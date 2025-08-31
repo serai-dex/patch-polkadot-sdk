@@ -1,0 +1,52 @@
+diff --git a/substrate/frame/support/src/traits/proving.rs b/substrate/frame/support/src/traits/proving.rs
+index 84e37bd..7b7f6f7 100644
+--- a/substrate/frame/support/src/traits/proving.rs
++++ b/substrate/frame/support/src/traits/proving.rs
+@@ -38,47 +38,6 @@ pub trait VerifyExistenceProof {
+ 	fn verify_proof(proof: Self::Proof, root: &Self::Hash) -> Result<Vec<u8>, DispatchError>;
+ }
+ 
+-/// Implements [`VerifyExistenceProof`] using a binary merkle tree.
+-pub struct BinaryMerkleTreeProver<H>(core::marker::PhantomData<H>);
+-
+-impl<H: Hasher> VerifyExistenceProof for BinaryMerkleTreeProver<H>
+-where
+-	H::Out: Decode + Encode,
+-{
+-	type Proof = binary_merkle_tree::MerkleProof<H::Out, Vec<u8>>;
+-	type Hash = H::Out;
+-
+-	fn verify_proof(proof: Self::Proof, root: &Self::Hash) -> Result<Vec<u8>, DispatchError> {
+-		if proof.root != *root {
+-			return Err(TrieError::RootMismatch.into());
+-		}
+-
+-		if binary_merkle_tree::verify_proof::<H, _, _>(
+-			&proof.root,
+-			proof.proof,
+-			proof.number_of_leaves,
+-			proof.leaf_index,
+-			&proof.leaf,
+-		) {
+-			Ok(proof.leaf)
+-		} else {
+-			Err(TrieError::IncompleteProof.into())
+-		}
+-	}
+-}
+-
+-impl<H: Hasher> ProofToHashes for BinaryMerkleTreeProver<H> {
+-	type Proof = binary_merkle_tree::MerkleProof<H::Out, Vec<u8>>;
+-
+-	// This base 2 merkle trie includes a `proof` field which is a `Vec<Hash>`.
+-	// The length of this vector tells us the depth of the proof, and how many
+-	// hashes we need to calculate.
+-	fn proof_to_hashes(proof: &Self::Proof) -> Result<u32, DispatchError> {
+-		let depth = proof.proof.len();
+-		Ok(depth as u32)
+-	}
+-}
+-
+ /// Proof used by [`SixteenPatriciaMerkleTreeProver`] for [`VerifyExistenceProof`].
+ #[derive(Encode, Decode, Clone)]
+ pub struct SixteenPatriciaMerkleTreeExistenceProof {

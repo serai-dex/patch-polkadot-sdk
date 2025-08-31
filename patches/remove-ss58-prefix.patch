@@ -1,0 +1,35 @@
+diff --git a/substrate/frame/system/src/lib.rs b/substrate/frame/system/src/lib.rs
+index 7c58874..f69fa7c 100644
+--- a/substrate/frame/system/src/lib.rs
++++ b/substrate/frame/system/src/lib.rs
+@@ -343,7 +343,6 @@ pub mod pallet {
+ 			type OnKilledAccount = ();
+ 			type SystemWeightInfo = ();
+ 			type ExtensionsWeightInfo = ();
+-			type SS58Prefix = ();
+ 			type Version = ();
+ 			type BlockWeights = ();
+ 			type BlockLength = ();
+@@ -419,7 +418,6 @@ pub mod pallet {
+ 			type ExtensionsWeightInfo = ();
+ 
+ 			/// This is used as an identifier of the chain.
+-			type SS58Prefix = ();
+ 
+ 			/// Version of the runtime.
+ 			type Version = ();
+@@ -633,14 +631,6 @@ pub mod pallet {
+ 		/// Weight information for the transaction extensions of this pallet.
+ 		type ExtensionsWeightInfo: extensions::WeightInfo;
+ 
+-		/// The designated SS58 prefix of this chain.
+-		///
+-		/// This replaces the "ss58Format" property declared in the chain spec. Reason is
+-		/// that the runtime should know about the prefix in order to make use of it as
+-		/// an identifier of the chain.
+-		#[pallet::constant]
+-		type SS58Prefix: Get<u16>;
+-
+ 		/// What to do if the runtime wants to change the code to something new.
+ 		///
+ 		/// The default (`()`) implementation is responsible for setting the correct storage

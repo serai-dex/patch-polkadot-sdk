@@ -1,0 +1,52 @@
+diff --git a/substrate/primitives/crypto/hashing/Cargo.toml b/substrate/primitives/crypto/hashing/Cargo.toml
+index 93a02e6..102243d 100644
+--- a/substrate/primitives/crypto/hashing/Cargo.toml
++++ b/substrate/primitives/crypto/hashing/Cargo.toml
+@@ -21,7 +21,7 @@ byteorder = { workspace = true }
+ digest = { workspace = true }
+ sha2 = { workspace = true }
+ sha3 = { workspace = true }
+-twox-hash = { features = ["digest_0_10"], workspace = true }
++twox-hash = { features = ["xxhash64"], workspace = true }
+ 
+ [dev-dependencies]
+ criterion = { workspace = true, default-features = true }
+diff --git a/substrate/primitives/crypto/hashing/src/lib.rs b/substrate/primitives/crypto/hashing/src/lib.rs
+index 04b7bb6..613c274 100644
+--- a/substrate/primitives/crypto/hashing/src/lib.rs
++++ b/substrate/primitives/crypto/hashing/src/lib.rs
+@@ -62,7 +62,7 @@ pub fn blake2_64(data: &[u8]) -> [u8; 8] {
+ 
+ /// Do a XX 64-bit hash and place result in `dest`.
+ pub fn twox_64_into(data: &[u8], dest: &mut [u8; 8]) {
+-	let r0 = twox_hash::XxHash::with_seed(0).chain_update(data).finish();
++	let r0 = twox_hash::XxHash64::oneshot(0, data);
+ 	LittleEndian::write_u64(&mut dest[0..8], r0);
+ }
+ 
+@@ -75,8 +75,8 @@ pub fn twox_64(data: &[u8]) -> [u8; 8] {
+ 
+ /// Do a XX 128-bit hash and place result in `dest`.
+ pub fn twox_128_into(data: &[u8], dest: &mut [u8; 16]) {
+-	let r0 = twox_hash::XxHash::with_seed(0).chain_update(data).finish();
+-	let r1 = twox_hash::XxHash::with_seed(1).chain_update(data).finish();
++	let r0 = twox_hash::XxHash64::oneshot(0, data);
++	let r1 = twox_hash::XxHash64::oneshot(1, data);
+ 	LittleEndian::write_u64(&mut dest[0..8], r0);
+ 	LittleEndian::write_u64(&mut dest[8..16], r1);
+ }
+@@ -90,10 +90,10 @@ pub fn twox_128(data: &[u8]) -> [u8; 16] {
+ 
+ /// Do a XX 256-bit hash and place result in `dest`.
+ pub fn twox_256_into(data: &[u8], dest: &mut [u8; 32]) {
+-	let r0 = twox_hash::XxHash::with_seed(0).chain_update(data).finish();
+-	let r1 = twox_hash::XxHash::with_seed(1).chain_update(data).finish();
+-	let r2 = twox_hash::XxHash::with_seed(2).chain_update(data).finish();
+-	let r3 = twox_hash::XxHash::with_seed(3).chain_update(data).finish();
++	let r0 = twox_hash::XxHash64::oneshot(0, data);
++	let r1 = twox_hash::XxHash64::oneshot(1, data);
++	let r2 = twox_hash::XxHash64::oneshot(2, data);
++	let r3 = twox_hash::XxHash64::oneshot(3, data);
+ 	LittleEndian::write_u64(&mut dest[0..8], r0);
+ 	LittleEndian::write_u64(&mut dest[8..16], r1);
+ 	LittleEndian::write_u64(&mut dest[16..24], r2);

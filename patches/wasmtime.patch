@@ -1,0 +1,226 @@
+diff --git a/substrate/client/executor/src/wasm_runtime.rs b/substrate/client/executor/src/wasm_runtime.rs
+index 8f189ca..980c6c3 100644
+--- a/substrate/client/executor/src/wasm_runtime.rs
++++ b/substrate/client/executor/src/wasm_runtime.rs
+@@ -316,7 +316,6 @@ where
+ 						parallel_compilation: true,
+ 						wasm_multi_value: false,
+ 						wasm_bulk_memory: false,
+-						wasm_reference_types: false,
+ 						wasm_simd: false,
+ 					},
+ 				},
+diff --git a/substrate/client/executor/wasmtime/Cargo.toml b/substrate/client/executor/wasmtime/Cargo.toml
+index 7a85a8d..368ef3b 100644
+--- a/substrate/client/executor/wasmtime/Cargo.toml
++++ b/substrate/client/executor/wasmtime/Cargo.toml
+@@ -29,21 +29,16 @@ sc-executor-common.workspace = true
+ sp-runtime-interface.default-features = true
+ sp-runtime-interface.workspace = true
+ sp-wasm-interface = { features = ["wasmtime"], workspace = true, default-features = true }
+-wasmtime = { features = [
++wasmtime = { default-features = false, features = [
+ 	"cache",
+ 	"cranelift",
+-	"jitdump",
+ 	"parallel-compilation",
+ 	"pooling-allocator",
+ ], workspace = true }
+ 
+ # Here we include the rustix crate in the exactly same semver-compatible version as used by
+-# wasmtime and enable its 'use-libc' flag.
+-#
+-# By default rustix directly calls the appropriate syscalls completely bypassing libc;
+-# this doesn't have any actual benefits for us besides making it harder to debug memory
+-# problems (since then `mmap` etc. cannot be easily hooked into).
+-rustix = { features = ["fs", "mm", "param", "std", "use-libc"], workspace = true }
++# wasmtime
++rustix = { features = ["fs", "mm", "param", "std"], workspace = true }
+ 
+ [dev-dependencies]
+ cargo_metadata = { workspace = true }
+diff --git a/substrate/client/executor/wasmtime/src/runtime.rs b/substrate/client/executor/wasmtime/src/runtime.rs
+index 286d134..939852a 100644
+--- a/substrate/client/executor/wasmtime/src/runtime.rs
++++ b/substrate/client/executor/wasmtime/src/runtime.rs
+@@ -41,7 +41,7 @@ use std::{
+ 		Arc,
+ 	},
+ };
+-use wasmtime::{AsContext, Engine, Memory};
++use wasmtime::{AsContext, Cache, Engine, Memory};
+ 
+ const MAX_INSTANCE_COUNT: u32 = 64;
+ 
+@@ -222,9 +222,10 @@ directory = \"{cache_dir}\"
+ 	fs::write(&cache_config_path, config_content)
+ 		.map_err(|err| format!("cannot write the cache config: {}", err))?;
+ 
+-	config
+-		.cache_config_load(cache_config_path)
+-		.map_err(|err| format!("failed to parse the config: {:#}", err))?;
++	config.cache(Some(
++		Cache::from_file(Some(&cache_config_path))
++			.map_err(|err| format!("failed to parse the config: {:#}", err))?,
++	));
+ 
+ 	Ok(())
+ }
+@@ -234,11 +235,6 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+ 	config.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize);
+ 	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
+ 
+-	// Since wasmtime 6.0.0 the default for this is `true`, but that heavily regresses
+-	// the contracts pallet's performance, so disable it for now.
+-	#[allow(deprecated)]
+-	config.cranelift_use_egraphs(false);
+-
+ 	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
+ 		Some(os_string) if os_string == "jitdump" => wasmtime::ProfilingStrategy::JitDump,
+ 		None => wasmtime::ProfilingStrategy::None,
+@@ -270,13 +266,40 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+ 
+ 	// Be clear and specific about the extensions we support. If an update brings new features
+ 	// they should be introduced here as well.
+-	config.wasm_reference_types(semantics.wasm_reference_types);
+ 	config.wasm_simd(semantics.wasm_simd);
+ 	config.wasm_bulk_memory(semantics.wasm_bulk_memory);
+ 	config.wasm_multi_value(semantics.wasm_multi_value);
+ 	config.wasm_multi_memory(false);
+-	config.wasm_threads(false);
+ 	config.wasm_memory64(false);
++	config.wasm_tail_call(false);
++	config.wasm_custom_page_sizes(false);
++	config.wasm_wide_arithmetic(false);
++	config.wasm_extended_const(false);
++	config.wasm_stack_switching(false);
++
++	config.wasm_relaxed_simd(false);
++	// Unnecessary since `wasm_relaxed_simd = false`
++	// config.relaxed_simd_deterministic(false);
++
++	// Requires the `threads` feature
++	// config.wasm_threads(false);
++	// config.wasm_shared_everything_threads(false);
++
++	// Requires the `gc` feature
++	// config.wasm_gc(false);
++	// config.wasm_function_references(false);
++	// config.wasm_reference_types(false);
++	// config.wasm_bulk_memory(false);
++
++	// Requires the `component-model` feature
++	// config.wasm_component_model(false);
++	// config.wasm_component_model_error_context(false);
++	// config.wasm_component_model_gc(false);
++
++	// Requires the `component-model` _and_ the `async` feature
++	// config.wasm_component_model_async(false);
++	// config.wasm_component_model_async_builtins(false);
++	// config.wasm_component_model_async_stackful(false);
+ 
+ 	let (use_pooling, use_cow) = match semantics.instantiation_strategy {
+ 		InstantiationStrategy::PoolingCopyOnWrite => (true, true),
+@@ -313,15 +336,17 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+ 			//   size: 32384
+ 			//   table_elements: 1249
+ 			//   memory_pages: 2070
+-			.instance_size(128 * 1024)
+-			.instance_table_elements(8192)
+-			.instance_memory_pages(memory_pages)
++			.max_core_instance_size(128 * 1024)
++			.table_elements(8192)
++			.max_memory_size(usize::try_from(memory_pages * WASM_PAGE_SIZE).unwrap())
+ 			// We can only have a single of those.
+-			.instance_tables(1)
+-			.instance_memories(1)
++			.total_memories(MAX_INSTANCE_COUNT)
++			.max_memories_per_module(1)
++			.total_tables(MAX_INSTANCE_COUNT)
++			.max_tables_per_module(1)
+ 			// This determines how many instances of the module can be
+ 			// instantiated in parallel from the same `Module`.
+-			.instance_count(MAX_INSTANCE_COUNT);
++			.total_core_instances(MAX_INSTANCE_COUNT);
+ 
+ 		config.allocation_strategy(wasmtime::InstanceAllocationStrategy::Pooling(pooling_config));
+ 	}
+@@ -451,9 +476,6 @@ pub struct Semantics {
+ 	/// Enables WASM Bulk Memory Operations proposal
+ 	pub wasm_bulk_memory: bool,
+ 
+-	/// Enables WASM Reference Types proposal
+-	pub wasm_reference_types: bool,
+-
+ 	/// Enables WASM Fixed-Width SIMD proposal
+ 	pub wasm_simd: bool,
+ }
+diff --git a/substrate/client/executor/wasmtime/src/tests.rs b/substrate/client/executor/wasmtime/src/tests.rs
+index abf2b95..45bccd7 100644
+--- a/substrate/client/executor/wasmtime/src/tests.rs
++++ b/substrate/client/executor/wasmtime/src/tests.rs
+@@ -144,7 +144,6 @@ impl RuntimeBuilder {
+ 				heap_alloc_strategy: self.heap_pages,
+ 				wasm_multi_value: false,
+ 				wasm_bulk_memory: false,
+-				wasm_reference_types: false,
+ 				wasm_simd: false,
+ 			},
+ 		};
+@@ -218,12 +217,14 @@ fn deep_call_stack_wat(depth: usize) -> String {
+ 
+ // We need two limits here since depending on whether the code is compiled in debug
+ // or in release mode the maximum call depth is slightly different.
+-const CALL_DEPTH_LOWER_LIMIT: usize = 65455;
+-const CALL_DEPTH_UPPER_LIMIT: usize = 65509;
++#[cfg(debug_assertions)]
++const CALL_DEPTH_LIMIT: usize = 65466;
++#[cfg(not(debug_assertions))]
++const CALL_DEPTH_LIMIT: usize = 65506;
+ 
+ test_wasm_execution!(test_consume_under_1mb_of_stack_does_not_trap);
+ fn test_consume_under_1mb_of_stack_does_not_trap(instantiation_strategy: InstantiationStrategy) {
+-	let wat = deep_call_stack_wat(CALL_DEPTH_LOWER_LIMIT);
++	let wat = deep_call_stack_wat(CALL_DEPTH_LIMIT);
+ 	let mut builder = RuntimeBuilder::new(instantiation_strategy).use_wat(wat);
+ 	let runtime = builder.build();
+ 	let mut instance = runtime.new_instance().expect("failed to instantiate a runtime");
+@@ -232,7 +233,7 @@ fn test_consume_under_1mb_of_stack_does_not_trap(instantiation_strategy: Instant
+ 
+ test_wasm_execution!(test_consume_over_1mb_of_stack_does_trap);
+ fn test_consume_over_1mb_of_stack_does_trap(instantiation_strategy: InstantiationStrategy) {
+-	let wat = deep_call_stack_wat(CALL_DEPTH_UPPER_LIMIT + 1);
++	let wat = deep_call_stack_wat(CALL_DEPTH_LIMIT + 1);
+ 	let mut builder = RuntimeBuilder::new(instantiation_strategy).use_wat(wat);
+ 	let runtime = builder.build();
+ 	let mut instance = runtime.new_instance().expect("failed to instantiate a runtime");
+@@ -471,7 +472,6 @@ fn test_instances_without_reuse_are_not_leaked() {
+ 				heap_alloc_strategy: DEFAULT_HEAP_ALLOC_STRATEGY,
+ 				wasm_multi_value: false,
+ 				wasm_bulk_memory: false,
+-				wasm_reference_types: false,
+ 				wasm_simd: false,
+ 			},
+ 		},
+@@ -496,7 +496,7 @@ fn test_rustix_version_matches_with_wasmtime() {
+ 	let wasmtime_rustix = metadata
+ 		.packages
+ 		.iter()
+-		.find(|pkg| pkg.name == "wasmtime-runtime")
++		.find(|pkg| pkg.name == "wasmtime")
+ 		.unwrap()
+ 		.dependencies
+ 		.iter()
+diff --git a/substrate/primitives/wasm-interface/src/lib.rs b/substrate/primitives/wasm-interface/src/lib.rs
+index 4fc78ca..8be785d 100644
+--- a/substrate/primitives/wasm-interface/src/lib.rs
++++ b/substrate/primitives/wasm-interface/src/lib.rs
+@@ -338,7 +338,7 @@ if_wasmtime_is_enabled! {
+ 	/// host functions' definitions generated through the runtime interface macro,
+ 	/// and is not meant to be used directly.
+ 	pub trait HostFunctionRegistry {
+-		type State;
++		type State: 'static;
+ 		type Error;
+ 		type FunctionContext: FunctionContext;
+ 

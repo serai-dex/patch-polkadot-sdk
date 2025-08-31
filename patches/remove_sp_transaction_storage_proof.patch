@@ -1,0 +1,45 @@
+diff --git a/substrate/client/service/src/client/client.rs b/substrate/client/service/src/client/client.rs
+index eddbb92..7b7573f 100644
+--- a/substrate/client/service/src/client/client.rs
++++ b/substrate/client/service/src/client/client.rs
+@@ -2059,40 +2059,3 @@ where
+ 		Client::block_status(self, hash).map_err(|e| Box::new(e) as Box<_>)
+ 	}
+ }
+-
+-impl<BE, E, B, RA> sp_transaction_storage_proof::IndexedBody<B> for Client<BE, E, B, RA>
+-where
+-	BE: backend::Backend<B>,
+-	E: CallExecutor<B>,
+-	B: BlockT,
+-{
+-	fn block_indexed_body(
+-		&self,
+-		number: NumberFor<B>,
+-	) -> Result<Option<Vec<Vec<u8>>>, sp_transaction_storage_proof::Error> {
+-		let hash = match self
+-			.backend
+-			.blockchain()
+-			.block_hash_from_id(&BlockId::Number(number))
+-			.map_err(|e| sp_transaction_storage_proof::Error::Application(Box::new(e)))?
+-		{
+-			Some(hash) => hash,
+-			None => return Ok(None),
+-		};
+-
+-		self.backend
+-			.blockchain()
+-			.block_indexed_body(hash)
+-			.map_err(|e| sp_transaction_storage_proof::Error::Application(Box::new(e)))
+-	}
+-
+-	fn number(
+-		&self,
+-		hash: B::Hash,
+-	) -> Result<Option<NumberFor<B>>, sp_transaction_storage_proof::Error> {
+-		self.backend
+-			.blockchain()
+-			.number(hash)
+-			.map_err(|e| sp_transaction_storage_proof::Error::Application(Box::new(e)))
+-	}
+-}

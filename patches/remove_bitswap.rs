@@ -1,0 +1,243 @@
+diff --git a/substrate/client/cli/src/params/network_params.rs b/substrate/client/cli/src/params/network_params.rs
+index 280d79a..3ee87e3 100644
+--- a/substrate/client/cli/src/params/network_params.rs
++++ b/substrate/client/cli/src/params/network_params.rs
+@@ -148,10 +148,6 @@ pub struct NetworkParams {
+ 	#[arg(long, default_value = "20")]
+ 	pub kademlia_replication_factor: NonZeroUsize,
+ 
+-	/// Join the IPFS network and serve transactions over bitswap protocol.
+-	#[arg(long)]
+-	pub ipfs_server: bool,
+-
+ 	/// Blockchain syncing mode.
+ 	#[arg(
+ 		long,
+@@ -279,7 +275,6 @@ impl NetworkParams {
+ 			allow_non_globals_in_dht,
+ 			kademlia_disjoint_query_paths: self.kademlia_disjoint_query_paths,
+ 			kademlia_replication_factor: self.kademlia_replication_factor,
+-			ipfs_server: self.ipfs_server,
+ 			sync_mode: self.sync.into(),
+ 			network_backend: self.network_backend.into(),
+ 		}
+diff --git a/substrate/client/network/src/config.rs b/substrate/client/network/src/config.rs
+index dd7e77e..3db879e 100644
+--- a/substrate/client/network/src/config.rs
++++ b/substrate/client/network/src/config.rs
+@@ -647,9 +647,6 @@ pub struct NetworkConfiguration {
+ 	/// `kademlia_replication_factor` peers to consider record successfully put.
+ 	pub kademlia_replication_factor: NonZeroUsize,
+ 
+-	/// Enable serving block data over IPFS bitswap.
+-	pub ipfs_server: bool,
+-
+ 	/// Networking backend used for P2P communication.
+ 	pub network_backend: NetworkBackendType,
+ }
+@@ -682,7 +679,6 @@ impl NetworkConfiguration {
+ 			kademlia_disjoint_query_paths: false,
+ 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
+ 				.expect("value is a constant; constant is non-zero; qed."),
+-			ipfs_server: false,
+ 			network_backend: NetworkBackendType::Litep2p,
+ 		}
+ 	}
+@@ -745,9 +741,6 @@ pub struct Params<Block: BlockT, H: ExHashT, N: NetworkBackend<Block, H>> {
+ 	/// Block announce protocol configuration
+ 	pub block_announce_config: N::NotificationProtocolConfig,
+ 
+-	/// Bitswap configuration, if the server has been enabled.
+-	pub bitswap_config: Option<N::BitswapConfig>,
+-
+ 	/// Notification metrics.
+ 	pub notification_metrics: NotificationMetrics,
+ }
+diff --git a/substrate/client/network/src/lib.rs b/substrate/client/network/src/lib.rs
+index f19c4dd..5be7bde 100644
+--- a/substrate/client/network/src/lib.rs
++++ b/substrate/client/network/src/lib.rs
+@@ -243,7 +243,6 @@
+ //! More precise usage details are still being worked on and will likely change in the future.
+ 
+ mod behaviour;
+-mod bitswap;
+ mod litep2p;
+ mod protocol;
+ 
+diff --git a/substrate/client/network/src/litep2p/mod.rs b/substrate/client/network/src/litep2p/mod.rs
+index ee11e90..0b2c21c 100644
+--- a/substrate/client/network/src/litep2p/mod.rs
++++ b/substrate/client/network/src/litep2p/mod.rs
+@@ -30,7 +30,6 @@ use crate::{
+ 		peerstore::Peerstore,
+ 		service::{Litep2pNetworkService, NetworkServiceCommand},
+ 		shim::{
+-			bitswap::BitswapServer,
+ 			notification::{
+ 				config::{NotificationProtocolConfig, ProtocolControlHandle},
+ 				peerset::PeersetCommand,
+@@ -56,7 +55,6 @@ use litep2p::{
+ 	executor::Executor,
+ 	protocol::{
+ 		libp2p::{
+-			bitswap::Config as BitswapConfig,
+ 			kademlia::{QueryId, Record},
+ 		},
+ 		request_response::ConfigBuilder as RequestResponseConfigBuilder,
+@@ -343,7 +341,6 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
+ 	type RequestResponseProtocolConfig = RequestResponseConfig;
+ 	type NetworkService<Block, Hash> = Arc<Litep2pNetworkService>;
+ 	type PeerStore = Peerstore;
+-	type BitswapConfig = BitswapConfig;
+ 
+ 	fn new(mut params: Params<B, H, Self>) -> Result<Self, Error>
+ 	where
+@@ -526,10 +523,6 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
+ 			config_builder = config_builder.with_mdns(config);
+ 		}
+ 
+-		if let Some(config) = params.bitswap_config {
+-			config_builder = config_builder.with_libp2p_bitswap(config);
+-		}
+-
+ 		let litep2p =
+ 			Litep2p::new(config_builder.build()).map_err(|error| Error::Litep2p(error))?;
+ 
+@@ -601,13 +594,6 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
+ 		NotificationMetrics::new(registry)
+ 	}
+ 
+-	/// Create Bitswap server.
+-	fn bitswap_server(
+-		client: Arc<dyn BlockBackend<B> + Send + Sync>,
+-	) -> (Pin<Box<dyn Future<Output = ()> + Send>>, Self::BitswapConfig) {
+-		BitswapServer::new(client)
+-	}
+-
+ 	/// Create notification protocol configuration for `protocol`.
+ 	fn notification_config(
+ 		protocol_name: ProtocolName,
+diff --git a/substrate/client/network/src/litep2p/shim/mod.rs b/substrate/client/network/src/litep2p/shim/mod.rs
+index 5eaf77f..2a52fa1 100644
+--- a/substrate/client/network/src/litep2p/shim/mod.rs
++++ b/substrate/client/network/src/litep2p/shim/mod.rs
+@@ -18,6 +18,5 @@
+ 
+ //! Shims for fitting `litep2p` APIs to `sc-network` APIs.
+ 
+-pub(crate) mod bitswap;
+ pub(crate) mod notification;
+ pub(crate) mod request_response;
+diff --git a/substrate/client/network/src/service.rs b/substrate/client/network/src/service.rs
+index 3f6ff7c..a7e91e8 100644
+--- a/substrate/client/network/src/service.rs
++++ b/substrate/client/network/src/service.rs
+@@ -29,7 +29,6 @@
+ 
+ use crate::{
+ 	behaviour::{self, Behaviour, BehaviourOut},
+-	bitswap::BitswapRequestHandler,
+ 	config::{
+ 		parse_addr, FullNetworkConfiguration, IncomingRequest, MultiaddrWithPeerId,
+ 		NonDefaultSetConfig, NotificationHandshake, Params, SetConfig, TransportConfig,
+@@ -171,7 +170,6 @@ where
+ 	type RequestResponseProtocolConfig = RequestResponseConfig;
+ 	type NetworkService<Block, Hash> = Arc<NetworkService<B, H>>;
+ 	type PeerStore = PeerStore;
+-	type BitswapConfig = RequestResponseConfig;
+ 
+ 	fn new(params: Params<B, H, Self>) -> Result<Self, Error>
+ 	where
+@@ -197,14 +195,6 @@ where
+ 		NotificationMetrics::new(registry)
+ 	}
+ 
+-	fn bitswap_server(
+-		client: Arc<dyn BlockBackend<B> + Send + Sync>,
+-	) -> (Pin<Box<dyn Future<Output = ()> + Send>>, Self::BitswapConfig) {
+-		let (handler, protocol_config) = BitswapRequestHandler::new(client.clone());
+-
+-		(Box::pin(async move { handler.run().await }), protocol_config)
+-	}
+-
+ 	/// Create notification protocol configuration.
+ 	fn notification_config(
+ 		protocol_name: ProtocolName,
+diff --git a/substrate/client/network/src/service/traits.rs b/substrate/client/network/src/service/traits.rs
+index acfed9e..4a6a807 100644
+--- a/substrate/client/network/src/service/traits.rs
++++ b/substrate/client/network/src/service/traits.rs
+@@ -126,9 +126,6 @@ pub trait NetworkBackend<B: BlockT + 'static, H: ExHashT>: Send + 'static {
+ 	/// Type implementing [`PeerStore`].
+ 	type PeerStore: PeerStore;
+ 
+-	/// Bitswap config.
+-	type BitswapConfig;
+-
+ 	/// Create new `NetworkBackend`.
+ 	fn new(params: Params<B, H, Self>) -> Result<Self, Error>
+ 	where
+@@ -143,11 +140,6 @@ pub trait NetworkBackend<B: BlockT + 'static, H: ExHashT>: Send + 'static {
+ 	/// Register metrics that are used by the notification protocols.
+ 	fn register_notification_metrics(registry: Option<&Registry>) -> NotificationMetrics;
+ 
+-	/// Create Bitswap server.
+-	fn bitswap_server(
+-		client: Arc<dyn BlockBackend<B> + Send + Sync>,
+-	) -> (Pin<Box<dyn Future<Output = ()> + Send>>, Self::BitswapConfig);
+-
+ 	/// Create notification protocol configuration and an associated `NotificationService`
+ 	/// for the protocol.
+ 	fn notification_config(
+diff --git a/substrate/client/service/src/builder.rs b/substrate/client/service/src/builder.rs
+index 6b1cea3..d9aa3b8 100644
+--- a/substrate/client/service/src/builder.rs
++++ b/substrate/client/service/src/builder.rs
+@@ -955,7 +955,6 @@ where
+ 		role: config.role,
+ 		protocol_id,
+ 		fork_id,
+-		ipfs_server: config.network.ipfs_server,
+ 		announce_block: config.announce_block,
+ 		net_config,
+ 		client,
+@@ -982,8 +981,6 @@ where
+ 	pub protocol_id: ProtocolId,
+ 	/// Fork ID.
+ 	pub fork_id: Option<&'a str>,
+-	/// Enable serving block data over IPFS bitswap.
+-	pub ipfs_server: bool,
+ 	/// Announce block automatically after they have been imported.
+ 	pub announce_block: bool,
+ 	/// Full network configuration.
+@@ -1040,7 +1037,6 @@ where
+ 		role,
+ 		protocol_id,
+ 		fork_id,
+-		ipfs_server,
+ 		announce_block,
+ 		mut net_config,
+ 		client,
+@@ -1067,13 +1063,6 @@ where
+ 	// install request handlers to `FullNetworkConfiguration`
+ 	net_config.add_request_response_protocol(light_client_request_protocol_config);
+ 
+-	let bitswap_config = ipfs_server.then(|| {
+-		let (handler, config) = Net::bitswap_server(client.clone());
+-		spawn_handle.spawn("bitswap-request-handler", Some("networking"), handler);
+-
+-		config
+-	});
+-
+ 	// Create transactions protocol and add it to the list of supported protocols of
+ 	let (transactions_handler_proto, transactions_config) =
+ 		sc_network_transactions::TransactionsHandlerPrototype::new::<_, Block, Net>(
+@@ -1105,7 +1094,6 @@ where
+ 		fork_id: fork_id.map(ToOwned::to_owned),
+ 		metrics_registry: metrics_registry.cloned(),
+ 		block_announce_config,
+-		bitswap_config,
+ 		notification_metrics: metrics,
+ 	};
+ 

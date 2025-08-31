@@ -1,0 +1,35 @@
+diff --git a/substrate/test-utils/runtime/src/extrinsic.rs b/substrate/test-utils/runtime/src/extrinsic.rs
+index 49dc6ba..26fda94 100644
+--- a/substrate/test-utils/runtime/src/extrinsic.rs
++++ b/substrate/test-utils/runtime/src/extrinsic.rs
+@@ -22,7 +22,6 @@ use crate::{
+ 	CheckSubstrateCall, Extrinsic, Nonce, Pair, RuntimeCall, SignedPayload, TransferData,
+ };
+ use codec::Encode;
+-use frame_metadata_hash_extension::CheckMetadataHash;
+ use frame_system::{CheckNonce, CheckWeight};
+ use sp_core::crypto::Pair as TraitPair;
+ use sp_keyring::Sr25519Keyring;
+@@ -209,9 +208,7 @@ impl ExtrinsicBuilder {
+ 			let tx_ext = (
+ 				(CheckNonce::from(self.nonce.unwrap_or(0)), CheckWeight::new()),
+ 				CheckSubstrateCall {},
+-				self.metadata_hash
+-					.map(CheckMetadataHash::new_with_custom_hash)
+-					.unwrap_or_else(|| CheckMetadataHash::new(false)),
++				self.metadata_hash,
+ 				frame_system::WeightReclaim::new(),
+ 			);
+ 			let raw_payload = SignedPayload::from_raw(
+diff --git a/substrate/test-utils/runtime/src/lib.rs b/substrate/test-utils/runtime/src/lib.rs
+index 5636007..37c2556 100644
+--- a/substrate/test-utils/runtime/src/lib.rs
++++ b/substrate/test-utils/runtime/src/lib.rs
+@@ -154,7 +154,6 @@ pub type Pair = sp_core::sr25519::Pair;
+ pub type TxExtension = (
+ 	(CheckNonce<Runtime>, CheckWeight<Runtime>),
+ 	CheckSubstrateCall,
+-	frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
+ 	frame_system::WeightReclaim<Runtime>,
+ );
+ /// The payload being signed in transactions.
