@@ -84,7 +84,6 @@ pub struct ExtrinsicBuilder {
 	function: RuntimeCall,
 	signer: Option<Pair>,
 	nonce: Option<Nonce>,
-	metadata_hash: Option<[u8; 32]>,
 }
 
 impl ExtrinsicBuilder {
@@ -94,13 +93,12 @@ impl ExtrinsicBuilder {
 			function: function.into(),
 			signer: Some(Sr25519Keyring::Alice.pair()),
 			nonce: None,
-			metadata_hash: None,
 		}
 	}
 
 	/// Create builder for given `RuntimeCall`. `Extrinsic` will be unsigned.
 	pub fn new_unsigned(function: impl Into<RuntimeCall>) -> Self {
-		Self { function: function.into(), signer: None, nonce: None, metadata_hash: None }
+		Self { function: function.into(), signer: None, nonce: None }
 	}
 
 	/// Create builder for `pallet_call::bench_transfer` from given `TransferData`.
@@ -114,7 +112,6 @@ impl ExtrinsicBuilder {
 		Self {
 			nonce: Some(transfer.nonce),
 			signer: Some(transfer.from.clone()),
-			metadata_hash: None,
 			..Self::new(BalancesCall::transfer_allow_death {
 				dest: transfer.to,
 				value: transfer.amount,
@@ -196,19 +193,12 @@ impl ExtrinsicBuilder {
 		self
 	}
 
-	/// Metadata hash to put into the signed data of the extrinsic.
-	pub fn metadata_hash(mut self, metadata_hash: [u8; 32]) -> Self {
-		self.metadata_hash = Some(metadata_hash);
-		self
-	}
-
 	/// Build `Extrinsic` using embedded parameters
 	pub fn build(self) -> Extrinsic {
 		if let Some(signer) = self.signer {
 			let tx_ext = (
 				(CheckNonce::from(self.nonce.unwrap_or(0)), CheckWeight::new()),
 				CheckSubstrateCall {},
-				self.metadata_hash,
 				frame_system::WeightReclaim::new(),
 			);
 			let raw_payload = SignedPayload::from_raw(
