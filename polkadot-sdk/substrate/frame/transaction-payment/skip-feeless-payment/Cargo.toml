@@ -1,0 +1,59 @@
+[package]
+name = "pallet-skip-feeless-payment"
+version = "15.0.0"
+description = "Pallet to skip payments for calls annotated with `feeless_if` if the respective conditions are satisfied."
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.license]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame-support/std",
+    "frame-system/std",
+    "scale-info/std",
+    "sp-runtime/std",
+]
+runtime-benchmarks = [
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+]
+try-runtime = [
+    "frame-support/try-runtime",
+    "frame-system/try-runtime",
+    "sp-runtime/try-runtime",
+]

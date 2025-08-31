@@ -1,0 +1,27 @@
+[package]
+name = "pallet-election-provider-e2e-test"
+version = "1.0.0"
+license = "Apache-2.0"
+description = "FRAME election provider multi phase pallet tests with staking pallet, bags-list and session pallets"
+publish = false
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[features]
+try-runtime = []

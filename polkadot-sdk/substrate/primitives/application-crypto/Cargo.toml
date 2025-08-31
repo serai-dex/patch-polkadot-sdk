@@ -1,0 +1,68 @@
+[package]
+name = "sp-application-crypto"
+version = "40.1.0"
+description = "Provides facilities for generating application specific crypto wrapper types."
+license = "Apache-2.0"
+documentation = "https://docs.rs/sp-application-crypto"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.serde]
+optional = true
+features = [
+    "alloc",
+    "derive",
+]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "full_crypto",
+    "scale-info/std",
+    "serde/std",
+    "sp-core/std",
+    "sp-io/std",
+]
+serde = [
+    "dep:serde",
+    "scale-info/serde",
+    "sp-core/serde",
+]
+full_crypto = [
+    "sp-core/full_crypto",
+    "sp-io/disable_oom",
+    "sp-io/disable_panic_handler",
+]

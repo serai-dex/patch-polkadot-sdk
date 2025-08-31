@@ -1,0 +1,44 @@
+[package]
+name = "frame-support-procedural-tools"
+version = "13.0.1"
+license = "Apache-2.0"
+description = "Proc macro helpers for procedural macros"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.frame-support-procedural-tools-derive]
+default-features = true
+workspace = true
+
+[dependencies.proc-macro-crate]
+workspace = true
+
+[dependencies.proc-macro2]
+workspace = true
+
+[dependencies.quote]
+workspace = true
+
+[dependencies.syn]
+features = [
+    "extra-traits",
+    "full",
+    "visit",
+]
+workspace = true

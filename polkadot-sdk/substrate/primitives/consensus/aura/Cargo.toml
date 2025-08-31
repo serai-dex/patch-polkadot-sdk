@@ -1,0 +1,73 @@
+[package]
+name = "sp-consensus-aura"
+version = "0.42.0"
+description = "Primitives for Aura consensus"
+license = "Apache-2.0"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.async-trait]
+optional = true
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-application-crypto]
+workspace = true
+
+[dependencies.sp-consensus-slots]
+workspace = true
+
+[dependencies.sp-inherents]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-timestamp]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "async-trait",
+    "codec/std",
+    "scale-info/std",
+    "sp-api/std",
+    "sp-application-crypto/std",
+    "sp-consensus-slots/std",
+    "sp-inherents/std",
+    "sp-runtime/std",
+    "sp-timestamp/std",
+]
+serde = [
+    "scale-info/serde",
+    "sp-application-crypto/serde",
+    "sp-consensus-slots/serde",
+    "sp-runtime/serde",
+]

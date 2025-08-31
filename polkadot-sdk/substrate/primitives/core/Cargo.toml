@@ -1,0 +1,252 @@
+[package]
+name = "sp-core"
+version = "36.1.0"
+license = "Apache-2.0"
+description = "Shareable Substrate types."
+documentation = "https://docs.rs/sp-core"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.bip39]
+workspace = true
+default-features = false
+features = ["alloc"]
+
+[dependencies.bitflags]
+workspace = true
+
+[dependencies.bounded-collections]
+workspace = true
+
+[dependencies.bs58]
+optional = true
+workspace = true
+
+[dependencies.codec]
+features = [
+    "derive",
+    "max-encoded-len",
+]
+workspace = true
+
+[dependencies.dyn-clonable]
+optional = true
+workspace = true
+
+[dependencies.futures]
+optional = true
+workspace = true
+
+[dependencies.hash-db]
+workspace = true
+
+[dependencies.hash256-std-hasher]
+workspace = true
+
+[dependencies.impl-serde]
+optional = true
+workspace = true
+
+[dependencies.itertools]
+optional = true
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.parking_lot]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.paste]
+workspace = true
+default-features = true
+
+[dependencies.primitive-types]
+features = [
+    "codec",
+    "scale-info",
+]
+workspace = true
+
+[dependencies.rand]
+features = ["small_rng"]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.secrecy]
+features = ["alloc"]
+workspace = true
+
+[dependencies.serde]
+optional = true
+features = [
+    "alloc",
+    "derive",
+]
+workspace = true
+
+[dependencies.sp-debug-derive]
+workspace = true
+
+[dependencies.sp-externalities]
+optional = true
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.sp-storage]
+workspace = true
+
+[dependencies.ss58-registry]
+workspace = true
+
+[dependencies.substrate-bip39]
+workspace = true
+
+[dependencies.thiserror]
+optional = true
+workspace = true
+
+[dependencies.tracing]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.zeroize]
+workspace = true
+
+[dependencies.array-bytes]
+workspace = true
+default-features = true
+
+[dependencies.blake2]
+optional = true
+workspace = true
+
+[dependencies.ed25519-zebra]
+workspace = true
+
+[dependencies.libsecp256k1]
+features = ["static-context"]
+workspace = true
+
+[dependencies.merlin]
+workspace = true
+
+[dependencies.schnorrkel]
+features = ["preaudit_deprecated"]
+workspace = true
+
+[dependencies.sp-crypto-hashing]
+workspace = true
+
+[dependencies.sp-runtime-interface]
+workspace = true
+
+[dependencies.k256]
+features = [
+    "alloc",
+    "ecdsa",
+]
+workspace = true
+
+[dependencies.secp256k1]
+features = [
+    "alloc",
+    "recovery",
+]
+optional = true
+workspace = true
+
+[[bench]]
+name = "bench"
+harness = false
+
+[lib]
+bench = false
+
+[features]
+default = ["std"]
+std = [
+    "bip39/rand",
+    "bip39/std",
+    "blake2/std",
+    "bounded-collections/std",
+    "bs58/std",
+    "codec/std",
+    "dyn-clonable",
+    "ed25519-zebra/std",
+    "full_crypto",
+    "futures",
+    "futures/thread-pool",
+    "hash-db/std",
+    "hash256-std-hasher/std",
+    "impl-serde/std",
+    "itertools",
+    "k256/std",
+    "libsecp256k1/std",
+    "log/std",
+    "merlin/std",
+    "parking_lot",
+    "primitive-types/byteorder",
+    "primitive-types/rustc-hex",
+    "primitive-types/serde",
+    "primitive-types/std",
+    "rand",
+    "scale-info/std",
+    "schnorrkel/std",
+    "secp256k1/global-context",
+    "secp256k1/std",
+    "serde/std",
+    "sp-crypto-hashing/std",
+    "sp-debug-derive/std",
+    "sp-externalities/std",
+    "sp-runtime-interface/std",
+    "sp-std/std",
+    "sp-storage/std",
+    "ss58-registry/std",
+    "substrate-bip39/std",
+    "thiserror",
+    "tracing",
+    "zeroize/alloc",
+    "zeroize/std",
+]
+serde = [
+    "blake2",
+    "bounded-collections/serde",
+    "bs58/alloc",
+    "dep:serde",
+    "impl-serde",
+    "k256/serde",
+    "primitive-types/serde_no_std",
+    "scale-info/serde",
+    "sp-storage/serde",
+]
+full_crypto = [
+    "blake2",
+    "sp-runtime-interface/disable_target_static_assertions",
+]

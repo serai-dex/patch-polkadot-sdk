@@ -1,0 +1,54 @@
+[package]
+name = "sc-keystore"
+version = "35.0.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Keystore (and session key management) for ed25519 based chains like Polkadot."
+documentation = "https://docs.rs/sc-keystore"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.array-bytes]
+workspace = true
+default-features = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.serde_json]
+workspace = true
+default-features = true
+
+[dependencies.sp-application-crypto]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-keystore]
+default-features = true
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[features]

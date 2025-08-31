@@ -1,0 +1,97 @@
+[package]
+name = "sp-state-machine"
+version = "0.45.0"
+description = "Substrate State Machine"
+license = "Apache-2.0"
+documentation = "https://docs.rs/sp-state-machine"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.arbitrary]
+features = ["derive"]
+optional = true
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.hash-db]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.parking_lot]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.rand]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.smallvec]
+workspace = true
+default-features = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-externalities]
+workspace = true
+
+[dependencies.sp-panic-handler]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.sp-trie]
+workspace = true
+
+[dependencies.thiserror]
+optional = true
+workspace = true
+
+[dependencies.tracing]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.trie-db]
+workspace = true
+
+[features]
+default = ["std"]
+fuzzing = ["arbitrary"]
+std = [
+    "codec/std",
+    "hash-db/std",
+    "log/std",
+    "parking_lot",
+    "rand",
+    "sp-core/std",
+    "sp-externalities/std",
+    "sp-panic-handler",
+    "sp-trie/std",
+    "thiserror",
+    "tracing",
+    "trie-db/std",
+]

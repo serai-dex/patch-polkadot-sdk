@@ -1,0 +1,106 @@
+[package]
+name = "sc-executor"
+version = "0.42.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "A crate that provides means of executing/dispatching calls into the runtime."
+documentation = "https://docs.rs/sc-executor"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.schnellru]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+default-features = true
+
+[dependencies.codec]
+workspace = true
+default-features = true
+
+[dependencies.sc-executor-common]
+default-features = true
+workspace = true
+
+[dependencies.sc-executor-polkavm]
+default-features = true
+workspace = true
+
+[dependencies.sc-executor-wasmtime]
+default-features = true
+workspace = true
+
+[dependencies.sp-api]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-externalities]
+default-features = true
+workspace = true
+
+[dependencies.sp-io]
+default-features = true
+workspace = true
+
+[dependencies.sp-panic-handler]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime-interface]
+default-features = true
+workspace = true
+
+[dependencies.sp-trie]
+default-features = true
+workspace = true
+
+[dependencies.sp-version]
+default-features = true
+workspace = true
+
+[dependencies.sp-wasm-interface]
+default-features = true
+workspace = true
+
+[[bench]]
+name = "bench"
+harness = false
+
+[features]
+default = ["std"]
+std = [
+    "sp-api/std",
+    "sp-core/std",
+    "sp-externalities/std",
+    "sp-io/std",
+    "sp-runtime-interface/std",
+    "sp-trie/std",
+    "sp-version/std",
+    "sp-wasm-interface/std",
+]
+wasm-extern-trace = []

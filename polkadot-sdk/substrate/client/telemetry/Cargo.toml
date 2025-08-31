@@ -1,0 +1,74 @@
+[package]
+name = "sc-telemetry"
+version = "28.1.0"
+description = "Telemetry utils"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+documentation = "https://docs.rs/sc-telemetry"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.chrono]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.libp2p]
+features = [
+    "dns",
+    "tcp",
+    "tokio",
+    "websocket",
+]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.pin-project]
+workspace = true
+
+[dependencies.rand]
+workspace = true
+default-features = true
+
+[dependencies.sc-utils]
+default-features = true
+workspace = true
+
+[dependencies.serde]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.serde_json]
+workspace = true
+default-features = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.wasm-timer]
+workspace = true

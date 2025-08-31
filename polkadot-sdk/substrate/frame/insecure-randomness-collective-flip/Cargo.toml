@@ -1,0 +1,49 @@
+[package]
+name = "pallet-insecure-randomness-collective-flip"
+version = "28.0.0"
+license = "Apache-2.0"
+description = "Insecure do not use in production: FRAME randomness collective flip pallet"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.frame]
+workspace = true
+features = ["runtime"]
+
+[dependencies.safe-mix]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame/std",
+    "safe-mix/std",
+    "scale-info/std",
+]
+try-runtime = ["frame/try-runtime"]

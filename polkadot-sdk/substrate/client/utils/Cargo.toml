@@ -1,0 +1,48 @@
+[package]
+name = "sc-utils"
+version = "18.0.1"
+license = "Apache-2.0"
+description = "I/O for Substrate runtimes"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[lints]
+workspace = true
+
+[dependencies.async-channel]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.futures-timer]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.prometheus]
+workspace = true
+
+[dependencies.sp-arithmetic]
+workspace = true
+
+[features]
+default = ["metered"]
+metered = []

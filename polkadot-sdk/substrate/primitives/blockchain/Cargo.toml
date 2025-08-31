@@ -1,0 +1,70 @@
+[package]
+name = "sp-blockchain"
+version = "39.0.0"
+license = "Apache-2.0"
+description = "Substrate blockchain traits and primitives."
+documentation = "https://docs.rs/sp-blockchain"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.schnellru]
+workspace = true
+
+[dependencies.sp-api]
+default-features = true
+workspace = true
+
+[dependencies.sp-consensus]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-database]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.sp-state-machine]
+default-features = true
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+default-features = true

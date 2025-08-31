@@ -1,0 +1,138 @@
+[package]
+name = "sp-runtime"
+version = "41.1.0"
+license = "Apache-2.0"
+description = "Runtime Modules shared primitive types."
+documentation = "https://docs.rs/sp-runtime"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = [
+    "derive",
+    "max-encoded-len",
+]
+workspace = true
+
+[dependencies.docify]
+workspace = true
+
+[dependencies.either]
+workspace = true
+
+[dependencies.hash256-std-hasher]
+workspace = true
+
+[dependencies.impl-trait-for-tuples]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.num-traits]
+workspace = true
+
+[dependencies.paste]
+workspace = true
+default-features = true
+
+[dependencies.rand]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.serde]
+features = [
+    "alloc",
+    "derive",
+]
+optional = true
+workspace = true
+
+[dependencies.sp-application-crypto]
+workspace = true
+
+[dependencies.sp-arithmetic]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.sp-trie]
+workspace = true
+
+[dependencies.sp-weights]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+features = ["log"]
+default-features = false
+
+[dependencies.simple-mermaid]
+version = "0.1.1"
+optional = true
+
+[dependencies.tuplex]
+version = "0.1.2"
+default-features = false
+
+[features]
+runtime-benchmarks = []
+try-runtime = []
+default = ["std"]
+std = [
+    "codec/std",
+    "either/use_std",
+    "hash256-std-hasher/std",
+    "log/std",
+    "num-traits/std",
+    "rand",
+    "scale-info/std",
+    "serde/std",
+    "simple-mermaid",
+    "sp-application-crypto/std",
+    "sp-arithmetic/std",
+    "sp-core/std",
+    "sp-io/std",
+    "sp-std/std",
+    "sp-trie/std",
+    "sp-weights/std",
+    "tracing/std",
+    "tuplex/std",
+]
+serde = [
+    "dep:serde",
+    "scale-info/serde",
+    "sp-application-crypto/serde",
+    "sp-arithmetic/serde",
+    "sp-core/serde",
+    "sp-weights/serde",
+]

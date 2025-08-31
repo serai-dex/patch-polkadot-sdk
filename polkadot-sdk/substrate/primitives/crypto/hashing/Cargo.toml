@@ -1,0 +1,61 @@
+[package]
+name = "sp-crypto-hashing"
+version = "0.1.0"
+license = "Apache-2.0"
+description = "Hashing primitives."
+documentation = "https://docs.rs/sp-crypto-hashing"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.blake2b_simd]
+workspace = true
+
+[dependencies.byteorder]
+workspace = true
+
+[dependencies.digest]
+workspace = true
+
+[dependencies.sha2]
+workspace = true
+
+[dependencies.sha3]
+workspace = true
+
+[dependencies.twox-hash]
+features = ["xxhash64"]
+workspace = true
+
+[[bench]]
+name = "bench"
+harness = false
+
+[lib]
+bench = false
+
+[features]
+default = ["std"]
+std = [
+    "blake2b_simd/std",
+    "byteorder/std",
+    "digest/std",
+    "sha2/std",
+    "sha3/std",
+    "twox-hash/std",
+]

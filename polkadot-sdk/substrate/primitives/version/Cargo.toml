@@ -1,0 +1,84 @@
+[package]
+name = "sp-version"
+version = "39.0.0"
+license = "Apache-2.0"
+description = "Version module for the Substrate runtime; Provides a function that returns the runtime version."
+documentation = "https://docs.rs/sp-version"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.impl-serde]
+optional = true
+workspace = true
+
+[dependencies.parity-wasm]
+optional = true
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.serde]
+features = [
+    "alloc",
+    "derive",
+]
+optional = true
+workspace = true
+
+[dependencies.sp-crypto-hashing-proc-macro]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-std]
+workspace = true
+
+[dependencies.sp-version-proc-macro]
+workspace = true
+
+[dependencies.thiserror]
+optional = true
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "impl-serde/std",
+    "parity-wasm",
+    "scale-info/std",
+    "serde/std",
+    "sp-runtime/std",
+    "sp-std/std",
+    "thiserror",
+]
+serde = [
+    "dep:serde",
+    "impl-serde",
+    "sp-runtime/serde",
+]

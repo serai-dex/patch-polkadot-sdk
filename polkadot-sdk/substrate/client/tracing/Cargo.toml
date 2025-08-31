@@ -1,0 +1,108 @@
+[package]
+name = "sc-tracing"
+version = "39.0.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Instrumentation implementation for substrate."
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.chrono]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+default-features = true
+
+[dependencies.console]
+workspace = true
+
+[dependencies.is-terminal]
+workspace = true
+
+[dependencies.libc]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.rustc-hash]
+workspace = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-tracing-proc-macro]
+default-features = true
+workspace = true
+
+[dependencies.serde]
+workspace = true
+default-features = true
+
+[dependencies.sp-api]
+default-features = true
+workspace = true
+
+[dependencies.sp-blockchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-rpc]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.sp-tracing]
+default-features = true
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+default-features = true
+
+[dependencies.tracing-log]
+workspace = true
+
+[dependencies.tracing-subscriber]
+workspace = true
+features = [
+    "env-filter",
+    "parking_lot",
+]
+
+[[bench]]
+name = "bench"
+harness = false

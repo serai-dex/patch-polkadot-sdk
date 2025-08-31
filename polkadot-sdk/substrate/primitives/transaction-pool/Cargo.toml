@@ -1,0 +1,38 @@
+[package]
+name = "sp-transaction-pool"
+version = "36.0.0"
+license = "Apache-2.0"
+description = "Transaction pool runtime facing API."
+documentation = "https://docs.rs/sp-transaction-pool"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "sp-api/std",
+    "sp-runtime/std",
+]

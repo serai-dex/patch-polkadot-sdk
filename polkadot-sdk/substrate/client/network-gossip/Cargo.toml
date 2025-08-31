@@ -1,0 +1,69 @@
+[package]
+description = "Gossiping for the Substrate network protocol"
+name = "sc-network-gossip"
+version = "0.50.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+documentation = "https://docs.rs/sc-network-gossip"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.ahash]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.futures-timer]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.prometheus-endpoint]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-common]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-sync]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-types]
+default-features = true
+workspace = true
+
+[dependencies.sc-network]
+default-features = true
+workspace = true
+
+[dependencies.schnellru]
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+default-features = true

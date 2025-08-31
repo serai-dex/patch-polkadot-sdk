@@ -1,0 +1,59 @@
+[package]
+name = "sp-consensus-slots"
+version = "0.42.1"
+description = "Primitives for slots-based consensus"
+license = "Apache-2.0"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = [
+    "derive",
+    "max-encoded-len",
+]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.serde]
+features = [
+    "alloc",
+    "derive",
+]
+optional = true
+workspace = true
+
+[dependencies.sp-timestamp]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "scale-info/std",
+    "serde/std",
+    "sp-timestamp/std",
+]
+serde = [
+    "dep:serde",
+    "scale-info/serde",
+]

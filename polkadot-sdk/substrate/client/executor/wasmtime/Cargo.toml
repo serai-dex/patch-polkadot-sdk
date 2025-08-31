@@ -1,0 +1,71 @@
+[package]
+name = "sc-executor-wasmtime"
+version = "0.38.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Defines a `WasmRuntime` that uses the Wasmtime JIT to execute."
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.anyhow]
+workspace = true
+
+[dependencies.sc-allocator]
+default-features = true
+workspace = true
+
+[dependencies.sc-executor-common]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime-interface]
+default-features = true
+workspace = true
+
+[dependencies.sp-wasm-interface]
+features = ["wasmtime"]
+workspace = true
+default-features = true
+
+[dependencies.wasmtime]
+default-features = false
+features = [
+    "cache",
+    "cranelift",
+    "parallel-compilation",
+    "pooling-allocator",
+]
+workspace = true
+
+[dependencies.rustix]
+features = [
+    "fs",
+    "mm",
+    "param",
+    "std",
+]
+workspace = true

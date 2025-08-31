@@ -1,0 +1,132 @@
+[package]
+description = "Substrate sync network protocol"
+name = "sc-network-sync"
+version = "0.49.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+documentation = "https://docs.rs/sc-network-sync"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[build-dependencies.prost-build]
+workspace = true
+
+[dependencies.array-bytes]
+workspace = true
+default-features = true
+
+[dependencies.async-channel]
+workspace = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.fork-tree]
+default-features = true
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.mockall]
+workspace = true
+
+[dependencies.prometheus-endpoint]
+default-features = true
+workspace = true
+
+[dependencies.prost]
+workspace = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-consensus]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-common]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-types]
+default-features = true
+workspace = true
+
+[dependencies.sc-network]
+default-features = true
+workspace = true
+
+[dependencies.sc-utils]
+default-features = true
+workspace = true
+
+[dependencies.schnellru]
+workspace = true
+
+[dependencies.smallvec]
+workspace = true
+default-features = true
+
+[dependencies.sp-arithmetic]
+default-features = true
+workspace = true
+
+[dependencies.sp-blockchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-consensus-grandpa]
+default-features = true
+workspace = true
+
+[dependencies.sp-consensus]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.tokio]
+features = [
+    "macros",
+    "time",
+]
+workspace = true
+default-features = true
+
+[dependencies.tokio-stream]
+workspace = true

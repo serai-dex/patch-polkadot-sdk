@@ -1,0 +1,108 @@
+[package]
+name = "pallet-offences-benchmarking"
+version = "40.0.0"
+license = "Apache-2.0"
+description = "FRAME offences pallet benchmarking"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.frame-benchmarking]
+workspace = true
+
+[dependencies.frame-election-provider-support]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.pallet-babe]
+workspace = true
+
+[dependencies.pallet-balances]
+workspace = true
+
+[dependencies.pallet-grandpa]
+workspace = true
+
+[dependencies.pallet-im-online]
+workspace = true
+
+[dependencies.pallet-offences]
+workspace = true
+
+[dependencies.pallet-session]
+workspace = true
+
+[dependencies.pallet-staking]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-staking]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame-benchmarking/std",
+    "frame-election-provider-support/std",
+    "frame-support/std",
+    "frame-system/std",
+    "log/std",
+    "pallet-babe/std",
+    "pallet-balances/std",
+    "pallet-grandpa/std",
+    "pallet-im-online/std",
+    "pallet-offences/std",
+    "pallet-session/std",
+    "pallet-staking/std",
+    "scale-info/std",
+    "sp-runtime/std",
+    "sp-staking/std",
+]
+runtime-benchmarks = [
+    "frame-benchmarking/runtime-benchmarks",
+    "frame-election-provider-support/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "pallet-babe/runtime-benchmarks",
+    "pallet-balances/runtime-benchmarks",
+    "pallet-grandpa/runtime-benchmarks",
+    "pallet-im-online/runtime-benchmarks",
+    "pallet-offences/runtime-benchmarks",
+    "pallet-staking/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+    "sp-staking/runtime-benchmarks",
+]

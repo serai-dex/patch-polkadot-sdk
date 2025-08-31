@@ -1,0 +1,28 @@
+[package]
+name = "sp-maybe-compressed-blob"
+version = "11.0.0"
+license = "Apache-2.0"
+description = "Handling of blobs, usually Wasm code, which may be compressed"
+documentation = "https://docs.rs/sp-maybe-compressed-blob"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[lints]
+workspace = true
+
+[dependencies.thiserror]
+workspace = true
+
+[dependencies.zstd]
+workspace = true

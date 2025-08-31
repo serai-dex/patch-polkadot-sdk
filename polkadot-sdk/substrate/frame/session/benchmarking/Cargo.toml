@@ -1,0 +1,72 @@
+[package]
+name = "pallet-session-benchmarking"
+version = "40.0.0"
+license = "Apache-2.0"
+description = "FRAME sessions pallet benchmarking"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.frame-benchmarking]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.pallet-session]
+workspace = true
+
+[dependencies.pallet-staking]
+workspace = true
+
+[dependencies.rand]
+features = ["std_rng"]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-session]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "frame-benchmarking/std",
+    "frame-support/std",
+    "frame-system/std",
+    "pallet-session/std",
+    "pallet-staking/std",
+    "rand/std",
+    "sp-runtime/std",
+    "sp-session/std",
+]
+runtime-benchmarks = [
+    "frame-benchmarking/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "pallet-staking/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+]

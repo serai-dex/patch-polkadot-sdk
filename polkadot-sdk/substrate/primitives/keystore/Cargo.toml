@@ -1,0 +1,47 @@
+[package]
+name = "sp-keystore"
+version = "0.42.0"
+license = "Apache-2.0"
+description = "Keystore primitives."
+documentation = "https://docs.rs/sp-core"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.parking_lot]
+optional = true
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-externalities]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "dep:parking_lot",
+    "sp-core/std",
+    "sp-externalities/std",
+]

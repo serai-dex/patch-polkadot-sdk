@@ -1,0 +1,118 @@
+[package]
+name = "sc-rpc"
+version = "45.0.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Substrate Client RPC"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+default-features = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.jsonrpsee]
+features = ["server"]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.sc-block-builder]
+default-features = true
+workspace = true
+
+[dependencies.sc-chain-spec]
+default-features = true
+workspace = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-rpc-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-tracing]
+default-features = true
+workspace = true
+
+[dependencies.sc-transaction-pool-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-utils]
+default-features = true
+workspace = true
+
+[dependencies.serde_json]
+workspace = true
+default-features = true
+
+[dependencies.sp-api]
+default-features = true
+workspace = true
+
+[dependencies.sp-blockchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-keystore]
+default-features = true
+workspace = true
+
+[dependencies.sp-offchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-rpc]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.sp-session]
+default-features = true
+workspace = true
+
+[dependencies.sp-version]
+default-features = true
+workspace = true
+
+[dependencies.tokio]
+workspace = true
+default-features = true
+
+[features]
+test-helpers = []

@@ -1,0 +1,114 @@
+[package]
+name = "pallet-bags-list"
+version = "39.1.0"
+license = "Apache-2.0"
+description = "FRAME pallet bags list"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.frame-election-provider-support]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.aquamarine]
+workspace = true
+
+[dependencies.docify]
+workspace = true
+
+[dependencies.frame-benchmarking]
+optional = true
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.pallet-balances]
+optional = true
+workspace = true
+
+[dependencies.sp-core]
+optional = true
+workspace = true
+
+[dependencies.sp-io]
+optional = true
+workspace = true
+
+[dependencies.sp-tracing]
+optional = true
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame-benchmarking?/std",
+    "frame-election-provider-support/std",
+    "frame-support/std",
+    "frame-system/std",
+    "log/std",
+    "pallet-balances?/std",
+    "scale-info/std",
+    "sp-core?/std",
+    "sp-io?/std",
+    "sp-runtime/std",
+    "sp-tracing?/std",
+]
+runtime-benchmarks = [
+    "frame-benchmarking/runtime-benchmarks",
+    "frame-election-provider-support/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "pallet-balances/runtime-benchmarks",
+    "sp-core",
+    "sp-io",
+    "sp-runtime/runtime-benchmarks",
+    "sp-tracing",
+]
+fuzz = [
+    "frame-election-provider-support/fuzz",
+    "pallet-balances",
+    "sp-core",
+    "sp-io",
+    "sp-tracing",
+]
+try-runtime = [
+    "frame-election-provider-support/try-runtime",
+    "frame-support/try-runtime",
+    "frame-system/try-runtime",
+    "pallet-balances?/try-runtime",
+    "sp-runtime/try-runtime",
+]

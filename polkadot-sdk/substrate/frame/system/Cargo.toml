@@ -1,0 +1,101 @@
+[package]
+name = "frame-system"
+version = "40.2.0"
+license = "Apache-2.0"
+description = "FRAME system module"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.cfg-if]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.docify]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.scale-info]
+features = [
+    "derive",
+    "serde",
+]
+workspace = true
+
+[dependencies.serde]
+features = [
+    "alloc",
+    "derive",
+]
+workspace = true
+
+[dependencies.sp-core]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[dependencies.sp-runtime]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-version]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-weights]
+features = ["serde"]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame-support/std",
+    "log/std",
+    "scale-info/std",
+    "serde/std",
+    "sp-core/std",
+    "sp-io/std",
+    "sp-runtime/std",
+    "sp-version/std",
+    "sp-weights/std",
+]
+runtime-benchmarks = [
+    "frame-support/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+]
+try-runtime = [
+    "frame-support/try-runtime",
+    "sp-runtime/try-runtime",
+]
+experimental = ["frame-support/experimental"]
+
+[[bench]]
+name = "bench"
+harness = false

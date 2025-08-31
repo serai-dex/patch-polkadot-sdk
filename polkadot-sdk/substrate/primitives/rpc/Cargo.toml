@@ -1,0 +1,36 @@
+[package]
+name = "sp-rpc"
+version = "34.0.0"
+license = "Apache-2.0"
+description = "Substrate RPC primitives and utilities."
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.rustc-hash]
+workspace = true
+
+[dependencies.serde]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true

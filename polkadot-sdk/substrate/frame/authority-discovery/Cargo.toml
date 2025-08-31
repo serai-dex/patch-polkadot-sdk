@@ -1,0 +1,70 @@
+[package]
+name = "pallet-authority-discovery"
+version = "40.0.0"
+license = "Apache-2.0"
+description = "FRAME pallet for authority discovery"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.pallet-session]
+features = ["historical"]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-application-crypto]
+workspace = true
+
+[dependencies.sp-authority-discovery]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame-support/std",
+    "frame-system/std",
+    "pallet-session/std",
+    "scale-info/std",
+    "sp-application-crypto/std",
+    "sp-authority-discovery/std",
+    "sp-runtime/std",
+]
+try-runtime = [
+    "frame-support/try-runtime",
+    "frame-system/try-runtime",
+    "pallet-session/try-runtime",
+    "sp-runtime/try-runtime",
+]

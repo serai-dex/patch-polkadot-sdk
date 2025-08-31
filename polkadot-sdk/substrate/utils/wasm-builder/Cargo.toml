@@ -1,0 +1,118 @@
+[package]
+name = "substrate-wasm-builder"
+version = "26.0.1"
+description = "Utility for building WASM binaries"
+license = "Apache-2.0"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.build-helper]
+workspace = true
+
+[dependencies.cargo_metadata]
+workspace = true
+
+[dependencies.console]
+workspace = true
+
+[dependencies.filetime]
+workspace = true
+
+[dependencies.jobserver]
+workspace = true
+
+[dependencies.parity-wasm]
+workspace = true
+
+[dependencies.polkavm-linker]
+workspace = true
+
+[dependencies.sp-maybe-compressed-blob]
+default-features = true
+workspace = true
+
+[dependencies.strum]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.tempfile]
+workspace = true
+
+[dependencies.toml]
+workspace = true
+
+[dependencies.walkdir]
+workspace = true
+
+[dependencies.wasm-opt]
+workspace = true
+
+[dependencies.array-bytes]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.codec]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.frame-metadata]
+features = [
+    "current",
+    "unstable",
+]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.merkleized-metadata]
+optional = true
+workspace = true
+
+[dependencies.sc-executor]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.shlex]
+workspace = true
+
+[dependencies.sp-core]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.sp-io]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.sp-tracing]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.sp-version]
+optional = true
+workspace = true
+default-features = true
+
+[features]

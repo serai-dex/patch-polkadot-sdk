@@ -1,0 +1,2045 @@
+[workspace]
+resolver = "2"
+members = [
+    "substrate/bin/utils/chain-spec-builder",
+    "substrate/bin/utils/subkey",
+    "substrate/client/allocator",
+    "substrate/client/api",
+    "substrate/client/authority-discovery",
+    "substrate/client/basic-authorship",
+    "substrate/client/block-builder",
+    "substrate/client/chain-spec",
+    "substrate/client/chain-spec/derive",
+    "substrate/client/cli",
+    "substrate/client/consensus/aura",
+    "substrate/client/consensus/babe",
+    "substrate/client/consensus/babe/rpc",
+    "substrate/client/consensus/common",
+    "substrate/client/consensus/epochs",
+    "substrate/client/consensus/grandpa",
+    "substrate/client/consensus/grandpa/rpc",
+    "substrate/client/consensus/manual-seal",
+    "substrate/client/consensus/slots",
+    "substrate/client/db",
+    "substrate/client/executor",
+    "substrate/client/executor/common",
+    "substrate/client/executor/polkavm",
+    "substrate/client/executor/runtime-test",
+    "substrate/client/executor/wasmtime",
+    "substrate/client/informant",
+    "substrate/client/keystore",
+    "substrate/client/network",
+    "substrate/client/network-gossip",
+    "substrate/client/network/common",
+    "substrate/client/network/light",
+    "substrate/client/network/sync",
+    "substrate/client/network/transactions",
+    "substrate/client/network/types",
+    "substrate/client/offchain",
+    "substrate/client/proposer-metrics",
+    "substrate/client/rpc",
+    "substrate/client/rpc-api",
+    "substrate/client/rpc-servers",
+    "substrate/client/rpc-spec-v2",
+    "substrate/client/runtime-utilities",
+    "substrate/client/service",
+    "substrate/client/state-db",
+    "substrate/client/storage-monitor",
+    "substrate/client/sync-state-rpc",
+    "substrate/client/sysinfo",
+    "substrate/client/telemetry",
+    "substrate/client/tracing",
+    "substrate/client/tracing/proc-macro",
+    "substrate/client/transaction-pool",
+    "substrate/client/transaction-pool/api",
+    "substrate/client/utils",
+    "substrate/frame",
+    "substrate/frame/aura",
+    "substrate/frame/authority-discovery",
+    "substrate/frame/authorship",
+    "substrate/frame/babe",
+    "substrate/frame/bags-list",
+    "substrate/frame/balances",
+    "substrate/frame/benchmarking",
+    "substrate/frame/benchmarking/pov",
+    "substrate/frame/election-provider-multi-phase",
+    "substrate/frame/election-provider-multi-phase/test-staking-e2e",
+    "substrate/frame/election-provider-support",
+    "substrate/frame/election-provider-support/benchmarking",
+    "substrate/frame/election-provider-support/solution-type",
+    "substrate/frame/executive",
+    "substrate/frame/glutton",
+    "substrate/frame/grandpa",
+    "substrate/frame/identity",
+    "substrate/frame/im-online",
+    "substrate/frame/indices",
+    "substrate/frame/insecure-randomness-collective-flip",
+    "substrate/frame/message-queue",
+    "substrate/frame/meta-tx",
+    "substrate/frame/migrations",
+    "substrate/frame/offences",
+    "substrate/frame/offences/benchmarking",
+    "substrate/frame/paged-list",
+    "substrate/frame/preimage",
+    "substrate/frame/proxy",
+    "substrate/frame/remark",
+    "substrate/frame/root-offences",
+    "substrate/frame/root-testing",
+    "substrate/frame/safe-mode",
+    "substrate/frame/scheduler",
+    "substrate/frame/session",
+    "substrate/frame/session/benchmarking",
+    "substrate/frame/staking",
+    "substrate/frame/staking/reward-curve",
+    "substrate/frame/staking/reward-fn",
+    "substrate/frame/staking/runtime-api",
+    "substrate/frame/state-trie-migration",
+    "substrate/frame/sudo",
+    "substrate/frame/support",
+    "substrate/frame/support/procedural",
+    "substrate/frame/support/procedural/tools",
+    "substrate/frame/support/procedural/tools/derive",
+    "substrate/frame/system",
+    "substrate/frame/system/benchmarking",
+    "substrate/frame/system/rpc/runtime-api",
+    "substrate/frame/timestamp",
+    "substrate/frame/transaction-payment",
+    "substrate/frame/transaction-payment/rpc",
+    "substrate/frame/transaction-payment/rpc/runtime-api",
+    "substrate/frame/transaction-payment/skip-feeless-payment",
+    "substrate/frame/try-runtime",
+    "substrate/frame/tx-pause",
+    "substrate/frame/uniques",
+    "substrate/frame/utility",
+    "substrate/frame/verify-signature",
+    "substrate/frame/whitelist",
+    "substrate/primitives/api",
+    "substrate/primitives/api/proc-macro",
+    "substrate/primitives/application-crypto",
+    "substrate/primitives/arithmetic",
+    "substrate/primitives/authority-discovery",
+    "substrate/primitives/block-builder",
+    "substrate/primitives/blockchain",
+    "substrate/primitives/consensus/aura",
+    "substrate/primitives/consensus/babe",
+    "substrate/primitives/consensus/common",
+    "substrate/primitives/consensus/grandpa",
+    "substrate/primitives/consensus/slots",
+    "substrate/primitives/core",
+    "substrate/primitives/core/fuzz",
+    "substrate/primitives/crypto/hashing",
+    "substrate/primitives/crypto/hashing/proc-macro",
+    "substrate/primitives/database",
+    "substrate/primitives/debug-derive",
+    "substrate/primitives/externalities",
+    "substrate/primitives/genesis-builder",
+    "substrate/primitives/inherents",
+    "substrate/primitives/io",
+    "substrate/primitives/keyring",
+    "substrate/primitives/keystore",
+    "substrate/primitives/maybe-compressed-blob",
+    "substrate/primitives/metadata-ir",
+    "substrate/primitives/npos-elections",
+    "substrate/primitives/offchain",
+    "substrate/primitives/panic-handler",
+    "substrate/primitives/rpc",
+    "substrate/primitives/runtime",
+    "substrate/primitives/runtime-interface",
+    "substrate/primitives/runtime-interface/proc-macro",
+    "substrate/primitives/session",
+    "substrate/primitives/staking",
+    "substrate/primitives/state-machine",
+    "substrate/primitives/std",
+    "substrate/primitives/storage",
+    "substrate/primitives/test-primitives",
+    "substrate/primitives/timestamp",
+    "substrate/primitives/tracing",
+    "substrate/primitives/transaction-pool",
+    "substrate/primitives/trie",
+    "substrate/primitives/version",
+    "substrate/primitives/version/proc-macro",
+    "substrate/primitives/wasm-interface",
+    "substrate/primitives/weights",
+    "substrate/test-utils",
+    "substrate/test-utils/runtime",
+    "substrate/test-utils/runtime/client",
+    "substrate/test-utils/runtime/transaction-pool",
+    "substrate/utils/build-script-utils",
+    "substrate/utils/fork-tree",
+    "substrate/utils/frame/generate-bags",
+    "substrate/utils/frame/remote-externalities",
+    "substrate/utils/frame/rpc/client",
+    "substrate/utils/frame/rpc/state-trie-migration-rpc",
+    "substrate/utils/frame/rpc/support",
+    "substrate/utils/frame/rpc/system",
+    "substrate/utils/prometheus",
+    "substrate/utils/substrate-bip39",
+    "substrate/utils/wasm-builder",
+]
+
+[workspace.package]
+authors = ["Parity Technologies <admin@parity.io>"]
+edition = "2021"
+homepage = "https://paritytech.github.io/polkadot-sdk/"
+license = "GPL-3.0-only"
+repository = "https://github.com/paritytech/polkadot-sdk.git"
+
+[workspace.lints.rust.suspicious_double_ref_op]
+level = "allow"
+priority = 2
+
+[workspace.lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = [
+    'cfg(build_opt_level, values("3"))',
+    'cfg(build_profile, values("debug", "release"))',
+    "cfg(enable_alloc_error_handler)",
+    "cfg(fuzzing)",
+    "cfg(substrate_runtime)",
+]
+
+[workspace.lints.clippy.all]
+level = "allow"
+priority = 0
+
+[workspace.lints.clippy.bind_instead_of_map]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.borrowed-box]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.complexity]
+level = "warn"
+priority = 1
+
+[workspace.lints.clippy.correctness]
+level = "warn"
+priority = 1
+
+[workspace.lints.clippy.default_constructed_unit_structs]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.derivable_impls]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.eq_op]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.erasing_op]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.extra-unused-type-parameters]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.identity-op]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.if-same-then-else]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.needless-lifetimes]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.needless_option_as_deref]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.nonminimal-bool]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.option-map-unit-fn]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.stable_sort_primitive]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.too-many-arguments]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.type_complexity]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.unit_arg]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.unnecessary_cast]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.useless_conversion]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.while_immutable_condition]
+level = "allow"
+priority = 2
+
+[workspace.lints.clippy.zero-prefixed-literal]
+level = "allow"
+priority = 2
+
+[workspace.dependencies]
+polkavm-derive = "0.18.0"
+polkavm-linker = "0.18.0"
+cid= "0.11.1"
+thiserror= "2.0.16"
+itertools= "0.14"
+
+[workspace.dependencies.Inflector]
+version = "0.11.4"
+
+[workspace.dependencies.aes-gcm]
+version = "0.10"
+
+[workspace.dependencies.ahash]
+version = "0.8.2"
+
+[workspace.dependencies.anyhow]
+version = "1.0.81"
+default-features = false
+
+[workspace.dependencies.approx]
+version = "0.5.1"
+
+[workspace.dependencies.aquamarine]
+version = "0.5.0"
+
+[workspace.dependencies.arbitrary]
+version = "1.3.2"
+
+[workspace.dependencies.array-bytes]
+version = "6.2.2"
+default-features = false
+
+[workspace.dependencies.arrayvec]
+version = "0.7.4"
+
+[workspace.dependencies.assert_cmd]
+version = "2.0.14"
+
+[workspace.dependencies.assert_matches]
+version = "1.5.0"
+
+[workspace.dependencies.async-channel]
+version = "1.8.0"
+
+[workspace.dependencies.async-std]
+version = "1.9.0"
+
+[workspace.dependencies.async-trait]
+version = "0.1.88"
+
+[workspace.dependencies.asynchronous-codec]
+version = "0.6"
+
+[workspace.dependencies.backoff]
+version = "0.4"
+
+[workspace.dependencies.backtrace]
+version = "0.3.71"
+
+[workspace.dependencies.bip39]
+package = "parity-bip39"
+version = "2.0.1"
+default-features = false
+
+[workspace.dependencies.bitflags]
+version = "1.3.2"
+
+[workspace.dependencies.bitvec]
+version = "1.0.1"
+default-features = false
+
+[workspace.dependencies.blake2]
+version = "0.10.4"
+default-features = false
+
+[workspace.dependencies.blake2b_simd]
+version = "1.0.2"
+default-features = false
+
+[workspace.dependencies.blake3]
+version = "1.5"
+
+[workspace.dependencies.bn]
+package = "substrate-bn"
+version = "0.6"
+default-features = false
+
+[workspace.dependencies.bounded-collections]
+version = "0.2.3"
+default-features = false
+
+[workspace.dependencies.bs58]
+version = "0.5.1"
+default-features = false
+
+[workspace.dependencies.build-helper]
+version = "0.1.1"
+
+[workspace.dependencies.byte-slice-cast]
+version = "1.2.1"
+default-features = false
+
+[workspace.dependencies.byteorder]
+version = "1.3.2"
+default-features = false
+
+[workspace.dependencies.bytes]
+version = "1.4.0"
+default-features = false
+
+[workspace.dependencies.cargo_metadata]
+version = "0.15.4"
+
+[workspace.dependencies.cfg-expr]
+version = "0.15.5"
+
+[workspace.dependencies.cfg-if]
+version = "1.0"
+
+[workspace.dependencies.chain-spec-builder]
+path = "substrate/bin/utils/chain-spec-builder"
+default-features = false
+package = "staging-chain-spec-builder"
+
+[workspace.dependencies.chrono]
+version = "0.4.31"
+
+[workspace.dependencies.clap]
+version = "4.5.13"
+
+[workspace.dependencies.clap_complete]
+version = "4.5.13"
+
+[workspace.dependencies.coarsetime]
+version = "0.1.22"
+
+[workspace.dependencies.codec]
+version = "3.7.4"
+default-features = false
+package = "parity-scale-codec"
+
+[workspace.dependencies.color-eyre]
+version = "0.6.3"
+default-features = false
+
+[workspace.dependencies.color-print]
+version = "0.3.4"
+
+[workspace.dependencies.comfy-table]
+version = "7.1.4"
+default-features = false
+
+[workspace.dependencies.console]
+version = "0.15.8"
+
+[workspace.dependencies.const-hex]
+version = "1.10.0"
+default-features = false
+
+[workspace.dependencies.cpu-time]
+version = "1.0.0"
+
+[workspace.dependencies.curve25519-dalek]
+version = "4.1.3"
+
+[workspace.dependencies.derive-syn-parse]
+version = "0.2.0"
+
+[workspace.dependencies.derive-where]
+version = "1.2.7"
+
+[workspace.dependencies.derive_more]
+version = "0.99.17"
+default-features = false
+
+[workspace.dependencies.digest]
+version = "0.10.3"
+default-features = false
+
+[workspace.dependencies.directories]
+version = "5.0.1"
+
+[workspace.dependencies.dlmalloc]
+version = "0.2.4"
+
+[workspace.dependencies.docify]
+version = "0.2.9"
+
+[workspace.dependencies.dyn-clonable]
+version = "0.9.0"
+
+[workspace.dependencies.dyn-clone]
+version = "1.0.16"
+
+[workspace.dependencies.ed25519-dalek]
+version = "2.1"
+default-features = false
+
+[workspace.dependencies.ed25519-zebra]
+version = "4.0.3"
+default-features = false
+
+[workspace.dependencies.either]
+version = "1.8.1"
+default-features = false
+
+[workspace.dependencies.enumflags2]
+version = "0.7.11"
+
+[workspace.dependencies.enumn]
+version = "0.1.13"
+
+[workspace.dependencies.env_logger]
+version = "0.11.2"
+
+[workspace.dependencies.environmental]
+version = "1.1.4"
+default-features = false
+
+[workspace.dependencies.ethabi]
+version = "2.0.0"
+default-features = false
+package = "ethabi-decode"
+
+[workspace.dependencies.ethbloom]
+version = "0.14.1"
+default-features = false
+
+[workspace.dependencies.ethereum-types]
+version = "0.15.1"
+default-features = false
+
+[workspace.dependencies.exit-future]
+version = "0.2.0"
+
+[workspace.dependencies.expander]
+version = "2.0.0"
+
+[workspace.dependencies.fatality]
+version = "0.1.1"
+
+[workspace.dependencies.fdlimit]
+version = "0.3.0"
+
+[workspace.dependencies.femme]
+version = "2.2.1"
+
+[workspace.dependencies.filetime]
+version = "0.2.16"
+
+[workspace.dependencies.finality-grandpa]
+version = "0.16.3"
+default-features = false
+
+[workspace.dependencies.flate2]
+version = "1.0"
+
+[workspace.dependencies.fnv]
+version = "1.0.6"
+
+[workspace.dependencies.fork-tree]
+path = "substrate/utils/fork-tree"
+default-features = false
+
+[workspace.dependencies.forwarded-header-value]
+version = "0.1.1"
+
+[workspace.dependencies.fraction]
+version = "0.13.1"
+
+[workspace.dependencies.frame]
+path = "substrate/frame"
+default-features = false
+package = "polkadot-sdk-frame"
+
+[workspace.dependencies.frame-benchmarking]
+path = "substrate/frame/benchmarking"
+default-features = false
+
+[workspace.dependencies.frame-benchmarking-pallet-pov]
+default-features = false
+path = "substrate/frame/benchmarking/pov"
+
+[workspace.dependencies.frame-election-provider-solution-type]
+path = "substrate/frame/election-provider-support/solution-type"
+default-features = false
+
+[workspace.dependencies.frame-election-provider-support]
+path = "substrate/frame/election-provider-support"
+default-features = false
+
+[workspace.dependencies.frame-executive]
+path = "substrate/frame/executive"
+default-features = false
+
+[workspace.dependencies.frame-metadata]
+version = "20.0.0"
+default-features = false
+
+[workspace.dependencies.frame-support]
+path = "substrate/frame/support"
+default-features = false
+
+[workspace.dependencies.frame-support-procedural]
+path = "substrate/frame/support/procedural"
+default-features = false
+
+[workspace.dependencies.frame-support-procedural-tools]
+path = "substrate/frame/support/procedural/tools"
+default-features = false
+
+[workspace.dependencies.frame-support-procedural-tools-derive]
+path = "substrate/frame/support/procedural/tools/derive"
+default-features = false
+
+[workspace.dependencies.frame-system]
+path = "substrate/frame/system"
+default-features = false
+
+[workspace.dependencies.frame-system-benchmarking]
+path = "substrate/frame/system/benchmarking"
+default-features = false
+
+[workspace.dependencies.frame-system-rpc-runtime-api]
+path = "substrate/frame/system/rpc/runtime-api"
+default-features = false
+
+[workspace.dependencies.frame-try-runtime]
+path = "substrate/frame/try-runtime"
+default-features = false
+
+[workspace.dependencies.fs4]
+version = "0.7.0"
+
+[workspace.dependencies.fs_extra]
+version = "1.3.0"
+
+[workspace.dependencies.futures]
+version = "0.3.31"
+
+[workspace.dependencies.futures-timer]
+version = "3.0.2"
+
+[workspace.dependencies.futures-util]
+version = "0.3.30"
+default-features = false
+
+[workspace.dependencies.generate-bags]
+path = "substrate/utils/frame/generate-bags"
+default-features = false
+
+[workspace.dependencies.git2]
+version = "0.20.0"
+default-features = false
+
+[workspace.dependencies.glob]
+version = "0.3"
+
+[workspace.dependencies.governor]
+version = "0.6.0"
+
+[workspace.dependencies.hash-db]
+version = "0.16.0"
+default-features = false
+
+[workspace.dependencies.hash256-std-hasher]
+version = "0.15.2"
+default-features = false
+
+[workspace.dependencies.hex]
+version = "0.4.3"
+default-features = false
+
+[workspace.dependencies.hex-literal]
+version = "0.4.1"
+default-features = false
+
+[workspace.dependencies.hkdf]
+version = "0.12.0"
+
+[workspace.dependencies.hmac]
+version = "0.12.1"
+
+[workspace.dependencies.honggfuzz]
+version = "0.5.55"
+
+[workspace.dependencies.http]
+version = "1.1"
+
+[workspace.dependencies.http-body]
+version = "1"
+default-features = false
+
+[workspace.dependencies.http-body-util]
+version = "0.1.2"
+default-features = false
+
+[workspace.dependencies.humantime-serde]
+version = "1.1"
+
+[workspace.dependencies.hyper]
+version = "1.3.1"
+default-features = false
+
+[workspace.dependencies.hyper-rustls]
+version = "0.27.3"
+default-features = false
+features = [
+    "http1",
+    "http2",
+    "logging",
+    "ring",
+    "rustls-native-certs",
+    "tls12",
+]
+
+[workspace.dependencies.hyper-util]
+version = "0.1.5"
+default-features = false
+
+[workspace.dependencies.impl-serde]
+version = "0.5.0"
+default-features = false
+
+[workspace.dependencies.impl-trait-for-tuples]
+version = "0.2.2"
+
+[workspace.dependencies.indexmap]
+version = "2.7.1"
+
+[workspace.dependencies.indicatif]
+version = "0.17.7"
+
+[workspace.dependencies.integer-sqrt]
+version = "0.1.2"
+
+[workspace.dependencies.ip_network]
+version = "0.4.1"
+
+[workspace.dependencies.is-terminal]
+version = "0.4.9"
+
+[workspace.dependencies.is_executable]
+version = "1.0.1"
+
+[workspace.dependencies.isahc]
+version = "1.2"
+
+[workspace.dependencies.jobserver]
+version = "0.1.26"
+
+[workspace.dependencies.jsonpath_lib]
+version = "0.3"
+
+[workspace.dependencies.jsonrpsee]
+version = "0.24.3"
+
+[workspace.dependencies.jsonrpsee-core]
+version = "0.24.3"
+
+[workspace.dependencies.k256]
+version = "0.13.4"
+default-features = false
+
+[workspace.dependencies.kvdb]
+version = "0.13.0"
+
+[workspace.dependencies.kvdb-memorydb]
+version = "0.13.0"
+
+[workspace.dependencies.kvdb-rocksdb]
+version = "0.19.0"
+
+[workspace.dependencies.kvdb-shared-tests]
+version = "0.11.0"
+
+[workspace.dependencies.libc]
+version = "0.2.155"
+
+[workspace.dependencies.libfuzzer-sys]
+version = "0.4"
+
+[workspace.dependencies.libp2p]
+version = "0.54.1"
+
+[workspace.dependencies.libp2p-identity]
+version = "0.2.9"
+
+[workspace.dependencies.libp2p-kad]
+version = "0.46.2"
+default-features = false
+
+[workspace.dependencies.libsecp256k1]
+version = "0.7.0"
+default-features = false
+
+[workspace.dependencies.linked-hash-map]
+version = "0.5.4"
+
+[workspace.dependencies.linked_hash_set]
+version = "0.1.4"
+
+[workspace.dependencies.linregress]
+version = "0.5.1"
+
+[workspace.dependencies.lite-json]
+version = "0.2.0"
+default-features = false
+
+[workspace.dependencies.litep2p]
+version = "0.9.5"
+features = ["websocket"]
+
+[workspace.dependencies.log]
+version = "0.4.22"
+default-features = false
+
+[workspace.dependencies.macro_magic]
+version = "0.5.1"
+
+[workspace.dependencies.maplit]
+version = "1.0.2"
+
+[workspace.dependencies.memmap2]
+version = "0.9.3"
+
+[workspace.dependencies.memory-db]
+version = "0.32.0"
+default-features = false
+
+[workspace.dependencies.merkleized-metadata]
+version = "0.4.0"
+
+[workspace.dependencies.merlin]
+version = "3.0"
+default-features = false
+
+[workspace.dependencies.metered]
+version = "0.6.1"
+default-features = false
+package = "prioritized-metered-channel"
+
+[workspace.dependencies.mixnet]
+version = "0.7.0"
+
+[workspace.dependencies.mmr-lib]
+version = "0.5.2"
+package = "ckb-merkle-mountain-range"
+
+[workspace.dependencies.mockall]
+version = "0.13.1"
+
+[workspace.dependencies.multiaddr]
+version = "0.18.1"
+
+[workspace.dependencies.multihash]
+version = "0.19.1"
+default-features = false
+
+[workspace.dependencies.multistream-select]
+version = "0.13.0"
+
+[workspace.dependencies.names]
+version = "0.14.0"
+default-features = false
+
+[workspace.dependencies.nohash-hasher]
+version = "0.2.0"
+
+[workspace.dependencies.novelpoly]
+version = "2.0.0"
+package = "reed-solomon-novelpoly"
+
+[workspace.dependencies.num-bigint]
+version = "0.4.3"
+default-features = false
+
+[workspace.dependencies.num-format]
+version = "0.4.3"
+
+[workspace.dependencies.num-integer]
+version = "0.1.46"
+default-features = false
+
+[workspace.dependencies.num-rational]
+version = "0.4.1"
+
+[workspace.dependencies.num-traits]
+version = "0.2.17"
+default-features = false
+
+[workspace.dependencies.num_cpus]
+version = "1.13.1"
+
+[workspace.dependencies.once_cell]
+version = "1.21.3"
+
+[workspace.dependencies.orchestra]
+version = "0.4.0"
+default-features = false
+
+[workspace.dependencies.pallet-aura]
+path = "substrate/frame/aura"
+default-features = false
+
+[workspace.dependencies.pallet-authority-discovery]
+path = "substrate/frame/authority-discovery"
+default-features = false
+
+[workspace.dependencies.pallet-authorship]
+path = "substrate/frame/authorship"
+default-features = false
+
+[workspace.dependencies.pallet-babe]
+path = "substrate/frame/babe"
+default-features = false
+
+[workspace.dependencies.pallet-bags-list]
+path = "substrate/frame/bags-list"
+default-features = false
+
+[workspace.dependencies.pallet-balances]
+path = "substrate/frame/balances"
+default-features = false
+
+[workspace.dependencies.pallet-election-provider-multi-phase]
+path = "substrate/frame/election-provider-multi-phase"
+default-features = false
+
+[workspace.dependencies.pallet-election-provider-support-benchmarking]
+path = "substrate/frame/election-provider-support/benchmarking"
+default-features = false
+
+[workspace.dependencies.pallet-glutton]
+path = "substrate/frame/glutton"
+default-features = false
+
+[workspace.dependencies.pallet-grandpa]
+path = "substrate/frame/grandpa"
+default-features = false
+
+[workspace.dependencies.pallet-identity]
+path = "substrate/frame/identity"
+default-features = false
+
+[workspace.dependencies.pallet-im-online]
+path = "substrate/frame/im-online"
+default-features = false
+
+[workspace.dependencies.pallet-indices]
+path = "substrate/frame/indices"
+default-features = false
+
+[workspace.dependencies.pallet-insecure-randomness-collective-flip]
+path = "substrate/frame/insecure-randomness-collective-flip"
+default-features = false
+
+[workspace.dependencies.pallet-message-queue]
+path = "substrate/frame/message-queue"
+default-features = false
+
+[workspace.dependencies.pallet-meta-tx]
+path = "substrate/frame/meta-tx"
+default-features = false
+
+[workspace.dependencies.pallet-migrations]
+path = "substrate/frame/migrations"
+default-features = false
+
+[workspace.dependencies.pallet-offences]
+path = "substrate/frame/offences"
+default-features = false
+
+[workspace.dependencies.pallet-offences-benchmarking]
+path = "substrate/frame/offences/benchmarking"
+default-features = false
+
+[workspace.dependencies.pallet-paged-list]
+path = "substrate/frame/paged-list"
+default-features = false
+
+[workspace.dependencies.pallet-preimage]
+path = "substrate/frame/preimage"
+default-features = false
+
+[workspace.dependencies.pallet-proxy]
+path = "substrate/frame/proxy"
+default-features = false
+
+[workspace.dependencies.pallet-remark]
+default-features = false
+path = "substrate/frame/remark"
+
+[workspace.dependencies.pallet-root-offences]
+default-features = false
+path = "substrate/frame/root-offences"
+
+[workspace.dependencies.pallet-root-testing]
+path = "substrate/frame/root-testing"
+default-features = false
+
+[workspace.dependencies.pallet-safe-mode]
+default-features = false
+path = "substrate/frame/safe-mode"
+
+[workspace.dependencies.pallet-scheduler]
+path = "substrate/frame/scheduler"
+default-features = false
+
+[workspace.dependencies.pallet-session]
+path = "substrate/frame/session"
+default-features = false
+
+[workspace.dependencies.pallet-session-benchmarking]
+path = "substrate/frame/session/benchmarking"
+default-features = false
+
+[workspace.dependencies.pallet-skip-feeless-payment]
+path = "substrate/frame/transaction-payment/skip-feeless-payment"
+default-features = false
+
+[workspace.dependencies.pallet-staking]
+path = "substrate/frame/staking"
+default-features = false
+
+[workspace.dependencies.pallet-staking-reward-curve]
+path = "substrate/frame/staking/reward-curve"
+default-features = false
+
+[workspace.dependencies.pallet-staking-reward-fn]
+path = "substrate/frame/staking/reward-fn"
+default-features = false
+
+[workspace.dependencies.pallet-staking-runtime-api]
+path = "substrate/frame/staking/runtime-api"
+default-features = false
+
+[workspace.dependencies.pallet-state-trie-migration]
+path = "substrate/frame/state-trie-migration"
+default-features = false
+
+[workspace.dependencies.pallet-sudo]
+path = "substrate/frame/sudo"
+default-features = false
+
+[workspace.dependencies.pallet-timestamp]
+path = "substrate/frame/timestamp"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment]
+path = "substrate/frame/transaction-payment"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment-rpc]
+path = "substrate/frame/transaction-payment/rpc"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment-rpc-runtime-api]
+path = "substrate/frame/transaction-payment/rpc/runtime-api"
+default-features = false
+
+[workspace.dependencies.pallet-tx-pause]
+default-features = false
+path = "substrate/frame/tx-pause"
+
+[workspace.dependencies.pallet-uniques]
+path = "substrate/frame/uniques"
+default-features = false
+
+[workspace.dependencies.pallet-utility]
+path = "substrate/frame/utility"
+default-features = false
+
+[workspace.dependencies.pallet-verify-signature]
+path = "substrate/frame/verify-signature"
+default-features = false
+
+[workspace.dependencies.pallet-whitelist]
+path = "substrate/frame/whitelist"
+default-features = false
+
+[workspace.dependencies.parity-bytes]
+version = "0.1.2"
+default-features = false
+
+[workspace.dependencies.parity-db]
+version = "0.4.12"
+
+[workspace.dependencies.parity-wasm]
+version = "0.45.0"
+
+[workspace.dependencies.parking_lot]
+version = "0.12.1"
+default-features = false
+
+[workspace.dependencies.partial_sort]
+version = "0.2.0"
+
+[workspace.dependencies.paste]
+version = "1.0.15"
+default-features = false
+
+[workspace.dependencies.pbkdf2]
+version = "0.12.2"
+default-features = false
+
+[workspace.dependencies.pin-project]
+version = "1.1.3"
+
+[workspace.dependencies.polkavm]
+version = "0.18.0"
+default-features = false
+
+[workspace.dependencies.portpicker]
+version = "0.1.1"
+
+[workspace.dependencies.pretty_assertions]
+version = "1.3.0"
+
+[workspace.dependencies.primitive-types]
+version = "0.13.1"
+default-features = false
+features = ["num-traits"]
+
+[workspace.dependencies.proc-macro-crate]
+version = "3.0.0"
+
+[workspace.dependencies.proc-macro-warning]
+version = "1.0.0"
+default-features = false
+
+[workspace.dependencies.proc-macro2]
+version = "1.0.86"
+
+[workspace.dependencies.prometheus]
+version = "0.13.0"
+default-features = false
+
+[workspace.dependencies.prometheus-endpoint]
+path = "substrate/utils/prometheus"
+default-features = false
+package = "substrate-prometheus-endpoint"
+
+[workspace.dependencies.prometheus-parse]
+version = "0.2.2"
+
+[workspace.dependencies.prost]
+version = "0.12.4"
+
+[workspace.dependencies.prost-build]
+version = "0.13.2"
+
+[workspace.dependencies.pyroscope]
+version = "0.5.8"
+
+[workspace.dependencies.pyroscope_pprofrs]
+version = "0.2.8"
+
+[workspace.dependencies.quickcheck]
+version = "1.0.3"
+default-features = false
+
+[workspace.dependencies.quote]
+version = "1.0.37"
+
+[workspace.dependencies.rand]
+version = "0.8.5"
+default-features = false
+
+[workspace.dependencies.rand_chacha]
+version = "0.3.1"
+default-features = false
+
+[workspace.dependencies.rand_core]
+version = "0.6.2"
+
+[workspace.dependencies.rand_distr]
+version = "0.4.3"
+
+[workspace.dependencies.rand_pcg]
+version = "0.3.1"
+
+[workspace.dependencies.rbtag]
+version = "0.3"
+
+[workspace.dependencies.ref-cast]
+version = "1.0.23"
+
+[workspace.dependencies.regex]
+version = "1.10.2"
+
+[workspace.dependencies.remote-externalities]
+path = "substrate/utils/frame/remote-externalities"
+default-features = false
+package = "frame-remote-externalities"
+
+[workspace.dependencies.ripemd]
+version = "0.1.3"
+default-features = false
+
+[workspace.dependencies.rlp]
+version = "0.6.1"
+default-features = false
+
+[workspace.dependencies.rpassword]
+version = "7.0.0"
+
+[workspace.dependencies.rustc-hash]
+version = "1.1.0"
+
+[workspace.dependencies.rustc-hex]
+version = "2.1.0"
+default-features = false
+
+[workspace.dependencies.rustix]
+version = "1.0.8"
+default-features = false
+
+[workspace.dependencies.rustls]
+version = "0.23.18"
+default-features = false
+features = [
+    "logging",
+    "ring",
+    "std",
+    "tls12",
+]
+
+[workspace.dependencies.rustversion]
+version = "1.0.17"
+
+[workspace.dependencies.rusty-fork]
+version = "0.3.0"
+default-features = false
+
+[workspace.dependencies.safe-mix]
+version = "1.0"
+default-features = false
+
+[workspace.dependencies.sc-allocator]
+path = "substrate/client/allocator"
+default-features = false
+
+[workspace.dependencies.sc-authority-discovery]
+path = "substrate/client/authority-discovery"
+default-features = false
+
+[workspace.dependencies.sc-basic-authorship]
+path = "substrate/client/basic-authorship"
+default-features = false
+
+[workspace.dependencies.sc-block-builder]
+path = "substrate/client/block-builder"
+default-features = false
+
+[workspace.dependencies.sc-chain-spec]
+path = "substrate/client/chain-spec"
+default-features = false
+
+[workspace.dependencies.sc-chain-spec-derive]
+path = "substrate/client/chain-spec/derive"
+default-features = false
+
+[workspace.dependencies.sc-cli]
+path = "substrate/client/cli"
+default-features = false
+
+[workspace.dependencies.sc-client-api]
+path = "substrate/client/api"
+default-features = false
+
+[workspace.dependencies.sc-client-db]
+path = "substrate/client/db"
+default-features = false
+
+[workspace.dependencies.sc-consensus]
+path = "substrate/client/consensus/common"
+default-features = false
+
+[workspace.dependencies.sc-consensus-aura]
+path = "substrate/client/consensus/aura"
+default-features = false
+
+[workspace.dependencies.sc-consensus-babe]
+path = "substrate/client/consensus/babe"
+default-features = false
+
+[workspace.dependencies.sc-consensus-babe-rpc]
+path = "substrate/client/consensus/babe/rpc"
+default-features = false
+
+[workspace.dependencies.sc-consensus-epochs]
+path = "substrate/client/consensus/epochs"
+default-features = false
+
+[workspace.dependencies.sc-consensus-grandpa]
+path = "substrate/client/consensus/grandpa"
+default-features = false
+
+[workspace.dependencies.sc-consensus-grandpa-rpc]
+path = "substrate/client/consensus/grandpa/rpc"
+default-features = false
+
+[workspace.dependencies.sc-consensus-manual-seal]
+path = "substrate/client/consensus/manual-seal"
+default-features = false
+
+[workspace.dependencies.sc-consensus-slots]
+path = "substrate/client/consensus/slots"
+default-features = false
+
+[workspace.dependencies.sc-executor]
+path = "substrate/client/executor"
+default-features = false
+
+[workspace.dependencies.sc-executor-common]
+path = "substrate/client/executor/common"
+default-features = false
+
+[workspace.dependencies.sc-executor-polkavm]
+path = "substrate/client/executor/polkavm"
+default-features = false
+
+[workspace.dependencies.sc-executor-wasmtime]
+path = "substrate/client/executor/wasmtime"
+default-features = false
+
+[workspace.dependencies.sc-informant]
+path = "substrate/client/informant"
+default-features = false
+
+[workspace.dependencies.sc-keystore]
+path = "substrate/client/keystore"
+default-features = false
+
+[workspace.dependencies.sc-network]
+path = "substrate/client/network"
+default-features = false
+
+[workspace.dependencies.sc-network-common]
+path = "substrate/client/network/common"
+default-features = false
+
+[workspace.dependencies.sc-network-gossip]
+path = "substrate/client/network-gossip"
+default-features = false
+
+[workspace.dependencies.sc-network-light]
+path = "substrate/client/network/light"
+default-features = false
+
+[workspace.dependencies.sc-network-sync]
+path = "substrate/client/network/sync"
+default-features = false
+
+[workspace.dependencies.sc-network-transactions]
+path = "substrate/client/network/transactions"
+default-features = false
+
+[workspace.dependencies.sc-network-types]
+path = "substrate/client/network/types"
+default-features = false
+
+[workspace.dependencies.sc-offchain]
+path = "substrate/client/offchain"
+default-features = false
+
+[workspace.dependencies.sc-proposer-metrics]
+path = "substrate/client/proposer-metrics"
+default-features = false
+
+[workspace.dependencies.sc-rpc]
+path = "substrate/client/rpc"
+default-features = false
+
+[workspace.dependencies.sc-rpc-api]
+path = "substrate/client/rpc-api"
+default-features = false
+
+[workspace.dependencies.sc-rpc-server]
+path = "substrate/client/rpc-servers"
+default-features = false
+
+[workspace.dependencies.sc-rpc-spec-v2]
+path = "substrate/client/rpc-spec-v2"
+default-features = false
+
+[workspace.dependencies.sc-runtime-test]
+path = "substrate/client/executor/runtime-test"
+
+[workspace.dependencies.sc-runtime-utilities]
+path = "substrate/client/runtime-utilities"
+default-features = true
+
+[workspace.dependencies.sc-service]
+path = "substrate/client/service"
+default-features = false
+
+[workspace.dependencies.sc-state-db]
+path = "substrate/client/state-db"
+default-features = false
+
+[workspace.dependencies.sc-storage-monitor]
+path = "substrate/client/storage-monitor"
+default-features = false
+
+[workspace.dependencies.sc-sync-state-rpc]
+path = "substrate/client/sync-state-rpc"
+default-features = false
+
+[workspace.dependencies.sc-sysinfo]
+path = "substrate/client/sysinfo"
+default-features = false
+
+[workspace.dependencies.sc-telemetry]
+path = "substrate/client/telemetry"
+default-features = false
+
+[workspace.dependencies.sc-tracing]
+path = "substrate/client/tracing"
+default-features = false
+
+[workspace.dependencies.sc-tracing-proc-macro]
+path = "substrate/client/tracing/proc-macro"
+default-features = false
+
+[workspace.dependencies.sc-transaction-pool]
+path = "substrate/client/transaction-pool"
+default-features = false
+
+[workspace.dependencies.sc-transaction-pool-api]
+path = "substrate/client/transaction-pool/api"
+default-features = false
+
+[workspace.dependencies.sc-utils]
+path = "substrate/client/utils"
+default-features = false
+
+[workspace.dependencies.scale-info]
+version = "2.11.6"
+default-features = false
+
+[workspace.dependencies.schnellru]
+version = "0.2.3"
+
+[workspace.dependencies.schnorrkel]
+version = "0.11.4"
+default-features = false
+
+[workspace.dependencies.secp256k1]
+version = "0.28.0"
+default-features = false
+
+[workspace.dependencies.secrecy]
+version = "0.8.0"
+default-features = false
+
+[workspace.dependencies.serde]
+version = "1.0.214"
+default-features = false
+
+[workspace.dependencies.serde_derive]
+version = "1.0.117"
+
+[workspace.dependencies.serde_json]
+version = "1.0.132"
+default-features = false
+
+[workspace.dependencies.serde_yaml]
+version = "0.9"
+
+[workspace.dependencies.sha1]
+version = "0.10.6"
+
+[workspace.dependencies.sha2]
+version = "0.10.7"
+default-features = false
+
+[workspace.dependencies.sha3]
+version = "0.10.0"
+default-features = false
+
+[workspace.dependencies.shlex]
+version = "1.3.0"
+
+[workspace.dependencies.slotmap]
+version = "1.0"
+
+[workspace.dependencies.smallvec]
+version = "1.11.0"
+default-features = false
+
+[workspace.dependencies.soketto]
+version = "0.8.0"
+
+[workspace.dependencies.sp-api]
+path = "substrate/primitives/api"
+default-features = false
+
+[workspace.dependencies.sp-api-proc-macro]
+path = "substrate/primitives/api/proc-macro"
+default-features = false
+
+[workspace.dependencies.sp-application-crypto]
+path = "substrate/primitives/application-crypto"
+default-features = false
+
+[workspace.dependencies.sp-arithmetic]
+path = "substrate/primitives/arithmetic"
+default-features = false
+
+[workspace.dependencies.sp-authority-discovery]
+path = "substrate/primitives/authority-discovery"
+default-features = false
+
+[workspace.dependencies.sp-block-builder]
+path = "substrate/primitives/block-builder"
+default-features = false
+
+[workspace.dependencies.sp-blockchain]
+path = "substrate/primitives/blockchain"
+default-features = false
+
+[workspace.dependencies.sp-consensus]
+path = "substrate/primitives/consensus/common"
+default-features = false
+
+[workspace.dependencies.sp-consensus-aura]
+path = "substrate/primitives/consensus/aura"
+default-features = false
+
+[workspace.dependencies.sp-consensus-babe]
+path = "substrate/primitives/consensus/babe"
+default-features = false
+
+[workspace.dependencies.sp-consensus-grandpa]
+path = "substrate/primitives/consensus/grandpa"
+default-features = false
+
+[workspace.dependencies.sp-consensus-slots]
+path = "substrate/primitives/consensus/slots"
+default-features = false
+
+[workspace.dependencies.sp-core]
+path = "substrate/primitives/core"
+default-features = false
+
+[workspace.dependencies.sp-crypto-hashing]
+path = "substrate/primitives/crypto/hashing"
+default-features = false
+
+[workspace.dependencies.sp-crypto-hashing-proc-macro]
+path = "substrate/primitives/crypto/hashing/proc-macro"
+default-features = false
+
+[workspace.dependencies.sp-database]
+path = "substrate/primitives/database"
+default-features = false
+
+[workspace.dependencies.sp-debug-derive]
+path = "substrate/primitives/debug-derive"
+default-features = false
+
+[workspace.dependencies.sp-externalities]
+path = "substrate/primitives/externalities"
+default-features = false
+
+[workspace.dependencies.sp-genesis-builder]
+path = "substrate/primitives/genesis-builder"
+default-features = false
+
+[workspace.dependencies.sp-inherents]
+path = "substrate/primitives/inherents"
+default-features = false
+
+[workspace.dependencies.sp-io]
+path = "substrate/primitives/io"
+default-features = false
+
+[workspace.dependencies.sp-keyring]
+path = "substrate/primitives/keyring"
+default-features = false
+
+[workspace.dependencies.sp-keystore]
+path = "substrate/primitives/keystore"
+default-features = false
+
+[workspace.dependencies.sp-maybe-compressed-blob]
+path = "substrate/primitives/maybe-compressed-blob"
+default-features = false
+
+[workspace.dependencies.sp-metadata-ir]
+path = "substrate/primitives/metadata-ir"
+default-features = false
+
+[workspace.dependencies.sp-npos-elections]
+path = "substrate/primitives/npos-elections"
+default-features = false
+
+[workspace.dependencies.sp-offchain]
+path = "substrate/primitives/offchain"
+default-features = false
+
+[workspace.dependencies.sp-panic-handler]
+path = "substrate/primitives/panic-handler"
+default-features = false
+
+[workspace.dependencies.sp-rpc]
+path = "substrate/primitives/rpc"
+default-features = false
+
+[workspace.dependencies.sp-runtime]
+path = "substrate/primitives/runtime"
+default-features = false
+
+[workspace.dependencies.sp-runtime-interface]
+path = "substrate/primitives/runtime-interface"
+default-features = false
+
+[workspace.dependencies.sp-runtime-interface-proc-macro]
+path = "substrate/primitives/runtime-interface/proc-macro"
+default-features = false
+
+[workspace.dependencies.sp-runtime-interface-test-wasm]
+path = "substrate/primitives/runtime-interface/test-wasm"
+
+[workspace.dependencies.sp-runtime-interface-test-wasm-deprecated]
+path = "substrate/primitives/runtime-interface/test-wasm-deprecated"
+
+[workspace.dependencies.sp-session]
+path = "substrate/primitives/session"
+default-features = false
+
+[workspace.dependencies.sp-staking]
+path = "substrate/primitives/staking"
+default-features = false
+
+[workspace.dependencies.sp-state-machine]
+path = "substrate/primitives/state-machine"
+default-features = false
+
+[workspace.dependencies.sp-std]
+path = "substrate/primitives/std"
+default-features = false
+
+[workspace.dependencies.sp-storage]
+path = "substrate/primitives/storage"
+default-features = false
+
+[workspace.dependencies.sp-test-primitives]
+path = "substrate/primitives/test-primitives"
+
+[workspace.dependencies.sp-timestamp]
+path = "substrate/primitives/timestamp"
+default-features = false
+
+[workspace.dependencies.sp-tracing]
+path = "substrate/primitives/tracing"
+default-features = false
+
+[workspace.dependencies.sp-transaction-pool]
+path = "substrate/primitives/transaction-pool"
+default-features = false
+
+[workspace.dependencies.sp-trie]
+path = "substrate/primitives/trie"
+default-features = false
+
+[workspace.dependencies.sp-version]
+path = "substrate/primitives/version"
+default-features = false
+
+[workspace.dependencies.sp-version-proc-macro]
+path = "substrate/primitives/version/proc-macro"
+default-features = false
+
+[workspace.dependencies.sp-wasm-interface]
+path = "substrate/primitives/wasm-interface"
+default-features = false
+
+[workspace.dependencies.sp-weights]
+path = "substrate/primitives/weights"
+default-features = false
+
+[workspace.dependencies.spinners]
+version = "4.1.1"
+
+[workspace.dependencies.ss58-registry]
+version = "1.34.0"
+default-features = false
+
+[workspace.dependencies.ssz_rs]
+version = "0.9.0"
+default-features = false
+
+[workspace.dependencies.ssz_rs_derive]
+version = "0.9.0"
+default-features = false
+
+[workspace.dependencies.static_assertions]
+version = "1.1.0"
+default-features = false
+
+[workspace.dependencies.static_init]
+version = "1.0.3"
+
+[workspace.dependencies.strum]
+version = "0.26.3"
+default-features = false
+
+[workspace.dependencies.subkey]
+path = "substrate/bin/utils/subkey"
+default-features = false
+
+[workspace.dependencies.substrate-bip39]
+path = "substrate/utils/substrate-bip39"
+default-features = false
+
+[workspace.dependencies.substrate-build-script-utils]
+path = "substrate/utils/build-script-utils"
+default-features = false
+
+[workspace.dependencies.substrate-frame-rpc-support]
+default-features = false
+path = "substrate/utils/frame/rpc/support"
+
+[workspace.dependencies.substrate-frame-rpc-system]
+path = "substrate/utils/frame/rpc/system"
+default-features = false
+
+[workspace.dependencies.substrate-rpc-client]
+path = "substrate/utils/frame/rpc/client"
+default-features = false
+
+[workspace.dependencies.substrate-state-trie-migration-rpc]
+path = "substrate/utils/frame/rpc/state-trie-migration-rpc"
+default-features = false
+
+[workspace.dependencies.substrate-test-client]
+path = "substrate/test-utils/client"
+
+[workspace.dependencies.substrate-test-runtime]
+path = "substrate/test-utils/runtime"
+
+[workspace.dependencies.substrate-test-runtime-client]
+path = "substrate/test-utils/runtime/client"
+
+[workspace.dependencies.substrate-test-runtime-transaction-pool]
+path = "substrate/test-utils/runtime/transaction-pool"
+
+[workspace.dependencies.substrate-test-utils]
+path = "substrate/test-utils"
+
+[workspace.dependencies.substrate-wasm-builder]
+path = "substrate/utils/wasm-builder"
+default-features = false
+
+[workspace.dependencies.syn]
+version = "2.0.87"
+
+[workspace.dependencies.tar]
+version = "0.4"
+
+[workspace.dependencies.tempfile]
+version = "3.8.1"
+
+[workspace.dependencies.test-log]
+version = "0.2.14"
+
+[workspace.dependencies.thousands]
+version = "0.2.0"
+
+[workspace.dependencies.threadpool]
+version = "1.7"
+
+[workspace.dependencies.time]
+version = "0.3"
+
+[workspace.dependencies.tiny-keccak]
+version = "2.0.2"
+
+[workspace.dependencies.tokio]
+version = "1.45.0"
+default-features = false
+
+[workspace.dependencies.tokio-retry]
+version = "0.3.0"
+
+[workspace.dependencies.tokio-stream]
+version = "0.1.14"
+
+[workspace.dependencies.tokio-test]
+version = "0.4.4"
+
+[workspace.dependencies.tokio-util]
+version = "0.7.8"
+
+[workspace.dependencies.toml]
+version = "0.8.12"
+
+[workspace.dependencies.toml_edit]
+version = "0.19"
+
+[workspace.dependencies.tower]
+version = "0.4.13"
+
+[workspace.dependencies.tower-http]
+version = "0.5.2"
+
+[workspace.dependencies.tracing]
+version = "0.1.37"
+default-features = false
+
+[workspace.dependencies.tracing-core]
+version = "0.1.32"
+default-features = false
+
+[workspace.dependencies.tracing-futures]
+version = "0.2.4"
+
+[workspace.dependencies.tracing-log]
+version = "0.2.0"
+
+[workspace.dependencies.tracing-subscriber]
+version = "0.3.18"
+
+[workspace.dependencies.trie-db]
+version = "0.30.0"
+default-features = false
+
+[workspace.dependencies.trie-root]
+version = "0.18.0"
+default-features = false
+
+[workspace.dependencies.trie-standardmap]
+version = "0.16.0"
+
+[workspace.dependencies.trybuild]
+version = "1.0.103"
+
+[workspace.dependencies.tt-call]
+version = "1.0.8"
+
+[workspace.dependencies.tuplex]
+version = "0.1"
+default-features = false
+
+[workspace.dependencies.twox-hash]
+version = "2.1.1"
+default-features = false
+
+[workspace.dependencies.txtesttool]
+version = "0.4.0"
+package = "substrate-txtesttool"
+
+[workspace.dependencies.unsigned-varint]
+version = "0.7.2"
+
+[workspace.dependencies.url]
+version = "2.5.4"
+
+[workspace.dependencies.void]
+version = "1.0.2"
+
+[workspace.dependencies.w3f-bls]
+version = "0.1.3"
+default-features = false
+
+[workspace.dependencies.wait-timeout]
+version = "0.2"
+
+[workspace.dependencies.walkdir]
+version = "2.5.0"
+
+[workspace.dependencies.wasm-instrument]
+version = "0.4"
+default-features = false
+
+[workspace.dependencies.wasm-opt]
+version = "0.116"
+
+[workspace.dependencies.wasm-timer]
+version = "0.2.5"
+
+[workspace.dependencies.wasmtime]
+version = "36.0.2"
+default-features = false
+
+[workspace.dependencies.wat]
+version = "1.0.0"
+
+[workspace.dependencies.x25519-dalek]
+version = "2.0"
+
+[workspace.dependencies.zeroize]
+version = "1.7.0"
+default-features = false
+
+[workspace.dependencies.zstd]
+version = "0.13.3"
+default-features = false
+
+[profile.release]
+opt-level = 3
+panic = "unwind"
+
+[profile.dev.package.backtrace]
+inherits = "release"
+
+[profile.dev.package.blake2]
+opt-level = 3
+
+[profile.dev.package.blake2b_simd]
+opt-level = 3
+
+[profile.dev.package.chacha20poly1305]
+opt-level = 3
+
+[profile.dev.package.cranelift-codegen]
+opt-level = 3
+
+[profile.dev.package.cranelift-wasm]
+opt-level = 3
+
+[profile.dev.package.crc32fast]
+opt-level = 3
+
+[profile.dev.package.crossbeam-deque]
+opt-level = 3
+
+[profile.dev.package.crypto-mac]
+opt-level = 3
+
+[profile.dev.package.curve25519-dalek]
+opt-level = 3
+
+[profile.dev.package.ed25519-dalek]
+opt-level = 3
+
+[profile.dev.package.flate2]
+opt-level = 3
+
+[profile.dev.package.futures-channel]
+opt-level = 3
+
+[profile.dev.package.hash-db]
+opt-level = 3
+
+[profile.dev.package.hashbrown]
+opt-level = 3
+
+[profile.dev.package.hmac]
+opt-level = 3
+
+[profile.dev.package.httparse]
+opt-level = 3
+
+[profile.dev.package.integer-sqrt]
+opt-level = 3
+
+[profile.dev.package.keccak]
+opt-level = 3
+
+[profile.dev.package.libm]
+opt-level = 3
+
+[profile.dev.package.librocksdb-sys]
+opt-level = 3
+
+[profile.dev.package.libsecp256k1]
+opt-level = 3
+
+[profile.dev.package.libz-sys]
+opt-level = 3
+
+[profile.dev.package.mio]
+opt-level = 3
+
+[profile.dev.package.nalgebra]
+opt-level = 3
+
+[profile.dev.package.num-bigint]
+opt-level = 3
+
+[profile.dev.package.parking_lot]
+opt-level = 3
+
+[profile.dev.package.parking_lot_core]
+opt-level = 3
+
+[profile.dev.package.percent-encoding]
+opt-level = 3
+
+[profile.dev.package.polkavm-linker]
+opt-level = 3
+
+[profile.dev.package.primitive-types]
+opt-level = 3
+
+[profile.dev.package.reed-solomon-novelpoly]
+opt-level = 3
+
+[profile.dev.package.ring]
+opt-level = 3
+
+[profile.dev.package.rustls]
+opt-level = 3
+
+[profile.dev.package.sha2]
+opt-level = 3
+
+[profile.dev.package.sha3]
+opt-level = 3
+
+[profile.dev.package.smallvec]
+opt-level = 3
+
+[profile.dev.package.snow]
+opt-level = 3
+
+[profile.dev.package.substrate-bip39]
+opt-level = 3
+
+[profile.dev.package.twox-hash]
+opt-level = 3
+
+[profile.dev.package.uint]
+opt-level = 3
+
+[profile.dev.package.x25519-dalek]
+opt-level = 3
+
+[profile.dev.package.yamux]
+opt-level = 3
+
+[profile.dev.package.zeroize]
+opt-level = 3
+
+[profile.production]
+codegen-units = 1
+inherits = "release"
+lto = true
+
+[profile.testnet]
+debug = 1
+debug-assertions = true
+inherits = "release"
+overflow-checks = true

@@ -1,0 +1,105 @@
+[package]
+name = "sp-trie"
+version = "39.1.0"
+description = "Patricia trie stuff using a parity-scale-codec node format"
+license = "Apache-2.0"
+documentation = "https://docs.rs/sp-trie"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dependencies.ahash]
+optional = true
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.hash-db]
+workspace = true
+
+[dependencies.memory-db]
+workspace = true
+
+[dependencies.nohash-hasher]
+optional = true
+workspace = true
+
+[dependencies.parking_lot]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.rand]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.schnellru]
+optional = true
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-externalities]
+workspace = true
+
+[dependencies.thiserror]
+optional = true
+workspace = true
+
+[dependencies.tracing]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.trie-db]
+workspace = true
+
+[dependencies.trie-root]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "ahash",
+    "codec/std",
+    "hash-db/std",
+    "memory-db/std",
+    "nohash-hasher",
+    "parking_lot",
+    "rand",
+    "scale-info/std",
+    "schnellru",
+    "sp-core/std",
+    "sp-externalities/std",
+    "thiserror",
+    "tracing",
+    "trie-db/std",
+    "trie-root/std",
+]

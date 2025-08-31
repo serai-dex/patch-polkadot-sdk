@@ -1,0 +1,78 @@
+[package]
+name = "sc-consensus-grandpa-rpc"
+version = "0.35.0"
+description = "RPC extensions for the GRANDPA finality gadget"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.finality-grandpa]
+features = ["derive-codec"]
+workspace = true
+default-features = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.jsonrpsee]
+features = [
+    "client-core",
+    "macros",
+    "server-core",
+]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-consensus-grandpa]
+default-features = true
+workspace = true
+
+[dependencies.sc-rpc]
+default-features = true
+workspace = true
+
+[dependencies.serde]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.sp-blockchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.thiserror]
+workspace = true

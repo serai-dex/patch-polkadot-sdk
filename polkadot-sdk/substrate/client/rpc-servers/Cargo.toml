@@ -1,0 +1,83 @@
+[package]
+name = "sc-rpc-server"
+version = "22.0.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Substrate RPC servers."
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.dyn-clone]
+workspace = true
+
+[dependencies.forwarded-header-value]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.governor]
+workspace = true
+
+[dependencies.http]
+workspace = true
+
+[dependencies.http-body-util]
+workspace = true
+
+[dependencies.hyper]
+workspace = true
+
+[dependencies.ip_network]
+workspace = true
+
+[dependencies.jsonrpsee]
+features = ["server"]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.prometheus-endpoint]
+default-features = true
+workspace = true
+
+[dependencies.sc-rpc-api]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+
+[dependencies.serde_json]
+workspace = true
+default-features = true
+
+[dependencies.tokio]
+features = ["parking_lot"]
+workspace = true
+default-features = true
+
+[dependencies.tower]
+workspace = true
+features = ["util"]
+
+[dependencies.tower-http]
+workspace = true
+features = ["cors"]

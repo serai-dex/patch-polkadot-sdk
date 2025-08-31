@@ -1,0 +1,135 @@
+[package]
+description = "Substrate offchain workers"
+name = "sc-offchain"
+version = "45.0.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.bytes]
+workspace = true
+default-features = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.fnv]
+workspace = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.futures-timer]
+workspace = true
+
+[dependencies.http-body-util]
+workspace = true
+
+[dependencies.hyper]
+features = [
+    "http1",
+    "http2",
+]
+workspace = true
+default-features = true
+
+[dependencies.hyper-rustls]
+workspace = true
+
+[dependencies.hyper-util]
+features = [
+    "client-legacy",
+    "http1",
+    "http2",
+]
+workspace = true
+
+[dependencies.num_cpus]
+workspace = true
+
+[dependencies.once_cell]
+workspace = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.rand]
+workspace = true
+default-features = true
+
+[dependencies.rustls]
+workspace = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-types]
+default-features = true
+workspace = true
+
+[dependencies.sc-network]
+default-features = true
+workspace = true
+
+[dependencies.sc-transaction-pool-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-utils]
+default-features = true
+workspace = true
+
+[dependencies.sp-api]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-externalities]
+default-features = true
+workspace = true
+
+[dependencies.sp-keystore]
+default-features = true
+workspace = true
+
+[dependencies.sp-offchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.threadpool]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+default-features = true
+
+[features]
+default = []

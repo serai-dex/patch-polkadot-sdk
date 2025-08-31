@@ -1,0 +1,40 @@
+[package]
+name = "sp-crypto-hashing-proc-macro"
+version = "0.1.0"
+license = "Apache-2.0"
+description = "Procedural macros for calculating static hashes."
+documentation = "https://docs.rs/sp-crypto-hashing-proc-macro"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies.quote]
+workspace = true
+
+[dependencies.sp-crypto-hashing]
+workspace = true
+
+[dependencies.syn]
+features = [
+    "full",
+    "parsing",
+]
+workspace = true

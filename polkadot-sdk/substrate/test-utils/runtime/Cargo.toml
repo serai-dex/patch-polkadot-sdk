@@ -1,0 +1,190 @@
+[package]
+name = "substrate-test-runtime"
+version = "2.0.0"
+build = "build.rs"
+license = "Apache-2.0"
+publish = false
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.frame-executive]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system-rpc-runtime-api]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.pallet-babe]
+workspace = true
+
+[dependencies.pallet-balances]
+workspace = true
+
+[dependencies.pallet-timestamp]
+workspace = true
+
+[dependencies.sc-service]
+optional = true
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-api]
+workspace = true
+
+[dependencies.sp-application-crypto]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-block-builder]
+workspace = true
+
+[dependencies.sp-consensus-aura]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-consensus-babe]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-consensus-grandpa]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-core]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-crypto-hashing]
+workspace = true
+
+[dependencies.sp-externalities]
+workspace = true
+
+[dependencies.sp-genesis-builder]
+workspace = true
+
+[dependencies.sp-inherents]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[dependencies.sp-keyring]
+workspace = true
+
+[dependencies.sp-offchain]
+workspace = true
+
+[dependencies.sp-runtime]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-session]
+workspace = true
+
+[dependencies.sp-state-machine]
+workspace = true
+
+[dependencies.sp-transaction-pool]
+workspace = true
+
+[dependencies.sp-trie]
+workspace = true
+
+[dependencies.sp-version]
+workspace = true
+
+[dependencies.trie-db]
+workspace = true
+
+[dependencies.array-bytes]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.serde_json]
+workspace = true
+features = ["alloc"]
+
+[dependencies.tracing]
+workspace = true
+default-features = false
+
+[build-dependencies.substrate-wasm-builder]
+optional = true
+features = []
+workspace = true
+default-features = true
+
+[features]
+default = ["std"]
+std = [
+    "array-bytes",
+    "codec/std",
+    "frame-executive/std",
+    "frame-support/std",
+    "frame-system-rpc-runtime-api/std",
+    "frame-system/std",
+    "log/std",
+    "pallet-babe/std",
+    "pallet-balances/std",
+    "pallet-timestamp/std",
+    "sc-service",
+    "scale-info/std",
+    "serde_json/std",
+    "sp-api/std",
+    "sp-application-crypto/std",
+    "sp-block-builder/std",
+    "sp-consensus-aura/std",
+    "sp-consensus-babe/std",
+    "sp-consensus-grandpa/std",
+    "sp-core/std",
+    "sp-crypto-hashing/std",
+    "sp-externalities/std",
+    "sp-genesis-builder/std",
+    "sp-inherents/std",
+    "sp-io/std",
+    "sp-keyring/std",
+    "sp-offchain/std",
+    "sp-runtime/std",
+    "sp-session/std",
+    "sp-state-machine/std",
+    "sp-transaction-pool/std",
+    "sp-trie/std",
+    "sp-version/std",
+    "substrate-wasm-builder",
+    "tracing/std",
+    "trie-db/std",
+]
+disable-logging = ["sp-api/disable-logging"]

@@ -1,0 +1,78 @@
+[package]
+name = "pallet-root-offences"
+version = "37.0.0"
+license = "Apache-2.0"
+description = "FRAME root offences pallet"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.frame-support]
+workspace = true
+
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.pallet-session]
+features = ["historical"]
+workspace = true
+
+[dependencies.pallet-staking]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-staking]
+workspace = true
+
+[features]
+runtime-benchmarks = [
+    "frame-support/runtime-benchmarks",
+    "frame-system/runtime-benchmarks",
+    "pallet-staking/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+    "sp-staking/runtime-benchmarks",
+]
+try-runtime = [
+    "frame-support/try-runtime",
+    "frame-system/try-runtime",
+    "pallet-session/try-runtime",
+    "pallet-staking/try-runtime",
+    "sp-runtime/try-runtime",
+]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame-support/std",
+    "frame-system/std",
+    "pallet-session/std",
+    "pallet-staking/std",
+    "scale-info/std",
+    "sp-runtime/std",
+    "sp-staking/std",
+]

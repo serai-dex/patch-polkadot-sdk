@@ -1,0 +1,73 @@
+[package]
+name = "pallet-tx-pause"
+version = "21.1.0"
+license = "Apache-2.0"
+description = "FRAME transaction pause pallet"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+features = ["derive"]
+workspace = true
+
+[dependencies.docify]
+workspace = true
+
+[dependencies.frame]
+workspace = true
+features = ["runtime"]
+
+[dependencies.pallet-balances]
+optional = true
+workspace = true
+
+[dependencies.pallet-proxy]
+optional = true
+workspace = true
+
+[dependencies.pallet-utility]
+optional = true
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "frame/std",
+    "pallet-balances?/std",
+    "pallet-proxy?/std",
+    "pallet-utility?/std",
+    "scale-info/std",
+]
+runtime-benchmarks = [
+    "frame/runtime-benchmarks",
+    "pallet-balances/runtime-benchmarks",
+    "pallet-proxy/runtime-benchmarks",
+    "pallet-utility/runtime-benchmarks",
+]
+try-runtime = [
+    "frame/try-runtime",
+    "pallet-balances?/try-runtime",
+    "pallet-proxy?/try-runtime",
+    "pallet-utility?/try-runtime",
+]

@@ -1,0 +1,86 @@
+[package]
+name = "sc-consensus"
+version = "0.49.0"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Collection of common consensus specific implementations for Substrate (client)"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.futures]
+features = ["thread-pool"]
+workspace = true
+
+[dependencies.log]
+workspace = true
+default-features = true
+
+[dependencies.mockall]
+workspace = true
+
+[dependencies.parking_lot]
+workspace = true
+default-features = true
+
+[dependencies.prometheus-endpoint]
+default-features = true
+workspace = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-network-types]
+default-features = true
+workspace = true
+
+[dependencies.sc-utils]
+default-features = true
+workspace = true
+
+[dependencies.serde]
+features = ["derive"]
+workspace = true
+default-features = true
+
+[dependencies.sp-blockchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-consensus]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.sp-state-machine]
+default-features = true
+workspace = true
+
+[dependencies.thiserror]
+workspace = true

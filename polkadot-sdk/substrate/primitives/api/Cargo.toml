@@ -1,0 +1,100 @@
+[package]
+name = "sp-api"
+version = "36.0.1"
+license = "Apache-2.0"
+description = "Substrate runtime api primitives"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+
+[dependencies.docify]
+workspace = true
+
+[dependencies.hash-db]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.scale-info]
+features = ["derive"]
+workspace = true
+
+[dependencies.sp-api-proc-macro]
+workspace = true
+
+[dependencies.sp-core]
+workspace = true
+
+[dependencies.sp-externalities]
+optional = true
+workspace = true
+
+[dependencies.sp-metadata-ir]
+optional = true
+workspace = true
+
+[dependencies.sp-runtime-interface]
+workspace = true
+
+[dependencies.sp-runtime]
+workspace = true
+
+[dependencies.sp-state-machine]
+optional = true
+workspace = true
+
+[dependencies.sp-trie]
+optional = true
+workspace = true
+
+[dependencies.sp-version]
+workspace = true
+
+[dependencies.thiserror]
+optional = true
+workspace = true
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "hash-db",
+    "log/std",
+    "scale-info/std",
+    "sp-api-proc-macro/std",
+    "sp-core/std",
+    "sp-externalities",
+    "sp-externalities?/std",
+    "sp-metadata-ir?/std",
+    "sp-runtime-interface/std",
+    "sp-runtime/std",
+    "sp-state-machine/std",
+    "sp-trie/std",
+    "sp-version/std",
+    "thiserror",
+]
+disable-logging = ["log/max_level_off"]
+no-metadata-docs = ["sp-api-proc-macro/no-metadata-docs"]
+frame-metadata = ["sp-metadata-ir"]

@@ -1,0 +1,96 @@
+[package]
+name = "substrate-test-client"
+description = "Client testing utilities"
+version = "2.0.1"
+license = "Apache-2.0"
+publish = false
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[lints]
+workspace = true
+
+[dependencies.array-bytes]
+workspace = true
+default-features = true
+
+[dependencies.async-trait]
+workspace = true
+
+[dependencies.codec]
+workspace = true
+default-features = true
+
+[dependencies.futures]
+workspace = true
+
+[dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-client-db]
+features = ["test-helpers"]
+workspace = true
+default-features = false
+
+[dependencies.sc-consensus]
+default-features = true
+workspace = true
+
+[dependencies.sc-executor]
+default-features = true
+workspace = true
+
+[dependencies.sc-service]
+default-features = false
+workspace = true
+
+[dependencies.serde]
+workspace = true
+default-features = true
+
+[dependencies.serde_json]
+workspace = true
+default-features = true
+
+[dependencies.sp-blockchain]
+default-features = true
+workspace = true
+
+[dependencies.sp-consensus]
+default-features = true
+workspace = true
+
+[dependencies.sp-core]
+default-features = true
+workspace = true
+
+[dependencies.sp-keyring]
+default-features = true
+workspace = true
+
+[dependencies.sp-keystore]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.tokio]
+features = ["sync"]
+workspace = true
+default-features = true
