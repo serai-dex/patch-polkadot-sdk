@@ -297,7 +297,6 @@ priority = 2
 [workspace.dependencies]
 polkavm-derive = "0.18.0"
 polkavm-linker = "0.18.0"
-cid= "0.11.1"
 thiserror= "2.0.16"
 itertools= "0.14"
 
@@ -824,9 +823,6 @@ version = "0.9.3"
 [workspace.dependencies.memory-db]
 version = "0.32.0"
 default-features = false
-
-[workspace.dependencies.merkleized-metadata]
-version = "0.4.0"
 
 [workspace.dependencies.merlin]
 version = "3.0"

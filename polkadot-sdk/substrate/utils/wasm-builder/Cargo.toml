@@ -83,10 +83,6 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.merkleized-metadata]
-optional = true
-workspace = true
-
 [dependencies.sc-executor]
 optional = true
 workspace = true

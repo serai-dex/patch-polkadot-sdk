@@ -61,9 +61,12 @@ apply_patch patches/wasmtime.patch
 # The same for twox-hash
 apply_patch patches/twox-hash.patch
 # Remove some unused dependencies
+echo "$(cat ./polkadot-sdk/substrate/client/network/Cargo.toml | grep -v 'cid')" > ./polkadot-sdk/substrate/client/network/Cargo.toml
+echo "$(cat ./polkadot-sdk/substrate/client/network/Cargo.toml | grep -v 'prost')" > ./polkadot-sdk/substrate/client/network/Cargo.toml
+echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | grep -v 'ark-vrf')" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
 echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | grep -v 'w3f-bls')" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
 echo "$(cat ./polkadot-sdk/substrate/primitives/weights/Cargo.toml | grep -v 'schemars')" > ./polkadot-sdk/substrate/primitives/weights/Cargo.toml
-echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | grep -v 'ark-vrf')" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
+echo "$(cat ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml | grep -v 'merkleized-metadata')" > ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml
 # Also prune dated workspace dependency specifications we don't need
 # This lets us detect which ones are actually worth upgrading
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^alloy-core')" > ./polkadot-sdk/Cargo.toml
@@ -71,6 +74,7 @@ echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^always-assert')" > ./polkadot-
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^ark-')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^bincode')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^bounded-vec')" > ./polkadot-sdk/Cargo.toml
+echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^cid')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^cmd_lib')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^colored')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^criterion')" > ./polkadot-sdk/Cargo.toml
@@ -78,6 +82,7 @@ echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^gethostname')" > ./polkadot-sd
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^handlebars')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^jemalloc_pprof')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^landlock')" > ./polkadot-sdk/Cargo.toml
+echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^merkleized-metadata')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^nix')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^procfs')" > ./polkadot-sdk/Cargo.toml
 echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^quick_cache')" > ./polkadot-sdk/Cargo.toml
@@ -248,7 +253,6 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Pr
 cd polkadot-sdk
 
 cargo +nightly update -Z unstable-options --breaking -p twox-hash --precise 2.1.1
-cargo +nightly update -Z unstable-options --breaking -p cid --precise 0.11.1
 cargo +nightly update -Z unstable-options --breaking -p hex-literal --precise 1.0.0
 cargo +nightly update -Z unstable-options --breaking -p thiserror --precise 2.0.16
 cargo +nightly update -Z unstable-options --breaking -p itertools --precise 0.14.0
