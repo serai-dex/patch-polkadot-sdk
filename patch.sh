@@ -1,5 +1,19 @@
 POLKADOT_SDK_COMMIT=52f4a08f26f226de93c0dbea5e8d066cbbd5bbd0
 
+if [ -f "polkadot-sdk/.patched" ]; then
+  if [ ! "$1" = "--from-scratch" ]; then
+    echo "\`polkadot-sdk\` was already patched. Run with \`--from-scratch\` to continue"
+    exit 1
+  fi
+fi
+
+# If we're running this script yet `polkadot-sdk` isn't a valid Git repository, clean it
+if [ -d "polkadot-sdk" ]; then
+  if [ ! -d "polkadot-sdk/.git" ]; then
+    rm -rf polkadot-sdk
+  fi
+fi
+
 # Clone `polkadot-sdk`, yet only the specific commit we're patching
 # Ideally, this would be `git clone --revision $POLKADOT_SDK_COMMIT --depth 1`,
 # yet that requires a newer Git than frequently packaged
@@ -11,15 +25,19 @@ if [ ! -d "polkadot-sdk" ]; then
   git fetch --depth 1 origin $POLKADOT_SDK_COMMIT
   cd ..
 fi
+
 cd polkadot-sdk
-git checkout -f FETCH_HEAD
+# Ensure we're starting from the intended commit
+git checkout -f $POLKADOT_SDK_COMMIT
+# Remove the existing `.patched` marker
+rm .patched
 cd ..
 
 function remove_crate_tree {
   echo "Removing crates $1"
   cargo run --release -- remove_crate_tree $1
   if [ $? -ne 0 ]; then
-    exit 1
+    exit 2
   fi
 }
 
@@ -27,7 +45,7 @@ function remove_dependency {
   echo "Removing feature $1"
   cargo run --release -- remove_dependency $1
   if [ $? -ne 0 ]; then
-    exit 1
+    exit 2
   fi
 }
 
@@ -35,14 +53,14 @@ function remove_feature {
   echo "Removing feature $1"
   cargo run --release -- remove_feature $1
   if [ $? -ne 0 ]; then
-    exit 1
+    exit 2
   fi
 }
 
 function remove_dev_dependencies {
   cargo run --release -- remove_dev_dependencies
   if [ $? -ne 0 ]; then
-    exit 1
+    exit 2
   fi
 }
 
@@ -52,7 +70,7 @@ function apply_patch {
   PATCH_SUCCEEDED=$?
   cd ..
   if [ $PATCH_SUCCEEDED -ne 0 ]; then
-    exit 1
+    exit 3
   fi
 }
 
@@ -285,7 +303,7 @@ echo "Running \`cargo check\`"
 cargo +1.88 check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 1
+  exit 4
 fi
 cargo clean
 
