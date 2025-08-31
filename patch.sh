@@ -298,6 +298,9 @@ rm README.md
 rm .prdoc.toml
 rm Plan.toml
 
+# Restore the committed `Cargo.lock` so this is deterministic, if one exists
+cp ../Cargo.lock.polkadot-sdk ./Cargo.lock || true
+
 # Ensure this worked as expected
 echo "Running \`cargo check\`"
 cargo +1.88 check --all-features
