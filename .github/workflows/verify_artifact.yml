@@ -1,0 +1,45 @@
+name: Verify Artifact
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify_artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
+
+      - name: Get nightly version to use
+        id: nightly
+        shell: bash
+        run: echo "version=$(cat .github/nightly-version)" >> $GITHUB_OUTPUT
+
+      - name: Install nightly rust
+        run: rustup toolchain install ${{ steps.nightly.outputs.version }} --profile minimal --target wasm32v1-none --component rust-src
+
+      - name: Run `patch.sh` and ensure the output matches the committed artifact
+        run: |
+          find polkadot-sdk/ -type f -exec sha256sum {} \; > SHA256SUMS.committed
+          rm -rf polkadot-sdk
+
+          ./patch.sh
+
+          cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk
+          # Remove this, as it wasn't present in this location when committed
+          rm polkadot-sdk/Cargo.lock
+
+          # Exclude the ".git" directory from the clone, which wasn't committed
+          find polkadot-sdk/ -type f -exec sha256sum {} \; | grep -v "  polkadot-sdk/\.git/" > SHA256SUMS
+          cmp SHA256SUMS.committed SHA256SUMS
+
+          # Running a second time should produce the exact same output, even if starting with a `polkadot-sdk` folder
+          ./patch.sh
+          cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk
+          rm polkadot-sdk/Cargo.lock
+          rm -rf polkadot-sdk/.git
+          find polkadot-sdk/ -type f -exec sha256sum {} \; > SHA256SUMS
+          cmp SHA256SUMS.committed SHA256SUMS
