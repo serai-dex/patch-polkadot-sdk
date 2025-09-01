@@ -99,6 +99,39 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^trie-bench"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasmi"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^zombienet"
 
+# Now, set up the Rust binary and make all the invasive changes
+
+function remove_crate_tree {
+  echo "Removing crates $1"
+  cargo run --release -- remove_crate_tree $1
+  if [ $? -ne 0 ]; then
+    exit 2
+  fi
+}
+
+function remove_workspace_dependency {
+  echo "Removing workspace dependency $1"
+  cargo run --release -- remove_workspace_dependency $1
+  if [ $? -ne 0 ]; then
+    exit 2
+  fi
+}
+
+function remove_feature {
+  echo "Removing feature $1"
+  cargo run --release -- remove_feature $1
+  if [ $? -ne 0 ]; then
+    exit 2
+  fi
+}
+
+function remove_dev_dependencies {
+  cargo run --release -- remove_dev_dependencies
+  if [ $? -ne 0 ]; then
+    exit 2
+  fi
+}
+
 # Remove the `bridges/` tree, as we won't use it
 remove_crate_tree bridges
 # Cleanup "snowbridge" dependency not removed with `bridges/`
