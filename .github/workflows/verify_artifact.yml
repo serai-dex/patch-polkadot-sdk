@@ -40,7 +40,7 @@ jobs:
           cmp SHA256SUMS.committed SHA256SUMS
 
           # Running a second time should produce the exact same output, even if starting with a `polkadot-sdk` folder
-          ./patch.sh
+          ./patch.sh --from-scratch
           cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk
           rm polkadot-sdk/Cargo.lock
           rm -rf polkadot-sdk/.git
