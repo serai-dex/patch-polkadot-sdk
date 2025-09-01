@@ -2140,19 +2140,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "frame-system-benchmarking"
-version = "40.0.1"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-runtime",
-]
-
-[[package]]
 name = "frame-system-rpc-runtime-api"
 version = "36.0.0"
 dependencies = [
@@ -4951,43 +4938,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-election-provider-e2e-test"
-version = "1.0.0"
-
-[[package]]
-name = "pallet-election-provider-multi-phase"
-version = "39.2.0"
-dependencies = [
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-election-provider-support-benchmarking",
- "parity-scale-codec",
- "rand 0.8.5",
- "scale-info",
- "sp-arithmetic",
- "sp-core",
- "sp-io",
- "sp-npos-elections",
- "sp-runtime",
- "strum 0.26.3",
-]
-
-[[package]]
-name = "pallet-election-provider-support-benchmarking"
-version = "39.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-system",
- "parity-scale-codec",
- "sp-npos-elections",
- "sp-runtime",
-]
-
-[[package]]
 name = "pallet-glutton"
 version = "26.0.0"
 dependencies = [
@@ -5151,28 +5101,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-offences-benchmarking"
-version = "40.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-support",
- "frame-system",
- "log",
- "pallet-babe",
- "pallet-balances",
- "pallet-grandpa",
- "pallet-im-online",
- "pallet-offences",
- "pallet-session",
- "pallet-staking",
- "parity-scale-codec",
- "scale-info",
- "sp-runtime",
- "sp-staking",
-]
-
-[[package]]
 name = "pallet-paged-list"
 version = "0.18.0"
 dependencies = [
@@ -5221,33 +5149,6 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
-]
-
-[[package]]
-name = "pallet-root-offences"
-version = "37.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "pallet-session",
- "pallet-staking",
- "parity-scale-codec",
- "scale-info",
- "sp-runtime",
- "sp-staking",
-]
-
-[[package]]
-name = "pallet-root-testing"
-version = "16.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -5304,21 +5205,6 @@ dependencies = [
  "sp-staking",
  "sp-state-machine",
  "sp-trie",
-]
-
-[[package]]
-name = "pallet-session-benchmarking"
-version = "40.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-session",
- "pallet-staking",
- "parity-scale-codec",
- "rand 0.8.5",
- "sp-runtime",
- "sp-session",
 ]
 
 [[package]]
@@ -5398,20 +5284,6 @@ dependencies = [
  "substrate-state-trie-migration-rpc",
  "thousands",
  "zstd",
-]
-
-[[package]]
-name = "pallet-sudo"
-version = "40.0.0"
-dependencies = [
- "docify",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-io",
- "sp-runtime",
 ]
 
 [[package]]
@@ -5791,7 +5663,6 @@ dependencies = [
  "frame-executive",
  "frame-support",
  "frame-system",
- "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "log",

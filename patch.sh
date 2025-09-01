@@ -245,6 +245,7 @@ remove_crate_tree substrate/frame/democracy
 remove_crate_tree substrate/frame/derivatives
 remove_crate_tree substrate/frame/dummy-dim
 remove_crate_tree substrate/frame/elections-phragmen
+remove_crate_tree substrate/frame/election-provider-multi-phase
 remove_crate_tree substrate/frame/fast-unstake
 remove_crate_tree substrate/frame/lottery
 remove_crate_tree substrate/frame/membership
@@ -258,9 +259,12 @@ remove_crate_tree substrate/frame/parameters
 remove_crate_tree substrate/frame/ranked-collective
 remove_crate_tree substrate/frame/recovery
 remove_crate_tree substrate/frame/referenda
+remove_crate_tree substrate/frame/root-offences
+remove_crate_tree substrate/frame/root-testing
 remove_crate_tree substrate/frame/salary
 remove_crate_tree substrate/frame/scored-pool
 remove_crate_tree substrate/frame/society
+remove_crate_tree substrate/frame/sudo
 remove_crate_tree substrate/frame/tips
 remove_crate_tree substrate/frame/transaction-payment/asset-conversion-tx-payment
 remove_crate_tree substrate/frame/transaction-payment/asset-tx-payment
@@ -277,8 +281,12 @@ remove_crate_tree substrate/frame/election-provider-support/solution-type/fuzzer
 remove_crate_tree substrate/frame/paged-list/fuzzer
 remove_crate_tree substrate/primitives/arithmetic/fuzzer
 remove_crate_tree substrate/primitives/npos-elections/fuzzer
+remove_crate_tree substrate/primitives/state-machine/fuzz
 
 # Remove benchmarking code we don't use
+remove_crate_tree substrate/frame/election-provider-support/benchmarking
+remove_crate_tree substrate/frame/offences/benchmarking
+remove_crate_tree substrate/frame/session/benchmarking
 remove_crate_tree substrate/frame/system/benchmarking
 apply_patch patches/remove_frame_system_benchmarking.patch
 remove_crate_tree substrate/utils/frame/benchmarking-cli

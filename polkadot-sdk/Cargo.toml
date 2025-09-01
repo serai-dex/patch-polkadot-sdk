@@ -62,10 +62,7 @@ members = [
     "substrate/frame/balances",
     "substrate/frame/benchmarking",
     "substrate/frame/benchmarking/pov",
-    "substrate/frame/election-provider-multi-phase",
-    "substrate/frame/election-provider-multi-phase/test-staking-e2e",
     "substrate/frame/election-provider-support",
-    "substrate/frame/election-provider-support/benchmarking",
     "substrate/frame/election-provider-support/solution-type",
     "substrate/frame/executive",
     "substrate/frame/glutton",
@@ -78,23 +75,18 @@ members = [
     "substrate/frame/meta-tx",
     "substrate/frame/migrations",
     "substrate/frame/offences",
-    "substrate/frame/offences/benchmarking",
     "substrate/frame/paged-list",
     "substrate/frame/preimage",
     "substrate/frame/proxy",
     "substrate/frame/remark",
-    "substrate/frame/root-offences",
-    "substrate/frame/root-testing",
     "substrate/frame/safe-mode",
     "substrate/frame/scheduler",
     "substrate/frame/session",
-    "substrate/frame/session/benchmarking",
     "substrate/frame/staking",
     "substrate/frame/staking/reward-curve",
     "substrate/frame/staking/reward-fn",
     "substrate/frame/staking/runtime-api",
     "substrate/frame/state-trie-migration",
-    "substrate/frame/sudo",
     "substrate/frame/support",
     "substrate/frame/support/procedural",
     "substrate/frame/support/procedural/tools",
@@ -911,14 +903,6 @@ default-features = false
 path = "substrate/frame/balances"
 default-features = false
 
-[workspace.dependencies.pallet-election-provider-multi-phase]
-path = "substrate/frame/election-provider-multi-phase"
-default-features = false
-
-[workspace.dependencies.pallet-election-provider-support-benchmarking]
-path = "substrate/frame/election-provider-support/benchmarking"
-default-features = false
-
 [workspace.dependencies.pallet-glutton]
 path = "substrate/frame/glutton"
 default-features = false
@@ -959,10 +943,6 @@ default-features = false
 path = "substrate/frame/offences"
 default-features = false
 
-[workspace.dependencies.pallet-offences-benchmarking]
-path = "substrate/frame/offences/benchmarking"
-default-features = false
-
 [workspace.dependencies.pallet-paged-list]
 path = "substrate/frame/paged-list"
 default-features = false
@@ -979,14 +959,6 @@ default-features = false
 default-features = false
 path = "substrate/frame/remark"
 
-[workspace.dependencies.pallet-root-offences]
-default-features = false
-path = "substrate/frame/root-offences"
-
-[workspace.dependencies.pallet-root-testing]
-path = "substrate/frame/root-testing"
-default-features = false
-
 [workspace.dependencies.pallet-safe-mode]
 default-features = false
 path = "substrate/frame/safe-mode"
@@ -997,10 +969,6 @@ default-features = false
 
 [workspace.dependencies.pallet-session]
 path = "substrate/frame/session"
-default-features = false
-
-[workspace.dependencies.pallet-session-benchmarking]
-path = "substrate/frame/session/benchmarking"
 default-features = false
 
 [workspace.dependencies.pallet-skip-feeless-payment]
@@ -1025,10 +993,6 @@ default-features = false
 
 [workspace.dependencies.pallet-state-trie-migration]
 path = "substrate/frame/state-trie-migration"
-default-features = false
-
-[workspace.dependencies.pallet-sudo]
-path = "substrate/frame/sudo"
 default-features = false
 
 [workspace.dependencies.pallet-timestamp]
