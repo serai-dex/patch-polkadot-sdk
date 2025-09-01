@@ -41,7 +41,7 @@ cd ..
 
 function apply_patch {
   cd polkadot-sdk
-  git apply ../$1
+  git apply ../patches/$1.patch
   PATCH_SUCCEEDED=$?
   cd ..
   if [ $PATCH_SUCCEEDED -ne 0 ]; then
@@ -56,9 +56,9 @@ function remove_matching_lines {
 }
 
 # Apply the `wasmtime` patch, which will update the features within the `Cargo.toml`s
-apply_patch patches/wasmtime.patch
+apply_patch wasmtime
 # The same for `twox-hash`
-apply_patch patches/twox-hash.patch
+apply_patch twox_hash
 
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
@@ -172,7 +172,7 @@ rm polkadot-sdk/substrate/client/network/build.rs
 rm -rf polkadot-sdk/substrate/client/network/src/bitswap
 rm polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 rm polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
-apply_patch patches/remove_bitswap.rs
+apply_patch remove_bitswap
 
 # Remove the BEEFY consensus crates
 remove_crate_tree substrate/client/consensus/beefy
@@ -220,12 +220,12 @@ remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod statem
 remove_crate_tree substrate/utils/binary-merkle-tree
 rm ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/base2.rs
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/mod.rs "mod base2;$"
-apply_patch patches/remove_binary_merkle_tree_prover.patch
+apply_patch remove_binary_merkle_tree_prover
 
 # Remove the transaction storage code
 remove_crate_tree substrate/frame/transaction-storage
 remove_crate_tree substrate/primitives/transaction-storage-proof
-apply_patch patches/remove_sp_transaction_storage_proof.patch
+apply_patch remove_sp_transaction_storage_proof
 
 # Remove non-Ristretto cryptography
 remove_crate_tree substrate/primitives/crypto/ec-utils
@@ -257,7 +257,10 @@ remove_matching_lines ./polkadot-sdk/substrate/test-utils/runtime/build.rs "enab
 
 # Remove the extension which checks the metadata's hash from the runtime
 remove_crate_tree substrate/frame/metadata-hash-extension
-apply_patch patches/remove_metadata_hash_extension.patch
+apply_patch remove_metadata_hash_extension
+
+# Remove the requirement extrinsics track their memory while being decoded
+apply_patch remove_extrinsic_decode_with_mem_tracking_bound
 
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
@@ -322,7 +325,7 @@ remove_crate_tree substrate/frame/election-provider-support/benchmarking
 remove_crate_tree substrate/frame/offences/benchmarking
 remove_crate_tree substrate/frame/session/benchmarking
 remove_crate_tree substrate/frame/system/benchmarking
-apply_patch patches/remove_frame_system_benchmarking.patch
+apply_patch remove_frame_system_benchmarking
 remove_crate_tree substrate/utils/frame/benchmarking-cli
 remove_crate_tree substrate/utils/frame/omni-bencher
 
@@ -330,7 +333,7 @@ remove_crate_tree substrate/utils/frame/omni-bencher
 remove_dev_dependencies
 
 # Remove the `SS58prefix` constant
-apply_patch patches/remove_ss58_prefix.patch
+apply_patch remove_ss58_prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Prefix > {}.2 && rm {} && mv {}.2 {}" \;
 
 cd polkadot-sdk

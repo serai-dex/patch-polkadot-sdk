@@ -1310,7 +1310,6 @@ pub trait Block:
 	+ Send
 	+ Sync
 	+ Codec
-	+ DecodeWithMemTracking
 	+ Eq
 	+ MaybeSerialize
 	+ Debug
