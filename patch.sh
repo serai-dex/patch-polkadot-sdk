@@ -41,9 +41,9 @@ function remove_crate_tree {
   fi
 }
 
-function remove_dependency {
-  echo "Removing feature $1"
-  cargo run --release -- remove_dependency $1
+function remove_workspace_dependency {
+  echo "Removing workspace dependency $1"
+  cargo run --release -- remove_workspace_dependency $1
   if [ $? -ne 0 ]; then
     exit 2
   fi
@@ -119,7 +119,7 @@ echo "$(cat ./polkadot-sdk/Cargo.toml | grep -v '^zombienet')" > ./polkadot-sdk/
 
 remove_crate_tree bridges
 # Cleanup 'snowbridge' dependency not removed with `bridges/`
-remove_dependency milagro-bls
+remove_workspace_dependency milagro-bls
 
 remove_crate_tree cumulus
 
