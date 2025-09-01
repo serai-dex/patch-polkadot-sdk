@@ -80,4 +80,4 @@ jobs:
       - name: Verify all dependencies are in use
         run: |
           cargo +1.88 install cargo-machete --version =0.8.0
-          cargo +1.88 machete
+          cargo +1.88 machete ./Cargo.toml
