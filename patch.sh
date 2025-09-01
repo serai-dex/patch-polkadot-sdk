@@ -268,7 +268,7 @@ remove_crate_tree substrate/utils/frame/omni-bencher
 remove_dev_dependencies
 
 # Remove the `SS58prefix` constant
-apply_patch patches/remove-ss58-prefix.patch
+apply_patch patches/remove_ss58_prefix.patch
 find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Prefix > {}.2 && rm {} && mv {}.2 {}" \;
 
 cd polkadot-sdk
