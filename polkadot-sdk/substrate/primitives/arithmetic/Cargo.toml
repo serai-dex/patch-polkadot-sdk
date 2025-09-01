@@ -68,7 +68,3 @@ serde = [
     "dep:serde",
     "scale-info/serde",
 ]
-
-[[bench]]
-name = "bench"
-harness = false

@@ -193,11 +193,3 @@ default-features = true
 
 [features]
 default = []
-
-[[bench]]
-name = "notifications_protocol"
-harness = false
-
-[[bench]]
-name = "request_response_protocol"
-harness = false

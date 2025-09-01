@@ -24,10 +24,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[[bench]]
-name = "bench"
-harness = false
-
 [dependencies.ahash]
 optional = true
 workspace = true

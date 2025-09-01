@@ -102,7 +102,3 @@ features = [
     "env-filter",
     "parking_lot",
 ]
-
-[[bench]]
-name = "bench"
-harness = false

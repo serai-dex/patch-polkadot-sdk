@@ -87,10 +87,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[[bench]]
-name = "bench"
-harness = false
-
 [features]
 default = ["std"]
 std = [

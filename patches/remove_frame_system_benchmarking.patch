@@ -1,0 +1,13 @@
+diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
+index 72ca417..fb0f13b 100644
+--- a/substrate/frame/src/lib.rs
++++ b/substrate/frame/src/lib.rs
+@@ -660,8 +660,6 @@ pub mod deps {
+ 
+ 	#[cfg(feature = "runtime-benchmarks")]
+ 	pub use frame_benchmarking;
+-	#[cfg(feature = "runtime-benchmarks")]
+-	pub use frame_system_benchmarking;
+ 
+ 	#[cfg(feature = "frame-try-runtime")]
+ 	pub use frame_try_runtime;

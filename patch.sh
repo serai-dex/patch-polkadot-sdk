@@ -259,6 +259,9 @@ remove_crate_tree substrate/frame/vesting
 
 remove_crate_tree substrate/scripts
 
+remove_crate_tree substrate/frame/system/benchmarking
+apply_patch patches/remove_frame_system_benchmarking.patch
+
 remove_crate_tree substrate/utils/frame/benchmarking-cli
 remove_crate_tree substrate/utils/frame/omni-bencher
 

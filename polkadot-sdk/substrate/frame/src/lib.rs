@@ -660,8 +660,6 @@ pub mod deps {
 
 	#[cfg(feature = "runtime-benchmarks")]
 	pub use frame_benchmarking;
-	#[cfg(feature = "runtime-benchmarks")]
-	pub use frame_system_benchmarking;
 
 	#[cfg(feature = "frame-try-runtime")]
 	pub use frame_try_runtime;

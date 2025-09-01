@@ -39,11 +39,12 @@ fn discover_all_crates_in_folder(folder: impl AsRef<Path>) -> Vec<Crate> {
 }
 
 fn remove_folder_of_crates(folder: &str) {
-  // Discover the crates we're removing
-  let removed_crates = discover_all_crates_in_folder(folder);
-  if removed_crates.is_empty() {
+  if !fs::exists(folder).unwrap() {
     return;
   }
+
+  // Discover the crates we're removing
+  let removed_crates = discover_all_crates_in_folder(folder);
   let mut removed_crates_names =
     removed_crates.iter().map(|removed| removed.name.as_str().to_owned()).collect::<HashSet<_>>();
 
@@ -133,7 +134,9 @@ fn remove_folder_of_crates(folder: &str) {
         let value = value.as_array_mut().unwrap();
         let mut i = 0;
         while i < value.len() {
-          if removed_crates_names.contains(value[i].as_str().unwrap().split("/").next().unwrap()) {
+          if removed_crates_names.contains(
+            value[i].as_str().unwrap().split('/').next().unwrap().split('?').next().unwrap(),
+          ) {
             value.remove(i);
             continue;
           }
@@ -257,6 +260,8 @@ fn main() {
         let crate_cargo_toml_path = item.path.join("Cargo.toml");
         let crate_cargo_toml = fs::read_to_string(&crate_cargo_toml_path).unwrap();
         let mut crate_cargo_toml = toml::from_str::<toml::Table>(&crate_cargo_toml).unwrap();
+
+
         if let Some(removed) = crate_cargo_toml.remove("dev-dependencies") {
           let mut removed = removed
             .as_table()
@@ -287,9 +292,9 @@ fn main() {
               let value = value.as_array_mut().unwrap();
               let mut i = 0;
               while i < value.len() {
-                if unique_dev_dependencies
-                  .contains(value[i].as_str().unwrap().split('/').next().unwrap())
-                {
+                if unique_dev_dependencies.contains(
+                  value[i].as_str().unwrap().split('/').next().unwrap().split('?').next().unwrap(),
+                ) {
                   value.remove(i);
                   continue;
                 }
@@ -298,6 +303,9 @@ fn main() {
             }
           }
         }
+
+        crate_cargo_toml.remove("bench");
+
         fs::write(
           crate_cargo_toml_path,
           toml::to_string_pretty(&crate_cargo_toml).unwrap().as_bytes(),

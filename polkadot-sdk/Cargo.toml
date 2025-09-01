@@ -100,7 +100,6 @@ members = [
     "substrate/frame/support/procedural/tools",
     "substrate/frame/support/procedural/tools/derive",
     "substrate/frame/system",
-    "substrate/frame/system/benchmarking",
     "substrate/frame/system/rpc/runtime-api",
     "substrate/frame/timestamp",
     "substrate/frame/transaction-payment",
@@ -611,10 +610,6 @@ default-features = false
 
 [workspace.dependencies.frame-system]
 path = "substrate/frame/system"
-default-features = false
-
-[workspace.dependencies.frame-system-benchmarking]
-path = "substrate/frame/system/benchmarking"
 default-features = false
 
 [workspace.dependencies.frame-system-rpc-runtime-api]

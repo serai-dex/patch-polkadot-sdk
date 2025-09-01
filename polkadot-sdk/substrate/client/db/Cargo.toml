@@ -101,9 +101,5 @@ test-helpers = []
 runtime-benchmarks = ["sp-runtime/runtime-benchmarks"]
 rocksdb = ["kvdb-rocksdb"]
 
-[[bench]]
-name = "state_access"
-harness = false
-
 [lib]
 bench = false

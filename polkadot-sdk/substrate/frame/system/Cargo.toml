@@ -95,7 +95,3 @@ try-runtime = [
     "sp-runtime/try-runtime",
 ]
 experimental = ["frame-support/experimental"]
-
-[[bench]]
-name = "bench"
-harness = false

@@ -119,7 +119,3 @@ workspace = true
 [dependencies.tracing]
 workspace = true
 default-features = true
-
-[[bench]]
-name = "basics"
-harness = false

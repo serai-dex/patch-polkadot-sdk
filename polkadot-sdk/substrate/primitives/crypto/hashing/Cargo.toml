@@ -42,10 +42,6 @@ workspace = true
 features = ["xxhash64"]
 workspace = true
 
-[[bench]]
-name = "bench"
-harness = false
-
 [lib]
 bench = false
 
