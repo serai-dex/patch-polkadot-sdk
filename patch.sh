@@ -50,9 +50,9 @@ function apply_patch {
 }
 
 function remove_matching_lines {
-  # This uses the outer `echo` as a buffer so we don't immediately overwrite
-  # the file we're reading from
-  echo "$(cat $1 | grep -v $2)" > $1
+  ORIGINAL=$(cat $1)
+  STRIPPED=$(echo "$ORIGINAL" | grep -v "$2")
+  echo "$STRIPPED" > $1
 }
 
 # Apply the `wasmtime` patch, which will update the features within the `Cargo.toml`s
