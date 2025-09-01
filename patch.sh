@@ -100,10 +100,11 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasmi"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^zombienet"
 
 # Now, set up the Rust binary and make all the invasive changes
+cargo build --release
 
 function remove_crate_tree {
   echo "Removing crates $1"
-  cargo run --release -- remove_crate_tree $1
+  ./target/release/serai-polkadot-sdk remove_crate_tree $1
   if [ $? -ne 0 ]; then
     exit 2
   fi
@@ -111,7 +112,7 @@ function remove_crate_tree {
 
 function remove_workspace_dependency {
   echo "Removing workspace dependency $1"
-  cargo run --release -- remove_workspace_dependency $1
+  ./target/release/serai-polkadot-sdk remove_workspace_dependency $1
   if [ $? -ne 0 ]; then
     exit 2
   fi
@@ -119,14 +120,14 @@ function remove_workspace_dependency {
 
 function remove_feature {
   echo "Removing feature $1"
-  cargo run --release -- remove_feature $1
+  ./target/release/serai-polkadot-sdk remove_feature $1
   if [ $? -ne 0 ]; then
     exit 2
   fi
 }
 
 function remove_dev_dependencies {
-  cargo run --release -- remove_dev_dependencies
+  ./target/release/serai-polkadot-sdk remove_dev_dependencies
   if [ $? -ne 0 ]; then
     exit 2
   fi
