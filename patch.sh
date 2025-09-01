@@ -311,6 +311,8 @@ if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
   exit 4
 fi
+
+# Save >10 GB on what should be a static directory of no further use
 cargo clean
 
 touch .patched
