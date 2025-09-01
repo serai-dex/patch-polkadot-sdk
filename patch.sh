@@ -292,6 +292,7 @@ rm -rf scripts
 rm -rf substrate/.maintain
 rm -rf substrate/scripts
 rm -rf prdoc
+rm .gitignore
 rm .gitlab-ci.yml
 rm .rustfmt.toml
 rm Cargo.lock
@@ -313,7 +314,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Save >10 GB on what should be a static directory of no further use
-cargo clean
+# cargo clean
 
 touch .patched
 
