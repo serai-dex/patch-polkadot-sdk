@@ -17,7 +17,7 @@ fi
 # If we're running this script yet `polkadot-sdk` isn't a valid Git repository, clean it
 if [ -d "polkadot-sdk" ]; then
   if [ ! -d "polkadot-sdk/.git" ]; then
-    silent_rm -rf polkadot-sdk
+    silent_rm polkadot-sdk
   fi
 fi
 
@@ -183,7 +183,7 @@ remove_crate_tree substrate/bin/node
 
 # Remove the unused "bitswap" protocol
 silent_rm polkadot-sdk/substrate/client/network/build.rs
-silent_rm -rf polkadot-sdk/substrate/client/network/src/bitswap
+silent_rm polkadot-sdk/substrate/client/network/src/bitswap
 silent_rm polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 silent_rm polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
 apply_patch remove_bitswap
@@ -212,9 +212,9 @@ remove_crate_tree substrate/frame/revive
 remove_crate_tree substrate/client/mixnet
 remove_crate_tree substrate/frame/mixnet
 remove_crate_tree substrate/primitives/mixnet
-silent_rm -rf ./polkadot-sdk/substrate/client/rpc-api/src/mixnet
+silent_rm ./polkadot-sdk/substrate/client/rpc-api/src/mixnet
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc-api/src/lib.rs "mod mixnet;$"
-silent_rm -rf ./polkadot-sdk/substrate/client/rpc/src/mixnet
+silent_rm ./polkadot-sdk/substrate/client/rpc/src/mixnet
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod mixnet;$"
 silent_rm ./polkadot-sdk/substrate/client/cli/src/params/mixnet_params.rs
 remove_matching_lines ./polkadot-sdk/substrate/client/cli/src/params/mod.rs "mod mixnet_params;$"
@@ -225,9 +225,9 @@ remove_crate_tree substrate/client/network/statement
 remove_crate_tree substrate/client/statement-store
 remove_crate_tree substrate/frame/statement
 remove_crate_tree substrate/primitives/statement-store
-silent_rm -rf ./polkadot-sdk/substrate/client/rpc-api/src/statement
+silent_rm ./polkadot-sdk/substrate/client/rpc-api/src/statement
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc-api/src/lib.rs "mod statement;$"
-silent_rm -rf ./polkadot-sdk/substrate/client/rpc/src/statement
+silent_rm ./polkadot-sdk/substrate/client/rpc/src/statement
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod statement;$"
 
 # Remove the binary Merkle tree code, as we only use the standard base-16 trie
@@ -366,16 +366,16 @@ cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.3
 cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.3
 
 # Remove misc unused files
-silent_rm -rf .cargo
-silent_rm -rf .config
-silent_rm -rf .forklift
-silent_rm -rf .github
-silent_rm -rf .gitlab
-silent_rm -rf docker
-silent_rm -rf scripts
-silent_rm -rf substrate/.maintain
-silent_rm -rf substrate/scripts
-silent_rm -rf prdoc
+silent_rm .cargo
+silent_rm .config
+silent_rm .forklift
+silent_rm .github
+silent_rm .gitlab
+silent_rm docker
+silent_rm scripts
+silent_rm substrate/.maintain
+silent_rm substrate/scripts
+silent_rm prdoc
 silent_rm .gitignore
 silent_rm .gitlab-ci.yml
 silent_rm .rustfmt.toml
