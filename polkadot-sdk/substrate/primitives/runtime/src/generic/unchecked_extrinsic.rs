@@ -242,7 +242,7 @@ impl<Address, Call, Signature, Extension> TypeInfo
 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
 where
 	Address: StaticTypeInfo,
-	Call: StaticTypeInfo,
+	Call: 'static,
 	Signature: StaticTypeInfo,
 	Extension: StaticTypeInfo,
 {
@@ -256,7 +256,7 @@ where
 			// to help construct the custom decoding from the opaque bytes (see below).
 			.type_params(vec![
 				TypeParameter::new("Address", Some(meta_type::<Address>())),
-				TypeParameter::new("Call", Some(meta_type::<Call>())),
+				TypeParameter::new("Call", Some(meta_type::<()>())),
 				TypeParameter::new("Signature", Some(meta_type::<Signature>())),
 				TypeParameter::new("Extra", Some(meta_type::<Extension>())),
 			])
@@ -319,7 +319,7 @@ impl<Address, Call, Signature, Extension> UncheckedExtrinsic<Address, Call, Sign
 	}
 }
 
-impl<Address: TypeInfo, Call: TypeInfo, Signature: TypeInfo, Extension: TypeInfo> ExtrinsicLike
+impl<Address: TypeInfo, Call, Signature: TypeInfo, Extension: TypeInfo> ExtrinsicLike
 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
 {
 	fn is_bare(&self) -> bool {

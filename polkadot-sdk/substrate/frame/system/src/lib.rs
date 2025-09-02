@@ -528,7 +528,7 @@ pub mod pallet {
 		#[docify::export(system_runtime_call)]
 		/// The aggregated `RuntimeCall` type.
 		#[pallet::no_default_bounds]
-		type RuntimeCall: Parameter
+		type RuntimeCall: codec::Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + core::fmt::Debug
 			+ Dispatchable<RuntimeOrigin = Self::RuntimeOrigin>
 			+ Debug
 			+ GetDispatchInfo

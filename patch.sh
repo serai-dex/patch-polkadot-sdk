@@ -277,8 +277,11 @@ remove_matching_lines ./polkadot-sdk/substrate/test-utils/runtime/build.rs "enab
 remove_crate_tree substrate/frame/metadata-hash-extension
 apply_patch remove_metadata_hash_extension
 
-# Remove the `TypeInfo` from storage values
+# Remove `TypeInfo` from storage values
 apply_patch remove_storage_type_info
+
+# Remove `TypeInfo` from call
+apply_patch remove_call_type_info
 
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance

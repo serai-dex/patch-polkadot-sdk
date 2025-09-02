@@ -307,11 +307,9 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 			#frame_support::__private::codec::Encode,
 			#frame_support::__private::codec::Decode,
 			#frame_support::__private::codec::DecodeWithMemTracking,
-			#frame_support::__private::scale_info::TypeInfo,
 		)]
 		#[codec(encode_bound())]
 		#[codec(decode_bound())]
-		#[scale_info(skip_type_params(#type_use_gen), capture_docs = #capture_docs)]
 		#[allow(non_camel_case_types)]
 		pub enum #call_ident<#type_decl_bounded_gen> #where_clause {
 			#[doc(hidden)]
@@ -476,7 +474,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 			#[doc(hidden)]
 			pub fn call_functions() -> #frame_support::__private::metadata_ir::PalletCallMetadataIR {
 				#frame_support::__private::metadata_ir::PalletCallMetadataIR  {
-					ty: #frame_support::__private::scale_info::meta_type::<#call_ident<#type_use_gen>>(),
+					ty: #frame_support::__private::scale_info::meta_type::<()>(),
 					deprecation_info: #deprecation,
 				}
 			}
