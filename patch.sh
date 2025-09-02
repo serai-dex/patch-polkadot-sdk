@@ -280,9 +280,6 @@ apply_patch remove_metadata_hash_extension
 # Remove the `TypeInfo` from storage values
 apply_patch remove_storage_type_info
 
-# Remove the requirement extrinsics track their memory while being decoded
-apply_patch remove_extrinsic_decode_with_mem_tracking_bound
-
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
 remove_crate_tree substrate/frame/asset-conversion
