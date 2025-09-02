@@ -154,7 +154,6 @@ pub type Pair = sp_core::sr25519::Pair;
 pub type TxExtension = (
 	(CheckNonce<Runtime>, CheckWeight<Runtime>),
 	CheckSubstrateCall,
-	frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
 	frame_system::WeightReclaim<Runtime>,
 );
 /// The payload being signed in transactions.
