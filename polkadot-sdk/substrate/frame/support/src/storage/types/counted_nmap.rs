@@ -627,7 +627,7 @@ impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuil
 where
 	Prefix: CountedStorageNMapInstance,
 	Key: super::key::KeyGenerator,
-	Value: FullCodec + scale_info::StaticTypeInfo,
+	Value: FullCodec,
 	QueryKind: QueryKindTrait<Value, OnEmpty>,
 	OnEmpty: Get<QueryKind::Query> + 'static,
 	MaxValues: Get<Option<u32>>,

@@ -484,8 +484,8 @@ impl<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMeta
 where
 	Prefix: StorageInstance,
 	Hasher: crate::hash::StorageHasher,
-	Key: FullCodec + scale_info::StaticTypeInfo,
-	Value: FullCodec + scale_info::StaticTypeInfo,
+	Key: FullCodec,
+	Value: FullCodec,
 	QueryKind: QueryKindTrait<Value, OnEmpty>,
 	OnEmpty: Get<QueryKind::Query> + 'static,
 	MaxValues: Get<Option<u32>>,
@@ -502,8 +502,8 @@ where
 			modifier: QueryKind::METADATA,
 			ty: StorageEntryTypeIR::Map {
 				hashers: vec![Hasher::METADATA],
-				key: scale_info::meta_type::<Key>(),
-				value: scale_info::meta_type::<Value>(),
+				key: scale_info::meta_type::<()>(),
+				value: scale_info::meta_type::<()>(),
 			},
 			default: OnEmpty::get().encode(),
 			docs,

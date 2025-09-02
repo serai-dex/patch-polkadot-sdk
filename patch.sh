@@ -277,6 +277,9 @@ remove_matching_lines ./polkadot-sdk/substrate/test-utils/runtime/build.rs "enab
 remove_crate_tree substrate/frame/metadata-hash-extension
 apply_patch remove_metadata_hash_extension
 
+# Remove the `TypeInfo` from storage values
+apply_patch remove_storage_type_info
+
 # Remove the requirement extrinsics track their memory while being decoded
 apply_patch remove_extrinsic_decode_with_mem_tracking_bound
 

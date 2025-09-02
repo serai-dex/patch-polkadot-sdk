@@ -21,7 +21,6 @@ use crate::hash::{ReversibleStorageHasher, StorageHasher};
 use alloc::{boxed::Box, vec::Vec};
 use codec::{Encode, EncodeLike, FullCodec, MaxEncodedLen};
 use paste::paste;
-use scale_info::StaticTypeInfo;
 
 /// A type used exclusively by storage maps as their key type.
 ///
@@ -36,7 +35,7 @@ pub struct Key<Hasher, KeyType>(core::marker::PhantomData<(Hasher, KeyType)>);
 
 /// A trait that contains the current key as an associated type.
 pub trait KeyGenerator {
-	type Key: EncodeLike<Self::Key> + StaticTypeInfo;
+	type Key: EncodeLike<Self::Key>;
 	type KArg: Encode + EncodeLike<Self::KArg>;
 	type HashFn: FnOnce(&[u8]) -> Vec<u8>;
 	type HArg;
@@ -68,7 +67,7 @@ pub trait KeyGeneratorInner: KeyGenerator {
 	fn final_hash(encoded: &[u8]) -> Vec<u8>;
 }
 
-impl<H: StorageHasher, K: FullCodec + StaticTypeInfo> KeyGenerator for Key<H, K> {
+impl<H: StorageHasher, K: FullCodec> KeyGenerator for Key<H, K> {
 	type Key = K;
 	type KArg = (K,);
 	type HashFn = Box<dyn FnOnce(&[u8]) -> Vec<u8>>;
@@ -90,7 +89,7 @@ impl<H: StorageHasher, K: FullCodec + StaticTypeInfo> KeyGenerator for Key<H, K>
 	}
 }
 
-impl<H: StorageHasher, K: FullCodec + MaxEncodedLen + StaticTypeInfo> KeyGeneratorMaxEncodedLen
+impl<H: StorageHasher, K: FullCodec + MaxEncodedLen> KeyGeneratorMaxEncodedLen
 	for Key<H, K>
 {
 	fn key_max_encoded_len() -> usize {
@@ -98,7 +97,7 @@ impl<H: StorageHasher, K: FullCodec + MaxEncodedLen + StaticTypeInfo> KeyGenerat
 	}
 }
 
-impl<H: StorageHasher, K: FullCodec + StaticTypeInfo> KeyGeneratorInner for Key<H, K> {
+impl<H: StorageHasher, K: FullCodec> KeyGeneratorInner for Key<H, K> {
 	type Hasher = H;
 
 	fn final_hash(encoded: &[u8]) -> Vec<u8> {
@@ -235,7 +234,7 @@ pub trait ReversibleKeyGenerator: KeyGenerator {
 	fn decode_final_key(key_material: &[u8]) -> Result<(Self::Key, &[u8]), codec::Error>;
 }
 
-impl<H: ReversibleStorageHasher, K: FullCodec + StaticTypeInfo> ReversibleKeyGenerator
+impl<H: ReversibleStorageHasher, K: FullCodec> ReversibleKeyGenerator
 	for Key<H, K>
 {
 	type ReversibleHasher = H;

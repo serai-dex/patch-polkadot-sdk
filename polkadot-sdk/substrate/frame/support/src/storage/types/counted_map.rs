@@ -502,8 +502,8 @@ impl<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMeta
 where
 	Prefix: CountedStorageMapInstance,
 	Hasher: crate::hash::StorageHasher,
-	Key: FullCodec + scale_info::StaticTypeInfo,
-	Value: FullCodec + scale_info::StaticTypeInfo,
+	Key: FullCodec,
+	Value: FullCodec,
 	QueryKind: QueryKindTrait<Value, OnEmpty>,
 	OnEmpty: Get<QueryKind::Query> + 'static,
 	MaxValues: Get<Option<u32>>,

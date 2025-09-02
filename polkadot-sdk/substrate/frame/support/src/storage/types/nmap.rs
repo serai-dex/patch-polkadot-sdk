@@ -592,7 +592,7 @@ impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuil
 where
 	Prefix: StorageInstance,
 	Key: super::key::KeyGenerator,
-	Value: FullCodec + scale_info::StaticTypeInfo,
+	Value: FullCodec,
 	QueryKind: QueryKindTrait<Value, OnEmpty>,
 	OnEmpty: Get<QueryKind::Query> + 'static,
 	MaxValues: Get<Option<u32>>,
@@ -608,9 +608,9 @@ where
 			name: Prefix::STORAGE_PREFIX,
 			modifier: QueryKind::METADATA,
 			ty: StorageEntryTypeIR::Map {
-				key: scale_info::meta_type::<Key::Key>(),
+				key: scale_info::meta_type::<()>(),
 				hashers: Key::HASHER_METADATA.to_vec(),
-				value: scale_info::meta_type::<Value>(),
+				value: scale_info::meta_type::<()>(),
 			},
 			default: OnEmpty::get().encode(),
 			docs,

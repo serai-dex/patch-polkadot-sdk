@@ -273,7 +273,7 @@ impl<Prefix, Value, QueryKind, OnEmpty> StorageEntryMetadataBuilder
 	for StorageValue<Prefix, Value, QueryKind, OnEmpty>
 where
 	Prefix: StorageInstance,
-	Value: FullCodec + scale_info::StaticTypeInfo,
+	Value: FullCodec,
 	QueryKind: QueryKindTrait<Value, OnEmpty>,
 	OnEmpty: crate::traits::Get<QueryKind::Query> + 'static,
 {
@@ -287,7 +287,7 @@ where
 		let entry = StorageEntryMetadataIR {
 			name: Prefix::STORAGE_PREFIX,
 			modifier: QueryKind::METADATA,
-			ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<Value>()),
+			ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<()>()),
 			default: OnEmpty::get().encode(),
 			docs,
 			deprecation_info: deprecation_status,
