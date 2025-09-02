@@ -318,11 +318,11 @@ fn adjust_mtime(
 
 	// Get the mtime of the `invoked.timestamp`
 	let metadata = fs::metadata(invoked_timestamp)?;
-	let mtime = filetime::FileTime::from_last_modification_time(&metadata);
-
-	filetime::set_file_mtime(bloaty_wasm.bloaty_path(), mtime)?;
-	if let Some(binary) = compressed_or_compact_wasm.as_ref() {
-		filetime::set_file_mtime(binary.wasm_binary_path(), mtime)?;
+	if let Ok(modified) = metadata.modified() {
+		let _ = fs::File::open(bloaty_wasm.bloaty_path()).unwrap().set_modified(modified);
+		if let Some(binary) = compressed_or_compact_wasm.as_ref() {
+			let _ = fs::File::open(binary.wasm_binary_path()).unwrap().set_modified(modified);
+		}
 	}
 
 	Ok(())
@@ -971,6 +971,11 @@ fn build_bloaty_blob(
 		.join(target.rustc_target_dir(&cargo_cmd))
 		.join(blob_build_profile.directory());
 	match target {
+		#[cfg(not(feature = "polkavm-linker"))]
+		RuntimeTarget::Riscv => {
+			panic!("RISC-V target specified but not compiled with `polkavm-linker` feature");
+		},
+		#[cfg(feature = "polkavm-linker")]
 		RuntimeTarget::Riscv => {
 			let elf_path = target_directory.join(&blob_name);
 			let elf_metadata = match elf_path.metadata() {

@@ -1,0 +1,32 @@
+diff --git a/substrate/utils/wasm-builder/Cargo.toml b/substrate/utils/wasm-builder/Cargo.toml
+index ba69d6d..f9bc9a6 100644
+--- a/substrate/utils/wasm-builder/Cargo.toml
++++ b/substrate/utils/wasm-builder/Cargo.toml
+@@ -18,6 +18,5 @@ targets = ["x86_64-unknown-linux-gnu"]
+ build-helper = { workspace = true }
+ cargo_metadata = { workspace = true }
+ console = { workspace = true }
+-filetime = { workspace = true }
+ jobserver = { workspace = true }
+ parity-wasm = { workspace = true }
+diff --git a/substrate/utils/wasm-builder/src/wasm_project.rs b/substrate/utils/wasm-builder/src/wasm_project.rs
+index 89b8f27..19f9692 100644
+--- a/substrate/utils/wasm-builder/src/wasm_project.rs
++++ b/substrate/utils/wasm-builder/src/wasm_project.rs
+@@ -318,11 +318,11 @@ fn adjust_mtime(
+
+ 	// Get the mtime of the `invoked.timestamp`
+ 	let metadata = fs::metadata(invoked_timestamp)?;
+-	let mtime = filetime::FileTime::from_last_modification_time(&metadata);
+-
+-	filetime::set_file_mtime(bloaty_wasm.bloaty_path(), mtime)?;
+-	if let Some(binary) = compressed_or_compact_wasm.as_ref() {
+-		filetime::set_file_mtime(binary.wasm_binary_path(), mtime)?;
++	if let Ok(modified) = metadata.modified() {
++		let _ = fs::File::open(bloaty_wasm.bloaty_path()).unwrap().set_modified(modified);
++		if let Some(binary) = compressed_or_compact_wasm.as_ref() {
++			let _ = fs::File::open(binary.wasm_binary_path()).unwrap().set_modified(modified);
++		}
+ 	}
+
+ 	Ok(())

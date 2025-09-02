@@ -1,0 +1,45 @@
+diff --git a/substrate/utils/wasm-builder/Cargo.toml b/substrate/utils/wasm-builder/Cargo.toml
+index ba69d6d..8b3e21f 100644
+--- a/substrate/utils/wasm-builder/Cargo.toml
++++ b/substrate/utils/wasm-builder/Cargo.toml
+@@ -21,7 +21,7 @@ console = { workspace = true }
+ filetime = { workspace = true }
+ jobserver = { workspace = true }
+ parity-wasm = { workspace = true }
+-polkavm-linker = { workspace = true }
++polkavm-linker = { workspace = true, optional = true }
+ sp-maybe-compressed-blob.default-features = true
+ sp-maybe-compressed-blob.workspace = true
+ strum = { features = ["derive"], workspace = true, default-features = true }
+diff --git a/substrate/utils/wasm-builder/src/lib.rs b/substrate/utils/wasm-builder/src/lib.rs
+index 47c156e..fd6e0c1 100644
+--- a/substrate/utils/wasm-builder/src/lib.rs
++++ b/substrate/utils/wasm-builder/src/lib.rs
+@@ -439,6 +439,11 @@ impl RuntimeTarget {
+ 				} else {
+ 					"wasm32-unknown-unknown".into()
+ 				},
++			#[cfg(not(feature = "polkavm-linker"))]
++			RuntimeTarget::Riscv => {
++				panic!("RISC-V target specified but not compiled with `polkavm-linker` feature");
++			}
++			#[cfg(feature = "polkavm-linker")]
+ 			RuntimeTarget::Riscv => {
+ 				let path = polkavm_linker::target_json_32_path().expect("riscv not found");
+ 				path.into_os_string().into_string().unwrap()
+diff --git a/substrate/utils/wasm-builder/src/wasm_project.rs b/substrate/utils/wasm-builder/src/wasm_project.rs
+index 89b8f27..1160aa4 100644
+--- a/substrate/utils/wasm-builder/src/wasm_project.rs
++++ b/substrate/utils/wasm-builder/src/wasm_project.rs
+@@ -971,6 +971,11 @@ fn build_bloaty_blob(
+ 		.join(target.rustc_target_dir(&cargo_cmd))
+ 		.join(blob_build_profile.directory());
+ 	match target {
++		#[cfg(not(feature = "polkavm-linker"))]
++		RuntimeTarget::Riscv => {
++			panic!("RISC-V target specified but not compiled with `polkavm-linker` feature");
++		},
++		#[cfg(feature = "polkavm-linker")]
+ 		RuntimeTarget::Riscv => {
+ 			let elf_path = target_directory.join(&blob_name);
+ 			let elf_metadata = match elf_path.metadata() {

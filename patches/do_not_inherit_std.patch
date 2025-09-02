@@ -1,0 +1,20 @@
+diff --git a/substrate/utils/wasm-builder/src/lib.rs b/substrate/utils/wasm-builder/src/lib.rs
+index 47c156e..c28f3c3 100644
+--- a/substrate/utils/wasm-builder/src/lib.rs
++++ b/substrate/utils/wasm-builder/src/lib.rs
+@@ -281,6 +281,15 @@ impl CargoCommand {
+
+ 	fn command(&self) -> Command {
+ 		let mut cmd = Command::new(&self.program);
++
++		// Don't propagate `CARGO_FEATURE_STD` as this will be a `no-std` build
++		cmd.env_clear();
++		for (name, value) in std::env::vars() {
++			if name != "CARGO_FEATURE_STD" {
++				cmd.env(name, value);
++			}
++		}
++
+ 		cmd.args(&self.args);
+ 		cmd
+ 	}

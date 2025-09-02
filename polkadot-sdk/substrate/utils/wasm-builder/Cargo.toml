@@ -31,9 +31,6 @@ workspace = true
 [dependencies.console]
 workspace = true
 
-[dependencies.filetime]
-workspace = true
-
 [dependencies.jobserver]
 workspace = true
 
@@ -42,6 +39,7 @@ workspace = true
 
 [dependencies.polkavm-linker]
 workspace = true
+optional = true
 
 [dependencies.sp-maybe-compressed-blob]
 default-features = true

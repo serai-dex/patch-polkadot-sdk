@@ -40,6 +40,7 @@ cd ..
 # _to_ the `Cargo.toml` files accordingly
 
 function apply_patch {
+  echo "Applying patch $1"
   cd polkadot-sdk
   git apply ../patches/$1.patch
   PATCH_SUCCEEDED=$?
@@ -58,7 +59,14 @@ function remove_matching_lines {
 # Apply the `wasmtime` patch, which will update the features within the `Cargo.toml`s
 apply_patch wasmtime
 # The same for `twox-hash`
-apply_patch twox_hash
+apply_patch twox-hash
+
+# Add a feature-flag for `polkavm-linker` within `substrate-wasm-builder`
+apply_patch wasm_builder_polkavm-linker_feature
+# Remove the `filetime` dependency from `substrate-wasm-builder`
+apply_patch remove_filetime
+# Stop propagation of `CARGO_FEATURE_STD` when performing a `no-std` build
+apply_patch do_not_inherit_std
 
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"

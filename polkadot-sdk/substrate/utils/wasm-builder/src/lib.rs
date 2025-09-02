@@ -281,6 +281,15 @@ impl CargoCommand {
 
 	fn command(&self) -> Command {
 		let mut cmd = Command::new(&self.program);
+
+		// Don't propagate `CARGO_FEATURE_STD` as this will be a `no-std` build
+		cmd.env_clear();
+		for (name, value) in std::env::vars() {
+			if name != "CARGO_FEATURE_STD" {
+				cmd.env(name, value);
+			}
+		}
+
 		cmd.args(&self.args);
 		cmd
 	}
@@ -439,6 +448,11 @@ impl RuntimeTarget {
 				} else {
 					"wasm32-unknown-unknown".into()
 				},
+			#[cfg(not(feature = "polkavm-linker"))]
+			RuntimeTarget::Riscv => {
+				panic!("RISC-V target specified but not compiled with `polkavm-linker` feature");
+			}
+			#[cfg(feature = "polkavm-linker")]
 			RuntimeTarget::Riscv => {
 				let path = polkavm_linker::target_json_32_path().expect("riscv not found");
 				path.into_os_string().into_string().unwrap()
