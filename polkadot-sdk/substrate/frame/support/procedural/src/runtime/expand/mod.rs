@@ -234,13 +234,6 @@ fn construct_runtime_final_expansion(
 	let all_pallets = decl_all_pallets(&name, pallets.iter(), &features);
 	let pallet_to_index = decl_pallet_runtime_setup(&name, &pallets, &scrate);
 
-	let metadata = expand::expand_runtime_metadata(
-		&name,
-		&pallets,
-		&scrate,
-		&unchecked_extrinsic,
-		&system_pallet.path,
-	);
 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
 	let inherent =
 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
@@ -306,8 +299,6 @@ fn construct_runtime_final_expansion(
 		#task
 
 		#query
-
-		#metadata
 
 		#outer_config
 
