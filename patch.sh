@@ -264,6 +264,10 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/core/src/lib.rs "mod p
 # TODO silent_rm substrate/primitives/core/src/ed25519.rs
 # TODO silent_rm substrate/primitives/keyring/src/ed25519.rs
 
+# Remove the runtime's metadata
+rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
+apply_patch remove_runtime_metadata
+
 # Remove the metadata's hash from the runtime
 remove_feature metadata-hash
 silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
