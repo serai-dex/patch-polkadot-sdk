@@ -1,3 +1,8 @@
+function silent_rm {
+  $(rm -rf $1)
+  return 0
+}
+
 # Start by checking out the desired version of the polkadot-sdk
 
 POLKADOT_SDK_COMMIT=52f4a08f26f226de93c0dbea5e8d066cbbd5bbd0
@@ -12,7 +17,7 @@ fi
 # If we're running this script yet `polkadot-sdk` isn't a valid Git repository, clean it
 if [ -d "polkadot-sdk" ]; then
   if [ ! -d "polkadot-sdk/.git" ]; then
-    rm -rf polkadot-sdk
+    silent_rm -rf polkadot-sdk
   fi
 fi
 
@@ -32,7 +37,7 @@ cd polkadot-sdk
 # Ensure we're starting from the intended commit
 git checkout -f $POLKADOT_SDK_COMMIT
 # Remove the existing `.patched` marker
-rm .patched
+silent_rm .patched
 cd ..
 
 # Our binary, when it makes its modifications, will overwrite all existing
@@ -176,10 +181,10 @@ remove_crate_tree substrate/test-utils/cli
 remove_crate_tree substrate/bin/node
 
 # Remove the unused "bitswap" protocol
-rm polkadot-sdk/substrate/client/network/build.rs
-rm -rf polkadot-sdk/substrate/client/network/src/bitswap
-rm polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
-rm polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
+silent_rm polkadot-sdk/substrate/client/network/build.rs
+silent_rm -rf polkadot-sdk/substrate/client/network/src/bitswap
+silent_rm polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
+silent_rm polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
 apply_patch remove_bitswap
 
 # Remove the BEEFY consensus crates
@@ -206,11 +211,11 @@ remove_crate_tree substrate/frame/revive
 remove_crate_tree substrate/client/mixnet
 remove_crate_tree substrate/frame/mixnet
 remove_crate_tree substrate/primitives/mixnet
-rm -rf ./polkadot-sdk/substrate/client/rpc-api/src/mixnet
+silent_rm -rf ./polkadot-sdk/substrate/client/rpc-api/src/mixnet
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc-api/src/lib.rs "mod mixnet;$"
-rm -rf ./polkadot-sdk/substrate/client/rpc/src/mixnet
+silent_rm -rf ./polkadot-sdk/substrate/client/rpc/src/mixnet
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod mixnet;$"
-rm ./polkadot-sdk/substrate/client/cli/src/params/mixnet_params.rs
+silent_rm ./polkadot-sdk/substrate/client/cli/src/params/mixnet_params.rs
 remove_matching_lines ./polkadot-sdk/substrate/client/cli/src/params/mod.rs "mod mixnet_params;$"
 sed -e s/" mixnet_params::\*,"//g -i ./polkadot-sdk/substrate/client/cli/src/params/mod.rs
 
@@ -219,14 +224,14 @@ remove_crate_tree substrate/client/network/statement
 remove_crate_tree substrate/client/statement-store
 remove_crate_tree substrate/frame/statement
 remove_crate_tree substrate/primitives/statement-store
-rm -rf ./polkadot-sdk/substrate/client/rpc-api/src/statement
+silent_rm -rf ./polkadot-sdk/substrate/client/rpc-api/src/statement
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc-api/src/lib.rs "mod statement;$"
-rm -rf ./polkadot-sdk/substrate/client/rpc/src/statement
+silent_rm -rf ./polkadot-sdk/substrate/client/rpc/src/statement
 remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod statement;$"
 
 # Remove the binary Merkle tree code, as we only use the standard base-16 trie
 remove_crate_tree substrate/utils/binary-merkle-tree
-rm ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/base2.rs
+silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/base2.rs
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/mod.rs "mod base2;$"
 apply_patch remove_binary_merkle_tree_prover
 
@@ -238,29 +243,29 @@ apply_patch remove_sp_transaction_storage_proof
 # Remove non-Ristretto cryptography
 remove_crate_tree substrate/primitives/crypto/ec-utils
 remove_feature bls-experimental
-rm ./polkadot-sdk/substrate/primitives/core/src/bls.rs
-rm ./polkadot-sdk/substrate/primitives/application-crypto/src/bls381.rs
-rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa_bls381.rs
+silent_rm ./polkadot-sdk/substrate/primitives/core/src/bls.rs
+silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/bls381.rs
+silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa_bls381.rs
 remove_feature bandersnatch-experimental
-rm ./polkadot-sdk/substrate/primitives/application-crypto/src/bandersnatch.rs
-rm ./polkadot-sdk/substrate/primitives/core/src/bandersnatch.rs
-rm ./polkadot-sdk/substrate/primitives/keyring/src/bandersnatch.rs
-rm ./polkadot-sdk/substrate/primitives/core/src/paired_crypto.rs
+silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/bandersnatch.rs
+silent_rm ./polkadot-sdk/substrate/primitives/core/src/bandersnatch.rs
+silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/bandersnatch.rs
+silent_rm ./polkadot-sdk/substrate/primitives/core/src/paired_crypto.rs
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/src/lib.rs "mod paired_crypto;$"
 
-# TODO rm substrate/primitives/core/src/ecdsa.rs
-# TODO rm substrate/primitives/application-crypto/src/ecdsa.rs
-# TODO rm substrate/primitives/application-crypto/test/src/ecdsa.rs
-# TODO rm substrate/frame/support/src/crypto/ecdsa.rs
+# TODO silent_rm substrate/primitives/core/src/ecdsa.rs
+# TODO silent_rm substrate/primitives/application-crypto/src/ecdsa.rs
+# TODO silent_rm substrate/primitives/application-crypto/test/src/ecdsa.rs
+# TODO silent_rm substrate/frame/support/src/crypto/ecdsa.rs
 
-# TODO rm substrate/primitives/application-crypto/src/ed25519.rs
-# TODO rm substrate/primitives/application-crypto/test/src/ed25519.rs
-# TODO rm substrate/primitives/core/src/ed25519.rs
-# TODO rm substrate/primitives/keyring/src/ed25519.rs
+# TODO silent_rm substrate/primitives/application-crypto/src/ed25519.rs
+# TODO silent_rm substrate/primitives/application-crypto/test/src/ed25519.rs
+# TODO silent_rm substrate/primitives/core/src/ed25519.rs
+# TODO silent_rm substrate/primitives/keyring/src/ed25519.rs
 
 # Remove the metadata's hash from the runtime
 remove_feature metadata-hash
-rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
+silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
 remove_matching_lines ./polkadot-sdk/substrate/test-utils/runtime/build.rs "enable_metadata_hash"
 
 # Remove the extension which checks the metadata's hash from the runtime
@@ -356,29 +361,29 @@ cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.3
 cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.3
 
 # Remove misc unused files
-rm -rf .cargo
-rm -rf .config
-rm -rf .forklift
-rm -rf .github
-rm -rf .gitlab
-rm -rf docker
-rm -rf scripts
-rm -rf substrate/.maintain
-rm -rf substrate/scripts
-rm -rf prdoc
-rm .gitignore
-rm .gitlab-ci.yml
-rm .rustfmt.toml
-rm Cargo.lock
-rm CODE_OF_CONDUCT.md
-rm CONTRIBUTING.md
-rm README.md
-rm .prdoc.toml
-rm Plan.toml
+silent_rm -rf .cargo
+silent_rm -rf .config
+silent_rm -rf .forklift
+silent_rm -rf .github
+silent_rm -rf .gitlab
+silent_rm -rf docker
+silent_rm -rf scripts
+silent_rm -rf substrate/.maintain
+silent_rm -rf substrate/scripts
+silent_rm -rf prdoc
+silent_rm .gitignore
+silent_rm .gitlab-ci.yml
+silent_rm .rustfmt.toml
+silent_rm Cargo.lock
+silent_rm CODE_OF_CONDUCT.md
+silent_rm CONTRIBUTING.md
+silent_rm README.md
+silent_rm .prdoc.toml
+silent_rm Plan.toml
 
 # Restore the committed `Cargo.lock` so this is deterministic, if one exists
-rm ./Cargo.lock || true
-cp ../Cargo.lock.polkadot-sdk ./Cargo.lock || true
+silent_rm ./Cargo.lock
+cp ../Cargo.lock.polkadot-sdk ./Cargo.lock
 
 # Ensure this worked as expected
 echo "Running \`cargo check\`"
@@ -397,8 +402,8 @@ cd ..
 
 echo "Patched"
 
-# TODO rm substrate/client/offchain/src/api/http.rs
-# TODO rm substrate/primitives/runtime/src/offchain/http.rs
-# TODO rm substrate/primitives/metadata-ir/src/unstable.rs
-# TODO rm substrate/primitives/metadata-ir/src/v14.rs
-# TODO rm substrate/primitives/metadata-ir/src/v15.rs
+# TODO silent_rm substrate/client/offchain/src/api/http.rs
+# TODO silent_rm substrate/primitives/runtime/src/offchain/http.rs
+# TODO silent_rm substrate/primitives/metadata-ir/src/unstable.rs
+# TODO silent_rm substrate/primitives/metadata-ir/src/v14.rs
+# TODO silent_rm substrate/primitives/metadata-ir/src/v15.rs
