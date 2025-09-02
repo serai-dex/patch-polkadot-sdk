@@ -154,6 +154,7 @@ pub type Pair = sp_core::sr25519::Pair;
 pub type TxExtension = (
 	(CheckNonce<Runtime>, CheckWeight<Runtime>),
 	CheckSubstrateCall,
+	frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
 	frame_system::WeightReclaim<Runtime>,
 );
 /// The payload being signed in transactions.
@@ -490,10 +491,10 @@ impl_runtime_apis! {
 		}
 
 		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata> {
-			Runtime::metadata_at_version(version)
+			None
 		}
 		fn metadata_versions() -> alloc::vec::Vec<u32> {
-			Runtime::metadata_versions()
+			vec![]
 		}
 	}
 
