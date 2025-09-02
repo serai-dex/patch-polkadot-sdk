@@ -113,6 +113,7 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasmi"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^zombienet"
 
 # Now, set up the Rust binary and make all the invasive changes
+rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release
 
 function remove_crate_tree {
