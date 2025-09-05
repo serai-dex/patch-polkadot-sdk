@@ -411,21 +411,38 @@ remove_crate_tree substrate/primitives/test-primitives
 cd polkadot-sdk
 
 # Perform upgrades to preferred versions
-cargo +nightly update -Z unstable-options --breaking -p twox-hash --precise 2.0.0
-cargo +nightly update -Z unstable-options --breaking -p hex-literal --precise 1.0.0
-cargo +nightly update -Z unstable-options --breaking -p thiserror --precise 2.0.0
-cargo +nightly update -Z unstable-options --breaking -p itertools --precise 0.14.0
 cargo +nightly update -Z unstable-options --breaking -p wasmtime --precise 36.0.0
 cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.0
-cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.0
+
+cargo +nightly update -Z unstable-options --breaking -p array-bytes --precise 7.0.0
+# TODO cargo +nightly update -Z unstable-options --breaking -p async-channel --precise 2.0.0
+cargo +nightly update -Z unstable-options --breaking -p asynchronous-codec --precise 0.7.0
+cargo +nightly update -Z unstable-options --breaking -p cfg-expr --precise 0.20.0
+cargo +nightly update -Z unstable-options --breaking -p console --precise 0.16.0
+cargo +nightly update -Z unstable-options --breaking -p derive_more --precise 1.0.0
+cargo +nightly update -Z unstable-options --breaking -p directories --precise 6.0.0
+cargo +nightly update -Z unstable-options --breaking -p fs4 --precise 0.13.0
+cargo +nightly update -Z unstable-options --breaking -p hex-literal --precise 1.0.0
+cargo +nightly update -Z unstable-options --breaking -p itertools --precise 0.14.0
 cargo +nightly update -Z unstable-options --breaking -p kvdb-rocksdb --precise 0.20.0
+# TODO cargo +nightly update -Z unstable-options --breaking -p libp2p --precise 0.56.0
+cargo +nightly update -Z unstable-options --breaking -p macro_magic --precise 0.6.0
+cargo +nightly update -Z unstable-options --breaking -p parity-db --precise 0.5.0
+cargo +nightly update -Z unstable-options --breaking -p partial_sort --precise 1.0.0
+# TODO cargo +nightly update -Z unstable-options --breaking -p prometheus --precise 0.14.0
+cargo +nightly update -Z unstable-options --breaking -p prost --precise 0.14.0
+cargo +nightly update -Z unstable-options --breaking -p prost-build --precise 0.14.0
+cargo +nightly update -Z unstable-options --breaking -p rustc-hash --precise 2.0.0
+cargo +nightly update -Z unstable-options --breaking -p strum --precise 0.27.0
+cargo +nightly update -Z unstable-options --breaking -p thiserror --precise 2.0.0
+cargo +nightly update -Z unstable-options --breaking -p twox-hash --precise 2.0.0
+cargo +nightly update -Z unstable-options --breaking -p unsigned-varint --precise 0.8.0
+cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.0
 
 cargo +nightly update -Z unstable-options --breaking -p governor --precise 0.10.0
 cd ..
 apply_patch update_governor
 cd polkadot-sdk
-
-cargo +nightly update -Z unstable-options --breaking -p directories --precise 6.0.0
 
 # Remove misc unused files
 silent_rm .cargo

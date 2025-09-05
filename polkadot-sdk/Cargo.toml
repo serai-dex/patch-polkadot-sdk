@@ -243,6 +243,17 @@ itertools= "0.14"
 kvdb-rocksdb= "0.20.0"
 governor= "0.10.1"
 directories= "6.0.0"
+prost= "0.14.1"
+prost-build= "0.14.1"
+asynchronous-codec= "0.7"
+cfg-expr= "0.20.2"
+console= "0.16.0"
+fs4= "0.13.1"
+macro_magic= "0.6.0"
+parity-db= "0.5.4"
+partial_sort= "1.0.0"
+rustc-hash= "2.1.1"
+unsigned-varint= "0.8.0"
 
 [workspace.dependencies.Inflector]
 version = "0.11.4"
@@ -267,7 +278,7 @@ version = "0.5.0"
 version = "1.3.2"
 
 [workspace.dependencies.array-bytes]
-version = "6.2.2"
+version = "7.0.0"
 default-features = false
 
 [workspace.dependencies.arrayvec]
@@ -287,9 +298,6 @@ version = "1.9.0"
 
 [workspace.dependencies.async-trait]
 version = "0.1.88"
-
-[workspace.dependencies.asynchronous-codec]
-version = "0.6"
 
 [workspace.dependencies.backoff]
 version = "0.4"
@@ -351,9 +359,6 @@ default-features = false
 [workspace.dependencies.cargo_metadata]
 version = "0.15.4"
 
-[workspace.dependencies.cfg-expr]
-version = "0.15.5"
-
 [workspace.dependencies.cfg-if]
 version = "1.0"
 
@@ -385,9 +390,6 @@ version = "0.3.4"
 version = "7.1.4"
 default-features = false
 
-[workspace.dependencies.console]
-version = "0.15.8"
-
 [workspace.dependencies.const-hex]
 version = "1.10.0"
 default-features = false
@@ -405,7 +407,7 @@ version = "0.2.0"
 version = "1.2.7"
 
 [workspace.dependencies.derive_more]
-version = "0.99.17"
+version = "1.0.0"
 default-features = false
 
 [workspace.dependencies.digest]
@@ -541,9 +543,6 @@ default-features = false
 [workspace.dependencies.frame-try-runtime]
 path = "substrate/frame/try-runtime"
 default-features = false
-
-[workspace.dependencies.fs4]
-version = "0.7.0"
 
 [workspace.dependencies.fs_extra]
 version = "1.3.0"
@@ -715,9 +714,6 @@ features = ["websocket"]
 version = "0.4.22"
 default-features = false
 
-[workspace.dependencies.macro_magic]
-version = "0.5.1"
-
 [workspace.dependencies.maplit]
 version = "1.0.2"
 
@@ -848,18 +844,12 @@ default-features = false
 version = "0.1.2"
 default-features = false
 
-[workspace.dependencies.parity-db]
-version = "0.4.12"
-
 [workspace.dependencies.parity-wasm]
 version = "0.45.0"
 
 [workspace.dependencies.parking_lot]
 version = "0.12.1"
 default-features = false
-
-[workspace.dependencies.partial_sort]
-version = "0.2.0"
 
 [workspace.dependencies.paste]
 version = "1.0.15"
@@ -898,7 +888,7 @@ default-features = false
 version = "1.0.86"
 
 [workspace.dependencies.prometheus]
-version = "0.13.0"
+version = "0.13.4"
 default-features = false
 
 [workspace.dependencies.prometheus-endpoint]
@@ -908,12 +898,6 @@ package = "substrate-prometheus-endpoint"
 
 [workspace.dependencies.prometheus-parse]
 version = "0.2.2"
-
-[workspace.dependencies.prost]
-version = "0.12.4"
-
-[workspace.dependencies.prost-build]
-version = "0.13.2"
 
 [workspace.dependencies.pyroscope]
 version = "0.5.8"
@@ -964,9 +948,6 @@ default-features = false
 
 [workspace.dependencies.rpassword]
 version = "7.0.0"
-
-[workspace.dependencies.rustc-hash]
-version = "1.1.0"
 
 [workspace.dependencies.rustc-hex]
 version = "2.1.0"
@@ -1433,7 +1414,7 @@ default-features = false
 version = "1.0.3"
 
 [workspace.dependencies.strum]
-version = "0.26.3"
+version = "0.27.2"
 default-features = false
 
 [workspace.dependencies.substrate-bip39]
@@ -1541,9 +1522,6 @@ default-features = false
 [workspace.dependencies.txtesttool]
 version = "0.4.0"
 package = "substrate-txtesttool"
-
-[workspace.dependencies.unsigned-varint]
-version = "0.7.2"
 
 [workspace.dependencies.url]
 version = "2.5.4"
