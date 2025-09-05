@@ -185,12 +185,14 @@ workspace = true
 [dependencies.void]
 workspace = true
 
-[dependencies.wasm-timer]
-workspace = true
-
 [dependencies.zeroize]
 workspace = true
 default-features = true
+
+[dependencies.wasmtimer]
+version = "0.4"
+default-features = false
+features = ["tokio"]
 
 [features]
 default = []

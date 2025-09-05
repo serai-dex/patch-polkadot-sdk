@@ -34,7 +34,6 @@ use std::{
 	sync::Arc,
 	time::{Duration, Instant},
 };
-use wasm_timer::Delay;
 
 /// Log target for this file.
 pub const LOG_TARGET: &str = "peerset";
@@ -450,7 +449,7 @@ impl PeerStore {
 			};
 
 			self.inner.lock().progress_time(seconds_passed);
-			let _ = Delay::new(Duration::from_secs(1)).await;
+			let _ = wasmtimer::tokio::sleep(Duration::from_secs(1)).await;
 		}
 	}
 }

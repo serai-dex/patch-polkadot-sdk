@@ -1,0 +1,123 @@
+diff --git a/substrate/client/network/src/litep2p/peerstore.rs b/substrate/client/network/src/litep2p/peerstore.rs
+index dd8d92b..bf11471 100644
+--- a/substrate/client/network/src/litep2p/peerstore.rs
++++ b/substrate/client/network/src/litep2p/peerstore.rs
+@@ -29,7 +29,6 @@ use crate::{
+ 
+ use parking_lot::Mutex;
+ use prometheus_endpoint::Registry;
+-use wasm_timer::Delay;
+ 
+ use sc_network_types::PeerId;
+ 
+@@ -356,7 +355,7 @@ impl Peerstore {
+ 			};
+ 
+ 			self.peerstore_handle.progress_time(seconds_passed);
+-			let _ = Delay::new(Duration::from_secs(1)).await;
++			let _ = wasmtimer::tokio::sleep(Duration::from_secs(1)).await;
+ 		}
+ 	}
+ }
+diff --git a/substrate/client/network/src/peer_store.rs b/substrate/client/network/src/peer_store.rs
+index 0e57791..3fc110d 100644
+--- a/substrate/client/network/src/peer_store.rs
++++ b/substrate/client/network/src/peer_store.rs
+@@ -34,7 +34,6 @@ use std::{
+ 	sync::Arc,
+ 	time::{Duration, Instant},
+ };
+-use wasm_timer::Delay;
+ 
+ /// Log target for this file.
+ pub const LOG_TARGET: &str = "peerset";
+@@ -450,7 +449,7 @@ impl PeerStore {
+ 			};
+ 
+ 			self.inner.lock().progress_time(seconds_passed);
+-			let _ = Delay::new(Duration::from_secs(1)).await;
++			let _ = wasmtimer::tokio::sleep(Duration::from_secs(1)).await;
+ 		}
+ 	}
+ }
+diff --git a/substrate/client/telemetry/src/node.rs b/substrate/client/telemetry/src/node.rs
+index 2c8d424..3cb9728 100644
+--- a/substrate/client/telemetry/src/node.rs
++++ b/substrate/client/telemetry/src/node.rs
+@@ -32,7 +32,6 @@ use std::{
+ 	task::{Context, Poll},
+ 	time::Duration,
+ };
+-use wasm_timer::Delay;
+ 
+ pub(crate) type ConnectionNotifierSender = mpsc::Sender<()>;
+ pub(crate) type ConnectionNotifierReceiver = mpsc::Receiver<()>;
+@@ -75,7 +74,7 @@ enum NodeSocket<TTrans: Transport> {
+ 	/// A new connection should be started as soon as possible.
+ 	ReconnectNow,
+ 	/// Waiting before attempting to dial again.
+-	WaitingReconnect(Delay),
++	WaitingReconnect(wasmtimer::tokio::Sleep),
+ 	/// Temporary transition state.
+ 	Poisoned,
+ }
+@@ -83,7 +82,7 @@ enum NodeSocket<TTrans: Transport> {
+ impl<TTrans: Transport> NodeSocket<TTrans> {
+ 	fn wait_reconnect() -> NodeSocket<TTrans> {
+ 		let random_delay = rand::thread_rng().gen_range(10..20);
+-		let delay = Delay::new(Duration::from_secs(random_delay));
++		let delay = wasmtimer::tokio::sleep(Duration::from_secs(random_delay));
+ 		log::trace!(target: "telemetry", "Pausing for {} secs before reconnecting", random_delay);
+ 		NodeSocket::WaitingReconnect(delay)
+ 	}
+diff --git a/substrate/client/network/src/protocol_controller.rs b/substrate/client/network/src/protocol_controller.rs
+index 11f5321..b56a9aa 100644
+--- a/substrate/client/network/src/protocol_controller.rs
++++ b/substrate/client/network/src/protocol_controller.rs
+@@ -51,9 +51,8 @@ use sp_arithmetic::traits::SaturatedConversion;
+ use std::{
+ 	collections::{HashMap, HashSet},
+ 	sync::Arc,
+-	time::{Duration, Instant},
++	time::Duration,
+ };
+-use wasm_timer::Delay;
+ 
+ /// Log target for this file.
+ pub const LOG_TARGET: &str = "peerset";
+@@ -291,7 +290,7 @@ pub struct ProtocolController {
+ 	/// Connect only to reserved nodes.
+ 	reserved_only: bool,
+ 	/// Next time to allocate slots. This is done once per second.
+-	next_periodic_alloc_slots: Instant,
++	next_periodic_alloc_slots: wasmtimer::std::Instant,
+ 	/// Outgoing channel for messages to `Notifications`.
+ 	to_notifications: TracingUnboundedSender<Message>,
+ 	/// `PeerStore` handle for checking peer reputation values and getting connection candidates
+@@ -324,7 +323,7 @@ impl ProtocolController {
+ 			nodes: HashMap::new(),
+ 			reserved_nodes,
+ 			reserved_only: config.reserved_only,
+-			next_periodic_alloc_slots: Instant::now(),
++			next_periodic_alloc_slots: wasmtimer::Instant::now(),
+ 			to_notifications,
+ 			peer_store,
+ 		};
+@@ -342,7 +341,7 @@ impl ProtocolController {
+ 	/// Intended for tests only. Use `run` for driving [`ProtocolController`].
+ 	pub async fn next_action(&mut self) -> bool {
+ 		let either = loop {
+-			let mut next_alloc_slots = Delay::new_at(self.next_periodic_alloc_slots).fuse();
++			let mut next_alloc_slots = wasmtimer::tokio::sleep_until(self.next_periodic_alloc_slots).fuse();
+ 
+ 			// See the module doc for why we use `select_biased!`.
+ 			futures::select_biased! {
+@@ -356,7 +355,7 @@ impl ProtocolController {
+ 				},
+ 				_ = next_alloc_slots => {
+ 					self.alloc_slots();
+-					self.next_periodic_alloc_slots = Instant::now() + Duration::new(1, 0);
++					self.next_periodic_alloc_slots = wasmtimer::Instant::now() + Duration::new(1, 0);
+ 				},
+ 			}
+ 		};

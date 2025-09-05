@@ -70,5 +70,7 @@ default-features = true
 [dependencies.thiserror]
 workspace = true
 
-[dependencies.wasm-timer]
-workspace = true
+[dependencies.wasmtimer]
+version = "0.4"
+default-features = false
+features = ["tokio"]

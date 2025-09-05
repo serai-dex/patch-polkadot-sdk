@@ -32,7 +32,6 @@ use std::{
 	task::{Context, Poll},
 	time::Duration,
 };
-use wasm_timer::Delay;
 
 pub(crate) type ConnectionNotifierSender = mpsc::Sender<()>;
 pub(crate) type ConnectionNotifierReceiver = mpsc::Receiver<()>;
@@ -75,7 +74,7 @@ enum NodeSocket<TTrans: Transport> {
 	/// A new connection should be started as soon as possible.
 	ReconnectNow,
 	/// Waiting before attempting to dial again.
-	WaitingReconnect(Delay),
+	WaitingReconnect(wasmtimer::tokio::Sleep),
 	/// Temporary transition state.
 	Poisoned,
 }
@@ -83,7 +82,7 @@ enum NodeSocket<TTrans: Transport> {
 impl<TTrans: Transport> NodeSocket<TTrans> {
 	fn wait_reconnect() -> NodeSocket<TTrans> {
 		let random_delay = rand::thread_rng().gen_range(10..20);
-		let delay = Delay::new(Duration::from_secs(random_delay));
+		let delay = wasmtimer::tokio::sleep(Duration::from_secs(random_delay));
 		log::trace!(target: "telemetry", "Pausing for {} secs before reconnecting", random_delay);
 		NodeSocket::WaitingReconnect(delay)
 	}

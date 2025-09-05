@@ -84,6 +84,19 @@ apply_patch optional_litep2p
 # Make `polkavm` optional
 apply_patch optional_polkavm
 
+# Replace `wasm-timer` with `wasmtimer`
+remove_matching_lines ./polkadot-sdk/substrate/client/telemetry/Cargo.toml "wasm-timer"
+echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+echo 'default-features = false' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "wasm-timer"
+echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
+echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
+echo 'default-features = false' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
+echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
+apply_patch replace_wasm-timer_with_wasmtimer
+
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
@@ -129,6 +142,7 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^tikv"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^tokio-tungstenite"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^trie-bench"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasmi"
+remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasm-timer"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^zombienet"
 
 # Remove `simple-mermaid`

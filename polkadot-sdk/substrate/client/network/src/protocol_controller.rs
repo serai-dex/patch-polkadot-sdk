@@ -51,9 +51,8 @@ use sp_arithmetic::traits::SaturatedConversion;
 use std::{
 	collections::{HashMap, HashSet},
 	sync::Arc,
-	time::{Duration, Instant},
+	time::Duration,
 };
-use wasm_timer::Delay;
 
 /// Log target for this file.
 pub const LOG_TARGET: &str = "peerset";
@@ -291,7 +290,7 @@ pub struct ProtocolController {
 	/// Connect only to reserved nodes.
 	reserved_only: bool,
 	/// Next time to allocate slots. This is done once per second.
-	next_periodic_alloc_slots: Instant,
+	next_periodic_alloc_slots: wasmtimer::std::Instant,
 	/// Outgoing channel for messages to `Notifications`.
 	to_notifications: TracingUnboundedSender<Message>,
 	/// `PeerStore` handle for checking peer reputation values and getting connection candidates
@@ -324,7 +323,7 @@ impl ProtocolController {
 			nodes: HashMap::new(),
 			reserved_nodes,
 			reserved_only: config.reserved_only,
-			next_periodic_alloc_slots: Instant::now(),
+			next_periodic_alloc_slots: wasmtimer::Instant::now(),
 			to_notifications,
 			peer_store,
 		};
@@ -342,7 +341,7 @@ impl ProtocolController {
 	/// Intended for tests only. Use `run` for driving [`ProtocolController`].
 	pub async fn next_action(&mut self) -> bool {
 		let either = loop {
-			let mut next_alloc_slots = Delay::new_at(self.next_periodic_alloc_slots).fuse();
+			let mut next_alloc_slots = wasmtimer::tokio::sleep_until(self.next_periodic_alloc_slots).fuse();
 
 			// See the module doc for why we use `select_biased!`.
 			futures::select_biased! {
@@ -356,7 +355,7 @@ impl ProtocolController {
 				},
 				_ = next_alloc_slots => {
 					self.alloc_slots();
-					self.next_periodic_alloc_slots = Instant::now() + Duration::new(1, 0);
+					self.next_periodic_alloc_slots = wasmtimer::Instant::now() + Duration::new(1, 0);
 				},
 			}
 		};
