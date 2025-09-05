@@ -219,6 +219,23 @@ fn main() {
           .unwrap();
       }
     }
+
+    "upgrade" => {
+      let dep = args.next().unwrap();
+      let version = args.next().unwrap();
+
+      let (workspace_toml_path, mut workspace_toml) = workspace_toml();
+      let dependencies = workspace_toml["workspace"]["dependencies"].as_table_mut().unwrap();
+      let dep = &mut dependencies[&dep];
+      if let Some(dep) = dep.as_table_mut() {
+        dep["version"] = version.to_string().into();
+      } else {
+        *dep = version.to_string().into();
+      }
+      fs::write(workspace_toml_path, toml::to_string_pretty(&workspace_toml).unwrap().as_bytes())
+        .unwrap();
+    }
+
     _ => panic!("unknown command"),
   }
 }

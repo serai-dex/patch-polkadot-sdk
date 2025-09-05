@@ -51,7 +51,7 @@ function apply_patch {
   PATCH_SUCCEEDED=$?
   cd ..
   if [ $PATCH_SUCCEEDED -ne 0 ]; then
-    exit 3
+    exit 2
   fi
 }
 
@@ -127,7 +127,7 @@ function remove_crate_tree {
   echo "Removing crates $1"
   ./target/release/serai-polkadot-sdk remove_crate_tree $1
   if [ $? -ne 0 ]; then
-    exit 2
+    exit 3
   fi
 }
 
@@ -135,7 +135,7 @@ function remove_workspace_dependency {
   echo "Removing workspace dependency $1"
   ./target/release/serai-polkadot-sdk remove_workspace_dependency $1
   if [ $? -ne 0 ]; then
-    exit 2
+    exit 4
   fi
 }
 
@@ -143,14 +143,21 @@ function remove_feature {
   echo "Removing feature $1"
   ./target/release/serai-polkadot-sdk remove_feature $1
   if [ $? -ne 0 ]; then
-    exit 2
+    exit 5
   fi
 }
 
 function remove_dev_dependencies {
   ./target/release/serai-polkadot-sdk remove_dev_dependencies
   if [ $? -ne 0 ]; then
-    exit 2
+    exit 6
+  fi
+}
+
+function cargo_upgrade {
+  ./target/release/serai-polkadot-sdk upgrade $1 $2
+  if [ $? -ne 0 ]; then
+    exit 7
   fi
 }
 
@@ -408,40 +415,39 @@ remove_crate_tree substrate/primitives/runtime-interface/test-wasm
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
 remove_crate_tree substrate/primitives/test-primitives
 
-cd polkadot-sdk
-
 # Perform upgrades to preferred versions
-cargo +nightly update -Z unstable-options --breaking -p wasmtime --precise 36.0.0
-cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.0
+cargo_upgrade wasmtime 36.0.0
+cargo_upgrade rustix 1.0.0
 
-cargo +nightly update -Z unstable-options --breaking -p array-bytes --precise 7.0.0
-# TODO cargo +nightly update -Z unstable-options --breaking -p async-channel --precise 2.0.0
-cargo +nightly update -Z unstable-options --breaking -p asynchronous-codec --precise 0.7.0
-cargo +nightly update -Z unstable-options --breaking -p cfg-expr --precise 0.20.0
-cargo +nightly update -Z unstable-options --breaking -p console --precise 0.16.0
-cargo +nightly update -Z unstable-options --breaking -p derive_more --precise 1.0.0
-cargo +nightly update -Z unstable-options --breaking -p directories --precise 6.0.0
-cargo +nightly update -Z unstable-options --breaking -p fs4 --precise 0.13.0
-cargo +nightly update -Z unstable-options --breaking -p hex-literal --precise 1.0.0
-cargo +nightly update -Z unstable-options --breaking -p itertools --precise 0.14.0
-cargo +nightly update -Z unstable-options --breaking -p kvdb-rocksdb --precise 0.20.0
-# TODO cargo +nightly update -Z unstable-options --breaking -p libp2p --precise 0.56.0
-cargo +nightly update -Z unstable-options --breaking -p macro_magic --precise 0.6.0
-cargo +nightly update -Z unstable-options --breaking -p parity-db --precise 0.5.0
-cargo +nightly update -Z unstable-options --breaking -p partial_sort --precise 1.0.0
-# TODO cargo +nightly update -Z unstable-options --breaking -p prometheus --precise 0.14.0
-cargo +nightly update -Z unstable-options --breaking -p prost --precise 0.14.0
-cargo +nightly update -Z unstable-options --breaking -p prost-build --precise 0.14.0
-cargo +nightly update -Z unstable-options --breaking -p rustc-hash --precise 2.0.0
-cargo +nightly update -Z unstable-options --breaking -p strum --precise 0.27.0
-cargo +nightly update -Z unstable-options --breaking -p thiserror --precise 2.0.0
-cargo +nightly update -Z unstable-options --breaking -p twox-hash --precise 2.0.0
-cargo +nightly update -Z unstable-options --breaking -p unsigned-varint --precise 0.8.0
-cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.0
+cargo_upgrade array-bytes 7.0.0
+# TODO cargo_upgrade async-channel 2.0.0
+cargo_upgrade asynchronous-codec 0.7.0
+cargo_upgrade cfg-expr 0.20.0
+cargo_upgrade console 0.16.0
+cargo_upgrade derive_more 1.0.0
+cargo_upgrade directories 6.0.0
+cargo_upgrade fs4 0.13.0
 
-cargo +nightly update -Z unstable-options --breaking -p governor --precise 0.10.0
-cd ..
+cargo_upgrade governor 0.10.0
 apply_patch update_governor
+
+cargo_upgrade hex-literal 1.0.0
+cargo_upgrade itertools 0.14.0
+cargo_upgrade kvdb-rocksdb 0.20.0
+# TODO cargo_upgrade libp2p 0.56.0
+cargo_upgrade macro_magic 0.6.0
+cargo_upgrade parity-db 0.5.0
+cargo_upgrade partial_sort 1.0.0
+# TODO cargo_upgrade prometheus 0.14.0
+cargo_upgrade prost 0.14.0
+cargo_upgrade prost-build 0.14.0
+cargo_upgrade rustc-hash 2.0.0
+cargo_upgrade strum 0.27.0
+cargo_upgrade thiserror 2.0.0
+cargo_upgrade twox-hash 2.0.0
+cargo_upgrade unsigned-varint 0.8.0
+cargo_upgrade zstd 0.13.0
+
 cd polkadot-sdk
 
 # Remove misc unused files
@@ -476,7 +482,7 @@ echo "Running \`cargo check\`"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 4
+  exit 8
 fi
 
 # Save >10 GB on what should be a static directory of no further use
