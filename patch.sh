@@ -7,7 +7,7 @@ function silent_rm {
 
 POLKADOT_SDK_COMMIT=52f4a08f26f226de93c0dbea5e8d066cbbd5bbd0
 
-if [ -f "polkadot-sdk/.patched" ]; then
+if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
     echo "\`polkadot-sdk\` was already patched. Run with \`--from-scratch\` to continue"
     exit 1
@@ -17,7 +17,7 @@ fi
 # If we're running this script yet `polkadot-sdk` isn't a valid Git repository, clean it
 if [ -d "polkadot-sdk" ]; then
   if [ ! -d "polkadot-sdk/.git" ]; then
-    silent_rm polkadot-sdk
+    silent_rm ./polkadot-sdk
   fi
 fi
 
@@ -25,15 +25,15 @@ fi
 # Ideally, this would be `git clone --revision $POLKADOT_SDK_COMMIT --depth 1`,
 # yet that requires a newer Git than frequently packaged
 if [ ! -d "polkadot-sdk" ]; then
-  mkdir polkadot-sdk
-  cd polkadot-sdk
+  mkdir ./polkadot-sdk
+  cd ./polkadot-sdk
   git init
   git remote add origin https://github.com/paritytech/polkadot-sdk
   git fetch --depth 1 origin $POLKADOT_SDK_COMMIT
   cd ..
 fi
 
-cd polkadot-sdk
+cd ./polkadot-sdk
 # Ensure we're starting from the intended commit
 git checkout -f $POLKADOT_SDK_COMMIT
 # Remove the existing `.patched` marker
@@ -46,7 +46,7 @@ cd ..
 
 function apply_patch {
   echo "Applying patch $1"
-  cd polkadot-sdk
+  cd ./polkadot-sdk
   git apply ../patches/$1.patch
   PATCH_SUCCEEDED=$?
   cd ..
@@ -142,7 +142,7 @@ find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {});
 remove_matching_lines ./polkadot-sdk/Cargo.toml "aquamarine"
 
 # Now, set up the Rust binary and make all the invasive changes
-rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
+silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release
 
 function remove_crate_tree {
@@ -216,10 +216,10 @@ remove_crate_tree substrate/deprecated
 remove_crate_tree substrate/bin
 
 # Remove the unused "bitswap" protocol
-silent_rm polkadot-sdk/substrate/client/network/build.rs
-silent_rm polkadot-sdk/substrate/client/network/src/bitswap
-silent_rm polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
-silent_rm polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
+silent_rm ./polkadot-sdk/substrate/client/network/build.rs
+silent_rm ./polkadot-sdk/substrate/client/network/src/bitswap
+silent_rm ./polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
+silent_rm ./polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
 remove_matching_lines ./polkadot-sdk/substrate/client/network/src/lib.rs "mod bitswap;$"
 apply_patch remove_bitswap
 
@@ -312,7 +312,7 @@ apply_patch remove_ecdsa_ed25519
 apply_patch events_on_genesis
 
 # Remove the runtime's metadata
-rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
 apply_patch remove_runtime_metadata
 
 # Remove the metadata's hash from the runtime
@@ -470,7 +470,7 @@ cargo_upgrade unsigned-varint 0.8.0
 cargo_upgrade wasmtime 36.0.0
 cargo_upgrade zstd 0.13.0
 
-cd polkadot-sdk
+cd ./polkadot-sdk
 
 # Remove misc unused files
 silent_rm .cargo
