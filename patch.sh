@@ -174,6 +174,7 @@ function remove_dev_dependencies {
 }
 
 function cargo_upgrade {
+  echo "Upgrading $1 to $2"
   ./target/release/serai-polkadot-sdk upgrade $1 $2
   if [ $? -ne 0 ]; then
     exit 7
