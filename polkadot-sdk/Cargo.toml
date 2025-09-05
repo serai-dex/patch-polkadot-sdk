@@ -24,7 +24,6 @@ members = [
     "substrate/client/executor",
     "substrate/client/executor/common",
     "substrate/client/executor/polkavm",
-    "substrate/client/executor/runtime-test",
     "substrate/client/executor/wasmtime",
     "substrate/client/informant",
     "substrate/client/keystore",
@@ -1332,9 +1331,6 @@ default-features = false
 [workspace.dependencies.sc-rpc-spec-v2]
 path = "substrate/client/rpc-spec-v2"
 default-features = false
-
-[workspace.dependencies.sc-runtime-test]
-path = "substrate/client/executor/runtime-test"
 
 [workspace.dependencies.sc-runtime-utilities]
 path = "substrate/client/runtime-utilities"

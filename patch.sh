@@ -365,6 +365,8 @@ remove_dev_dependencies
 apply_patch remove_ss58_prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Prefix > {}.2 && rm {} && mv {}.2 {}" \;
 
+remove_crate_tree substrate/client/executor/runtime-test
+
 cd polkadot-sdk
 
 # Perform upgrades to preferred versions
