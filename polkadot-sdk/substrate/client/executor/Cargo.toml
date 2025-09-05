@@ -46,6 +46,7 @@ workspace = true
 [dependencies.sc-executor-polkavm]
 default-features = true
 workspace = true
+optional = true
 
 [dependencies.sc-executor-wasmtime]
 default-features = true
@@ -100,3 +101,4 @@ std = [
     "sp-wasm-interface/std",
 ]
 wasm-extern-trace = []
+polkavm = ["sc-executor-polkavm"]

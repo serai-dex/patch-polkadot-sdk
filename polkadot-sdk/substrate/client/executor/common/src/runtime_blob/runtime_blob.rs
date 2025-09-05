@@ -17,6 +17,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{error::WasmError, wasm_runtime::HeapAllocStrategy};
+#[cfg(feature = "polkavm")]
 use polkavm::ArcBytes;
 use wasm_instrument::parity_wasm::elements::{
 	deserialize_buffer, serialize, ExportEntry, External, Internal, MemorySection, MemoryType,
@@ -30,6 +31,7 @@ pub struct RuntimeBlob(BlobKind);
 #[derive(Clone)]
 enum BlobKind {
 	WebAssembly(Module),
+	#[cfg(feature = "polkavm")]
 	PolkaVM((polkavm::ProgramBlob, ArcBytes)),
 }
 
@@ -51,6 +53,7 @@ impl RuntimeBlob {
 	/// Will only accept a PolkaVM program if the `SUBSTRATE_ENABLE_POLKAVM` environment
 	/// variable is set to `1`.
 	pub fn new(raw_blob: &[u8]) -> Result<Self, WasmError> {
+		#[cfg(feature = "polkavm")]
 		if raw_blob.starts_with(b"PVM\0") {
 			if crate::is_polkavm_enabled() {
 				let raw = ArcBytes::from(raw_blob);
@@ -225,6 +228,7 @@ impl RuntimeBlob {
 	}
 
 	/// Gets a reference to the inner PolkaVM program blob, if this is a PolkaVM program.
+	#[cfg(feature = "polkavm")]
 	pub fn as_polkavm_blob(&self) -> Option<&polkavm::ProgramBlob> {
 		match self.0 {
 			BlobKind::WebAssembly(..) => None,

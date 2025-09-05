@@ -26,6 +26,7 @@ workspace = true
 
 [dependencies.polkavm]
 workspace = true
+optional = true
 
 [dependencies.sc-allocator]
 default-features = true

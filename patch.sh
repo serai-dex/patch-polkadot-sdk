@@ -78,8 +78,11 @@ apply_patch remove_filetime
 # Stop propagation of `CARGO_FEATURE_STD` when performing a `no-std` build
 apply_patch do_not_inherit_std
 
-# Make litep2p optional
+# Make `litep2p` optional
 apply_patch optional_litep2p
+
+# Make `polkavm` optional
+apply_patch optional_polkavm
 
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"

@@ -297,6 +297,7 @@ pub fn create_wasm_runtime_with_code<H>(
 where
 	H: HostFunctions,
 {
+	#[cfg(feature = "polkavm")]
 	if let Some(blob) = blob.as_polkavm_blob() {
 		return sc_executor_polkavm::create_runtime::<H>(blob);
 	}

@@ -150,18 +150,21 @@ pub enum WasmError {
 	Other(String),
 }
 
+#[cfg(feature = "polkavm")]
 impl From<polkavm::program::ProgramParseError> for WasmError {
 	fn from(error: polkavm::program::ProgramParseError) -> Self {
 		WasmError::Other(error.to_string())
 	}
 }
 
+#[cfg(feature = "polkavm")]
 impl From<polkavm::Error> for WasmError {
 	fn from(error: polkavm::Error) -> Self {
 		WasmError::Other(error.to_string())
 	}
 }
 
+#[cfg(feature = "polkavm")]
 impl From<polkavm::Error> for Error {
 	fn from(error: polkavm::Error) -> Self {
 		Error::Other(error.to_string())

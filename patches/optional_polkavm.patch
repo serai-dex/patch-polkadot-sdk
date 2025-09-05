@@ -1,0 +1,116 @@
+diff --git a/substrate/client/executor/Cargo.toml b/substrate/client/executor/Cargo.toml
+index 9e89e26..0a6342e 100644
+--- a/substrate/client/executor/Cargo.toml
++++ b/substrate/client/executor/Cargo.toml
+@@ -26,6 +26,7 @@ sc-executor-common.default-features = true
+ sc-executor-common.workspace = true
+ sc-executor-polkavm.default-features = true
+ sc-executor-polkavm.workspace = true
++sc-executor-polkavm.optional = true
+ sc-executor-wasmtime.default-features = true
+ sc-executor-wasmtime.workspace = true
+ sp-api.default-features = true
+@@ -83,3 +84,4 @@ std = [
+ 	"sp-wasm-interface/std",
+ ]
+ wasm-extern-trace = []
++polkavm = ["sc-executor-polkavm"]
+diff --git a/substrate/client/executor/common/Cargo.toml b/substrate/client/executor/common/Cargo.toml
+index 7913d42..1a5d293 100644
+--- a/substrate/client/executor/common/Cargo.toml
++++ b/substrate/client/executor/common/Cargo.toml
+@@ -17,7 +17,7 @@ workspace = true
+ targets = ["x86_64-unknown-linux-gnu"]
+ 
+ [dependencies]
+-polkavm = { workspace = true }
++polkavm = { workspace = true, optional = true }
+ sc-allocator.default-features = true
+ sc-allocator.workspace = true
+ sp-maybe-compressed-blob.default-features = true
+diff --git a/substrate/client/executor/common/src/error.rs b/substrate/client/executor/common/src/error.rs
+index a94c1d4..8640e43 100644
+--- a/substrate/client/executor/common/src/error.rs
++++ b/substrate/client/executor/common/src/error.rs
+@@ -150,18 +150,21 @@ pub enum WasmError {
+ 	Other(String),
+ }
+ 
++#[cfg(feature = "polkavm")]
+ impl From<polkavm::program::ProgramParseError> for WasmError {
+ 	fn from(error: polkavm::program::ProgramParseError) -> Self {
+ 		WasmError::Other(error.to_string())
+ 	}
+ }
+ 
++#[cfg(feature = "polkavm")]
+ impl From<polkavm::Error> for WasmError {
+ 	fn from(error: polkavm::Error) -> Self {
+ 		WasmError::Other(error.to_string())
+ 	}
+ }
+ 
++#[cfg(feature = "polkavm")]
+ impl From<polkavm::Error> for Error {
+ 	fn from(error: polkavm::Error) -> Self {
+ 		Error::Other(error.to_string())
+diff --git a/substrate/client/executor/common/src/lib.rs b/substrate/client/executor/common/src/lib.rs
+index ff9fab2..4a94b91 100644
+--- a/substrate/client/executor/common/src/lib.rs
++++ b/substrate/client/executor/common/src/lib.rs
+@@ -26,6 +26,7 @@ pub mod runtime_blob;
+ pub mod util;
+ pub mod wasm_runtime;
+ 
++#[cfg(feature = "polkavm")]
+ pub(crate) fn is_polkavm_enabled() -> bool {
+ 	std::env::var_os("SUBSTRATE_ENABLE_POLKAVM").map_or(false, |value| value == "1")
+ }
+diff --git a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
+index e3f4b4a..9158f80 100644
+--- a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
++++ b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
+@@ -17,6 +17,7 @@
+ // along with this program. If not, see <https://www.gnu.org/licenses/>.
+ 
+ use crate::{error::WasmError, wasm_runtime::HeapAllocStrategy};
++#[cfg(feature = "polkavm")]
+ use polkavm::ArcBytes;
+ use wasm_instrument::parity_wasm::elements::{
+ 	deserialize_buffer, serialize, ExportEntry, External, Internal, MemorySection, MemoryType,
+@@ -30,6 +31,7 @@ pub struct RuntimeBlob(BlobKind);
+ #[derive(Clone)]
+ enum BlobKind {
+ 	WebAssembly(Module),
++	#[cfg(feature = "polkavm")]
+ 	PolkaVM((polkavm::ProgramBlob, ArcBytes)),
+ }
+ 
+@@ -51,6 +53,7 @@ impl RuntimeBlob {
+ 	/// Will only accept a PolkaVM program if the `SUBSTRATE_ENABLE_POLKAVM` environment
+ 	/// variable is set to `1`.
+ 	pub fn new(raw_blob: &[u8]) -> Result<Self, WasmError> {
++		#[cfg(feature = "polkavm")]
+ 		if raw_blob.starts_with(b"PVM\0") {
+ 			if crate::is_polkavm_enabled() {
+ 				let raw = ArcBytes::from(raw_blob);
+@@ -225,6 +228,7 @@ impl RuntimeBlob {
+ 	}
+ 
+ 	/// Gets a reference to the inner PolkaVM program blob, if this is a PolkaVM program.
++	#[cfg(feature = "polkavm")]
+ 	pub fn as_polkavm_blob(&self) -> Option<&polkavm::ProgramBlob> {
+ 		match self.0 {
+ 			BlobKind::WebAssembly(..) => None,
+diff --git a/substrate/client/executor/src/wasm_runtime.rs b/substrate/client/executor/src/wasm_runtime.rs
+index 8f189ca..bca7ef6 100644
+--- a/substrate/client/executor/src/wasm_runtime.rs
++++ b/substrate/client/executor/src/wasm_runtime.rs
+@@ -297,6 +297,7 @@ pub fn create_wasm_runtime_with_code<H>(
+ where
+ 	H: HostFunctions,
+ {
++	#[cfg(feature = "polkavm")]
+ 	if let Some(blob) = blob.as_polkavm_blob() {
+ 		return sc_executor_polkavm::create_runtime::<H>(blob);
+ 	}
