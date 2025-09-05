@@ -445,7 +445,6 @@ pub mod runtime {
 		pub use frame_system_rpc_runtime_api::*;
 		pub use sp_api::{self, *};
 		pub use sp_block_builder::*;
-		pub use sp_consensus_aura::*;
 		pub use sp_consensus_grandpa::*;
 		pub use sp_genesis_builder::*;
 		pub use sp_offchain::*;
@@ -641,8 +640,6 @@ pub mod deps {
 	pub use sp_api;
 	#[cfg(feature = "runtime")]
 	pub use sp_block_builder;
-	#[cfg(feature = "runtime")]
-	pub use sp_consensus_aura;
 	#[cfg(feature = "runtime")]
 	pub use sp_consensus_grandpa;
 	#[cfg(feature = "runtime")]

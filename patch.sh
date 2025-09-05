@@ -96,8 +96,10 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^cid"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^cmd_lib"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^colored"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^criterion"
+remove_matching_lines ./polkadot-sdk/Cargo.toml "^fraction"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^gethostname"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^handlebars"
+remove_matching_lines ./polkadot-sdk/Cargo.toml "^indicatif"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^jemalloc_pprof"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^landlock"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^merkleized-metadata"
@@ -210,6 +212,15 @@ remove_crate_tree substrate/primitives/consensus/sassafras
 remove_crate_tree substrate/client/consensus/pow
 remove_crate_tree substrate/primitives/consensus/pow
 
+# Remove the manual-seal consensus crate
+remove_crate_tree substrate/client/consensus/manual-seal
+
+# Remove the Aura consensus crates
+remove_crate_tree substrate/client/consensus/aura
+remove_crate_tree substrate/frame/aura
+remove_crate_tree substrate/primitives/consensus/aura
+apply_patch remove_aura
+
 remove_crate_tree substrate/frame/contracts
 remove_crate_tree substrate/frame/revive
 
@@ -304,6 +315,9 @@ remove_crate_tree substrate/frame/assets
 remove_crate_tree substrate/frame/assets-freezer
 remove_crate_tree substrate/frame/assets-holder
 remove_crate_tree substrate/frame/atomic-swap
+remove_crate_tree substrate/frame/bags-list && remove_crate_tree substrate/utils/frame/generate-bags
+remove_crate_tree substrate/frame/balances
+remove_crate_tree substrate/frame/benchmarking/pov
 remove_crate_tree substrate/frame/bounties
 remove_crate_tree substrate/frame/broker
 remove_crate_tree substrate/frame/child-bounties
@@ -316,41 +330,65 @@ remove_crate_tree substrate/frame/derivatives
 remove_crate_tree substrate/frame/dummy-dim
 remove_crate_tree substrate/frame/elections-phragmen
 remove_crate_tree substrate/frame/election-provider-multi-phase
+remove_crate_tree substrate/frame/election-provider-support && remove_crate_tree substrate/primitives/npos-elections
 remove_crate_tree substrate/frame/fast-unstake
+remove_crate_tree substrate/frame/identity
+remove_crate_tree substrate/frame/im-online
+remove_crate_tree substrate/frame/indices
+remove_crate_tree substrate/frame/insecure-randomness-collective-flip
 remove_crate_tree substrate/frame/lottery
 remove_crate_tree substrate/frame/membership
+remove_crate_tree substrate/frame/message-queue
+remove_crate_tree substrate/frame/meta-tx
 remove_crate_tree substrate/frame/multisig
 remove_crate_tree substrate/frame/nft-fractionalization
 remove_crate_tree substrate/frame/nfts
 remove_crate_tree substrate/frame/nis
 remove_crate_tree substrate/frame/node-authorization
 remove_crate_tree substrate/frame/nomination-pools
+remove_crate_tree substrate/frame/offences
+remove_crate_tree substrate/frame/paged-list
 remove_crate_tree substrate/frame/parameters
+remove_crate_tree substrate/frame/preimage
+remove_crate_tree substrate/frame/proxy
 remove_crate_tree substrate/frame/ranked-collective
 remove_crate_tree substrate/frame/recovery
 remove_crate_tree substrate/frame/referenda
+remove_crate_tree substrate/frame/remark
 remove_crate_tree substrate/frame/root-offences
 remove_crate_tree substrate/frame/root-testing
+remove_crate_tree substrate/frame/safe-mode
 remove_crate_tree substrate/frame/salary
+remove_crate_tree substrate/frame/scheduler
 remove_crate_tree substrate/frame/scored-pool
 remove_crate_tree substrate/frame/society
+remove_crate_tree substrate/frame/staking
+remove_crate_tree substrate/frame/state-trie-migration
 remove_crate_tree substrate/frame/sudo
 remove_crate_tree substrate/frame/tips
 remove_crate_tree substrate/frame/transaction-payment/asset-conversion-tx-payment
 remove_crate_tree substrate/frame/transaction-payment/asset-tx-payment
 remove_crate_tree substrate/frame/treasury
+remove_crate_tree substrate/frame/tx-pause
+remove_crate_tree substrate/frame/uniques
+remove_crate_tree substrate/frame/whitelist
+remove_crate_tree substrate/frame/verify-signature
 remove_crate_tree substrate/frame/vesting
+remove_crate_tree substrate/frame/utility
 
 # Remove the scripts used for testing
 remove_crate_tree substrate/scripts
 
+# Remove unused utilities
+remove_crate_tree substrate/bin/utils/chain-spec-builder
+remove_crate_tree substrate/bin/utils/subkey
+remove_crate_tree substrate/client/runtime-utilities
+remove_crate_tree substrate/utils/build-script-utils
+remove_crate_tree substrate/utils/frame
+
 # Remove fuzzers
-remove_crate_tree substrate/frame/bags-list/fuzzer
-remove_crate_tree substrate/frame/bags-list/remote-tests
-remove_crate_tree substrate/frame/election-provider-support/solution-type/fuzzer
-remove_crate_tree substrate/frame/paged-list/fuzzer
 remove_crate_tree substrate/primitives/arithmetic/fuzzer
-remove_crate_tree substrate/primitives/npos-elections/fuzzer
+remove_crate_tree substrate/primitives/core/fuzz
 remove_crate_tree substrate/primitives/state-machine/fuzz
 
 # Remove benchmarking code we don't use
@@ -364,8 +402,11 @@ remove_crate_tree substrate/utils/frame/omni-bencher
 
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
-
 remove_crate_tree substrate/client/executor/runtime-test
+remove_crate_tree substrate/test-utils
+remove_crate_tree substrate/primitives/runtime-interface/test-wasm
+remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
+remove_crate_tree substrate/primitives/test-primitives
 
 cd polkadot-sdk
 
@@ -395,7 +436,9 @@ silent_rm .gitlab
 silent_rm docker
 silent_rm scripts
 silent_rm substrate/.maintain
+silent_rm substrate/docker
 silent_rm substrate/scripts
+silent_rm substrate/zombienet
 silent_rm prdoc
 silent_rm .gitignore
 silent_rm .gitlab-ci.yml

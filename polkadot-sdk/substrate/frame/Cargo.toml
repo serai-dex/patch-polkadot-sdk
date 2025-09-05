@@ -63,10 +63,6 @@ workspace = true
 optional = true
 workspace = true
 
-[dependencies.sp-consensus-aura]
-optional = true
-workspace = true
-
 [dependencies.sp-consensus-grandpa]
 optional = true
 workspace = true
@@ -129,7 +125,6 @@ runtime = [
     "frame-system-rpc-runtime-api",
     "sp-api",
     "sp-block-builder",
-    "sp-consensus-aura",
     "sp-consensus-grandpa",
     "sp-genesis-builder",
     "sp-inherents",
@@ -154,7 +149,6 @@ std = [
     "sp-api?/std",
     "sp-arithmetic/std",
     "sp-block-builder?/std",
-    "sp-consensus-aura?/std",
     "sp-consensus-grandpa?/std",
     "sp-core/std",
     "sp-genesis-builder?/std",

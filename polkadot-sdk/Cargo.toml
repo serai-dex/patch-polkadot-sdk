@@ -1,8 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "substrate/bin/utils/chain-spec-builder",
-    "substrate/bin/utils/subkey",
     "substrate/client/allocator",
     "substrate/client/api",
     "substrate/client/authority-discovery",
@@ -11,14 +9,12 @@ members = [
     "substrate/client/chain-spec",
     "substrate/client/chain-spec/derive",
     "substrate/client/cli",
-    "substrate/client/consensus/aura",
     "substrate/client/consensus/babe",
     "substrate/client/consensus/babe/rpc",
     "substrate/client/consensus/common",
     "substrate/client/consensus/epochs",
     "substrate/client/consensus/grandpa",
     "substrate/client/consensus/grandpa/rpc",
-    "substrate/client/consensus/manual-seal",
     "substrate/client/consensus/slots",
     "substrate/client/db",
     "substrate/client/executor",
@@ -40,7 +36,6 @@ members = [
     "substrate/client/rpc-api",
     "substrate/client/rpc-servers",
     "substrate/client/rpc-spec-v2",
-    "substrate/client/runtime-utilities",
     "substrate/client/service",
     "substrate/client/state-db",
     "substrate/client/storage-monitor",
@@ -53,39 +48,15 @@ members = [
     "substrate/client/transaction-pool/api",
     "substrate/client/utils",
     "substrate/frame",
-    "substrate/frame/aura",
     "substrate/frame/authority-discovery",
     "substrate/frame/authorship",
     "substrate/frame/babe",
-    "substrate/frame/bags-list",
-    "substrate/frame/balances",
     "substrate/frame/benchmarking",
-    "substrate/frame/benchmarking/pov",
-    "substrate/frame/election-provider-support",
-    "substrate/frame/election-provider-support/solution-type",
     "substrate/frame/executive",
     "substrate/frame/glutton",
     "substrate/frame/grandpa",
-    "substrate/frame/identity",
-    "substrate/frame/im-online",
-    "substrate/frame/indices",
-    "substrate/frame/insecure-randomness-collective-flip",
-    "substrate/frame/message-queue",
-    "substrate/frame/meta-tx",
     "substrate/frame/migrations",
-    "substrate/frame/offences",
-    "substrate/frame/paged-list",
-    "substrate/frame/preimage",
-    "substrate/frame/proxy",
-    "substrate/frame/remark",
-    "substrate/frame/safe-mode",
-    "substrate/frame/scheduler",
     "substrate/frame/session",
-    "substrate/frame/staking",
-    "substrate/frame/staking/reward-curve",
-    "substrate/frame/staking/reward-fn",
-    "substrate/frame/staking/runtime-api",
-    "substrate/frame/state-trie-migration",
     "substrate/frame/support",
     "substrate/frame/support/procedural",
     "substrate/frame/support/procedural/tools",
@@ -98,11 +69,6 @@ members = [
     "substrate/frame/transaction-payment/rpc/runtime-api",
     "substrate/frame/transaction-payment/skip-feeless-payment",
     "substrate/frame/try-runtime",
-    "substrate/frame/tx-pause",
-    "substrate/frame/uniques",
-    "substrate/frame/utility",
-    "substrate/frame/verify-signature",
-    "substrate/frame/whitelist",
     "substrate/primitives/api",
     "substrate/primitives/api/proc-macro",
     "substrate/primitives/application-crypto",
@@ -110,13 +76,11 @@ members = [
     "substrate/primitives/authority-discovery",
     "substrate/primitives/block-builder",
     "substrate/primitives/blockchain",
-    "substrate/primitives/consensus/aura",
     "substrate/primitives/consensus/babe",
     "substrate/primitives/consensus/common",
     "substrate/primitives/consensus/grandpa",
     "substrate/primitives/consensus/slots",
     "substrate/primitives/core",
-    "substrate/primitives/core/fuzz",
     "substrate/primitives/crypto/hashing",
     "substrate/primitives/crypto/hashing/proc-macro",
     "substrate/primitives/database",
@@ -129,7 +93,6 @@ members = [
     "substrate/primitives/keystore",
     "substrate/primitives/maybe-compressed-blob",
     "substrate/primitives/metadata-ir",
-    "substrate/primitives/npos-elections",
     "substrate/primitives/offchain",
     "substrate/primitives/panic-handler",
     "substrate/primitives/rpc",
@@ -141,7 +104,6 @@ members = [
     "substrate/primitives/state-machine",
     "substrate/primitives/std",
     "substrate/primitives/storage",
-    "substrate/primitives/test-primitives",
     "substrate/primitives/timestamp",
     "substrate/primitives/tracing",
     "substrate/primitives/transaction-pool",
@@ -150,18 +112,7 @@ members = [
     "substrate/primitives/version/proc-macro",
     "substrate/primitives/wasm-interface",
     "substrate/primitives/weights",
-    "substrate/test-utils",
-    "substrate/test-utils/runtime",
-    "substrate/test-utils/runtime/client",
-    "substrate/test-utils/runtime/transaction-pool",
-    "substrate/utils/build-script-utils",
     "substrate/utils/fork-tree",
-    "substrate/utils/frame/generate-bags",
-    "substrate/utils/frame/remote-externalities",
-    "substrate/utils/frame/rpc/client",
-    "substrate/utils/frame/rpc/state-trie-migration-rpc",
-    "substrate/utils/frame/rpc/support",
-    "substrate/utils/frame/rpc/system",
     "substrate/utils/prometheus",
     "substrate/utils/substrate-bip39",
     "substrate/utils/wasm-builder",
@@ -291,6 +242,7 @@ thiserror= "2.0.16"
 itertools= "0.14"
 kvdb-rocksdb= "0.20.0"
 governor= "0.10.1"
+directories= "6.0.0"
 
 [workspace.dependencies.Inflector]
 version = "0.11.4"
@@ -405,11 +357,6 @@ version = "0.15.5"
 [workspace.dependencies.cfg-if]
 version = "1.0"
 
-[workspace.dependencies.chain-spec-builder]
-path = "substrate/bin/utils/chain-spec-builder"
-default-features = false
-package = "staging-chain-spec-builder"
-
 [workspace.dependencies.chrono]
 version = "0.4.31"
 
@@ -464,9 +411,6 @@ default-features = false
 [workspace.dependencies.digest]
 version = "0.10.3"
 default-features = false
-
-[workspace.dependencies.directories]
-version = "5.0.1"
 
 [workspace.dependencies.dlmalloc]
 version = "0.2.4"
@@ -553,9 +497,6 @@ default-features = false
 [workspace.dependencies.forwarded-header-value]
 version = "0.1.1"
 
-[workspace.dependencies.fraction]
-version = "0.13.1"
-
 [workspace.dependencies.frame]
 path = "substrate/frame"
 default-features = false
@@ -563,18 +504,6 @@ package = "polkadot-sdk-frame"
 
 [workspace.dependencies.frame-benchmarking]
 path = "substrate/frame/benchmarking"
-default-features = false
-
-[workspace.dependencies.frame-benchmarking-pallet-pov]
-default-features = false
-path = "substrate/frame/benchmarking/pov"
-
-[workspace.dependencies.frame-election-provider-solution-type]
-path = "substrate/frame/election-provider-support/solution-type"
-default-features = false
-
-[workspace.dependencies.frame-election-provider-support]
-path = "substrate/frame/election-provider-support"
 default-features = false
 
 [workspace.dependencies.frame-executive]
@@ -627,10 +556,6 @@ version = "3.0.2"
 
 [workspace.dependencies.futures-util]
 version = "0.3.30"
-default-features = false
-
-[workspace.dependencies.generate-bags]
-path = "substrate/utils/frame/generate-bags"
 default-features = false
 
 [workspace.dependencies.git2]
@@ -708,9 +633,6 @@ version = "0.2.2"
 
 [workspace.dependencies.indexmap]
 version = "2.7.1"
-
-[workspace.dependencies.indicatif]
-version = "0.17.7"
 
 [workspace.dependencies.integer-sqrt]
 version = "0.1.2"
@@ -874,10 +796,6 @@ version = "1.21.3"
 version = "0.4.0"
 default-features = false
 
-[workspace.dependencies.pallet-aura]
-path = "substrate/frame/aura"
-default-features = false
-
 [workspace.dependencies.pallet-authority-discovery]
 path = "substrate/frame/authority-discovery"
 default-features = false
@@ -890,14 +808,6 @@ default-features = false
 path = "substrate/frame/babe"
 default-features = false
 
-[workspace.dependencies.pallet-bags-list]
-path = "substrate/frame/bags-list"
-default-features = false
-
-[workspace.dependencies.pallet-balances]
-path = "substrate/frame/balances"
-default-features = false
-
 [workspace.dependencies.pallet-glutton]
 path = "substrate/frame/glutton"
 default-features = false
@@ -906,60 +816,8 @@ default-features = false
 path = "substrate/frame/grandpa"
 default-features = false
 
-[workspace.dependencies.pallet-identity]
-path = "substrate/frame/identity"
-default-features = false
-
-[workspace.dependencies.pallet-im-online]
-path = "substrate/frame/im-online"
-default-features = false
-
-[workspace.dependencies.pallet-indices]
-path = "substrate/frame/indices"
-default-features = false
-
-[workspace.dependencies.pallet-insecure-randomness-collective-flip]
-path = "substrate/frame/insecure-randomness-collective-flip"
-default-features = false
-
-[workspace.dependencies.pallet-message-queue]
-path = "substrate/frame/message-queue"
-default-features = false
-
-[workspace.dependencies.pallet-meta-tx]
-path = "substrate/frame/meta-tx"
-default-features = false
-
 [workspace.dependencies.pallet-migrations]
 path = "substrate/frame/migrations"
-default-features = false
-
-[workspace.dependencies.pallet-offences]
-path = "substrate/frame/offences"
-default-features = false
-
-[workspace.dependencies.pallet-paged-list]
-path = "substrate/frame/paged-list"
-default-features = false
-
-[workspace.dependencies.pallet-preimage]
-path = "substrate/frame/preimage"
-default-features = false
-
-[workspace.dependencies.pallet-proxy]
-path = "substrate/frame/proxy"
-default-features = false
-
-[workspace.dependencies.pallet-remark]
-default-features = false
-path = "substrate/frame/remark"
-
-[workspace.dependencies.pallet-safe-mode]
-default-features = false
-path = "substrate/frame/safe-mode"
-
-[workspace.dependencies.pallet-scheduler]
-path = "substrate/frame/scheduler"
 default-features = false
 
 [workspace.dependencies.pallet-session]
@@ -968,26 +826,6 @@ default-features = false
 
 [workspace.dependencies.pallet-skip-feeless-payment]
 path = "substrate/frame/transaction-payment/skip-feeless-payment"
-default-features = false
-
-[workspace.dependencies.pallet-staking]
-path = "substrate/frame/staking"
-default-features = false
-
-[workspace.dependencies.pallet-staking-reward-curve]
-path = "substrate/frame/staking/reward-curve"
-default-features = false
-
-[workspace.dependencies.pallet-staking-reward-fn]
-path = "substrate/frame/staking/reward-fn"
-default-features = false
-
-[workspace.dependencies.pallet-staking-runtime-api]
-path = "substrate/frame/staking/runtime-api"
-default-features = false
-
-[workspace.dependencies.pallet-state-trie-migration]
-path = "substrate/frame/state-trie-migration"
 default-features = false
 
 [workspace.dependencies.pallet-timestamp]
@@ -1004,26 +842,6 @@ default-features = false
 
 [workspace.dependencies.pallet-transaction-payment-rpc-runtime-api]
 path = "substrate/frame/transaction-payment/rpc/runtime-api"
-default-features = false
-
-[workspace.dependencies.pallet-tx-pause]
-default-features = false
-path = "substrate/frame/tx-pause"
-
-[workspace.dependencies.pallet-uniques]
-path = "substrate/frame/uniques"
-default-features = false
-
-[workspace.dependencies.pallet-utility]
-path = "substrate/frame/utility"
-default-features = false
-
-[workspace.dependencies.pallet-verify-signature]
-path = "substrate/frame/verify-signature"
-default-features = false
-
-[workspace.dependencies.pallet-whitelist]
-path = "substrate/frame/whitelist"
 default-features = false
 
 [workspace.dependencies.parity-bytes]
@@ -1136,11 +954,6 @@ version = "1.0.23"
 [workspace.dependencies.regex]
 version = "1.10.2"
 
-[workspace.dependencies.remote-externalities]
-path = "substrate/utils/frame/remote-externalities"
-default-features = false
-package = "frame-remote-externalities"
-
 [workspace.dependencies.ripemd]
 version = "0.1.3"
 default-features = false
@@ -1224,10 +1037,6 @@ default-features = false
 path = "substrate/client/consensus/common"
 default-features = false
 
-[workspace.dependencies.sc-consensus-aura]
-path = "substrate/client/consensus/aura"
-default-features = false
-
 [workspace.dependencies.sc-consensus-babe]
 path = "substrate/client/consensus/babe"
 default-features = false
@@ -1246,10 +1055,6 @@ default-features = false
 
 [workspace.dependencies.sc-consensus-grandpa-rpc]
 path = "substrate/client/consensus/grandpa/rpc"
-default-features = false
-
-[workspace.dependencies.sc-consensus-manual-seal]
-path = "substrate/client/consensus/manual-seal"
 default-features = false
 
 [workspace.dependencies.sc-consensus-slots]
@@ -1331,10 +1136,6 @@ default-features = false
 [workspace.dependencies.sc-rpc-spec-v2]
 path = "substrate/client/rpc-spec-v2"
 default-features = false
-
-[workspace.dependencies.sc-runtime-utilities]
-path = "substrate/client/runtime-utilities"
-default-features = true
 
 [workspace.dependencies.sc-service]
 path = "substrate/client/service"
@@ -1469,10 +1270,6 @@ default-features = false
 path = "substrate/primitives/consensus/common"
 default-features = false
 
-[workspace.dependencies.sp-consensus-aura]
-path = "substrate/primitives/consensus/aura"
-default-features = false
-
 [workspace.dependencies.sp-consensus-babe]
 path = "substrate/primitives/consensus/babe"
 default-features = false
@@ -1537,10 +1334,6 @@ default-features = false
 path = "substrate/primitives/metadata-ir"
 default-features = false
 
-[workspace.dependencies.sp-npos-elections]
-path = "substrate/primitives/npos-elections"
-default-features = false
-
 [workspace.dependencies.sp-offchain]
 path = "substrate/primitives/offchain"
 default-features = false
@@ -1565,12 +1358,6 @@ default-features = false
 path = "substrate/primitives/runtime-interface/proc-macro"
 default-features = false
 
-[workspace.dependencies.sp-runtime-interface-test-wasm]
-path = "substrate/primitives/runtime-interface/test-wasm"
-
-[workspace.dependencies.sp-runtime-interface-test-wasm-deprecated]
-path = "substrate/primitives/runtime-interface/test-wasm-deprecated"
-
 [workspace.dependencies.sp-session]
 path = "substrate/primitives/session"
 default-features = false
@@ -1590,9 +1377,6 @@ default-features = false
 [workspace.dependencies.sp-storage]
 path = "substrate/primitives/storage"
 default-features = false
-
-[workspace.dependencies.sp-test-primitives]
-path = "substrate/primitives/test-primitives"
 
 [workspace.dependencies.sp-timestamp]
 path = "substrate/primitives/timestamp"
@@ -1652,48 +1436,9 @@ version = "1.0.3"
 version = "0.26.3"
 default-features = false
 
-[workspace.dependencies.subkey]
-path = "substrate/bin/utils/subkey"
-default-features = false
-
 [workspace.dependencies.substrate-bip39]
 path = "substrate/utils/substrate-bip39"
 default-features = false
-
-[workspace.dependencies.substrate-build-script-utils]
-path = "substrate/utils/build-script-utils"
-default-features = false
-
-[workspace.dependencies.substrate-frame-rpc-support]
-default-features = false
-path = "substrate/utils/frame/rpc/support"
-
-[workspace.dependencies.substrate-frame-rpc-system]
-path = "substrate/utils/frame/rpc/system"
-default-features = false
-
-[workspace.dependencies.substrate-rpc-client]
-path = "substrate/utils/frame/rpc/client"
-default-features = false
-
-[workspace.dependencies.substrate-state-trie-migration-rpc]
-path = "substrate/utils/frame/rpc/state-trie-migration-rpc"
-default-features = false
-
-[workspace.dependencies.substrate-test-client]
-path = "substrate/test-utils/client"
-
-[workspace.dependencies.substrate-test-runtime]
-path = "substrate/test-utils/runtime"
-
-[workspace.dependencies.substrate-test-runtime-client]
-path = "substrate/test-utils/runtime/client"
-
-[workspace.dependencies.substrate-test-runtime-transaction-pool]
-path = "substrate/test-utils/runtime/transaction-pool"
-
-[workspace.dependencies.substrate-test-utils]
-path = "substrate/test-utils"
 
 [workspace.dependencies.substrate-wasm-builder]
 path = "substrate/utils/wasm-builder"
