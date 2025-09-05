@@ -91,7 +91,6 @@ members = [
     "substrate/primitives/keyring",
     "substrate/primitives/keystore",
     "substrate/primitives/maybe-compressed-blob",
-    "substrate/primitives/metadata-ir",
     "substrate/primitives/offchain",
     "substrate/primitives/panic-handler",
     "substrate/primitives/rpc",
@@ -1323,10 +1322,6 @@ default-features = false
 
 [workspace.dependencies.sp-maybe-compressed-blob]
 path = "substrate/primitives/maybe-compressed-blob"
-default-features = false
-
-[workspace.dependencies.sp-metadata-ir]
-path = "substrate/primitives/metadata-ir"
 default-features = false
 
 [workspace.dependencies.sp-offchain]

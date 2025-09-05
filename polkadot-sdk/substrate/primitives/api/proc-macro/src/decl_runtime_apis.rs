@@ -254,8 +254,6 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
 		let versioned_methods_iter = methods_by_version
 			.iter()
 			.flat_map(|(&version, methods)| methods.iter().map(move |method| (method, version)));
-		let metadata =
-			crate::runtime_metadata::generate_decl_runtime_metadata(&decl, versioned_methods_iter);
 
 		let versioned_api_traits = generate_versioned_api_traits(decl.clone(), methods_by_version);
 
@@ -275,8 +273,6 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
 				#( #versioned_api_traits )*
 
 				pub use #versioned_ident as #main_api_ident;
-
-				#metadata
 
 				pub #api_version
 

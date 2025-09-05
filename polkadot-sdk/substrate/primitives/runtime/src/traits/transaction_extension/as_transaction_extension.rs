@@ -57,9 +57,6 @@ where
 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
 		self.0.additional_signed()
 	}
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		SE::metadata()
-	}
 	fn weight(&self, _call: &SE::Call) -> Weight {
 		Weight::zero()
 	}

@@ -57,4 +57,3 @@ workspace = true
 [features]
 default = ["std"]
 std = ["blake2/std"]
-no-metadata-docs = []

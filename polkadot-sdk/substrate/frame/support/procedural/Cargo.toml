@@ -71,7 +71,6 @@ workspace = true
 [features]
 default = ["std"]
 std = ["sp-crypto-hashing/std"]
-no-metadata-docs = []
 experimental = []
 tuples-96 = []
 tuples-128 = []

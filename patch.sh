@@ -100,6 +100,7 @@ apply_patch replace_wasm-timer_with_wasmtimer
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
+remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "frame-metadata"
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "k256"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ark-vrf"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ed25519-zebra"
@@ -111,6 +112,7 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
+remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "frame-metadata"
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "merkleized-metadata"
 # Also prune dated workspace dependency specifications we don't need
 # This lets us detect which ones are actually worth upgrading
@@ -349,6 +351,20 @@ apply_patch remove_storage_type_info
 # Remove `TypeInfo` from call
 apply_patch remove_call_type_info
 
+# Remote metadata entirely
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/deprecation.rs
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/constants.rs
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/doc_only.rs
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/documentation.rs
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/extra_constants.rs
+silent_rm ./polkadot-sdk/substrate/primitives/api/proc-macro/src/runtime_metadata.rs
+remove_crate_tree substrate/primitives/metadata-ir
+echo '[dependencies.sp-api]' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
+echo 'workspace = true' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
+echo 'default-features = false' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
+remove_feature no-metadata-docs
+apply_patch remove_metadata
+
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
@@ -542,7 +558,3 @@ touch .patched
 cd ..
 
 echo "Patched"
-
-# TODO silent_rm substrate/primitives/metadata-ir/src/unstable.rs
-# TODO silent_rm substrate/primitives/metadata-ir/src/v14.rs
-# TODO silent_rm substrate/primitives/metadata-ir/src/v15.rs

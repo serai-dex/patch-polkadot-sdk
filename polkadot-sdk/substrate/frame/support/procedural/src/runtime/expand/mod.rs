@@ -274,16 +274,6 @@ fn construct_runtime_final_expansion(
 		// when both macros are called; and will resolve an empty `runtime_metadata` when only the `runtime`
 		// is used.
 
-		#[doc(hidden)]
-		trait InternalConstructRuntime {
-			#[inline(always)]
-			fn runtime_metadata(&self) -> #scrate::__private::Vec<#scrate::__private::metadata_ir::RuntimeApiMetadataIR> {
-				Default::default()
-			}
-		}
-		#[doc(hidden)]
-		impl InternalConstructRuntime for &#name {}
-
 		#outer_event
 
 		#outer_error

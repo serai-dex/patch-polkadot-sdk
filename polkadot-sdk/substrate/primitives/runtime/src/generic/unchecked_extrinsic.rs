@@ -21,7 +21,7 @@ use crate::{
 	generic::{CheckedExtrinsic, ExtrinsicFormat},
 	traits::{
 		self, transaction_extension::TransactionExtension, Checkable, Dispatchable, ExtrinsicLike,
-		ExtrinsicMetadata, IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
+		IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
 	},
 	transaction_validity::{InvalidTransaction, TransactionValidityError},
 	OpaqueExtrinsic,
@@ -389,13 +389,6 @@ where
 				CheckedExtrinsic { format: ExtrinsicFormat::Bare, function: self.function },
 		})
 	}
-}
-
-impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
-	ExtrinsicMetadata for UncheckedExtrinsic<Address, Call, Signature, Extension>
-{
-	const VERSIONS: &'static [u8] = &[LEGACY_EXTRINSIC_FORMAT_VERSION, EXTRINSIC_FORMAT_VERSION];
-	type TransactionExtensions = Extension;
 }
 
 impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>

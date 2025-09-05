@@ -36,7 +36,6 @@ mod keyword {
 	syn::custom_keyword!(no_default);
 	syn::custom_keyword!(no_default_bounds);
 	syn::custom_keyword!(constant);
-	syn::custom_keyword!(include_metadata);
 }
 
 #[derive(Default)]
@@ -54,10 +53,6 @@ pub struct ConfigDef {
 	pub index: usize,
 	/// Whether the trait has instance (i.e. define with `Config<I = ()>`)
 	pub has_instance: bool,
-	/// Const associated type.
-	pub consts_metadata: Vec<ConstMetadataDef>,
-	/// Associated types metadata.
-	pub associated_types_metadata: Vec<AssociatedTypeMetadataDef>,
 	/// Whether the trait has the associated type `Event`, note that those bounds are
 	/// checked:
 	/// * `IsType<Self as frame_system::Config>::RuntimeEvent`
@@ -71,77 +66,6 @@ pub struct ConfigDef {
 	/// Vec will be empty if `#[pallet::config(with_default)]` is not specified or if there are
 	/// no trait items.
 	pub default_sub_trait: Option<DefaultTrait>,
-}
-
-/// Input definition for an associated type in pallet config.
-pub struct AssociatedTypeMetadataDef {
-	/// Name of the associated type.
-	pub ident: syn::Ident,
-	/// The doc associated.
-	pub doc: Vec<syn::Expr>,
-	/// The cfg associated.
-	pub cfg: Vec<syn::Attribute>,
-}
-
-impl From<&syn::TraitItemType> for AssociatedTypeMetadataDef {
-	fn from(trait_ty: &syn::TraitItemType) -> Self {
-		let ident = trait_ty.ident.clone();
-		let doc = get_doc_literals(&trait_ty.attrs);
-		let cfg = get_cfg_attributes(&trait_ty.attrs);
-
-		Self { ident, doc, cfg }
-	}
-}
-
-/// Input definition for a constant in pallet config.
-pub struct ConstMetadataDef {
-	/// Name of the associated type.
-	pub ident: syn::Ident,
-	/// The type in Get, e.g. `u32` in `type Foo: Get<u32>;`, but `Self` is replaced by `T`
-	pub type_: syn::Type,
-	/// The doc associated
-	pub doc: Vec<syn::Expr>,
-	/// attributes
-	pub attrs: Vec<syn::Attribute>,
-}
-
-impl TryFrom<&syn::TraitItemType> for ConstMetadataDef {
-	type Error = syn::Error;
-
-	fn try_from(trait_ty: &syn::TraitItemType) -> Result<Self, Self::Error> {
-		let err = |span, msg| {
-			syn::Error::new(span, format!("Invalid usage of `#[pallet::constant]`: {}", msg))
-		};
-		let doc = get_doc_literals(&trait_ty.attrs);
-		let ident = trait_ty.ident.clone();
-		let bound = trait_ty
-			.bounds
-			.iter()
-			.find_map(|param_bound| {
-				let syn::TypeParamBound::Trait(trait_bound) = param_bound else { return None };
-
-				trait_bound.path.segments.last().and_then(|s| (s.ident == "Get").then(|| s))
-			})
-			.ok_or_else(|| err(trait_ty.span(), "`Get<T>` trait bound not found"))?;
-
-		let syn::PathArguments::AngleBracketed(ref ab) = bound.arguments else {
-			return Err(err(bound.span(), "Expected trait generic args"));
-		};
-
-		// Only one type argument is expected.
-		if ab.args.len() != 1 {
-			return Err(err(bound.span(), "Expected a single type argument"));
-		}
-
-		let syn::GenericArgument::Type(ref type_arg) = ab.args[0] else {
-			return Err(err(ab.args[0].span(), "Expected a type argument"));
-		};
-
-		let type_ = syn::parse2::<syn::Type>(replace_self_by_t(type_arg.to_token_stream()))
-			.expect("Internal error: replacing `Self` by `T` should result in valid type");
-
-		Ok(Self { ident, type_, doc, attrs: trait_ty.attrs.clone() })
-	}
 }
 
 /// Parse for `#[pallet::disable_frame_system_supertrait_check]`
@@ -169,8 +93,6 @@ pub enum PalletAttrType {
 	NoBounds(keyword::no_default_bounds),
 	#[peek(keyword::constant, name = "constant")]
 	Constant(keyword::constant),
-	#[peek(keyword::include_metadata, name = "include_metadata")]
-	IncludeMetadata(keyword::include_metadata),
 }
 
 /// Parsing for `#[pallet::X]`
@@ -372,7 +294,6 @@ impl ConfigDef {
 		index: usize,
 		item: &mut syn::Item,
 		enable_default: bool,
-		disable_associated_metadata: bool,
 	) -> syn::Result<Self> {
 		let syn::Item::Trait(item) = item else {
 			let msg = "Invalid pallet::config, expected trait definition";
@@ -412,8 +333,6 @@ impl ConfigDef {
 		});
 
 		let mut has_event_type = false;
-		let mut consts_metadata = vec![];
-		let mut associated_types_metadata = vec![];
 		let mut default_sub_trait = if enable_default {
 			Some(DefaultTrait {
 				items: Default::default(),
@@ -443,30 +362,11 @@ impl ConfigDef {
 							));
 						}
 						already_constant = true;
-						consts_metadata.push(ConstMetadataDef::try_from(typ)?);
 					},
 					(PalletAttrType::Constant(_), _) =>
 						return Err(syn::Error::new(
 							trait_item.span(),
 							"Invalid #[pallet::constant] in #[pallet::config], expected type item",
-						)),
-					// Pallet developer has explicitly requested to include metadata for this associated type.
-					//
-					// They must provide a type item that implements `TypeInfo`.
-					(PalletAttrType::IncludeMetadata(_), syn::TraitItem::Type(ref typ)) => {
-						if already_collected_associated_type.is_some() {
-							return Err(syn::Error::new(
-								pallet_attr._bracket.span.join(),
-								"Duplicate #[pallet::include_metadata] attribute not allowed.",
-							));
-						}
-						already_collected_associated_type = Some(pallet_attr._bracket.span.join());
-						associated_types_metadata.push(AssociatedTypeMetadataDef::from(AssociatedTypeMetadataDef::from(typ)));
-					}
-					(PalletAttrType::IncludeMetadata(_), _) =>
-						return Err(syn::Error::new(
-							pallet_attr._bracket.span.join(),
-							"Invalid #[pallet::include_metadata] in #[pallet::config], expected type item",
 						)),
 					(PalletAttrType::NoDefault(_), _) => {
 						if !enable_default {
@@ -532,17 +432,6 @@ impl ConfigDef {
 						return Err(syn::Error::new(span, msg));
 					}
 				}
-			} else {
-				// Metadata of associated types is collected by default, if the associated type
-				// implements `TypeInfo`, or a similar trait that requires the `TypeInfo` bound.
-				if !disable_associated_metadata && !is_event && !already_constant {
-					if let syn::TraitItem::Type(ref ty) = trait_item {
-						// Collect the metadata of the associated type if it implements `TypeInfo`.
-						if contains_type_info_bound(ty) {
-							associated_types_metadata.push(AssociatedTypeMetadataDef::from(ty));
-						}
-					}
-				}
 			}
 
 			if !already_no_default && enable_default {
@@ -586,8 +475,6 @@ impl ConfigDef {
 		Ok(Self {
 			index,
 			has_instance,
-			consts_metadata,
-			associated_types_metadata,
 			has_event_type,
 			where_clause,
 			default_sub_trait,

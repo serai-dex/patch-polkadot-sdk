@@ -77,7 +77,7 @@ pub use randomness::Randomness;
 
 mod metadata;
 pub use metadata::{
-	CallMetadata, CrateVersion, GetCallIndex, GetCallMetadata, GetCallName, GetStorageVersion,
+	CrateVersion, GetCallIndex, GetCallName, GetStorageVersion,
 	NoStorageVersionSet, PalletInfo, PalletInfoAccess, PalletInfoData, PalletsInfoAccess,
 	StorageVersion, STORAGE_VERSION_STORAGE_KEY_POSTFIX,
 };

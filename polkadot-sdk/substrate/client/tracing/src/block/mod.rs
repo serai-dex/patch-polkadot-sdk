@@ -36,7 +36,7 @@ use tracing::{
 
 use crate::{SpanDatum, TraceEvent, Values};
 use sc_client_api::BlockBackend;
-use sp_api::{Core, Metadata, ProvideRuntimeApi};
+use sp_api::{Core, ProvideRuntimeApi};
 use sp_blockchain::HeaderBackend;
 use sp_core::hexdisplay::HexDisplay;
 use sp_rpc::tracing::{BlockTrace, Span, TraceBlockResponse};
@@ -178,7 +178,7 @@ where
 		+ Send
 		+ Sync
 		+ 'static,
-	Client::Api: Metadata<Block>,
+	Client::Api: Core<Block>,
 {
 	/// Create a new `BlockExecutor`
 	pub fn new(

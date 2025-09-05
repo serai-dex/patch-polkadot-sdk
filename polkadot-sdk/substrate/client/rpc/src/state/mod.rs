@@ -30,7 +30,7 @@ use sc_client_api::{
 	Backend, BlockBackend, BlockchainEvents, ExecutorProvider, ProofProvider, StorageProvider,
 };
 use sc_rpc_api::{check_if_safe, DenyUnsafe};
-use sp_api::{CallApiAt, Metadata, ProvideRuntimeApi};
+use sp_api::{CallApiAt, Core, ProvideRuntimeApi};
 use sp_blockchain::{HeaderBackend, HeaderMetadata};
 use sp_core::{
 	storage::{PrefixedStorageKey, StorageChangeSet, StorageData, StorageKey},
@@ -107,9 +107,6 @@ where
 		deny_unsafe: DenyUnsafe,
 	) -> Result<Option<u64>, Error>;
 
-	/// Returns the runtime metadata as an opaque blob.
-	fn metadata(&self, block: Option<Block::Hash>) -> Result<Bytes, Error>;
-
 	/// Get the runtime version.
 	fn runtime_version(&self, block: Option<Block::Hash>) -> Result<RuntimeVersion, Error>;
 
@@ -181,7 +178,7 @@ where
 		+ Send
 		+ Sync
 		+ 'static,
-	Client::Api: Metadata<Block>,
+	Client::Api: Core<Block>,
 {
 	let child_backend =
 		Box::new(self::state_full::FullState::new(client.clone(), executor.clone()));
@@ -269,10 +266,6 @@ where
 			.cloned()
 			.expect("DenyUnsafe extension is always set by the substrate rpc server; qed");
 		self.backend.storage_size(block, key, deny_unsafe).await.map_err(Into::into)
-	}
-
-	fn metadata(&self, block: Option<Block::Hash>) -> Result<Bytes, Error> {
-		self.backend.metadata(block).map_err(Into::into)
 	}
 
 	fn runtime_version(&self, at: Option<Block::Hash>) -> Result<RuntimeVersion, Error> {

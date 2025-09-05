@@ -21,7 +21,7 @@ use crate::{
 	storage::{
 		types::{
 			EncodeLikeTuple, HasKeyPrefix, HasReversibleKeyPrefix, OptionQuery, QueryKindTrait,
-			StorageEntryMetadataBuilder, StorageNMap, StorageValue, TupleToEncodedIter, ValueQuery,
+			StorageNMap, StorageValue, TupleToEncodedIter, ValueQuery,
 		},
 		KeyGenerator, PrefixIterator, StorageAppend, StorageDecodeLength,
 	},
@@ -30,7 +30,6 @@ use crate::{
 };
 use alloc::{vec, vec::Vec};
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen, Ref};
-use sp_metadata_ir::StorageEntryMetadataIR;
 use sp_runtime::traits::Saturating;
 
 /// A wrapper around a [`StorageNMap`] and a [`StorageValue`] (with the value being `u32`) to keep
@@ -619,30 +618,6 @@ where
 			}
 			res
 		})
-	}
-}
-
-impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuilder
-	for CountedStorageNMap<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues>
-where
-	Prefix: CountedStorageNMapInstance,
-	Key: super::key::KeyGenerator,
-	Value: FullCodec,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: Get<QueryKind::Query> + 'static,
-	MaxValues: Get<Option<u32>>,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		<Self as MapWrapper>::Map::build_metadata(deprecation_status.clone(), docs, entries);
-		CounterFor::<Prefix>::build_metadata(
-			deprecation_status,
-			vec![&"Counter for the related counted storage map"],
-			entries,
-		);
 	}
 }
 

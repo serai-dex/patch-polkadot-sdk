@@ -22,7 +22,7 @@ use crate::{
 	storage::{
 		types::{
 			EncodeLikeTuple, HasKeyPrefix, HasReversibleKeyPrefix, OptionQuery, QueryKindTrait,
-			StorageEntryMetadataBuilder, TupleToEncodedIter,
+			TupleToEncodedIter,
 		},
 		KeyGenerator, PrefixIterator, StorageAppend, StorageDecodeLength, StoragePrefixedMap,
 		StorageTryAppend,
@@ -31,7 +31,6 @@ use crate::{
 };
 use alloc::{vec, vec::Vec};
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen};
-use sp_metadata_ir::{StorageEntryMetadataIR, StorageEntryTypeIR};
 use sp_runtime::SaturatedConversion;
 
 /// A type representing an *NMap* in storage. This structure associates an arbitrary number of keys
@@ -584,40 +583,6 @@ where
 	/// NOTE: If a value fail to decode because storage is corrupted then it is skipped.
 	pub fn translate<O: Decode, F: FnMut(Key::Key, O) -> Option<Value>>(f: F) {
 		<Self as crate::storage::IterableStorageNMap<Key, Value>>::translate(f)
-	}
-}
-
-impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuilder
-	for StorageNMap<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues>
-where
-	Prefix: StorageInstance,
-	Key: super::key::KeyGenerator,
-	Value: FullCodec,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: Get<QueryKind::Query> + 'static,
-	MaxValues: Get<Option<u32>>,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		let docs = if cfg!(feature = "no-metadata-docs") { vec![] } else { docs };
-
-		let entry = StorageEntryMetadataIR {
-			name: Prefix::STORAGE_PREFIX,
-			modifier: QueryKind::METADATA,
-			ty: StorageEntryTypeIR::Map {
-				key: scale_info::meta_type::<()>(),
-				hashers: Key::HASHER_METADATA.to_vec(),
-				value: scale_info::meta_type::<()>(),
-			},
-			default: OnEmpty::get().encode(),
-			docs,
-			deprecation_info: deprecation_status,
-		};
-
-		entries.push(entry);
 	}
 }
 

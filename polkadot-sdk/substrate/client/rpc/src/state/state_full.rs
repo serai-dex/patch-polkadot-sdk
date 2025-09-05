@@ -37,7 +37,7 @@ use sc_client_api::{
 	StorageProvider,
 };
 use sc_rpc_api::state::ReadProof;
-use sp_api::{CallApiAt, Metadata, ProvideRuntimeApi};
+use sp_api::{CallApiAt, Core, ProvideRuntimeApi};
 use sp_blockchain::{
 	CachedHeaderMetadata, Error as ClientError, HeaderBackend, HeaderMetadata,
 	Result as ClientResult,
@@ -186,7 +186,7 @@ where
 		+ Send
 		+ Sync
 		+ 'static,
-	Client::Api: Metadata<Block>,
+	Client::Api: Core<Block>,
 {
 	fn call(
 		&self,
@@ -310,16 +310,6 @@ where
 		self.block_or_best(block)
 			.and_then(|block| self.client.storage_hash(block, &key))
 			.map_err(client_err)
-	}
-
-	fn metadata(&self, block: Option<Block::Hash>) -> std::result::Result<Bytes, Error> {
-		self.block_or_best(block).map_err(client_err).and_then(|block| {
-			self.client
-				.runtime_api()
-				.metadata(block)
-				.map(Into::into)
-				.map_err(|e| Error::Client(Box::new(e)))
-		})
 	}
 
 	fn runtime_version(
@@ -501,7 +491,7 @@ where
 		+ Send
 		+ Sync
 		+ 'static,
-	Client::Api: Metadata<Block>,
+	Client::Api: Core<Block>,
 {
 	fn read_child_proof(
 		&self,

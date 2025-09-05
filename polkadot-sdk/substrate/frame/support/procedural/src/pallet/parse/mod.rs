@@ -24,7 +24,6 @@ pub mod composite;
 pub mod config;
 pub mod error;
 pub mod event;
-pub mod extra_constants;
 pub mod genesis_build;
 pub mod genesis_config;
 pub mod helper;
@@ -65,7 +64,6 @@ pub struct Def {
 	pub genesis_config: Option<genesis_config::GenesisConfigDef>,
 	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
 	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
-	pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
 	pub composites: Vec<composite::CompositeDef>,
 	pub type_values: Vec<type_value::TypeValueDef>,
 	pub frame_system: syn::Path,
@@ -101,7 +99,6 @@ impl Def {
 		let mut genesis_config = None;
 		let mut genesis_build = None;
 		let mut validate_unsigned = None;
-		let mut extra_constants = None;
 		let mut storages = vec![];
 		let mut type_values = vec![];
 		let mut composites: Vec<CompositeDef> = vec![];
@@ -111,13 +108,12 @@ impl Def {
 			let pallet_attr: Option<PalletAttr> = helper::take_first_item_pallet_attr(item)?;
 
 			match pallet_attr {
-				Some(PalletAttr::Config{ with_default, without_automatic_metadata, ..}) if config.is_none() =>
+				Some(PalletAttr::Config{ with_default, ..}) if config.is_none() =>
 					config = Some(config::ConfigDef::try_from(
 						&frame_system,
 						index,
 						item,
 						with_default,
-						without_automatic_metadata,
 					)?),
 				Some(PalletAttr::Pallet(span)) if pallet_struct.is_none() => {
 					let p = pallet_struct::PalletStructDef::try_from(span, index, item)?;
@@ -179,9 +175,6 @@ impl Def {
 				},
 				Some(PalletAttr::TypeValue(span)) =>
 					type_values.push(type_value::TypeValueDef::try_from(span, index, item)?),
-				Some(PalletAttr::ExtraConstants(_)) =>
-					extra_constants =
-						Some(extra_constants::ExtraConstantsDef::try_from(item)?),
 				Some(PalletAttr::Composite(span)) => {
 					let composite =
 						composite::CompositeDef::try_from(span, &frame_support, item)?;
@@ -242,7 +235,6 @@ impl Def {
 			call,
 			tasks,
 			task_enum,
-			extra_constants,
 			genesis_config,
 			genesis_build,
 			validate_unsigned,
@@ -408,9 +400,6 @@ impl Def {
 		if let Some(genesis_build) = &self.genesis_build {
 			genesis_build.instances.as_ref().map(|i| instances.extend_from_slice(&i));
 		}
-		if let Some(extra_constants) = &self.extra_constants {
-			instances.extend_from_slice(&extra_constants.instances[..]);
-		}
 		if let Some(task_enum) = &self.task_enum {
 			instances.push(task_enum.instance_usage.clone());
 		}
@@ -558,7 +547,6 @@ mod keyword {
 	syn::custom_keyword!(event);
 	syn::custom_keyword!(config);
 	syn::custom_keyword!(with_default);
-	syn::custom_keyword!(without_automatic_metadata);
 	syn::custom_keyword!(hooks);
 	syn::custom_keyword!(inherent);
 	syn::custom_keyword!(error);
@@ -568,7 +556,6 @@ mod keyword {
 	syn::custom_keyword!(validate_unsigned);
 	syn::custom_keyword!(type_value);
 	syn::custom_keyword!(pallet);
-	syn::custom_keyword!(extra_constants);
 	syn::custom_keyword!(composite_enum);
 	syn::custom_keyword!(view_functions_experimental);
 }
@@ -578,8 +565,6 @@ mod keyword {
 enum ConfigValue {
 	/// `#[pallet::config(with_default)]`
 	WithDefault(keyword::with_default),
-	/// `#[pallet::config(without_automatic_metadata)]`
-	WithoutAutomaticMetadata(keyword::without_automatic_metadata),
 }
 
 impl syn::parse::Parse for ConfigValue {
@@ -588,8 +573,6 @@ impl syn::parse::Parse for ConfigValue {
 
 		if lookahead.peek(keyword::with_default) {
 			input.parse().map(ConfigValue::WithDefault)
-		} else if lookahead.peek(keyword::without_automatic_metadata) {
-			input.parse().map(ConfigValue::WithoutAutomaticMetadata)
 		} else {
 			Err(lookahead.error())
 		}
@@ -602,7 +585,6 @@ enum PalletAttr {
 	Config {
 		span: proc_macro2::Span,
 		with_default: bool,
-		without_automatic_metadata: bool,
 	},
 	Pallet(proc_macro2::Span),
 	Hooks(proc_macro2::Span),
@@ -658,7 +640,6 @@ enum PalletAttr {
 	GenesisBuild(proc_macro2::Span),
 	ValidateUnsigned(proc_macro2::Span),
 	TypeValue(proc_macro2::Span),
-	ExtraConstants(proc_macro2::Span),
 	Composite(proc_macro2::Span),
 	ViewFunctions(proc_macro2::Span),
 }
@@ -684,7 +665,6 @@ impl PalletAttr {
 			Self::GenesisBuild(span) => *span,
 			Self::ValidateUnsigned(span) => *span,
 			Self::TypeValue(span) => *span,
-			Self::ExtraConstants(span) => *span,
 			Self::Composite(span) => *span,
 			Self::ViewFunctions(span) => *span,
 		}
@@ -713,7 +693,6 @@ impl syn::parse::Parse for PalletAttr {
 				let config_values = fields.iter().collect::<Vec<_>>();
 
 				let mut with_default = false;
-				let mut without_automatic_metadata = false;
 				for config in config_values {
 					match config {
 						ConfigValue::WithDefault(_) => {
@@ -725,24 +704,14 @@ impl syn::parse::Parse for PalletAttr {
 							}
 							with_default = true;
 						},
-						ConfigValue::WithoutAutomaticMetadata(_) => {
-							if without_automatic_metadata {
-								return Err(syn::Error::new(
-									span,
-									"Invalid duplicated attribute for `#[pallet::config]`. Please remove duplicates: without_automatic_metadata.",
-								));
-							}
-							without_automatic_metadata = true;
-						},
 					}
 				}
 
-				Ok(PalletAttr::Config { span, with_default, without_automatic_metadata })
+				Ok(PalletAttr::Config { span, with_default })
 			} else {
 				Ok(PalletAttr::Config {
 					span,
 					with_default: false,
-					without_automatic_metadata: false,
 				})
 			}
 		} else if lookahead.peek(keyword::pallet) {
@@ -784,8 +753,6 @@ impl syn::parse::Parse for PalletAttr {
 			Ok(PalletAttr::ValidateUnsigned(content.parse::<keyword::validate_unsigned>()?.span()))
 		} else if lookahead.peek(keyword::type_value) {
 			Ok(PalletAttr::TypeValue(content.parse::<keyword::type_value>()?.span()))
-		} else if lookahead.peek(keyword::extra_constants) {
-			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span()))
 		} else if lookahead.peek(keyword::composite_enum) {
 			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span()))
 		} else if lookahead.peek(keyword::view_functions_experimental) {

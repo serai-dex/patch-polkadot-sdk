@@ -194,8 +194,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 	let count = COUNTER.with(|counter| counter.borrow_mut().inc());
 	let macro_ident = syn::Ident::new(&format!("__is_call_part_defined_{}", count), span);
 
-	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
-
 	// Wrap all calls inside of storage layers
 	if let Some(call) = def.call.as_ref() {
 		let item_impl =
@@ -262,15 +260,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 				quote::quote_spanned!(span => |_origin, #( #arg_name, )*| { false })
 			}
 		});
-
-	let deprecation = match crate::deprecation::get_deprecation_enum(
-		&quote::quote! {#frame_support},
-		def.call.as_ref().map(|call| call.attrs.as_ref()).unwrap_or(&[]),
-		methods.iter().map(|item| (item.call_index as u8, item.attrs.as_ref())),
-	) {
-		Ok(deprecation) => deprecation,
-		Err(e) => return e.into_compile_error(),
-	};
 
 	quote::quote_spanned!(span =>
 		#[doc(hidden)]
@@ -467,17 +456,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 			#where_clause
 		{
 			type RuntimeCall = #call_ident<#type_use_gen>;
-		}
-
-		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
-			#[allow(dead_code)]
-			#[doc(hidden)]
-			pub fn call_functions() -> #frame_support::__private::metadata_ir::PalletCallMetadataIR {
-				#frame_support::__private::metadata_ir::PalletCallMetadataIR  {
-					ty: #frame_support::__private::scale_info::meta_type::<()>(),
-					deprecation_info: #deprecation,
-				}
-			}
 		}
 	)
 }

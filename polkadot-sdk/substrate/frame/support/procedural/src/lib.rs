@@ -23,7 +23,6 @@
 mod benchmark;
 mod construct_runtime;
 mod crate_version;
-mod deprecation;
 mod derive_impl;
 mod dummy_part_checker;
 mod dynamic_params;
@@ -944,15 +943,6 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
 ///
 /// ---
 ///
-/// Documentation for this macro can be found at `frame_support::pallet_macros::extra_constants`.
-#[proc_macro_attribute]
-pub fn extra_constants(_: TokenStream, _: TokenStream) -> TokenStream {
-	pallet_macro_stub()
-}
-
-///
-/// ---
-///
 /// Documentation for this macro can be found at `frame_support::pallet_macros::error`.
 #[proc_macro_attribute]
 pub fn error(_: TokenStream, _: TokenStream) -> TokenStream {
@@ -965,15 +955,6 @@ pub fn error(_: TokenStream, _: TokenStream) -> TokenStream {
 /// Documentation for this macro can be found at `frame_support::pallet_macros::event`.
 #[proc_macro_attribute]
 pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
-	pallet_macro_stub()
-}
-
-///
-/// ---
-///
-/// Documentation for this macro can be found at `frame_support::pallet_macros::include_metadata`.
-#[proc_macro_attribute]
-pub fn include_metadata(_: TokenStream, _: TokenStream) -> TokenStream {
 	pallet_macro_stub()
 }
 

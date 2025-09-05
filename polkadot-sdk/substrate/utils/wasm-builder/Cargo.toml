@@ -72,15 +72,6 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.frame-metadata]
-features = [
-    "current",
-    "unstable",
-]
-optional = true
-workspace = true
-default-features = true
-
 [dependencies.sc-executor]
 optional = true
 workspace = true

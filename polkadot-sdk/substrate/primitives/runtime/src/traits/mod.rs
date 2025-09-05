@@ -58,7 +58,7 @@ use std::str::FromStr;
 pub mod transaction_extension;
 pub use transaction_extension::{
 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
-	TransactionExtensionMetadata, TxBaseImplication, ValidateResult,
+	TxBaseImplication, ValidateResult,
 };
 
 /// A lazy value.
@@ -1725,22 +1725,6 @@ pub trait SignedExtension:
 		_result: &DispatchResult,
 	) -> Result<(), TransactionValidityError> {
 		Ok(())
-	}
-
-	/// Returns the metadata for this signed extension.
-	///
-	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
-	/// that holds the metadata of each one. Each individual `SignedExtension` must return
-	/// *exactly* one [`TransactionExtensionMetadata`].
-	///
-	/// This method provides a default implementation that returns a vec containing a single
-	/// [`TransactionExtensionMetadata`].
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		alloc::vec![TransactionExtensionMetadata {
-			identifier: Self::IDENTIFIER,
-			ty: scale_info::meta_type::<Self>(),
-			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
-		}]
 	}
 
 	/// Validate an unsigned transaction for the transaction queue.

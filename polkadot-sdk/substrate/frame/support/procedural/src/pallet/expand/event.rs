@@ -95,19 +95,6 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
 		event_item.variants.push(variant);
 	}
 
-	let deprecation = match crate::deprecation::get_deprecation_enum(
-		&quote::quote! {#frame_support},
-		&event.attrs,
-		event_item.variants.iter().enumerate().map(|(index, item)| {
-			let index = crate::deprecation::variant_index_for_deprecation(index as u8, item);
-
-			(index, item.attrs.as_ref())
-		}),
-	) {
-		Ok(deprecation) => deprecation,
-		Err(e) => return e.into_compile_error(),
-	};
-
 	if get_doc_literals(&event_item.attrs).is_empty() {
 		event_item
 			.attrs
@@ -124,15 +111,7 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
 			#frame_support::__private::codec::Encode,
 			#frame_support::__private::codec::Decode,
 			#frame_support::__private::codec::DecodeWithMemTracking,
-			#frame_support::__private::scale_info::TypeInfo,
 		)]
-	));
-
-	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
-
-	// skip requirement for type params to implement `TypeInfo`, and set docs capture
-	event_item.attrs.push(syn::parse_quote!(
-		#[scale_info(skip_type_params(#event_use_gen), capture_docs = #capture_docs)]
 	));
 
 	let deposit_event = if let Some(deposit_event) = &event.deposit_event {
@@ -182,17 +161,6 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
 
 		impl<#event_impl_gen> From<#event_ident<#event_use_gen>> for () #event_where_clause {
 			fn from(_: #event_ident<#event_use_gen>) {}
-		}
-
-		impl<#event_impl_gen> #event_ident<#event_use_gen> #event_where_clause {
-			#[allow(dead_code)]
-			#[doc(hidden)]
-			pub fn event_metadata<W: #frame_support::__private::scale_info::TypeInfo + 'static>() -> #frame_support::__private::metadata_ir::PalletEventMetadataIR {
-				#frame_support::__private::metadata_ir::PalletEventMetadataIR {
-					ty: #frame_support::__private::scale_info::meta_type::<W>(),
-					deprecation_info: #deprecation,
-				}
-			}
 		}
 	)
 }

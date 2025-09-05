@@ -591,7 +591,6 @@ pub mod hashing {
 ///
 /// This is already part of the [`prelude`].
 pub mod transaction {
-	pub use frame_support::traits::{CallMetadata, GetCallMetadata};
 	pub use sp_runtime::{
 		generic::ExtensionVersion,
 		impl_tx_ext_default,

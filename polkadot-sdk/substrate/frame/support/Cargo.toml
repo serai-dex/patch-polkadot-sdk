@@ -39,13 +39,6 @@ workspace = true
 [dependencies.environmental]
 workspace = true
 
-[dependencies.frame-metadata]
-features = [
-    "current",
-    "unstable",
-]
-workspace = true
-
 [dependencies.frame-support-procedural]
 workspace = true
 
@@ -77,10 +70,6 @@ workspace = true
 features = ["alloc"]
 workspace = true
 
-[dependencies.sp-api]
-features = ["frame-metadata"]
-workspace = true
-
 [dependencies.sp-arithmetic]
 workspace = true
 
@@ -101,9 +90,6 @@ workspace = true
 workspace = true
 
 [dependencies.sp-io]
-workspace = true
-
-[dependencies.sp-metadata-ir]
 workspace = true
 
 [dependencies.sp-runtime]
@@ -132,12 +118,15 @@ workspace = true
 [dependencies.tt-call]
 workspace = true
 
+[dependencies.sp-api]
+workspace = true
+default-features = false
+
 [features]
 default = ["std"]
 std = [
     "codec/std",
     "environmental/std",
-    "frame-metadata/std",
     "frame-support-procedural/std",
     "log/std",
     "scale-info/std",
@@ -150,7 +139,6 @@ std = [
     "sp-genesis-builder/std",
     "sp-inherents/std",
     "sp-io/std",
-    "sp-metadata-ir/std",
     "sp-runtime/std",
     "sp-staking/std",
     "sp-state-machine/std",
@@ -168,10 +156,6 @@ try-runtime = [
     "sp-runtime/try-runtime",
 ]
 experimental = ["frame-support-procedural/experimental"]
-no-metadata-docs = [
-    "frame-support-procedural/no-metadata-docs",
-    "sp-api/no-metadata-docs",
-]
 full-metadata-docs = ["scale-info/docs"]
 tuples-96 = ["frame-support-procedural/tuples-96"]
 tuples-128 = ["frame-support-procedural/tuples-128"]

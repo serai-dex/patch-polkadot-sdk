@@ -20,7 +20,7 @@
 
 use crate::{
 	storage::{
-		types::{OptionQuery, QueryKindTrait, StorageEntryMetadataBuilder},
+		types::{OptionQuery, QueryKindTrait},
 		KeyLenOf, StorageAppend, StorageDecodeLength, StoragePrefixedMap, StorageTryAppend,
 	},
 	traits::{Get, GetDefault, StorageInfo, StorageInstance},
@@ -30,7 +30,6 @@ use alloc::{vec, vec::Vec};
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen};
 use frame_support::storage::StorageDecodeNonDedupLength;
 use sp_arithmetic::traits::SaturatedConversion;
-use sp_metadata_ir::{StorageEntryMetadataIR, StorageEntryTypeIR};
 
 /// A type representing a *double map* in storage. This structure associates a pair of keys with a
 /// value of a specified type stored on-chain.
@@ -715,44 +714,6 @@ where
 	/// NOTE: If a value fail to decode because storage is corrupted then it is skipped.
 	pub fn translate<O: Decode, F: FnMut(Key1, Key2, O) -> Option<Value>>(f: F) {
 		<Self as crate::storage::IterableStorageDoubleMap<Key1, Key2, Value>>::translate(f)
-	}
-}
-
-impl<Prefix, Hasher1, Hasher2, Key1, Key2, Value, QueryKind, OnEmpty, MaxValues>
-	StorageEntryMetadataBuilder
-	for StorageDoubleMap<Prefix, Hasher1, Key1, Hasher2, Key2, Value, QueryKind, OnEmpty, MaxValues>
-where
-	Prefix: StorageInstance,
-	Hasher1: crate::hash::StorageHasher,
-	Hasher2: crate::hash::StorageHasher,
-	Key1: FullCodec,
-	Key2: FullCodec,
-	Value: FullCodec,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: Get<QueryKind::Query> + 'static,
-	MaxValues: Get<Option<u32>>,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		let docs = if cfg!(feature = "no-metadata-docs") { vec![] } else { docs };
-
-		let entry = StorageEntryMetadataIR {
-			name: Prefix::STORAGE_PREFIX,
-			modifier: QueryKind::METADATA,
-			ty: StorageEntryTypeIR::Map {
-				hashers: vec![Hasher1::METADATA, Hasher2::METADATA],
-				key: scale_info::meta_type::<()>(),
-				value: scale_info::meta_type::<()>(),
-			},
-			default: OnEmpty::get().encode(),
-			docs,
-			deprecation_info: deprecation_status,
-		};
-
-		entries.push(entry);
 	}
 }
 

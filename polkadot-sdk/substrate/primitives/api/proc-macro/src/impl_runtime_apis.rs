@@ -834,8 +834,6 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
 	let wasm_interface = generate_wasm_interface(api_impls)?;
 	let api_impls_for_runtime_api = generate_api_impl_for_runtime_api(api_impls)?;
 
-	let runtime_metadata = crate::runtime_metadata::generate_impl_runtime_metadata(api_impls)?;
-
 	let impl_ = quote!(
 		#base_runtime_api
 
@@ -844,8 +842,6 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
 		#api_impls_for_runtime_api
 
 		#runtime_api_versions
-
-		#runtime_metadata
 
 		pub mod api {
 			use super::*;

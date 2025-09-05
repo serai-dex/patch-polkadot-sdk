@@ -408,38 +408,6 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
 	let frame_support = &def.frame_support;
 	let frame_system = &def.frame_system;
 	let pallet_ident = &def.pallet_struct.pallet;
-	let mut entries_builder = vec![];
-	for storage in def.storages.iter() {
-		let no_docs = vec![];
-		let docs = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &storage.docs };
-
-		let ident = &storage.ident;
-		let gen = &def.type_use_generics(storage.attr_span);
-		let full_ident = quote::quote_spanned!(storage.attr_span => #ident<#gen> );
-
-		let cfg_attrs = &storage.cfg_attrs;
-		let deprecation = match crate::deprecation::get_deprecation(
-			&quote::quote! { #frame_support },
-			&storage.attrs,
-		) {
-			Ok(deprecation) => deprecation,
-			Err(e) => return e.into_compile_error(),
-		};
-		entries_builder.push(quote::quote_spanned!(storage.attr_span =>
-			#(#cfg_attrs)*
-			(|entries: &mut #frame_support::__private::Vec<_>| {
-				{
-					<#full_ident as #frame_support::storage::StorageEntryMetadataBuilder>::build_metadata(
-						#deprecation,
-						#frame_support::__private::vec![
-							#( #docs, )*
-						],
-						entries,
-					);
-				}
-			})
-		))
-	}
 
 	let getters = def.storages.iter().map(|storage| {
 		if let Some(getter) = &storage.getter {
@@ -899,27 +867,6 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
 	};
 
 	quote::quote!(
-		impl<#type_impl_gen> #pallet_ident<#type_use_gen>
-			#completed_where_clause
-		{
-			#[doc(hidden)]
-			pub fn storage_metadata() -> #frame_support::__private::metadata_ir::PalletStorageMetadataIR {
-				#frame_support::__private::metadata_ir::PalletStorageMetadataIR {
-					prefix: <
-						<T as #frame_system::Config>::PalletInfo as
-						#frame_support::traits::PalletInfo
-					>::name::<#pallet_ident<#type_use_gen>>()
-						.expect("No name found for the pallet in the runtime! This usually means that the pallet wasn't added to `construct_runtime!`."),
-					entries: {
-						#[allow(unused_mut)]
-						let mut entries = #frame_support::__private::vec![];
-						#( #entries_builder(&mut entries); )*
-						entries
-					},
-				}
-			}
-		}
-
 		#( #getters )*
 		#( #prefix_structs )*
 		#( #on_empty_structs )*

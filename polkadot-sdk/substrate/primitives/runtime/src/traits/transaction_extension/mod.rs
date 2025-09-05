@@ -250,22 +250,6 @@ pub trait TransactionExtension<Call: Dispatchable>:
 		Ok(Self::Implicit::decode(&mut &[][..]).map_err(|_| IndeterminateImplicit)?)
 	}
 
-	/// Returns the metadata for this extension.
-	///
-	/// As a [`TransactionExtension`] can be a tuple of [`TransactionExtension`]s we need to return
-	/// a `Vec` that holds the metadata of each one. Each individual `TransactionExtension` must
-	/// return *exactly* one [`TransactionExtensionMetadata`].
-	///
-	/// This method provides a default implementation that returns a vec containing a single
-	/// [`TransactionExtensionMetadata`].
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		alloc::vec![TransactionExtensionMetadata {
-			identifier: Self::IDENTIFIER,
-			ty: scale_info::meta_type::<Self>(),
-			implicit: scale_info::meta_type::<Self::Implicit>()
-		}]
-	}
-
 	/// The type that encodes information that can be passed from `validate` to `prepare`.
 	type Val;
 
@@ -527,27 +511,12 @@ macro_rules! impl_tx_ext_default {
 	($call:ty ;) => {};
 }
 
-/// Information about a [`TransactionExtension`] for the runtime metadata.
-pub struct TransactionExtensionMetadata {
-	/// The unique identifier of the [`TransactionExtension`].
-	pub identifier: &'static str,
-	/// The type of the [`TransactionExtension`].
-	pub ty: MetaType,
-	/// The type of the [`TransactionExtension`] additional signed data for the payload.
-	pub implicit: MetaType,
-}
-
 #[impl_for_tuples(1, 12)]
 impl<Call: Dispatchable> TransactionExtension<Call> for Tuple {
 	const IDENTIFIER: &'static str = "Use `metadata()`!";
 	for_tuples!( type Implicit = ( #( Tuple::Implicit ),* ); );
 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
 		Ok(for_tuples!( ( #( Tuple.implicit()? ),* ) ))
-	}
-	fn metadata() -> Vec<TransactionExtensionMetadata> {
-		let mut ids = Vec::new();
-		for_tuples!( #( ids.extend(Tuple::metadata()); )* );
-		ids
 	}
 
 	for_tuples!( type Val = ( #( Tuple::Val ),* ); );

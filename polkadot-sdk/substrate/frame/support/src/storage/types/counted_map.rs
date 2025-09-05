@@ -21,7 +21,7 @@ use crate::{
 	storage::{
 		generator::StorageMap as _,
 		types::{
-			OptionQuery, QueryKindTrait, StorageEntryMetadataBuilder, StorageMap, StorageValue,
+			OptionQuery, QueryKindTrait, StorageMap, StorageValue,
 			ValueQuery,
 		},
 		StorageAppend, StorageDecodeLength, StorageTryAppend,
@@ -32,7 +32,6 @@ use crate::{
 use alloc::{vec, vec::Vec};
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen, Ref};
 use sp_io::MultiRemovalResults;
-use sp_metadata_ir::StorageEntryMetadataIR;
 use sp_runtime::traits::Saturating;
 
 /// A wrapper around a [`StorageMap`] and a [`StorageValue`] (with the value being `u32`) to keep
@@ -493,35 +492,6 @@ where
 	/// If you alter the map while doing this, you'll get undefined results.
 	pub fn iter_keys() -> crate::storage::KeyPrefixIterator<Key> {
 		<Self as MapWrapper>::Map::iter_keys()
-	}
-}
-
-impl<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues> StorageEntryMetadataBuilder
-	for CountedStorageMap<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues>
-where
-	Prefix: CountedStorageMapInstance,
-	Hasher: crate::hash::StorageHasher,
-	Key: FullCodec,
-	Value: FullCodec,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: Get<QueryKind::Query> + 'static,
-	MaxValues: Get<Option<u32>>,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		<Self as MapWrapper>::Map::build_metadata(deprecation_status.clone(), docs, entries);
-		CounterFor::<Prefix>::build_metadata(
-			deprecation_status,
-			if cfg!(feature = "no-metadata-docs") {
-				vec![]
-			} else {
-				vec!["Counter for the related counted storage map"]
-			},
-			entries,
-		);
 	}
 }
 

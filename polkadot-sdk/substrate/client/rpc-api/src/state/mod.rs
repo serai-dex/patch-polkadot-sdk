@@ -80,10 +80,6 @@ pub trait StateApi<Hash> {
 	async fn storage_size(&self, key: StorageKey, hash: Option<Hash>)
 		-> Result<Option<u64>, Error>;
 
-	/// Returns the runtime metadata as an opaque blob.
-	#[method(name = "state_getMetadata", blocking)]
-	fn metadata(&self, hash: Option<Hash>) -> Result<Bytes, Error>;
-
 	/// Get the runtime version.
 	#[method(name = "state_getRuntimeVersion", aliases = ["chain_getRuntimeVersion"], blocking)]
 	fn runtime_version(&self, hash: Option<Hash>) -> Result<RuntimeVersion, Error>;

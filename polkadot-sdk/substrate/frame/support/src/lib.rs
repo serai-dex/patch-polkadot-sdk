@@ -50,7 +50,6 @@ pub mod __private {
 		vec::{IntoIter, Vec},
 	};
 	pub use codec;
-	pub use frame_metadata as metadata;
 	pub use log;
 	pub use paste;
 	pub use scale_info;
@@ -62,7 +61,6 @@ pub mod __private {
 	#[cfg(feature = "std")]
 	pub use sp_io::TestExternalities;
 	pub use sp_io::{self, hashing, storage::root as storage_root};
-	pub use sp_metadata_ir as metadata_ir;
 	#[cfg(feature = "std")]
 	pub use sp_runtime::{bounded_btree_map, bounded_vec};
 	pub use sp_runtime::{
@@ -1413,38 +1411,6 @@ pub mod pallet_macros {
 	/// See [`pallet::storage`](`frame_support::pallet_macros::storage`) for more info.
 	pub use frame_support_procedural::getter;
 
-	/// Defines constants that are added to the constant field of
-	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
-	///
-	/// Must be defined like:
-	///
-	/// ```
-	/// #[frame_support::pallet]
-	/// mod pallet {
-	/// # 	use frame_support::pallet_prelude::*;
-	/// #
-	/// 	#[pallet::pallet]
-	/// 	pub struct Pallet<T>(_);
-	///
-	/// # 	#[pallet::config]
-	/// # 	pub trait Config: frame_system::Config {}
-	/// #
-	/// 	#[pallet::extra_constants]
-	/// 	impl<T: Config> Pallet<T> // $optional_where_clause
-	/// 	{
-	/// 	#[pallet::constant_name(SomeU32ConstantName)]
-	/// 		/// Some doc
-	/// 		fn some_u32_constant() -> u32 {
-	/// 			100u32
-	/// 		}
-	/// 	}
-	/// }
-	/// ```
-	///
-	/// I.e. a regular rust `impl` block with some optional where clause and functions with 0
-	/// args, 0 generics, and some return type.
-	pub use frame_support_procedural::extra_constants;
-
 	#[rustfmt::skip]
 	/// Allows bypassing the `frame_system::Config` supertrait check.
 	///
@@ -2097,17 +2063,6 @@ pub mod pallet_macros {
 	///   `Event` itself. If both the `Event` and its variants are deprecated a compile error
 	///   will be returned.
 	pub use frame_support_procedural::event;
-
-	/// Selectively includes associated types in the metadata.
-	///
-	/// The optional attribute allows you to selectively include associated types in the
-	/// metadata. This can be attached to trait items that implement `TypeInfo`.
-	///
-	/// By default all collectable associated types are included in the metadata.
-	///
-	/// This attribute can be used in combination with the
-	/// [`#[pallet::config(without_automatic_metadata)]`](`config`).
-	pub use frame_support_procedural::include_metadata;
 
 	/// Allows a pallet to declare a set of functions as a *dispatchable extrinsic*.
 	///

@@ -20,7 +20,7 @@
 use crate::{
 	storage::{
 		generator::StorageValue as StorageValueT,
-		types::{OptionQuery, QueryKindTrait, StorageEntryMetadataBuilder},
+		types::{OptionQuery, QueryKindTrait},
 		StorageAppend, StorageDecodeLength, StorageTryAppend,
 	},
 	traits::{Get, GetDefault, StorageInfo, StorageInstance},
@@ -29,7 +29,6 @@ use alloc::{vec, vec::Vec};
 use codec::{Decode, Encode, EncodeLike, FullCodec, MaxEncodedLen};
 use frame_support::storage::StorageDecodeNonDedupLength;
 use sp_arithmetic::traits::SaturatedConversion;
-use sp_metadata_ir::{StorageEntryMetadataIR, StorageEntryTypeIR};
 
 /// A type representing a *value* in storage. A *storage value* is a single value of a given type
 /// stored on-chain.
@@ -266,34 +265,6 @@ where
 		Value: StorageTryAppend<Item>,
 	{
 		<Self as crate::storage::TryAppendValue<Value, Item>>::try_append(item)
-	}
-}
-
-impl<Prefix, Value, QueryKind, OnEmpty> StorageEntryMetadataBuilder
-	for StorageValue<Prefix, Value, QueryKind, OnEmpty>
-where
-	Prefix: StorageInstance,
-	Value: FullCodec,
-	QueryKind: QueryKindTrait<Value, OnEmpty>,
-	OnEmpty: crate::traits::Get<QueryKind::Query> + 'static,
-{
-	fn build_metadata(
-		deprecation_status: sp_metadata_ir::DeprecationStatusIR,
-		docs: Vec<&'static str>,
-		entries: &mut Vec<StorageEntryMetadataIR>,
-	) {
-		let docs = if cfg!(feature = "no-metadata-docs") { vec![] } else { docs };
-
-		let entry = StorageEntryMetadataIR {
-			name: Prefix::STORAGE_PREFIX,
-			modifier: QueryKind::METADATA,
-			ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<()>()),
-			default: OnEmpty::get().encode(),
-			docs,
-			deprecation_info: deprecation_status,
-		};
-
-		entries.push(entry);
 	}
 }
 

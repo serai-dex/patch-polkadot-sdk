@@ -131,10 +131,6 @@ where
 	const IDENTIFIER: &'static str = S::IDENTIFIER;
 	type Implicit = S::Implicit;
 
-	fn metadata() -> alloc::vec::Vec<sp_runtime::traits::TransactionExtensionMetadata> {
-		S::metadata()
-	}
-
 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
 		self.0.implicit()
 	}

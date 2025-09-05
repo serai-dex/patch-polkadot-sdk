@@ -35,7 +35,6 @@ pub use self::{
 	transactional::{
 		in_storage_layer, with_storage_layer, with_transaction, with_transaction_unchecked,
 	},
-	types::StorageEntryMetadataBuilder,
 };
 pub use sp_runtime::TransactionOutcome;
 pub use types::Key;

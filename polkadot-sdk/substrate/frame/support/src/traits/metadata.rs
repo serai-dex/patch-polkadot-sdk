@@ -95,15 +95,6 @@ impl PalletsInfoAccess for Tuple {
 	}
 }
 
-/// The function and pallet name of the Call.
-#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug)]
-pub struct CallMetadata {
-	/// Name of the function.
-	pub function_name: &'static str,
-	/// Name of the pallet to which the function belongs.
-	pub pallet_name: &'static str,
-}
-
 /// Gets the function name of the Call.
 pub trait GetCallName {
 	/// Return all function names in the same order as [`GetCallIndex`].
@@ -118,16 +109,6 @@ pub trait GetCallIndex {
 	fn get_call_indices() -> &'static [u8];
 	/// Return the index of this Call.
 	fn get_call_index(&self) -> u8;
-}
-
-/// Gets the metadata for the Call - function name and pallet name.
-pub trait GetCallMetadata {
-	/// Return all module names.
-	fn get_module_names() -> &'static [&'static str];
-	/// Return all function names for the given `module`.
-	fn get_call_names(module: &str) -> &'static [&'static str];
-	/// Return a [`CallMetadata`], containing function and pallet name of the Call.
-	fn get_call_metadata(&self) -> CallMetadata;
 }
 
 /// The version of a crate.
