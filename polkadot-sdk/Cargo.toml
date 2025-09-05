@@ -291,6 +291,7 @@ polkavm-linker = "0.18.0"
 thiserror= "2.0.16"
 itertools= "0.14"
 kvdb-rocksdb= "0.20.0"
+governor= "0.10.1"
 
 [workspace.dependencies.Inflector]
 version = "0.11.4"
@@ -639,9 +640,6 @@ default-features = false
 
 [workspace.dependencies.glob]
 version = "0.3"
-
-[workspace.dependencies.governor]
-version = "0.6.0"
 
 [workspace.dependencies.hash-db]
 version = "0.16.0"

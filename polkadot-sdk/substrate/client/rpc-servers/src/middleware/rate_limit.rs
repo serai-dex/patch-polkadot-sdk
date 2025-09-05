@@ -40,7 +40,7 @@ impl RateLimit {
 	pub fn per_minute(n: NonZeroU32) -> Self {
 		let clock = QuantaClock::default();
 		Self {
-			inner: Arc::new(RateLimitInner::direct_with_clock(Quota::per_minute(n), &clock)),
+			inner: Arc::new(RateLimitInner::direct_with_clock(Quota::per_minute(n), clock.clone())),
 			clock,
 		}
 	}

@@ -1,0 +1,13 @@
+diff --git a/substrate/client/rpc-servers/src/middleware/rate_limit.rs b/substrate/client/rpc-servers/src/middleware/rate_limit.rs
+index 23335eb..eec66e7 100644
+--- a/substrate/client/rpc-servers/src/middleware/rate_limit.rs
++++ b/substrate/client/rpc-servers/src/middleware/rate_limit.rs
+@@ -40,7 +40,7 @@ impl RateLimit {
+ 	pub fn per_minute(n: NonZeroU32) -> Self {
+ 		let clock = QuantaClock::default();
+ 		Self {
+-			inner: Arc::new(RateLimitInner::direct_with_clock(Quota::per_minute(n), &clock)),
++			inner: Arc::new(RateLimitInner::direct_with_clock(Quota::per_minute(n), clock.clone())),
+ 			clock,
+ 		}
+ 	}

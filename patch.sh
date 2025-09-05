@@ -372,6 +372,11 @@ cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.0
 cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.0
 cargo +nightly update -Z unstable-options --breaking -p kvdb-rocksdb --precise 0.20.0
 
+cargo +nightly update -Z unstable-options --breaking -p governor --precise 0.10.0
+cd ..
+apply_patch update_governor
+cd polkadot-sdk
+
 # Remove misc unused files
 silent_rm .cargo
 silent_rm .config
