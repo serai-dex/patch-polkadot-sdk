@@ -140,14 +140,8 @@ pub enum OutputType {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 #[value(rename_all = "kebab-case")]
 pub enum ExecutionStrategy {
-	/// Execute with native build (if available, WebAssembly otherwise).
-	Native,
 	/// Only execute with the WebAssembly build.
 	Wasm,
-	/// Execute with both native (where available) and WebAssembly builds.
-	Both,
-	/// Execute with the native build if possible; if it fails, then execute with WebAssembly.
-	NativeElseWasm,
 }
 
 /// Available RPC methods.

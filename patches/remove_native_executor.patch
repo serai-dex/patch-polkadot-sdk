@@ -1,0 +1,430 @@
+diff --git a/substrate/client/cli/src/arg_enums.rs b/substrate/client/cli/src/arg_enums.rs
+index fa0befa..28b9fa3 100644
+--- a/substrate/client/cli/src/arg_enums.rs
++++ b/substrate/client/cli/src/arg_enums.rs
+@@ -140,14 +140,8 @@ pub enum OutputType {
+ #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
+ #[value(rename_all = "kebab-case")]
+ pub enum ExecutionStrategy {
+-	/// Execute with native build (if available, WebAssembly otherwise).
+-	Native,
+ 	/// Only execute with the WebAssembly build.
+ 	Wasm,
+-	/// Execute with both native (where available) and WebAssembly builds.
+-	Both,
+-	/// Execute with the native build if possible; if it fails, then execute with WebAssembly.
+-	NativeElseWasm,
+ }
+ 
+ /// Available RPC methods.
+diff --git a/substrate/client/executor/src/executor.rs b/substrate/client/executor/src/executor.rs
+index 913bcdf..29884b6 100644
+--- a/substrate/client/executor/src/executor.rs
++++ b/substrate/client/executor/src/executor.rs
+@@ -37,7 +37,7 @@ use sc_executor_common::{
+ 	},
+ };
+ use sp_core::traits::{CallContext, CodeExecutor, Externalities, RuntimeCode};
+-use sp_version::{GetNativeVersion, NativeVersion, RuntimeVersion};
++use sp_version::RuntimeVersion;
+ use sp_wasm_interface::{ExtendedHostFunctions, HostFunctions};
+ 
+ /// Set up the externalities and safe calling environment to execute runtime calls.
+@@ -63,21 +63,6 @@ where
+ 	})
+ }
+ 
+-/// Delegate for dispatching a CodeExecutor call.
+-///
+-/// By dispatching we mean that we execute a runtime function specified by it's name.
+-pub trait NativeExecutionDispatch: Send + Sync {
+-	/// Host functions for custom runtime interfaces that should be callable from within the runtime
+-	/// besides the default Substrate runtime interfaces.
+-	type ExtendHostFunctions: HostFunctions;
+-
+-	/// Dispatch a method in the runtime.
+-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>>;
+-
+-	/// Provide native runtime version.
+-	fn native_version() -> NativeVersion;
+-}
+-
+ fn unwrap_heap_pages(pages: Option<HeapAllocStrategy>) -> HeapAllocStrategy {
+ 	pages.unwrap_or_else(|| DEFAULT_HEAP_ALLOC_STRATEGY)
+ }
+@@ -564,197 +549,6 @@ where
+ 	}
+ }
+ 
+-/// A generic `CodeExecutor` implementation that uses a delegate to determine wasm code equivalence
+-/// and dispatch to native code when possible, falling back on `WasmExecutor` when not.
+-#[deprecated(
+-	note = "Native execution will be deprecated, please replace with `WasmExecutor`. Will be removed at end of 2024."
+-)]
+-pub struct NativeElseWasmExecutor<D: NativeExecutionDispatch> {
+-	/// Native runtime version info.
+-	native_version: NativeVersion,
+-	/// Fallback wasm executor.
+-	wasm:
+-		WasmExecutor<ExtendedHostFunctions<sp_io::SubstrateHostFunctions, D::ExtendHostFunctions>>,
+-
+-	use_native: bool,
+-}
+-
+-#[allow(deprecated)]
+-impl<D: NativeExecutionDispatch> NativeElseWasmExecutor<D> {
+-	///
+-	/// Create new instance.
+-	///
+-	/// # Parameters
+-	///
+-	/// `fallback_method` - Method used to execute fallback Wasm code.
+-	///
+-	/// `default_heap_pages` - Number of 64KB pages to allocate for Wasm execution. Internally this
+-	/// will be mapped as [`HeapAllocStrategy::Static`] where `default_heap_pages` represent the
+-	/// static number of heap pages to allocate. Defaults to `DEFAULT_HEAP_ALLOC_STRATEGY` if `None`
+-	/// is provided.
+-	///
+-	/// `max_runtime_instances` - The number of runtime instances to keep in memory ready for reuse.
+-	///
+-	/// `runtime_cache_size` - The capacity of runtime cache.
+-	#[deprecated(note = "use `Self::new_with_wasm_executor` method instead of it")]
+-	pub fn new(
+-		fallback_method: WasmExecutionMethod,
+-		default_heap_pages: Option<u64>,
+-		max_runtime_instances: usize,
+-		runtime_cache_size: u8,
+-	) -> Self {
+-		let heap_pages = default_heap_pages.map_or(DEFAULT_HEAP_ALLOC_STRATEGY, |h| {
+-			HeapAllocStrategy::Static { extra_pages: h as _ }
+-		});
+-		let wasm = WasmExecutor::builder()
+-			.with_execution_method(fallback_method)
+-			.with_onchain_heap_alloc_strategy(heap_pages)
+-			.with_offchain_heap_alloc_strategy(heap_pages)
+-			.with_max_runtime_instances(max_runtime_instances)
+-			.with_runtime_cache_size(runtime_cache_size)
+-			.build();
+-
+-		NativeElseWasmExecutor { native_version: D::native_version(), wasm, use_native: true }
+-	}
+-
+-	/// Create a new instance using the given [`WasmExecutor`].
+-	pub fn new_with_wasm_executor(
+-		executor: WasmExecutor<
+-			ExtendedHostFunctions<sp_io::SubstrateHostFunctions, D::ExtendHostFunctions>,
+-		>,
+-	) -> Self {
+-		Self { native_version: D::native_version(), wasm: executor, use_native: true }
+-	}
+-
+-	/// Disable to use native runtime when possible just behave like `WasmExecutor`.
+-	///
+-	/// Default to enabled.
+-	pub fn disable_use_native(&mut self) {
+-		self.use_native = false;
+-	}
+-
+-	/// Ignore missing function imports if set true.
+-	#[deprecated(note = "use `Self::new_with_wasm_executor` method instead of it")]
+-	pub fn allow_missing_host_functions(&mut self, allow_missing_host_functions: bool) {
+-		self.wasm.allow_missing_host_functions = allow_missing_host_functions
+-	}
+-}
+-
+-#[allow(deprecated)]
+-impl<D: NativeExecutionDispatch> RuntimeVersionOf for NativeElseWasmExecutor<D> {
+-	fn runtime_version(
+-		&self,
+-		ext: &mut dyn Externalities,
+-		runtime_code: &RuntimeCode,
+-	) -> Result<RuntimeVersion> {
+-		self.wasm.runtime_version(ext, runtime_code)
+-	}
+-}
+-
+-#[allow(deprecated)]
+-impl<D: NativeExecutionDispatch> GetNativeVersion for NativeElseWasmExecutor<D> {
+-	fn native_version(&self) -> &NativeVersion {
+-		&self.native_version
+-	}
+-}
+-
+-#[allow(deprecated)]
+-impl<D: NativeExecutionDispatch + 'static> CodeExecutor for NativeElseWasmExecutor<D> {
+-	type Error = Error;
+-
+-	fn call(
+-		&self,
+-		ext: &mut dyn Externalities,
+-		runtime_code: &RuntimeCode,
+-		method: &str,
+-		data: &[u8],
+-		context: CallContext,
+-	) -> (Result<Vec<u8>>, bool) {
+-		let use_native = self.use_native;
+-
+-		tracing::trace!(
+-			target: "executor",
+-			function = %method,
+-			"Executing function",
+-		);
+-
+-		let on_chain_heap_alloc_strategy = if self.wasm.ignore_onchain_heap_pages {
+-			self.wasm.default_onchain_heap_alloc_strategy
+-		} else {
+-			runtime_code
+-				.heap_pages
+-				.map(|h| HeapAllocStrategy::Static { extra_pages: h as _ })
+-				.unwrap_or_else(|| self.wasm.default_onchain_heap_alloc_strategy)
+-		};
+-
+-		let heap_alloc_strategy = match context {
+-			CallContext::Offchain => self.wasm.default_offchain_heap_alloc_strategy,
+-			CallContext::Onchain => on_chain_heap_alloc_strategy,
+-		};
+-
+-		let mut used_native = false;
+-		let result = self.wasm.with_instance(
+-			runtime_code,
+-			ext,
+-			heap_alloc_strategy,
+-			|_, mut instance, on_chain_version, mut ext| {
+-				let on_chain_version =
+-					on_chain_version.ok_or_else(|| Error::ApiError("Unknown version".into()))?;
+-
+-				let can_call_with =
+-					on_chain_version.can_call_with(&self.native_version.runtime_version);
+-
+-				if use_native && can_call_with {
+-					tracing::trace!(
+-						target: "executor",
+-						native = %self.native_version.runtime_version,
+-						chain = %on_chain_version,
+-						"Request for native execution succeeded",
+-					);
+-
+-					used_native = true;
+-					Ok(with_externalities_safe(&mut **ext, move || D::dispatch(method, data))?
+-						.ok_or_else(|| Error::MethodNotFound(method.to_owned())))
+-				} else {
+-					if !can_call_with {
+-						tracing::trace!(
+-							target: "executor",
+-							native = %self.native_version.runtime_version,
+-							chain = %on_chain_version,
+-							"Request for native execution failed",
+-						);
+-					}
+-
+-					with_externalities_safe(&mut **ext, move || instance.call_export(method, data))
+-				}
+-			},
+-		);
+-		(result, used_native)
+-	}
+-}
+-
+-#[allow(deprecated)]
+-impl<D: NativeExecutionDispatch> Clone for NativeElseWasmExecutor<D> {
+-	fn clone(&self) -> Self {
+-		NativeElseWasmExecutor {
+-			native_version: D::native_version(),
+-			wasm: self.wasm.clone(),
+-			use_native: self.use_native,
+-		}
+-	}
+-}
+-
+-#[allow(deprecated)]
+-impl<D: NativeExecutionDispatch> sp_core::traits::ReadRuntimeVersion for NativeElseWasmExecutor<D> {
+-	fn read_runtime_version(
+-		&self,
+-		wasm_code: &[u8],
+-		ext: &mut dyn Externalities,
+-	) -> std::result::Result<Vec<u8>, String> {
+-		self.wasm.read_runtime_version(wasm_code, ext)
+-	}
+-}
+-
+ #[cfg(test)]
+ mod tests {
+ 	use super::*;
+diff --git a/substrate/client/executor/src/lib.rs b/substrate/client/executor/src/lib.rs
+index 204f1ff..072d7dc 100644
+--- a/substrate/client/executor/src/lib.rs
++++ b/substrate/client/executor/src/lib.rs
+@@ -37,12 +37,10 @@ mod integration_tests;
+ mod wasm_runtime;
+ 
+ pub use codec::Codec;
+-#[allow(deprecated)]
+-pub use executor::NativeElseWasmExecutor;
+-pub use executor::{with_externalities_safe, NativeExecutionDispatch, WasmExecutor};
++pub use executor::{with_externalities_safe, WasmExecutor};
+ #[doc(hidden)]
+ pub use sp_core::traits::Externalities;
+-pub use sp_version::{NativeVersion, RuntimeVersion};
++pub use sp_version::RuntimeVersion;
+ #[doc(hidden)]
+ pub use sp_wasm_interface;
+ pub use sp_wasm_interface::HostFunctions;
+diff --git a/substrate/client/service/src/builder.rs b/substrate/client/service/src/builder.rs
+index 56f006f..f8c08b9 100644
+--- a/substrate/client/service/src/builder.rs
++++ b/substrate/client/service/src/builder.rs
+@@ -37,7 +37,7 @@ use sc_client_api::{
+ use sc_client_db::{Backend, BlocksPruning, DatabaseSettings, PruningMode};
+ use sc_consensus::import_queue::{ImportQueue, ImportQueueService};
+ use sc_executor::{
+-	sp_wasm_interface::HostFunctions, HeapAllocStrategy, NativeExecutionDispatch, RuntimeVersionOf,
++	sp_wasm_interface::HostFunctions, HeapAllocStrategy, RuntimeVersionOf,
+ 	WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY,
+ };
+ use sc_keystore::LocalKeystore;
+@@ -269,17 +269,6 @@ where
+ 	Ok((client, backend, keystore_container, task_manager))
+ }
+ 
+-/// Creates a [`NativeElseWasmExecutor`](sc_executor::NativeElseWasmExecutor) according to
+-/// [`Configuration`].
+-#[deprecated(note = "Please switch to `new_wasm_executor`. Will be removed at end of 2024.")]
+-#[allow(deprecated)]
+-pub fn new_native_or_wasm_executor<D: NativeExecutionDispatch>(
+-	config: &Configuration,
+-) -> sc_executor::NativeElseWasmExecutor<D> {
+-	#[allow(deprecated)]
+-	sc_executor::NativeElseWasmExecutor::new_with_wasm_executor(new_wasm_executor(&config.executor))
+-}
+-
+ /// Creates a [`WasmExecutor`] according to [`ExecutorConfiguration`].
+ pub fn new_wasm_executor<H: HostFunctions>(config: &ExecutorConfiguration) -> WasmExecutor<H> {
+ 	let strategy = config
+diff --git a/substrate/client/service/src/client/call_executor.rs b/substrate/client/service/src/client/call_executor.rs
+index 1341aa0..cf09d07 100644
+--- a/substrate/client/service/src/client/call_executor.rs
++++ b/substrate/client/service/src/client/call_executor.rs
+@@ -254,14 +254,3 @@ where
+ 		CallExecutor::runtime_version(self, at).map_err(|e| e.to_string())
+ 	}
+ }
+-
+-impl<Block, B, E> sp_version::GetNativeVersion for LocalCallExecutor<Block, B, E>
+-where
+-	B: backend::Backend<Block>,
+-	E: CodeExecutor + sp_version::GetNativeVersion + Clone + 'static,
+-	Block: BlockT,
+-{
+-	fn native_version(&self) -> &sp_version::NativeVersion {
+-		self.executor.native_version()
+-	}
+-}
+diff --git a/substrate/client/service/src/lib.rs b/substrate/client/service/src/lib.rs
+index a7f1b07..2a4b155 100644
+--- a/substrate/client/service/src/lib.rs
++++ b/substrate/client/service/src/lib.rs
+@@ -68,8 +68,6 @@ pub use self::{
+ 	error::Error,
+ 	metrics::MetricsService,
+ };
+-#[allow(deprecated)]
+-pub use builder::new_native_or_wasm_executor;
+ 
+ pub use sc_chain_spec::{
+ 	construct_genesis_block, resolve_state_version_from_wasm, BuildGenesisBlock,
+@@ -87,7 +85,6 @@ pub use sc_chain_spec::{
+ use crate::config::RpcConfiguration;
+ use prometheus_endpoint::Registry;
+ pub use sc_consensus::ImportQueue;
+-pub use sc_executor::NativeExecutionDispatch;
+ pub use sc_network_sync::WarpSyncConfig;
+ #[doc(hidden)]
+ pub use sc_network_transactions::config::{TransactionImport, TransactionImportFuture};
+diff --git a/substrate/primitives/version/src/lib.rs b/substrate/primitives/version/src/lib.rs
+index cabc16a..c092c16 100644
+--- a/substrate/primitives/version/src/lib.rs
++++ b/substrate/primitives/version/src/lib.rs
+@@ -738,55 +738,6 @@ impl RuntimeVersion {
+ 	}
+ }
+ 
+-/// The version of the native runtime.
+-///
+-/// In contrast to the bare [`RuntimeVersion`] this also carries a list of `spec_version`s of
+-/// runtimes this native runtime can be used to author blocks for.
+-#[derive(Debug)]
+-#[cfg(feature = "std")]
+-pub struct NativeVersion {
+-	/// Basic runtime version info.
+-	pub runtime_version: RuntimeVersion,
+-	/// Authoring runtimes (`spec_version`s) that this native runtime supports.
+-	pub can_author_with: HashSet<u32>,
+-}
+-
+-#[cfg(feature = "std")]
+-impl NativeVersion {
+-	/// Check if this version matches other version for authoring blocks.
+-	///
+-	/// # Return
+-	///
+-	/// - Returns `Ok(())` when authoring is supported.
+-	/// - Returns `Err(_)` with a detailed error when authoring is not supported.
+-	pub fn can_author_with(&self, other: &RuntimeVersion) -> Result<(), String> {
+-		if self.runtime_version.spec_name != other.spec_name {
+-			Err(format!(
+-				"`spec_name` does not match `{}` vs `{}`",
+-				self.runtime_version.spec_name, other.spec_name,
+-			))
+-		} else if self.runtime_version.authoring_version != other.authoring_version &&
+-			!self.can_author_with.contains(&other.authoring_version)
+-		{
+-			Err(format!(
+-				"`authoring_version` does not match `{version}` vs `{other_version}` and \
+-				`can_author_with` not contains `{other_version}`",
+-				version = self.runtime_version.authoring_version,
+-				other_version = other.authoring_version,
+-			))
+-		} else {
+-			Ok(())
+-		}
+-	}
+-}
+-
+-#[cfg(feature = "std")]
+-/// Returns the version of the native runtime.
+-pub trait GetNativeVersion {
+-	/// Returns the version of the native runtime.
+-	fn native_version(&self) -> &NativeVersion;
+-}
+-
+ /// Something that can provide the runtime version at a given block.
+ #[cfg(feature = "std")]
+ pub trait GetRuntimeVersionAt<Block: BlockT> {
+@@ -803,13 +754,6 @@ impl<T: GetRuntimeVersionAt<Block>, Block: BlockT> GetRuntimeVersionAt<Block>
+ 	}
+ }
+ 
+-#[cfg(feature = "std")]
+-impl<T: GetNativeVersion> GetNativeVersion for std::sync::Arc<T> {
+-	fn native_version(&self) -> &NativeVersion {
+-		(&**self).native_version()
+-	}
+-}
+-
+ #[cfg(feature = "serde")]
+ mod apis_serialize {
+ 	use super::*;
+diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
+index ee64dc7..0484191 100644
+--- a/substrate/frame/src/lib.rs
++++ b/substrate/frame/src/lib.rs
+@@ -410,9 +410,6 @@ pub mod runtime {
+ 		pub use sp_version::create_runtime_str;
+ 		pub use sp_version::{runtime_version, RuntimeVersion};
+ 
+-		#[cfg(feature = "std")]
+-		pub use sp_version::NativeVersion;
+-
+ 		/// Macro to implement runtime APIs.
+ 		pub use sp_api::impl_runtime_apis;
+ 

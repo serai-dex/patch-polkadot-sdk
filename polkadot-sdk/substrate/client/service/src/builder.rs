@@ -37,7 +37,7 @@ use sc_client_api::{
 use sc_client_db::{Backend, BlocksPruning, DatabaseSettings, PruningMode};
 use sc_consensus::import_queue::{ImportQueue, ImportQueueService};
 use sc_executor::{
-	sp_wasm_interface::HostFunctions, HeapAllocStrategy, NativeExecutionDispatch, RuntimeVersionOf,
+	sp_wasm_interface::HostFunctions, HeapAllocStrategy, RuntimeVersionOf,
 	WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY,
 };
 use sc_keystore::LocalKeystore;
@@ -267,17 +267,6 @@ where
 	};
 
 	Ok((client, backend, keystore_container, task_manager))
-}
-
-/// Creates a [`NativeElseWasmExecutor`](sc_executor::NativeElseWasmExecutor) according to
-/// [`Configuration`].
-#[deprecated(note = "Please switch to `new_wasm_executor`. Will be removed at end of 2024.")]
-#[allow(deprecated)]
-pub fn new_native_or_wasm_executor<D: NativeExecutionDispatch>(
-	config: &Configuration,
-) -> sc_executor::NativeElseWasmExecutor<D> {
-	#[allow(deprecated)]
-	sc_executor::NativeElseWasmExecutor::new_with_wasm_executor(new_wasm_executor(&config.executor))
 }
 
 /// Creates a [`WasmExecutor`] according to [`ExecutorConfiguration`].

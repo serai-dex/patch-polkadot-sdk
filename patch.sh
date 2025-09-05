@@ -379,6 +379,9 @@ apply_patch remove_scale-info
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
+# Remove the deprecated native executor
+apply_patch remove_native_executor
+
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
 remove_crate_tree substrate/frame/asset-conversion
