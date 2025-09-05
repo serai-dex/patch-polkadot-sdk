@@ -384,6 +384,8 @@ cd ..
 apply_patch update_governor
 cd polkadot-sdk
 
+cargo +nightly update -Z unstable-options --breaking -p directories --precise 6.0.0
+
 # Remove misc unused files
 silent_rm .cargo
 silent_rm .config
