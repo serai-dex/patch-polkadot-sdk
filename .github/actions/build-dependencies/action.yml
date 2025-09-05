@@ -33,7 +33,7 @@ runs:
       shell: bash
       run: |
         if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt install -y ca-certificates protobuf-compiler
+          sudo apt install -y ca-certificates libclang-dev protobuf-compiler
         elif [ "$RUNNER_OS" == "Windows" ]; then
           choco install protoc
         elif [ "$RUNNER_OS" == "macOS" ]; then
