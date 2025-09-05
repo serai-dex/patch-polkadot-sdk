@@ -149,12 +149,6 @@ impl From<Keyring> for &'static str {
 	}
 }
 
-impl From<Keyring> for sp_runtime::MultiSigner {
-	fn from(x: Keyring) -> Self {
-		sp_runtime::MultiSigner::Sr25519(x.into())
-	}
-}
-
 impl FromStr for Keyring {
 	type Err = ParseKeyringError;
 

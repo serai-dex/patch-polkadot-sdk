@@ -74,7 +74,6 @@ pub use sp_core::storage::{Storage, StorageChild};
 
 use sp_core::{
 	crypto::{self, ByteArray, FromEntropy},
-	ecdsa, ed25519,
 	hash::{H256, H512},
 	sr25519,
 };
@@ -270,6 +269,7 @@ impl BuildStorage for () {
 /// Consensus engine unique ID.
 pub type ConsensusEngineId = [u8; 4];
 
+/*
 /// Signature verify that can work with any known signature types.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(
@@ -380,16 +380,14 @@ impl FromEntropy for MultiSigner {
 /// we convert the hash into some AccountId, it's fine to use any scheme.
 impl<T: Into<H256>> crypto::UncheckedFrom<T> for MultiSigner {
 	fn unchecked_from(x: T) -> Self {
-		ed25519::Public::unchecked_from(x.into()).into()
+		sr25519::Public::unchecked_from(x.into()).into()
 	}
 }
 
 impl AsRef<[u8]> for MultiSigner {
 	fn as_ref(&self) -> &[u8] {
 		match *self {
-			Self::Ed25519(ref who) => who.as_ref(),
 			Self::Sr25519(ref who) => who.as_ref(),
-			Self::Ecdsa(ref who) => who.as_ref(),
 		}
 	}
 }
@@ -515,6 +513,7 @@ impl From<ed25519::Signature> for AnySignature {
 		Self(s.into())
 	}
 }
+*/
 
 impl From<DispatchError> for DispatchOutcome {
 	fn from(err: DispatchError) -> Self {

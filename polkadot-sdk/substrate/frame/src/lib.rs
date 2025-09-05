@@ -469,7 +469,7 @@ pub mod runtime {
 		use sp_runtime::{generic, traits, OpaqueExtrinsic};
 
 		/// A signature type compatible capably of handling multiple crypto-schemes.
-		pub type Signature = sp_runtime::MultiSignature;
+		pub type Signature = sp_core::sr25519::Signature;
 
 		/// The corresponding account-id type of [`Signature`].
 		pub type AccountId =
@@ -483,8 +483,8 @@ pub mod runtime {
 
 		// NOTE: `AccountIndex` is provided for future compatibility, if you want to introduce
 		// something like `pallet-indices`.
-		type ExtrinsicInner<T, Extra, AccountIndex = ()> = generic::UncheckedExtrinsic<
-			sp_runtime::MultiAddress<AccountId, AccountIndex>,
+		type ExtrinsicInner<T, Extra> = generic::UncheckedExtrinsic<
+			sp_core::sr25519::Public,
 			<T as SysConfig>::RuntimeCall,
 			Signature,
 			Extra,

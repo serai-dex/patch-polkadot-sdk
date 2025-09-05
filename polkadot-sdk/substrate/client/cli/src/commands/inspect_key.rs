@@ -23,7 +23,7 @@ use crate::{
 	with_crypto_scheme, CryptoSchemeFlag, Error, KeystoreParams, NetworkSchemeFlag, OutputTypeFlag,
 };
 use clap::Parser;
-use sp_core::crypto::{ExposeSecret, SecretString, SecretUri, Ss58Codec};
+use sp_core::crypto::{Pair, ExposeSecret, SecretString, SecretUri, Ss58Codec};
 use std::str::FromStr;
 
 /// The `inspect` command
@@ -116,7 +116,7 @@ impl InspectKeyCmd {
 /// `suri`, i.e. without any derivations.
 ///
 /// Returns an error if the public key does not match.
-fn expect_public_from_phrase<Pair: sp_core::Pair>(
+fn expect_public_from_phrase(
 	expect_public: &str,
 	suri: &str,
 	password: Option<&SecretString>,
@@ -125,15 +125,15 @@ fn expect_public_from_phrase<Pair: sp_core::Pair>(
 	let expected_public = if let Some(public) = expect_public.strip_prefix("0x") {
 		let hex_public = array_bytes::hex2bytes(public)
 			.map_err(|_| format!("Invalid expected public key hex: `{}`", expect_public))?;
-		Pair::Public::try_from(&hex_public)
+		sp_core::sr25519::Public::try_from(hex_public.as_slice())
 			.map_err(|_| format!("Invalid expected public key: `{}`", expect_public))?
 	} else {
-		Pair::Public::from_string_with_version(expect_public)
+		sp_core::sr25519::Public::from_string_with_version(expect_public)
 			.map_err(|_| format!("Invalid expected account id: `{}`", expect_public))?
 			.0
 	};
 
-	let pair = Pair::from_string_with_seed(
+	let pair = sp_core::sr25519::Pair::from_string_with_seed(
 		secret_uri.phrase.expose_secret().as_str(),
 		password
 			.or_else(|| secret_uri.password.as_ref())

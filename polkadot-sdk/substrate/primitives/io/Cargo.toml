@@ -32,21 +32,7 @@ workspace = true
 features = ["bytes"]
 workspace = true
 
-[dependencies.libsecp256k1]
-optional = true
-workspace = true
-default-features = true
-
 [dependencies.log]
-optional = true
-workspace = true
-default-features = true
-
-[dependencies.secp256k1]
-features = [
-    "global-context",
-    "recovery",
-]
 optional = true
 workspace = true
 default-features = true
@@ -84,10 +70,6 @@ workspace = true
 [dependencies.tracing-core]
 workspace = true
 
-[dependencies.ed25519-dalek]
-optional = true
-workspace = true
-
 [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies.polkavm-derive]
 workspace = true
 
@@ -99,11 +81,7 @@ default = ["std"]
 std = [
     "bytes/std",
     "codec/std",
-    "ed25519-dalek",
-    "ed25519-dalek?/std",
-    "libsecp256k1",
     "log/std",
-    "secp256k1",
     "sp-core/std",
     "sp-crypto-hashing/std",
     "sp-externalities/std",

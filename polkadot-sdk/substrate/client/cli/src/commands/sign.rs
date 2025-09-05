@@ -22,7 +22,7 @@ use crate::{
 };
 use array_bytes::bytes2hex;
 use clap::Parser;
-use sp_core::crypto::SecretString;
+use sp_core::crypto::{Pair, SecretString};
 use std::io::{BufRead, Write};
 
 /// The `sign` command
@@ -74,13 +74,13 @@ impl SignCmd {
 	}
 }
 
-fn sign<P: sp_core::Pair>(
+fn sign(
 	suri: &str,
 	password: Option<SecretString>,
 	message: Vec<u8>,
 ) -> error::Result<String> {
-	let pair = utils::pair_from_suri::<P>(suri, password)?;
-	Ok(bytes2hex("0x", pair.sign(&message).as_ref()))
+	let pair = utils::pair_from_suri(suri, password)?;
+	Ok(bytes2hex::<_, &[u8]>("0x", pair.sign(&message).as_ref()))
 }
 
 #[cfg(test)]

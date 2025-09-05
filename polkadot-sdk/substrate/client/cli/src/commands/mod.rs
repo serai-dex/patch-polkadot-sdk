@@ -36,7 +36,6 @@ mod run_cmd;
 mod sign;
 mod test;
 pub mod utils;
-mod vanity;
 mod verify;
 
 pub use self::{
@@ -45,5 +44,5 @@ pub use self::{
 	generate_node_key::GenerateKeyCmdCommon, import_blocks_cmd::ImportBlocksCmd,
 	insert_key::InsertKeyCmd, inspect_key::InspectKeyCmd, inspect_node_key::InspectNodeKeyCmd,
 	key::KeySubcommand, purge_chain_cmd::PurgeChainCmd, revert_cmd::RevertCmd, run_cmd::RunCmd,
-	sign::SignCmd, vanity::VanityCmd, verify::VerifyCmd,
+	sign::SignCmd, verify::VerifyCmd,
 };

@@ -98,7 +98,6 @@ use sp_keystore::KeystoreExt;
 use sp_core::bandersnatch;
 use sp_core::{
 	crypto::KeyTypeId,
-	ecdsa, ed25519,
 	offchain::{
 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
 	},
@@ -119,12 +118,6 @@ use sp_runtime_interface::{
 };
 
 use codec::{Decode, Encode};
-
-#[cfg(feature = "std")]
-use secp256k1::{
-	ecdsa::{RecoverableSignature, RecoveryId},
-	Message, SECP256K1,
-};
 
 #[cfg(feature = "std")]
 use sp_externalities::{Externalities, ExternalitiesExt};
@@ -756,6 +749,7 @@ pub trait Misc {
 	}
 }
 
+/*
 #[cfg(feature = "std")]
 sp_externalities::decl_extension! {
 	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
@@ -783,10 +777,12 @@ impl Default for UseDalekExt {
 		Self
 	}
 }
+*/
 
 /// Interfaces for working with crypto related types from within the runtime.
 #[runtime_interface]
 pub trait Crypto {
+	/*
 	/// Returns all `ed25519` public keys for the given key id from the keystore.
 	fn ed25519_public_keys(&mut self, id: KeyTypeId) -> Vec<ed25519::Public> {
 		self.extension::<KeystoreExt>()
@@ -877,6 +873,7 @@ pub trait Crypto {
 
 		res
 	}
+	*/
 
 	/// Verify `sr25519` signature.
 	///
@@ -997,6 +994,7 @@ pub trait Crypto {
 		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
 	}
 
+	/*
 	/// Returns all `ecdsa` public keys for the given key id from the keystore.
 	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
 		self.extension::<KeystoreExt>()
@@ -1203,6 +1201,7 @@ pub trait Crypto {
 			.map_err(|_| EcdsaVerifyError::BadSignature)?;
 		Ok(pubkey.serialize())
 	}
+	*/
 
 	/// Generate an `bls12-381` key for the given key type using an optional `seed` and
 	/// store it in the keystore.

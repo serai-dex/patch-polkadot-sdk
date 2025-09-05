@@ -17,5 +17,3 @@
 
 //! Utilities for dealing with crypto primitives. Sometimes we need to use these from inside WASM
 //! contracts, where crypto calculations have weak performance.
-
-pub mod ecdsa;

@@ -30,7 +30,7 @@ use sp_core::bandersnatch;
 use sp_core::{bls381, ecdsa_bls381};
 use sp_core::{
 	crypto::{ByteArray, CryptoTypeId, KeyTypeId},
-	ecdsa, ed25519, sr25519,
+	sr25519,
 };
 
 use alloc::{string::String, sync::Arc, vec::Vec};
@@ -120,6 +120,7 @@ pub trait Keystore: Send + Sync {
 		input: &sr25519::vrf::VrfInput,
 	) -> Result<Option<sr25519::vrf::VrfPreOutput>, Error>;
 
+	/*
 	/// Returns all ed25519 public keys for the given key type.
 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public>;
 
@@ -190,6 +191,7 @@ pub trait Keystore: Send + Sync {
 		public: &ecdsa::Public,
 		msg: &[u8; 32],
 	) -> Result<Option<ecdsa::Signature>, Error>;
+	*/
 
 	/// Returns all the bandersnatch public keys for the given key type.
 	#[cfg(feature = "bandersnatch-experimental")]
@@ -401,6 +403,7 @@ pub trait Keystore: Send + Sync {
 					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
 				self.sr25519_sign(id, &public, msg)?.map(|s| s.encode())
 			},
+			/*
 			ed25519::CRYPTO_ID => {
 				let public = ed25519::Public::from_slice(public)
 					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
@@ -412,6 +415,7 @@ pub trait Keystore: Send + Sync {
 
 				self.ecdsa_sign(id, &public, msg)?.map(|s| s.encode())
 			},
+			*/
 			#[cfg(feature = "bandersnatch-experimental")]
 			bandersnatch::CRYPTO_ID => {
 				let public = bandersnatch::Public::from_slice(public)
@@ -476,6 +480,7 @@ impl<T: Keystore + ?Sized> Keystore for Arc<T> {
 		(**self).sr25519_vrf_pre_output(key_type, public, input)
 	}
 
+	/*
 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
 		(**self).ed25519_public_keys(key_type)
 	}
@@ -526,6 +531,7 @@ impl<T: Keystore + ?Sized> Keystore for Arc<T> {
 	) -> Result<Option<ecdsa::Signature>, Error> {
 		(**self).ecdsa_sign_prehashed(key_type, public, msg)
 	}
+	*/
 
 	#[cfg(feature = "bandersnatch-experimental")]
 	fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {

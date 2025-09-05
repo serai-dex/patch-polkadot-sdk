@@ -20,7 +20,7 @@
 
 use crate::{error, params::MessageParams, utils, with_crypto_scheme, CryptoSchemeFlag};
 use clap::Parser;
-use sp_core::crypto::{ByteArray, Ss58Codec};
+use sp_core::crypto::{ByteArray, Ss58Codec, Pair};
 use std::io::BufRead;
 
 /// The `verify` command
@@ -72,22 +72,19 @@ impl VerifyCmd {
 	}
 }
 
-fn verify<Pair>(sig_data: Vec<u8>, message: Vec<u8>, uri: &str) -> error::Result<()>
-where
-	Pair: sp_core::Pair,
-	Pair::Signature: for<'a> TryFrom<&'a [u8]>,
+fn verify(sig_data: Vec<u8>, message: Vec<u8>, uri: &str) -> error::Result<()>
 {
 	let signature =
-		Pair::Signature::try_from(&sig_data).map_err(|_| error::Error::SignatureFormatInvalid)?;
+		sp_core::sr25519::Signature::try_from(sig_data.as_slice()).map_err(|_| error::Error::SignatureFormatInvalid)?;
 
 	let pubkey = if let Ok(pubkey_vec) = array_bytes::hex2bytes(uri) {
-		Pair::Public::from_slice(pubkey_vec.as_slice())
+		sp_core::sr25519::Public::from_slice(pubkey_vec.as_slice())
 			.map_err(|_| error::Error::KeyFormatInvalid)?
 	} else {
-		Pair::Public::from_string(uri)?
+		sp_core::sr25519::Public::from_string(uri)?
 	};
 
-	if Pair::verify(&signature, &message, &pubkey) {
+	if sp_core::sr25519::Pair::verify(&signature, &message, &pubkey) {
 		println!("Signature verifies correctly.");
 	} else {
 		return Err(error::Error::SignatureInvalid)

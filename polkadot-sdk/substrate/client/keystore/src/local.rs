@@ -22,7 +22,7 @@ use parking_lot::RwLock;
 use sp_application_crypto::{AppCrypto, AppPair, IsWrappedBy};
 use sp_core::{
 	crypto::{ByteArray, ExposeSecret, KeyTypeId, Pair as CorePair, SecretString, VrfSecret},
-	ecdsa, ed25519, sr25519,
+	sr25519,
 };
 use sp_keystore::{Error as TraitError, Keystore, KeystorePtr};
 use std::{
@@ -212,6 +212,7 @@ impl Keystore for LocalKeystore {
 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
 	}
 
+	/*
 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
 		self.public_keys::<ed25519::Pair>(key_type)
 	}
@@ -273,6 +274,7 @@ impl Keystore for LocalKeystore {
 			.map(|pair| pair.sign_prehashed(msg));
 		Ok(sig)
 	}
+	*/
 
 	sp_keystore::bandersnatch_experimental_enabled! {
 		fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {

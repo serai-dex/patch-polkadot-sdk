@@ -25,7 +25,7 @@ use sp_core::bandersnatch;
 use sp_core::{bls381, ecdsa_bls381, KeccakHasher};
 use sp_core::{
 	crypto::{ByteArray, KeyTypeId, Pair, VrfSecret},
-	ecdsa, ed25519, sr25519,
+	sr25519,
 };
 
 use parking_lot::RwLock;
@@ -164,6 +164,7 @@ impl Keystore for MemoryKeystore {
 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
 	}
 
+	/*
 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
 		self.public_keys::<ed25519::Pair>(key_type)
 	}
@@ -215,6 +216,7 @@ impl Keystore for MemoryKeystore {
 		let sig = self.pair::<ecdsa::Pair>(key_type, public).map(|pair| pair.sign_prehashed(msg));
 		Ok(sig)
 	}
+	*/
 
 	#[cfg(feature = "bandersnatch-experimental")]
 	fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {

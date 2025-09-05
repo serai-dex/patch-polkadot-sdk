@@ -82,7 +82,13 @@ apply_patch do_not_inherit_std
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ark-vrf"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ed25519-zebra"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "libsecp256k1"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "secp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "w3f-bls"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519-dalek"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "merkleized-metadata"
 # Also prune dated workspace dependency specifications we don't need
@@ -287,15 +293,15 @@ silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/bandersnatch.rs
 silent_rm ./polkadot-sdk/substrate/primitives/core/src/paired_crypto.rs
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/src/lib.rs "mod paired_crypto;$"
 
-# TODO silent_rm substrate/primitives/core/src/ecdsa.rs
-# TODO silent_rm substrate/primitives/application-crypto/src/ecdsa.rs
-# TODO silent_rm substrate/primitives/application-crypto/test/src/ecdsa.rs
-# TODO silent_rm substrate/frame/support/src/crypto/ecdsa.rs
-
-# TODO silent_rm substrate/primitives/application-crypto/src/ed25519.rs
-# TODO silent_rm substrate/primitives/application-crypto/test/src/ed25519.rs
-# TODO silent_rm substrate/primitives/core/src/ed25519.rs
-# TODO silent_rm substrate/primitives/keyring/src/ed25519.rs
+silent_rm ./polkadot-sdk/substrate/client/cli/src/commands/vanity.rs
+silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa.rs
+silent_rm ./polkadot-sdk/substrate/primitives/core/src/ecdsa.rs
+silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ecdsa.rs
+silent_rm ./polkadot-sdk/substrate/frame/support/src/crypto/ecdsa.rs
+silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ed25519.rs
+silent_rm ./polkadot-sdk/substrate/primitives/core/src/ed25519.rs
+silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
+apply_patch remove_ecdsa_ed25519
 
 # Restore emission of events on genesis
 apply_patch events_on_genesis

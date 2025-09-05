@@ -437,8 +437,8 @@ mod tests {
 		auth: &[Ed25519Keyring],
 	) -> finality_grandpa::Commit<H256, u64, S, Id>
 	where
-		Id: From<sp_core::ed25519::Public>,
-		S: From<sp_core::ed25519::Signature>,
+		Id: From<sp_core::sr25519::Public>,
+		S: From<sp_core::sr25519::Signature>,
 	{
 		let mut precommits = Vec::new();
 

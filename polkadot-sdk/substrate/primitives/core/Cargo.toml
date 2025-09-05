@@ -144,13 +144,6 @@ default-features = true
 optional = true
 workspace = true
 
-[dependencies.ed25519-zebra]
-workspace = true
-
-[dependencies.libsecp256k1]
-features = ["static-context"]
-workspace = true
-
 [dependencies.merlin]
 workspace = true
 
@@ -171,14 +164,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.secp256k1]
-features = [
-    "alloc",
-    "recovery",
-]
-optional = true
-workspace = true
-
 [lib]
 bench = false
 
@@ -192,7 +177,6 @@ std = [
     "bs58/std",
     "codec/std",
     "dyn-clonable",
-    "ed25519-zebra/std",
     "full_crypto",
     "futures",
     "futures/thread-pool",
@@ -201,7 +185,6 @@ std = [
     "impl-serde/std",
     "itertools",
     "k256/std",
-    "libsecp256k1/std",
     "log/std",
     "merlin/std",
     "parking_lot",
@@ -212,8 +195,6 @@ std = [
     "rand",
     "scale-info/std",
     "schnorrkel/std",
-    "secp256k1/global-context",
-    "secp256k1/std",
     "serde/std",
     "sp-crypto-hashing/std",
     "sp-debug-derive/std",

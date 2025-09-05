@@ -1,0 +1,915 @@
+diff --git a/substrate/client/cli/src/arg_enums.rs b/substrate/client/cli/src/arg_enums.rs
+index cd245dc..fa0befa 100644
+--- a/substrate/client/cli/src/arg_enums.rs
++++ b/substrate/client/cli/src/arg_enums.rs
+@@ -122,12 +122,8 @@ pub enum NodeKeyType {
+ #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
+ #[value(rename_all = "kebab-case")]
+ pub enum CryptoScheme {
+-	/// Use ed25519.
+-	Ed25519,
+ 	/// Use sr25519.
+ 	Sr25519,
+-	/// Use ecdsa.
+-	Ecdsa,
+ }
+ 
+ /// The type of the output format.
+diff --git a/substrate/client/cli/src/commands/insert_key.rs b/substrate/client/cli/src/commands/insert_key.rs
+index 08a7b95..65a8f67 100644
+--- a/substrate/client/cli/src/commands/insert_key.rs
++++ b/substrate/client/cli/src/commands/insert_key.rs
+@@ -24,7 +24,7 @@ use crate::{
+ use clap::Parser;
+ use sc_keystore::LocalKeystore;
+ use sc_service::config::{BasePath, KeystoreConfig};
+-use sp_core::crypto::{KeyTypeId, SecretString};
++use sp_core::crypto::{Pair, KeyTypeId, SecretString};
+ use sp_keystore::KeystorePtr;
+ 
+ /// The `insert` command
+@@ -86,9 +86,9 @@ impl InsertKeyCmd {
+ 	}
+ }
+ 
+-fn to_vec<P: sp_core::Pair>(uri: &str, pass: Option<SecretString>) -> Result<Vec<u8>, Error> {
+-	let p = utils::pair_from_suri::<P>(uri, pass)?;
+-	Ok(p.public().as_ref().to_vec())
++fn to_vec(uri: &str, pass: Option<SecretString>) -> Result<Vec<u8>, Error> {
++	let p = utils::pair_from_suri(uri, pass)?;
++	Ok(p.public().to_vec())
+ }
+ 
+ #[cfg(test)]
+diff --git a/substrate/client/cli/src/commands/inspect_key.rs b/substrate/client/cli/src/commands/inspect_key.rs
+index b984ccf..b3c59cf 100644
+--- a/substrate/client/cli/src/commands/inspect_key.rs
++++ b/substrate/client/cli/src/commands/inspect_key.rs
+@@ -23,7 +23,7 @@ use crate::{
+ 	with_crypto_scheme, CryptoSchemeFlag, Error, KeystoreParams, NetworkSchemeFlag, OutputTypeFlag,
+ };
+ use clap::Parser;
+-use sp_core::crypto::{ExposeSecret, SecretString, SecretUri, Ss58Codec};
++use sp_core::crypto::{Pair, ExposeSecret, SecretString, SecretUri, Ss58Codec};
+ use std::str::FromStr;
+ 
+ /// The `inspect` command
+@@ -116,7 +116,7 @@ impl InspectKeyCmd {
+ /// `suri`, i.e. without any derivations.
+ ///
+ /// Returns an error if the public key does not match.
+-fn expect_public_from_phrase<Pair: sp_core::Pair>(
++fn expect_public_from_phrase(
+ 	expect_public: &str,
+ 	suri: &str,
+ 	password: Option<&SecretString>,
+@@ -125,15 +125,15 @@ fn expect_public_from_phrase<Pair: sp_core::Pair>(
+ 	let expected_public = if let Some(public) = expect_public.strip_prefix("0x") {
+ 		let hex_public = array_bytes::hex2bytes(public)
+ 			.map_err(|_| format!("Invalid expected public key hex: `{}`", expect_public))?;
+-		Pair::Public::try_from(&hex_public)
++		sp_core::sr25519::Public::try_from(hex_public.as_slice())
+ 			.map_err(|_| format!("Invalid expected public key: `{}`", expect_public))?
+ 	} else {
+-		Pair::Public::from_string_with_version(expect_public)
++		sp_core::sr25519::Public::from_string_with_version(expect_public)
+ 			.map_err(|_| format!("Invalid expected account id: `{}`", expect_public))?
+ 			.0
+ 	};
+ 
+-	let pair = Pair::from_string_with_seed(
++	let pair = sp_core::sr25519::Pair::from_string_with_seed(
+ 		secret_uri.phrase.expose_secret().as_str(),
+ 		password
+ 			.or_else(|| secret_uri.password.as_ref())
+diff --git a/substrate/client/cli/src/commands/mod.rs b/substrate/client/cli/src/commands/mod.rs
+index 2d7a0dc..f44a979 100644
+--- a/substrate/client/cli/src/commands/mod.rs
++++ b/substrate/client/cli/src/commands/mod.rs
+@@ -36,7 +36,6 @@ mod run_cmd;
+ mod sign;
+ mod test;
+ pub mod utils;
+-mod vanity;
+ mod verify;
+ 
+ pub use self::{
+@@ -45,5 +44,5 @@ pub use self::{
+ 	generate_node_key::GenerateKeyCmdCommon, import_blocks_cmd::ImportBlocksCmd,
+ 	insert_key::InsertKeyCmd, inspect_key::InspectKeyCmd, inspect_node_key::InspectNodeKeyCmd,
+ 	key::KeySubcommand, purge_chain_cmd::PurgeChainCmd, revert_cmd::RevertCmd, run_cmd::RunCmd,
+-	sign::SignCmd, vanity::VanityCmd, verify::VerifyCmd,
++	sign::SignCmd, verify::VerifyCmd,
+ };
+diff --git a/substrate/client/cli/src/commands/sign.rs b/substrate/client/cli/src/commands/sign.rs
+index 91b0651..a020f9b 100644
+--- a/substrate/client/cli/src/commands/sign.rs
++++ b/substrate/client/cli/src/commands/sign.rs
+@@ -22,7 +22,7 @@ use crate::{
+ };
+ use array_bytes::bytes2hex;
+ use clap::Parser;
+-use sp_core::crypto::SecretString;
++use sp_core::crypto::{Pair, SecretString};
+ use std::io::{BufRead, Write};
+ 
+ /// The `sign` command
+@@ -74,13 +74,13 @@ impl SignCmd {
+ 	}
+ }
+ 
+-fn sign<P: sp_core::Pair>(
++fn sign(
+ 	suri: &str,
+ 	password: Option<SecretString>,
+ 	message: Vec<u8>,
+ ) -> error::Result<String> {
+-	let pair = utils::pair_from_suri::<P>(suri, password)?;
+-	Ok(bytes2hex("0x", pair.sign(&message).as_ref()))
++	let pair = utils::pair_from_suri(suri, password)?;
++	Ok(bytes2hex::<_, &[u8]>("0x", pair.sign(&message).as_ref()))
+ }
+ 
+ #[cfg(test)]
+diff --git a/substrate/client/cli/src/commands/utils.rs b/substrate/client/cli/src/commands/utils.rs
+index fc725f5..818e30a 100644
+--- a/substrate/client/cli/src/commands/utils.rs
++++ b/substrate/client/cli/src/commands/utils.rs
+@@ -28,9 +28,10 @@ use sp_core::{
+ 		Zeroize,
+ 	},
+ 	hexdisplay::HexDisplay,
+-	Pair,
++	sr25519::{Public, Pair},
++	Pair as PairTrait,
+ };
+-use sp_runtime::{traits::IdentifyAccount, MultiSigner};
++use sp_runtime::traits::IdentifyAccount;
+ use std::path::PathBuf;
+ 
+ /// Public key type for Runtime
+@@ -61,17 +62,14 @@ pub fn read_uri(uri: Option<&String>) -> error::Result<String> {
+ /// 2. Try to construct the `Pair` while using `uri` as input for
+ /// [`sp_core::Pair::from_string_with_seed`].
+ ///
+-/// 3. Try to construct the `Pair::Public` while using `uri` as input for
++/// 3. Try to construct the `Public` while using `uri` as input for
+ ///    [`sp_core::crypto::Ss58Codec::from_string_with_version`].
+-pub fn print_from_uri<Pair>(
++pub fn print_from_uri(
+ 	uri: &str,
+ 	password: Option<SecretString>,
+ 	network_override: Option<Ss58AddressFormat>,
+ 	output: OutputType,
+-) where
+-	Pair: sp_core::Pair,
+-	Pair::Public: Into<MultiSigner>,
+-{
++) {
+ 	let password = password.as_ref().map(|s| s.expose_secret().as_str());
+ 	let network_id = String::from(unwrap_or_default_ss58_version(network_override));
+ 	if let Ok((pair, seed)) = Pair::from_phrase(uri, password) {
+@@ -83,11 +81,11 @@ pub fn print_from_uri<Pair>(
+ 				let json = json!({
+ 					"secretPhrase": uri,
+ 					"networkId": network_id,
+-					"secretSeed": format_seed::<Pair>(seed),
+-					"publicKey": format_public_key::<Pair>(public_key.clone()),
++					"secretSeed": format_seed(seed),
++					"publicKey": format_public_key(public_key.clone()),
+ 					"ss58PublicKey": public_key.to_ss58check_with_version(network_override),
+-					"accountId": format_account_id::<Pair>(public_key),
+-					"ss58Address": pair.public().into().into_account().to_ss58check_with_version(network_override),
++					"accountId": format_account_id(public_key),
++					"ss58Address": pair.public().into_account().to_ss58check_with_version(network_override),
+ 				});
+ 				println!(
+ 					"{}",
+@@ -105,11 +103,11 @@ pub fn print_from_uri<Pair>(
+ 					SS58 Address:      {}",
+ 					uri,
+ 					network_id,
+-					format_seed::<Pair>(seed),
+-					format_public_key::<Pair>(public_key.clone()),
+-					format_account_id::<Pair>(public_key.clone()),
++					format_seed(seed),
++					format_public_key(public_key.clone()),
++					format_account_id(public_key.clone()),
+ 					public_key.to_ss58check_with_version(network_override),
+-					pair.public().into().into_account().to_ss58check_with_version(network_override),
++					pair.public().into_account().to_ss58check_with_version(network_override),
+ 				);
+ 			},
+ 		}
+@@ -122,11 +120,11 @@ pub fn print_from_uri<Pair>(
+ 				let json = json!({
+ 					"secretKeyUri": uri,
+ 					"networkId": network_id,
+-					"secretSeed": if let Some(seed) = seed { format_seed::<Pair>(seed) } else { "n/a".into() },
+-					"publicKey": format_public_key::<Pair>(public_key.clone()),
++					"secretSeed": if let Some(seed) = seed { format_seed(seed) } else { "n/a".into() },
++					"publicKey": format_public_key(public_key.clone()),
+ 					"ss58PublicKey": public_key.to_ss58check_with_version(network_override),
+-					"accountId": format_account_id::<Pair>(public_key),
+-					"ss58Address": pair.public().into().into_account().to_ss58check_with_version(network_override),
++					"accountId": format_account_id(public_key),
++					"ss58Address": pair.public().into_account().to_ss58check_with_version(network_override),
+ 				});
+ 				println!(
+ 					"{}",
+@@ -144,15 +142,15 @@ pub fn print_from_uri<Pair>(
+ 					SS58 Address:      {}",
+ 					uri,
+ 					network_id,
+-					if let Some(seed) = seed { format_seed::<Pair>(seed) } else { "n/a".into() },
+-					format_public_key::<Pair>(public_key.clone()),
+-					format_account_id::<Pair>(public_key.clone()),
++					if let Some(seed) = seed { format_seed(seed) } else { "n/a".into() },
++					format_public_key(public_key.clone()),
++					format_account_id(public_key.clone()),
+ 					public_key.to_ss58check_with_version(network_override),
+-					pair.public().into().into_account().to_ss58check_with_version(network_override),
++					pair.public().into_account().to_ss58check_with_version(network_override),
+ 				);
+ 			},
+ 		}
+-	} else if let Ok((public_key, network)) = Pair::Public::from_string_with_version(uri) {
++	} else if let Ok((public_key, network)) = Public::from_string_with_version(uri) {
+ 		let network_override = network_override.unwrap_or(network);
+ 
+ 		match output {
+@@ -160,8 +158,8 @@ pub fn print_from_uri<Pair>(
+ 				let json = json!({
+ 					"publicKeyUri": uri,
+ 					"networkId": String::from(network_override),
+-					"publicKey": format_public_key::<Pair>(public_key.clone()),
+-					"accountId": format_account_id::<Pair>(public_key.clone()),
++					"publicKey": format_public_key(public_key.clone()),
++					"accountId": format_account_id(public_key.clone()),
+ 					"ss58PublicKey": public_key.to_ss58check_with_version(network_override),
+ 					"ss58Address": public_key.to_ss58check_with_version(network_override),
+ 				});
+@@ -181,8 +179,8 @@ pub fn print_from_uri<Pair>(
+ 					 SS58 Address:       {}",
+ 					uri,
+ 					String::from(network_override),
+-					format_public_key::<Pair>(public_key.clone()),
+-					format_account_id::<Pair>(public_key.clone()),
++					format_public_key(public_key.clone()),
++					format_account_id(public_key.clone()),
+ 					public_key.to_ss58check_with_version(network_override),
+ 					public_key.to_ss58check_with_version(network_override),
+ 				);
+@@ -194,18 +192,14 @@ pub fn print_from_uri<Pair>(
+ }
+ 
+ /// Try to parse given `public` as hex encoded public key and print relevant information.
+-pub fn print_from_public<Pair>(
++pub fn print_from_public(
+ 	public_str: &str,
+ 	network_override: Option<Ss58AddressFormat>,
+ 	output: OutputType,
+-) -> Result<(), Error>
+-where
+-	Pair: sp_core::Pair,
+-	Pair::Public: Into<MultiSigner>,
+-{
++) -> Result<(), Error> {
+ 	let public = array_bytes::hex2bytes(public_str)?;
+ 
+-	let public_key = Pair::Public::try_from(&public)
++	let public_key = Public::try_from(public.as_slice())
+ 		.map_err(|_| "Failed to construct public key from given hex")?;
+ 
+ 	let network_override = unwrap_or_default_ss58_version(network_override);
+@@ -214,8 +208,8 @@ where
+ 		OutputType::Json => {
+ 			let json = json!({
+ 				"networkId": String::from(network_override),
+-				"publicKey": format_public_key::<Pair>(public_key.clone()),
+-				"accountId": format_account_id::<Pair>(public_key.clone()),
++				"publicKey": format_public_key(public_key.clone()),
++				"accountId": format_account_id(public_key.clone()),
+ 				"ss58PublicKey": public_key.to_ss58check_with_version(network_override),
+ 				"ss58Address": public_key.to_ss58check_with_version(network_override),
+ 			});
+@@ -230,8 +224,8 @@ where
+ 				 Public key (SS58):  {}\n  \
+ 				 SS58 Address:       {}",
+ 				String::from(network_override),
+-				format_public_key::<Pair>(public_key.clone()),
+-				format_account_id::<Pair>(public_key.clone()),
++				format_public_key(public_key.clone()),
++				format_account_id(public_key.clone()),
+ 				public_key.to_ss58check_with_version(network_override),
+ 				public_key.to_ss58check_with_version(network_override),
+ 			);
+@@ -242,35 +236,33 @@ where
+ }
+ 
+ /// generate a pair from suri
+-pub fn pair_from_suri<P: Pair>(suri: &str, password: Option<SecretString>) -> Result<P, Error> {
++pub fn pair_from_suri(suri: &str, password: Option<SecretString>) -> Result<Pair, Error> {
+ 	let result = if let Some(pass) = password {
+ 		let mut pass_str = pass.expose_secret().clone();
+-		let pair = P::from_string(suri, Some(&pass_str));
++		let pair = Pair::from_string(suri, Some(&pass_str));
+ 		pass_str.zeroize();
+ 		pair
+ 	} else {
+-		P::from_string(suri, None)
++		Pair::from_string(suri, None)
+ 	};
+ 
+ 	Ok(result.map_err(|err| format!("Invalid phrase {:?}", err))?)
+ }
+ 
+ /// formats seed as hex
+-pub fn format_seed<P: sp_core::Pair>(seed: SeedFor<P>) -> String {
++pub fn format_seed(seed: SeedFor<Pair>) -> String {
+ 	format!("0x{}", HexDisplay::from(&seed.as_ref()))
+ }
+ 
+ /// formats public key as hex
+-fn format_public_key<P: sp_core::Pair>(public_key: PublicFor<P>) -> String {
++fn format_public_key(public_key: PublicFor<Pair>) -> String {
+ 	format!("0x{}", HexDisplay::from(&public_key.as_ref()))
+ }
+ 
+ /// formats public key as accountId as hex
+-fn format_account_id<P: sp_core::Pair>(public_key: PublicFor<P>) -> String
+-where
+-	PublicFor<P>: Into<MultiSigner>,
++fn format_account_id(public_key: sp_core::sr25519::Public) -> String
+ {
+-	format!("0x{}", HexDisplay::from(&public_key.into().into_account().as_ref()))
++	format!("0x{}", HexDisplay::from(&public_key.into_account().as_ref()))
+ }
+ 
+ /// Allows for calling $method with appropriate crypto impl.
+@@ -287,14 +279,8 @@ macro_rules! with_crypto_scheme {
+ 		$method:ident<$($generics:ty),*>( $( $params:expr ),* $(,)?) $(,)?
+ 	) => {
+ 		match $scheme {
+-			$crate::CryptoScheme::Ecdsa => {
+-				$method::<sp_core::ecdsa::Pair, $($generics),*>($($params),*)
+-			}
+ 			$crate::CryptoScheme::Sr25519 => {
+-				$method::<sp_core::sr25519::Pair, $($generics),*>($($params),*)
+-			}
+-			$crate::CryptoScheme::Ed25519 => {
+-				$method::<sp_core::ed25519::Pair, $($generics),*>($($params),*)
++				$method::<$($generics),*>($($params),*)
+ 			}
+ 		}
+ 	};
+diff --git a/substrate/client/cli/src/commands/verify.rs b/substrate/client/cli/src/commands/verify.rs
+index c6d280d..c1c5820 100644
+--- a/substrate/client/cli/src/commands/verify.rs
++++ b/substrate/client/cli/src/commands/verify.rs
+@@ -20,7 +20,7 @@
+ 
+ use crate::{error, params::MessageParams, utils, with_crypto_scheme, CryptoSchemeFlag};
+ use clap::Parser;
+-use sp_core::crypto::{ByteArray, Ss58Codec};
++use sp_core::crypto::{ByteArray, Ss58Codec, Pair};
+ use std::io::BufRead;
+ 
+ /// The `verify` command
+@@ -72,22 +72,19 @@ impl VerifyCmd {
+ 	}
+ }
+ 
+-fn verify<Pair>(sig_data: Vec<u8>, message: Vec<u8>, uri: &str) -> error::Result<()>
+-where
+-	Pair: sp_core::Pair,
+-	Pair::Signature: for<'a> TryFrom<&'a [u8]>,
++fn verify(sig_data: Vec<u8>, message: Vec<u8>, uri: &str) -> error::Result<()>
+ {
+ 	let signature =
+-		Pair::Signature::try_from(&sig_data).map_err(|_| error::Error::SignatureFormatInvalid)?;
++		sp_core::sr25519::Signature::try_from(sig_data.as_slice()).map_err(|_| error::Error::SignatureFormatInvalid)?;
+ 
+ 	let pubkey = if let Ok(pubkey_vec) = array_bytes::hex2bytes(uri) {
+-		Pair::Public::from_slice(pubkey_vec.as_slice())
++		sp_core::sr25519::Public::from_slice(pubkey_vec.as_slice())
+ 			.map_err(|_| error::Error::KeyFormatInvalid)?
+ 	} else {
+-		Pair::Public::from_string(uri)?
++		sp_core::sr25519::Public::from_string(uri)?
+ 	};
+ 
+-	if Pair::verify(&signature, &message, &pubkey) {
++	if sp_core::sr25519::Pair::verify(&signature, &message, &pubkey) {
+ 		println!("Signature verifies correctly.");
+ 	} else {
+ 		return Err(error::Error::SignatureInvalid)
+diff --git a/substrate/client/consensus/grandpa/src/finality_proof.rs b/substrate/client/consensus/grandpa/src/finality_proof.rs
+index 8a47d12..1da18fb 100644
+--- a/substrate/client/consensus/grandpa/src/finality_proof.rs
++++ b/substrate/client/consensus/grandpa/src/finality_proof.rs
+@@ -437,8 +437,8 @@ mod tests {
+ 		auth: &[Ed25519Keyring],
+ 	) -> finality_grandpa::Commit<H256, u64, S, Id>
+ 	where
+-		Id: From<sp_core::ed25519::Public>,
+-		S: From<sp_core::ed25519::Signature>,
++		Id: From<sp_core::sr25519::Public>,
++		S: From<sp_core::sr25519::Signature>,
+ 	{
+ 		let mut precommits = Vec::new();
+ 
+diff --git a/substrate/client/keystore/src/local.rs b/substrate/client/keystore/src/local.rs
+index 180b167..0952f12 100644
+--- a/substrate/client/keystore/src/local.rs
++++ b/substrate/client/keystore/src/local.rs
+@@ -22,7 +22,7 @@ use parking_lot::RwLock;
+ use sp_application_crypto::{AppCrypto, AppPair, IsWrappedBy};
+ use sp_core::{
+ 	crypto::{ByteArray, ExposeSecret, KeyTypeId, Pair as CorePair, SecretString, VrfSecret},
+-	ecdsa, ed25519, sr25519,
++	sr25519,
+ };
+ use sp_keystore::{Error as TraitError, Keystore, KeystorePtr};
+ use std::{
+@@ -212,6 +212,7 @@ impl Keystore for LocalKeystore {
+ 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
+ 	}
+ 
++	/*
+ 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
+ 		self.public_keys::<ed25519::Pair>(key_type)
+ 	}
+@@ -273,6 +274,7 @@ impl Keystore for LocalKeystore {
+ 			.map(|pair| pair.sign_prehashed(msg));
+ 		Ok(sig)
+ 	}
++	*/
+ 
+ 	sp_keystore::bandersnatch_experimental_enabled! {
+ 		fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {
+diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
+index e0d5d7e..acc1915 100644
+--- a/substrate/frame/src/lib.rs
++++ b/substrate/frame/src/lib.rs
+@@ -469,7 +469,7 @@ pub mod runtime {
+ 		use sp_runtime::{generic, traits, OpaqueExtrinsic};
+ 
+ 		/// A signature type compatible capably of handling multiple crypto-schemes.
+-		pub type Signature = sp_runtime::MultiSignature;
++		pub type Signature = sp_core::sr25519::Signature;
+ 
+ 		/// The corresponding account-id type of [`Signature`].
+ 		pub type AccountId =
+@@ -483,8 +483,8 @@ pub mod runtime {
+ 
+ 		// NOTE: `AccountIndex` is provided for future compatibility, if you want to introduce
+ 		// something like `pallet-indices`.
+-		type ExtrinsicInner<T, Extra, AccountIndex = ()> = generic::UncheckedExtrinsic<
+-			sp_runtime::MultiAddress<AccountId, AccountIndex>,
++		type ExtrinsicInner<T, Extra> = generic::UncheckedExtrinsic<
++			sp_core::sr25519::Public,
+ 			<T as SysConfig>::RuntimeCall,
+ 			Signature,
+ 			Extra,
+diff --git a/substrate/frame/support/src/crypto.rs b/substrate/frame/support/src/crypto.rs
+index 1957a7b..c0dd035 100644
+--- a/substrate/frame/support/src/crypto.rs
++++ b/substrate/frame/support/src/crypto.rs
+@@ -17,5 +17,3 @@
+ 
+ //! Utilities for dealing with crypto primitives. Sometimes we need to use these from inside WASM
+ //! contracts, where crypto calculations have weak performance.
+-
+-pub mod ecdsa;
+diff --git a/substrate/primitives/application-crypto/src/lib.rs b/substrate/primitives/application-crypto/src/lib.rs
+index 8180627..5e90c49 100644
+--- a/substrate/primitives/application-crypto/src/lib.rs
++++ b/substrate/primitives/application-crypto/src/lib.rs
+@@ -48,10 +48,8 @@ pub use serde;
+ pub mod bandersnatch;
+ #[cfg(feature = "bls-experimental")]
+ pub mod bls381;
+-pub mod ecdsa;
+ #[cfg(feature = "bls-experimental")]
+ pub mod ecdsa_bls381;
+-pub mod ed25519;
+ pub mod sr25519;
+ mod traits;
+ 
+@@ -62,10 +60,10 @@ pub use traits::*;
+ /// types whose identifier is `$key_type`.
+ ///
+ /// ```rust
+-/// # use sp_application_crypto::{app_crypto, ed25519, KeyTypeId};
+-/// // Declare a new set of crypto types using ed25519 logic that identifies as `KeyTypeId`
++/// # use sp_application_crypto::{app_crypto, sr25519, KeyTypeId};
++/// // Declare a new set of crypto types using sr25519 logic that identifies as `KeyTypeId`
+ /// // of value `b"fuba"`.
+-/// app_crypto!(ed25519, KeyTypeId(*b"fuba"));
++/// app_crypto!(sr25519, KeyTypeId(*b"fuba"));
+ /// ```
+ #[cfg(feature = "full_crypto")]
+ #[macro_export]
+@@ -93,10 +91,10 @@ macro_rules! app_crypto {
+ /// types whose identifier is `$key_type`.
+ ///
+ /// ```rust
+-/// # use sp_application_crypto::{app_crypto, ed25519, KeyTypeId};
+-/// // Declare a new set of crypto types using ed25519 logic that identifies as `KeyTypeId`
++/// # use sp_application_crypto::{app_crypto, sr25519, KeyTypeId};
++/// // Declare a new set of crypto types using sr25519 logic that identifies as `KeyTypeId`
+ /// // of value `b"fuba"`.
+-/// app_crypto!(ed25519, KeyTypeId(*b"fuba"));
++/// app_crypto!(sr25519, KeyTypeId(*b"fuba"));
+ /// ```
+ #[cfg(not(feature = "full_crypto"))]
+ #[macro_export]
+diff --git a/substrate/primitives/consensus/grandpa/src/lib.rs b/substrate/primitives/consensus/grandpa/src/lib.rs
+index 3aa4dc2..2d220e4 100644
+--- a/substrate/primitives/consensus/grandpa/src/lib.rs
++++ b/substrate/primitives/consensus/grandpa/src/lib.rs
+@@ -43,8 +43,8 @@ pub const RUNTIME_LOG_TARGET: &str = "runtime::grandpa";
+ pub const KEY_TYPE: sp_core::crypto::KeyTypeId = sp_application_crypto::key_types::GRANDPA;
+ 
+ mod app {
+-	use sp_application_crypto::{app_crypto, ed25519, key_types::GRANDPA};
+-	app_crypto!(ed25519, GRANDPA);
++	use sp_application_crypto::{app_crypto, sr25519, key_types::GRANDPA};
++	app_crypto!(sr25519, GRANDPA);
+ }
+ 
+ sp_application_crypto::with_pair! {
+@@ -476,7 +476,7 @@ where
+ 
+ 	let encoded = localized_payload(round, set_id, &message);
+ 	let signature = keystore
+-		.ed25519_sign(AuthorityId::ID, public.as_ref(), &encoded[..])
++		.sr25519_sign(AuthorityId::ID, public.as_ref(), &encoded[..])
+ 		.ok()
+ 		.flatten()?
+ 		.try_into()
+diff --git a/substrate/primitives/core/src/crypto.rs b/substrate/primitives/core/src/crypto.rs
+index 03be04c..04b3920 100644
+--- a/substrate/primitives/core/src/crypto.rs
++++ b/substrate/primitives/core/src/crypto.rs
+@@ -17,7 +17,7 @@
+ 
+ //! Cryptographic utilities.
+ 
+-use crate::{ed25519, sr25519, U256};
++use crate::{sr25519, U256};
+ use alloc::{format, str, vec::Vec};
+ #[cfg(all(not(feature = "std"), feature = "serde"))]
+ use alloc::{string::String, vec};
+@@ -594,11 +594,13 @@ impl From<sr25519::Public> for AccountId32 {
+ 	}
+ }
+ 
++/*
+ impl From<ed25519::Public> for AccountId32 {
+ 	fn from(k: ed25519::Public) -> Self {
+ 		k.0.into()
+ 	}
+ }
++*/
+ 
+ #[cfg(feature = "std")]
+ impl std::fmt::Display for AccountId32 {
+diff --git a/substrate/primitives/core/src/lib.rs b/substrate/primitives/core/src/lib.rs
+index cb8a9a7..793b514 100644
+--- a/substrate/primitives/core/src/lib.rs
++++ b/substrate/primitives/core/src/lib.rs
+@@ -75,8 +75,6 @@ pub mod bandersnatch;
+ #[cfg(feature = "bls-experimental")]
+ pub mod bls;
+ pub mod crypto_bytes;
+-pub mod ecdsa;
+-pub mod ed25519;
+ pub mod sr25519;
+ 
+ #[cfg(feature = "bls-experimental")]
+diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
+index 0184822..8d283d0 100644
+--- a/substrate/primitives/io/src/lib.rs
++++ b/substrate/primitives/io/src/lib.rs
+@@ -98,7 +98,6 @@ use sp_keystore::KeystoreExt;
+ use sp_core::bandersnatch;
+ use sp_core::{
+ 	crypto::KeyTypeId,
+-	ecdsa, ed25519,
+ 	offchain::{
+ 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
+ 	},
+@@ -120,12 +119,6 @@ use sp_runtime_interface::{
+ 
+ use codec::{Decode, Encode};
+ 
+-#[cfg(feature = "std")]
+-use secp256k1::{
+-	ecdsa::{RecoverableSignature, RecoveryId},
+-	Message, SECP256K1,
+-};
+-
+ #[cfg(feature = "std")]
+ use sp_externalities::{Externalities, ExternalitiesExt};
+ 
+@@ -756,6 +749,7 @@ pub trait Misc {
+ 	}
+ }
+ 
++/*
+ #[cfg(feature = "std")]
+ sp_externalities::decl_extension! {
+ 	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
+@@ -783,10 +777,12 @@ impl Default for UseDalekExt {
+ 		Self
+ 	}
+ }
++*/
+ 
+ /// Interfaces for working with crypto related types from within the runtime.
+ #[runtime_interface]
+ pub trait Crypto {
++	/*
+ 	/// Returns all `ed25519` public keys for the given key id from the keystore.
+ 	fn ed25519_public_keys(&mut self, id: KeyTypeId) -> Vec<ed25519::Public> {
+ 		self.extension::<KeystoreExt>()
+@@ -877,6 +873,7 @@ pub trait Crypto {
+ 
+ 		res
+ 	}
++	*/
+ 
+ 	/// Verify `sr25519` signature.
+ 	///
+@@ -997,6 +994,7 @@ pub trait Crypto {
+ 		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
+ 	}
+ 
++	/*
+ 	/// Returns all `ecdsa` public keys for the given key id from the keystore.
+ 	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
+ 		self.extension::<KeystoreExt>()
+@@ -1203,6 +1201,7 @@ pub trait Crypto {
+ 			.map_err(|_| EcdsaVerifyError::BadSignature)?;
+ 		Ok(pubkey.serialize())
+ 	}
++	*/
+ 
+ 	/// Generate an `bls12-381` key for the given key type using an optional `seed` and
+ 	/// store it in the keystore.
+diff --git a/substrate/primitives/keyring/src/lib.rs b/substrate/primitives/keyring/src/lib.rs
+index 36e77da..6f421c1 100644
+--- a/substrate/primitives/keyring/src/lib.rs
++++ b/substrate/primitives/keyring/src/lib.rs
+@@ -25,16 +25,12 @@ use alloc::fmt;
+ /// Test account crypto for sr25519.
+ pub mod sr25519;
+ 
+-/// Test account crypto for ed25519.
+-pub mod ed25519;
+-
+ /// Test account crypto for bandersnatch.
+ #[cfg(feature = "bandersnatch-experimental")]
+ pub mod bandersnatch;
+ 
+ #[cfg(feature = "bandersnatch-experimental")]
+ pub use bandersnatch::Keyring as BandersnatchKeyring;
+-pub use ed25519::Keyring as Ed25519Keyring;
+ pub use sr25519::Keyring as Sr25519Keyring;
+ 
+ #[derive(Debug)]
+diff --git a/substrate/primitives/keyring/src/sr25519.rs b/substrate/primitives/keyring/src/sr25519.rs
+index 5ff9056..ed83b90 100644
+--- a/substrate/primitives/keyring/src/sr25519.rs
++++ b/substrate/primitives/keyring/src/sr25519.rs
+@@ -149,12 +149,6 @@ impl From<Keyring> for &'static str {
+ 	}
+ }
+ 
+-impl From<Keyring> for sp_runtime::MultiSigner {
+-	fn from(x: Keyring) -> Self {
+-		sp_runtime::MultiSigner::Sr25519(x.into())
+-	}
+-}
+-
+ impl FromStr for Keyring {
+ 	type Err = ParseKeyringError;
+ 
+diff --git a/substrate/primitives/keystore/src/lib.rs b/substrate/primitives/keystore/src/lib.rs
+index 42ad2c6..53b016e 100644
+--- a/substrate/primitives/keystore/src/lib.rs
++++ b/substrate/primitives/keystore/src/lib.rs
+@@ -30,7 +30,7 @@ use sp_core::bandersnatch;
+ use sp_core::{bls381, ecdsa_bls381};
+ use sp_core::{
+ 	crypto::{ByteArray, CryptoTypeId, KeyTypeId},
+-	ecdsa, ed25519, sr25519,
++	sr25519,
+ };
+ 
+ use alloc::{string::String, sync::Arc, vec::Vec};
+@@ -120,6 +120,7 @@ pub trait Keystore: Send + Sync {
+ 		input: &sr25519::vrf::VrfInput,
+ 	) -> Result<Option<sr25519::vrf::VrfPreOutput>, Error>;
+ 
++	/*
+ 	/// Returns all ed25519 public keys for the given key type.
+ 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public>;
+ 
+@@ -190,6 +191,7 @@ pub trait Keystore: Send + Sync {
+ 		public: &ecdsa::Public,
+ 		msg: &[u8; 32],
+ 	) -> Result<Option<ecdsa::Signature>, Error>;
++	*/
+ 
+ 	/// Returns all the bandersnatch public keys for the given key type.
+ 	#[cfg(feature = "bandersnatch-experimental")]
+@@ -401,6 +403,7 @@ pub trait Keystore: Send + Sync {
+ 					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
+ 				self.sr25519_sign(id, &public, msg)?.map(|s| s.encode())
+ 			},
++			/*
+ 			ed25519::CRYPTO_ID => {
+ 				let public = ed25519::Public::from_slice(public)
+ 					.map_err(|_| Error::ValidationError("Invalid public key format".into()))?;
+@@ -412,6 +415,7 @@ pub trait Keystore: Send + Sync {
+ 
+ 				self.ecdsa_sign(id, &public, msg)?.map(|s| s.encode())
+ 			},
++			*/
+ 			#[cfg(feature = "bandersnatch-experimental")]
+ 			bandersnatch::CRYPTO_ID => {
+ 				let public = bandersnatch::Public::from_slice(public)
+@@ -476,6 +480,7 @@ impl<T: Keystore + ?Sized> Keystore for Arc<T> {
+ 		(**self).sr25519_vrf_pre_output(key_type, public, input)
+ 	}
+ 
++	/*
+ 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
+ 		(**self).ed25519_public_keys(key_type)
+ 	}
+@@ -526,6 +531,7 @@ impl<T: Keystore + ?Sized> Keystore for Arc<T> {
+ 	) -> Result<Option<ecdsa::Signature>, Error> {
+ 		(**self).ecdsa_sign_prehashed(key_type, public, msg)
+ 	}
++	*/
+ 
+ 	#[cfg(feature = "bandersnatch-experimental")]
+ 	fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {
+diff --git a/substrate/primitives/keystore/src/testing.rs b/substrate/primitives/keystore/src/testing.rs
+index 7939ee8..379a17b 100644
+--- a/substrate/primitives/keystore/src/testing.rs
++++ b/substrate/primitives/keystore/src/testing.rs
+@@ -25,7 +25,7 @@ use sp_core::bandersnatch;
+ use sp_core::{bls381, ecdsa_bls381, KeccakHasher};
+ use sp_core::{
+ 	crypto::{ByteArray, KeyTypeId, Pair, VrfSecret},
+-	ecdsa, ed25519, sr25519,
++	sr25519,
+ };
+ 
+ use parking_lot::RwLock;
+@@ -164,6 +164,7 @@ impl Keystore for MemoryKeystore {
+ 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
+ 	}
+ 
++	/*
+ 	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
+ 		self.public_keys::<ed25519::Pair>(key_type)
+ 	}
+@@ -215,6 +216,7 @@ impl Keystore for MemoryKeystore {
+ 		let sig = self.pair::<ecdsa::Pair>(key_type, public).map(|pair| pair.sign_prehashed(msg));
+ 		Ok(sig)
+ 	}
++	*/
+ 
+ 	#[cfg(feature = "bandersnatch-experimental")]
+ 	fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {
+diff --git a/substrate/primitives/runtime/src/lib.rs b/substrate/primitives/runtime/src/lib.rs
+index b9f69b6..2f4c483 100644
+--- a/substrate/primitives/runtime/src/lib.rs
++++ b/substrate/primitives/runtime/src/lib.rs
+@@ -74,7 +74,6 @@ pub use sp_core::storage::{Storage, StorageChild};
+ 
+ use sp_core::{
+ 	crypto::{self, ByteArray, FromEntropy},
+-	ecdsa, ed25519,
+ 	hash::{H256, H512},
+ 	sr25519,
+ };
+@@ -270,6 +269,7 @@ impl BuildStorage for () {
+ /// Consensus engine unique ID.
+ pub type ConsensusEngineId = [u8; 4];
+ 
++/*
+ /// Signature verify that can work with any known signature types.
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ #[derive(
+@@ -380,16 +380,14 @@ impl FromEntropy for MultiSigner {
+ /// we convert the hash into some AccountId, it's fine to use any scheme.
+ impl<T: Into<H256>> crypto::UncheckedFrom<T> for MultiSigner {
+ 	fn unchecked_from(x: T) -> Self {
+-		ed25519::Public::unchecked_from(x.into()).into()
++		sr25519::Public::unchecked_from(x.into()).into()
+ 	}
+ }
+ 
+ impl AsRef<[u8]> for MultiSigner {
+ 	fn as_ref(&self) -> &[u8] {
+ 		match *self {
+-			Self::Ed25519(ref who) => who.as_ref(),
+ 			Self::Sr25519(ref who) => who.as_ref(),
+-			Self::Ecdsa(ref who) => who.as_ref(),
+ 		}
+ 	}
+ }
+@@ -515,6 +513,7 @@ impl From<ed25519::Signature> for AnySignature {
+ 		Self(s.into())
+ 	}
+ }
++*/
+ 
+ impl From<DispatchError> for DispatchOutcome {
+ 	fn from(err: DispatchError) -> Self {
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index 0cda70e..af9978b 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -84,12 +84,14 @@ pub trait IdentifyAccount {
+ 	fn into_account(self) -> Self::AccountId;
+ }
+ 
++/*
+ impl IdentifyAccount for sp_core::ed25519::Public {
+ 	type AccountId = Self;
+ 	fn into_account(self) -> Self {
+ 		self
+ 	}
+ }
++*/
+ 
+ impl IdentifyAccount for sp_core::sr25519::Public {
+ 	type AccountId = Self;
+@@ -98,12 +100,14 @@ impl IdentifyAccount for sp_core::sr25519::Public {
+ 	}
+ }
+ 
++/*
+ impl IdentifyAccount for sp_core::ecdsa::Public {
+ 	type AccountId = Self;
+ 	fn into_account(self) -> Self {
+ 		self
+ 	}
+ }
++*/
+ 
+ /// Means of signature verification.
+ pub trait Verify {
+@@ -119,6 +123,7 @@ pub trait Verify {
+ 	) -> bool;
+ }
+ 
++/*
+ impl Verify for sp_core::ed25519::Signature {
+ 	type Signer = sp_core::ed25519::Public;
+ 
+@@ -126,6 +131,7 @@ impl Verify for sp_core::ed25519::Signature {
+ 		sp_io::crypto::ed25519_verify(self, msg.get(), signer)
+ 	}
+ }
++*/
+ 
+ impl Verify for sp_core::sr25519::Signature {
+ 	type Signer = sp_core::sr25519::Public;
+@@ -135,6 +141,7 @@ impl Verify for sp_core::sr25519::Signature {
+ 	}
+ }
+ 
++/*
+ impl Verify for sp_core::ecdsa::Signature {
+ 	type Signer = sp_core::ecdsa::Public;
+ 	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa::Public) -> bool {
+@@ -147,6 +154,7 @@ impl Verify for sp_core::ecdsa::Signature {
+ 		}
+ 	}
+ }
++*/
+ 
+ /// Means of signature verification of an application key.
+ pub trait AppVerify {
+@@ -2185,12 +2193,9 @@ macro_rules! impl_opaque_keys_inner {
+ ///
+ /// ```rust
+ /// use sp_runtime::{
+-/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::{sr25519, ed25519}
++/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::sr25519
+ /// };
+ ///
+-/// pub struct KeyModule;
+-/// impl BoundToRuntimeAppPublic for KeyModule { type Public = ed25519::AppPublic; }
+-///
+ /// pub struct KeyModule2;
+ /// impl BoundToRuntimeAppPublic for KeyModule2 { type Public = sr25519::AppPublic; }
+ ///

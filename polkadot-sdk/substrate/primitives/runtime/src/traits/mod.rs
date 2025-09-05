@@ -84,12 +84,14 @@ pub trait IdentifyAccount {
 	fn into_account(self) -> Self::AccountId;
 }
 
+/*
 impl IdentifyAccount for sp_core::ed25519::Public {
 	type AccountId = Self;
 	fn into_account(self) -> Self {
 		self
 	}
 }
+*/
 
 impl IdentifyAccount for sp_core::sr25519::Public {
 	type AccountId = Self;
@@ -98,12 +100,14 @@ impl IdentifyAccount for sp_core::sr25519::Public {
 	}
 }
 
+/*
 impl IdentifyAccount for sp_core::ecdsa::Public {
 	type AccountId = Self;
 	fn into_account(self) -> Self {
 		self
 	}
 }
+*/
 
 /// Means of signature verification.
 pub trait Verify {
@@ -119,6 +123,7 @@ pub trait Verify {
 	) -> bool;
 }
 
+/*
 impl Verify for sp_core::ed25519::Signature {
 	type Signer = sp_core::ed25519::Public;
 
@@ -126,6 +131,7 @@ impl Verify for sp_core::ed25519::Signature {
 		sp_io::crypto::ed25519_verify(self, msg.get(), signer)
 	}
 }
+*/
 
 impl Verify for sp_core::sr25519::Signature {
 	type Signer = sp_core::sr25519::Public;
@@ -135,6 +141,7 @@ impl Verify for sp_core::sr25519::Signature {
 	}
 }
 
+/*
 impl Verify for sp_core::ecdsa::Signature {
 	type Signer = sp_core::ecdsa::Public;
 	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa::Public) -> bool {
@@ -147,6 +154,7 @@ impl Verify for sp_core::ecdsa::Signature {
 		}
 	}
 }
+*/
 
 /// Means of signature verification of an application key.
 pub trait AppVerify {
@@ -2185,11 +2193,8 @@ macro_rules! impl_opaque_keys_inner {
 ///
 /// ```rust
 /// use sp_runtime::{
-/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::{sr25519, ed25519}
+/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::sr25519
 /// };
-///
-/// pub struct KeyModule;
-/// impl BoundToRuntimeAppPublic for KeyModule { type Public = ed25519::AppPublic; }
 ///
 /// pub struct KeyModule2;
 /// impl BoundToRuntimeAppPublic for KeyModule2 { type Public = sr25519::AppPublic; }

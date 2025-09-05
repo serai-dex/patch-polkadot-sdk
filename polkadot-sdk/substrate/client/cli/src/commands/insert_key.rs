@@ -24,7 +24,7 @@ use crate::{
 use clap::Parser;
 use sc_keystore::LocalKeystore;
 use sc_service::config::{BasePath, KeystoreConfig};
-use sp_core::crypto::{KeyTypeId, SecretString};
+use sp_core::crypto::{Pair, KeyTypeId, SecretString};
 use sp_keystore::KeystorePtr;
 
 /// The `insert` command
@@ -86,9 +86,9 @@ impl InsertKeyCmd {
 	}
 }
 
-fn to_vec<P: sp_core::Pair>(uri: &str, pass: Option<SecretString>) -> Result<Vec<u8>, Error> {
-	let p = utils::pair_from_suri::<P>(uri, pass)?;
-	Ok(p.public().as_ref().to_vec())
+fn to_vec(uri: &str, pass: Option<SecretString>) -> Result<Vec<u8>, Error> {
+	let p = utils::pair_from_suri(uri, pass)?;
+	Ok(p.public().to_vec())
 }
 
 #[cfg(test)]
