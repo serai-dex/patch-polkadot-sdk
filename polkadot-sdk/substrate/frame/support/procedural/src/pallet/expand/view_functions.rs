@@ -105,7 +105,6 @@ fn expand_view_function(
 			#frame_support::__private::codec::Encode,
 			#frame_support::__private::codec::Decode,
 			#frame_support::__private::codec::DecodeWithMemTracking,
-			#frame_support::__private::scale_info::TypeInfo,
 		)]
 		#[codec(encode_bound())]
 		#[codec(decode_bound())]

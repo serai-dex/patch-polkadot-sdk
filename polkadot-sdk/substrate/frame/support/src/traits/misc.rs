@@ -21,7 +21,6 @@ use crate::dispatch::{DispatchResult, Parameter};
 use alloc::{vec, vec::Vec};
 use codec::{CompactLen, Decode, DecodeLimit, Encode, EncodeLike, Input, MaxEncodedLen};
 use impl_trait_for_tuples::impl_for_tuples;
-use scale_info::{build::Fields, meta_type, Path, Type, TypeInfo, TypeParameter};
 use sp_arithmetic::traits::{CheckedAdd, CheckedMul, CheckedSub, One, Saturating};
 use sp_core::bounded::bounded_vec::TruncateFrom;
 
@@ -927,13 +926,7 @@ pub trait ExtrinsicCall: sp_runtime::traits::ExtrinsicLike {
 }
 
 impl<Address, Call, Signature, Extra> ExtrinsicCall
-	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
-where
-	Address: TypeInfo,
-	Call: TypeInfo,
-	Signature: TypeInfo,
-	Extra: TypeInfo,
-{
+	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra> {
 	type Call = Call;
 
 	fn call(&self) -> &Call {
@@ -948,13 +941,7 @@ pub trait InherentBuilder: ExtrinsicCall {
 }
 
 impl<Address, Call, Signature, Extra> InherentBuilder
-	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
-where
-	Address: TypeInfo,
-	Call: TypeInfo,
-	Signature: TypeInfo,
-	Extra: TypeInfo,
-{
+	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra> {
 	fn new_inherent(call: Self::Call) -> Self {
 		Self::new_bare(call)
 	}
@@ -977,13 +964,7 @@ pub trait SignedTransactionBuilder: ExtrinsicCall {
 }
 
 impl<Address, Call, Signature, Extension> SignedTransactionBuilder
-	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension>
-where
-	Address: TypeInfo,
-	Call: TypeInfo,
-	Signature: TypeInfo,
-	Extension: TypeInfo,
-{
+	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension> {
 	type Address = Address;
 	type Signature = Signature;
 	type Extension = Extension;
@@ -1082,20 +1063,6 @@ impl<T: MaxEncodedLen> MaxEncodedLen for WrapperOpaque<T> {
 	}
 }
 
-impl<T: TypeInfo + 'static> TypeInfo for WrapperOpaque<T> {
-	type Identity = Self;
-	fn type_info() -> Type {
-		Type::builder()
-			.path(Path::new("WrapperOpaque", module_path!()))
-			.type_params(vec![TypeParameter::new("T", Some(meta_type::<T>()))])
-			.composite(
-				Fields::unnamed()
-					.field(|f| f.compact::<u32>())
-					.field(|f| f.ty::<T>().type_name("T")),
-			)
-	}
-}
-
 /// A wrapper for any type `T` which implement encode/decode in a way compatible with `Vec<u8>`.
 ///
 /// This type is similar to [`WrapperOpaque`], but it differs in the way it stores the type `T`.
@@ -1166,20 +1133,6 @@ impl<T: Decode> Decode for WrapperKeepOpaque<T> {
 impl<T: MaxEncodedLen> MaxEncodedLen for WrapperKeepOpaque<T> {
 	fn max_encoded_len() -> usize {
 		WrapperOpaque::<T>::max_encoded_len()
-	}
-}
-
-impl<T: TypeInfo + 'static> TypeInfo for WrapperKeepOpaque<T> {
-	type Identity = Self;
-	fn type_info() -> Type {
-		Type::builder()
-			.path(Path::new("WrapperKeepOpaque", module_path!()))
-			.type_params(vec![TypeParameter::new("T", Some(meta_type::<T>()))])
-			.composite(
-				Fields::unnamed()
-					.field(|f| f.compact::<u32>())
-					.field(|f| f.ty::<T>().type_name("T")),
-			)
 	}
 }
 

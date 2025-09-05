@@ -36,13 +36,6 @@ workspace = true
 [dependencies.log]
 workspace = true
 
-[dependencies.scale-info]
-features = [
-    "derive",
-    "serde",
-]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -75,7 +68,6 @@ std = [
     "codec/std",
     "frame-support/std",
     "log/std",
-    "scale-info/std",
     "serde/std",
     "sp-core/std",
     "sp-io/std",

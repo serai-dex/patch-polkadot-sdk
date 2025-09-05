@@ -37,10 +37,6 @@ workspace = true
 [dependencies.frame-system]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 optional = true
 workspace = true
@@ -62,7 +58,6 @@ std = [
     "frame-benchmarking?/std",
     "frame-support/std",
     "frame-system/std",
-    "scale-info/std",
     "serde",
     "sp-core/std",
     "sp-io/std",

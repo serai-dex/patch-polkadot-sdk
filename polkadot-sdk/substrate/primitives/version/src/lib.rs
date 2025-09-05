@@ -45,7 +45,6 @@ use std::collections::HashSet;
 #[doc(hidden)]
 pub use alloc::borrow::Cow;
 use codec::{Decode, Encode, Input};
-use scale_info::TypeInfo;
 #[allow(deprecated)]
 pub use sp_runtime::{create_runtime_str, StateVersion};
 #[doc(hidden)]
@@ -162,7 +161,7 @@ macro_rules! create_apis_vec {
 /// In particular: bug fixes should result in an increment of `spec_version` and possibly
 /// `authoring_version`, absolutely not `impl_version` since they change the semantics of the
 /// runtime.
-#[derive(Clone, PartialEq, Eq, Encode, Default, sp_runtime::RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Default, sp_runtime::RuntimeDebug)]
 pub struct RuntimeVersion {
 	/// Identifies the different Substrate runtimes. There'll be at least polkadot and node.
 	/// A different on-chain spec_name to that of the native runtime would normally result

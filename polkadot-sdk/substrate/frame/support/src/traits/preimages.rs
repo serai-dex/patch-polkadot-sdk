@@ -19,7 +19,6 @@
 
 use alloc::borrow::Cow;
 use codec::{Decode, DecodeWithMemTracking, Encode, EncodeLike, MaxEncodedLen};
-use scale_info::TypeInfo;
 use sp_core::RuntimeDebug;
 use sp_runtime::{
 	traits::{ConstU32, Hash},
@@ -39,7 +38,6 @@ const MAX_LEGACY_LEN: u32 = 1_000_000;
 	Clone,
 	Eq,
 	PartialEq,
-	TypeInfo,
 	RuntimeDebug,
 )]
 #[codec(mel_bound())]

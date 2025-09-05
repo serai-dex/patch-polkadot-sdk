@@ -20,7 +20,6 @@
 use crate::{
 	codec::{Codec, Decode, DecodeWithMemTracking, Encode},
 	generic::Digest,
-	scale_info::TypeInfo,
 	traits::{self, AtLeast32BitUnsigned, BlockNumber, Hash as HashT, MaybeDisplay, Member},
 };
 #[cfg(feature = "serde")]
@@ -29,9 +28,8 @@ use sp_core::U256;
 
 /// Abstraction over a block header for a substrate chain.
 #[derive(
-	Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, sp_core::RuntimeDebug, TypeInfo,
+	Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, sp_core::RuntimeDebug,
 )]
-#[scale_info(skip_type_params(Hash))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]

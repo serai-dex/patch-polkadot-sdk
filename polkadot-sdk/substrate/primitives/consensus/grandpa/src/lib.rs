@@ -26,7 +26,6 @@ use serde::Serialize;
 
 use alloc::vec::Vec;
 use codec::{Codec, Decode, DecodeWithMemTracking, Encode};
-use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use sp_keystore::KeystorePtr;
 use sp_runtime::{
@@ -128,7 +127,7 @@ pub type CompactCommit<Header> = finality_grandpa::CompactCommit<
 ///
 /// This is meant to be stored in the db and passed around the network to other
 /// nodes, and are used by syncing nodes to prove authority set handoffs.
-#[derive(Clone, Encode, Decode, PartialEq, Eq, TypeInfo)]
+#[derive(Clone, Encode, Decode, PartialEq, Eq)]
 #[cfg_attr(feature = "std", derive(Debug))]
 pub struct GrandpaJustification<Header: HeaderT> {
 	pub round: u64,
@@ -137,7 +136,7 @@ pub struct GrandpaJustification<Header: HeaderT> {
 }
 
 /// A scheduled change of authority set.
-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 pub struct ScheduledChange<N> {
 	/// The new authorities after the change, along with their respective weights.
@@ -231,7 +230,7 @@ impl<N: Codec> ConsensusLog<N> {
 /// GRANDPA happens when a voter votes on the same round (either at prevote or
 /// precommit stage) for different blocks. Proving is achieved by collecting the
 /// signed messages of conflicting votes.
-#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq, TypeInfo)]
+#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq)]
 pub struct EquivocationProof<H, N> {
 	set_id: SetId,
 	equivocation: Equivocation<H, N>,
@@ -265,7 +264,7 @@ impl<H, N> EquivocationProof<H, N> {
 
 /// Wrapper object for GRANDPA equivocation proofs, useful for unifying prevote
 /// and precommit equivocations under a common type.
-#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq, TypeInfo)]
+#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq)]
 pub enum Equivocation<H, N> {
 	/// Proof of equivocation at prevote stage.
 	Prevote(

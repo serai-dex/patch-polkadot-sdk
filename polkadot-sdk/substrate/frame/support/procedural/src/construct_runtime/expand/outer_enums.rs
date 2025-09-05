@@ -160,7 +160,6 @@ pub fn expand_outer_enum(
 			#scrate::__private::codec::Encode,
 			#scrate::__private::codec::Decode,
 			#scrate::__private::codec::DecodeWithMemTracking,
-			#scrate::__private::scale_info::TypeInfo,
 			#scrate::__private::Debug,
 		)]
 		#[allow(non_camel_case_types)]

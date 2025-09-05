@@ -37,7 +37,6 @@ use alloc::vec::Vec;
 #[doc(hidden)]
 pub use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use core::ops::Deref;
-use scale_info::TypeInfo;
 #[cfg(feature = "serde")]
 pub use serde;
 #[cfg(feature = "serde")]
@@ -147,7 +146,7 @@ impl alloc::str::FromStr for Bytes {
 }
 
 /// Stores the encoded `RuntimeMetadata` for the native side as opaque type.
-#[derive(Encode, Decode, PartialEq, TypeInfo)]
+#[derive(Encode, Decode, PartialEq)]
 pub struct OpaqueMetadata(Vec<u8>);
 
 impl OpaqueMetadata {
@@ -178,7 +177,6 @@ impl Deref for OpaqueMetadata {
 	DecodeWithMemTracking,
 	RuntimeDebug,
 	PassByInner,
-	TypeInfo,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct OpaquePeerId(pub Vec<u8>);
@@ -330,7 +328,6 @@ pub fn to_substrate_wasm_fn_return_value(value: &impl Encode) -> u64 {
 	Eq,
 	PartialEq,
 	RuntimeDebug,
-	TypeInfo,
 	MaxEncodedLen,
 )]
 pub enum Void {}

@@ -37,10 +37,6 @@ workspace = true
 [dependencies.num-traits]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -58,10 +54,6 @@ default = ["std"]
 std = [
     "codec/std",
     "num-traits/std",
-    "scale-info/std",
     "serde/std",
 ]
-serde = [
-    "dep:serde",
-    "scale-info/serde",
-]
+serde = ["dep:serde"]

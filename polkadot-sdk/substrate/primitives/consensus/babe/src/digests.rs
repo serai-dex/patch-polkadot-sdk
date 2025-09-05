@@ -28,10 +28,9 @@ use sp_core::sr25519::vrf::VrfSignature;
 use sp_runtime::{DigestItem, RuntimeDebug};
 
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
 
 /// Raw BABE primary slot assignment pre-digest.
-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 pub struct PrimaryPreDigest {
 	/// Authority index
 	pub authority_index: super::AuthorityIndex,
@@ -42,7 +41,7 @@ pub struct PrimaryPreDigest {
 }
 
 /// BABE secondary slot assignment pre-digest.
-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 pub struct SecondaryPlainPreDigest {
 	/// Authority index
 	///
@@ -56,7 +55,7 @@ pub struct SecondaryPlainPreDigest {
 }
 
 /// BABE secondary deterministic slot assignment with VRF outputs.
-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 pub struct SecondaryVRFPreDigest {
 	/// Authority index
 	pub authority_index: super::AuthorityIndex,
@@ -69,7 +68,7 @@ pub struct SecondaryVRFPreDigest {
 /// A BABE pre-runtime digest. This contains all data required to validate a
 /// block and for the BABE runtime module. Slots can be assigned to a primary
 /// (VRF based) and to a secondary (slot number based).
-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
+#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 pub enum PreDigest {
 	/// A primary VRF-based slot assignment.
 	#[codec(index = 1)]
@@ -147,7 +146,6 @@ pub struct NextEpochDescriptor {
 	Clone,
 	RuntimeDebug,
 	MaxEncodedLen,
-	scale_info::TypeInfo,
 )]
 pub enum NextConfigDescriptor {
 	/// Version 1.

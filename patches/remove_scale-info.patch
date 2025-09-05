@@ -1,0 +1,3219 @@
+diff --git a/substrate/client/rpc-api/src/dev/mod.rs b/substrate/client/rpc-api/src/dev/mod.rs
+index 5c6208f..b06a41f 100644
+--- a/substrate/client/rpc-api/src/dev/mod.rs
++++ b/substrate/client/rpc-api/src/dev/mod.rs
+@@ -25,11 +25,10 @@ pub mod error;
+ use codec::{Decode, Encode};
+ use error::Error;
+ use jsonrpsee::proc_macros::rpc;
+-use scale_info::TypeInfo;
+ use serde::{Deserialize, Serialize};
+ 
+ /// Statistics of a block returned by the `dev_getBlockStats` RPC.
+-#[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, Debug, TypeInfo, Serialize, Deserialize)]
++#[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, Debug, Serialize, Deserialize)]
+ #[serde(rename_all = "camelCase")]
+ pub struct BlockStats {
+ 	/// The length in bytes of the storage proof produced by executing the block.
+diff --git a/substrate/frame/benchmarking/src/utils.rs b/substrate/frame/benchmarking/src/utils.rs
+index 3a10e43..f93c8ef 100644
+--- a/substrate/frame/benchmarking/src/utils.rs
++++ b/substrate/frame/benchmarking/src/utils.rs
+@@ -19,7 +19,6 @@
+ use alloc::vec::Vec;
+ use codec::{Decode, Encode};
+ use frame_support::{dispatch::DispatchErrorWithPostInfo, pallet_prelude::*, traits::StorageInfo};
+-use scale_info::TypeInfo;
+ #[cfg(feature = "std")]
+ use serde::{Deserialize, Serialize};
+ use sp_io::hashing::blake2_256;
+@@ -28,7 +27,7 @@ use sp_storage::TrackedStorageKey;
+ 
+ /// An alphabet of possible parameters to use for benchmarking.
+ #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+-#[derive(Encode, Decode, Clone, Copy, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Clone, Copy, PartialEq, Debug)]
+ #[allow(missing_docs)]
+ #[allow(non_camel_case_types)]
+ pub enum BenchmarkParameter {
+@@ -69,7 +68,7 @@ impl std::fmt::Display for BenchmarkParameter {
+ 
+ /// The results of a single of benchmark.
+ #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+-#[derive(Encode, Decode, Clone, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Clone, PartialEq, Debug)]
+ pub struct BenchmarkBatch {
+ 	/// The pallet containing this benchmark.
+ 	#[cfg_attr(feature = "std", serde(with = "serde_as_str"))]
+@@ -108,7 +107,7 @@ pub struct BenchmarkBatchSplitResults {
+ /// Contains duration of the function call in nanoseconds along with the benchmark parameters
+ /// used for that benchmark result.
+ #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
+ pub struct BenchmarkResult {
+ 	pub components: Vec<(BenchmarkParameter, u32)>,
+ 	pub extrinsic_time: u128,
+@@ -196,7 +195,7 @@ impl From<DispatchError> for BenchmarkError {
+ }
+ 
+ /// Configuration used to setup and run runtime benchmarks.
+-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
+ pub struct BenchmarkConfig {
+ 	/// The encoded name of the pallet to benchmark.
+ 	pub pallet: Vec<u8>,
+@@ -215,14 +214,14 @@ pub struct BenchmarkConfig {
+ /// A list of benchmarks available for a particular pallet and instance.
+ ///
+ /// All `Vec<u8>` must be valid utf8 strings.
+-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
+ pub struct BenchmarkList {
+ 	pub pallet: Vec<u8>,
+ 	pub instance: Vec<u8>,
+ 	pub benchmarks: Vec<BenchmarkMetadata>,
+ }
+ 
+-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
+ pub struct BenchmarkMetadata {
+ 	pub name: Vec<u8>,
+ 	pub components: Vec<(BenchmarkParameter, u32, u32)>,
+diff --git a/substrate/frame/executive/src/tests.rs b/substrate/frame/executive/src/tests.rs
+index cd7f6c5..f917831 100644
+--- a/substrate/frame/executive/src/tests.rs
++++ b/substrate/frame/executive/src/tests.rs
+@@ -366,7 +366,6 @@ impl frame_system::Config for Runtime {
+ 	Eq,
+ 	PartialEq,
+ 	MaxEncodedLen,
+-	TypeInfo,
+ 	RuntimeDebug,
+ )]
+ pub enum FreezeReasonId {
+diff --git a/substrate/frame/grandpa/src/lib.rs b/substrate/frame/grandpa/src/lib.rs
+index 9017eec..6f9c1e4 100644
+--- a/substrate/frame/grandpa/src/lib.rs
++++ b/substrate/frame/grandpa/src/lib.rs
+@@ -45,7 +45,6 @@ use frame_support::{
+ 	WeakBoundedVec,
+ };
+ use frame_system::pallet_prelude::BlockNumberFor;
+-use scale_info::TypeInfo;
+ use sp_consensus_grandpa::{
+ 	ConsensusLog, EquivocationProof, ScheduledChange, SetId, GRANDPA_ENGINE_ID,
+ 	RUNTIME_LOG_TARGET as LOG_TARGET,
+@@ -382,9 +381,8 @@ pub type BoundedAuthorityList<Limit> = WeakBoundedVec<(AuthorityId, AuthorityWei
+ 
+ /// A stored pending change.
+ /// `Limit` is the bound for `next_authorities`
+-#[derive(Encode, Decode, TypeInfo, MaxEncodedLen)]
++#[derive(Encode, Decode, MaxEncodedLen)]
+ #[codec(mel_bound(N: MaxEncodedLen, Limit: Get<u32>))]
+-#[scale_info(skip_type_params(Limit))]
+ pub struct StoredPendingChange<N, Limit> {
+ 	/// The block number this was scheduled at.
+ 	pub scheduled_at: N,
+@@ -400,7 +398,7 @@ pub struct StoredPendingChange<N, Limit> {
+ /// Current state of the GRANDPA authority set. State transitions must happen in
+ /// the same order of states defined below, e.g. `Paused` implies a prior
+ /// `PendingPause`.
+-#[derive(Decode, Encode, TypeInfo, MaxEncodedLen)]
++#[derive(Decode, Encode, MaxEncodedLen)]
+ #[cfg_attr(test, derive(Debug, PartialEq))]
+ pub enum StoredState<N> {
+ 	/// The current authority set is live, and GRANDPA is enabled.
+diff --git a/substrate/frame/migrations/src/lib.rs b/substrate/frame/migrations/src/lib.rs
+index d71fbd8..aca20c9 100644
+--- a/substrate/frame/migrations/src/lib.rs
++++ b/substrate/frame/migrations/src/lib.rs
+@@ -181,7 +181,6 @@ use sp_runtime::Saturating;
+ 	Encode,
+ 	Decode,
+ 	DecodeWithMemTracking,
+-	scale_info::TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ pub enum MigrationCursor<Cursor, BlockNumber> {
+@@ -219,7 +218,6 @@ impl<Cursor, BlockNumber> From<ActiveCursor<Cursor, BlockNumber>>
+ 	Encode,
+ 	Decode,
+ 	DecodeWithMemTracking,
+-	scale_info::TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ pub struct ActiveCursor<Cursor, BlockNumber> {
+@@ -244,7 +242,7 @@ impl<Cursor, BlockNumber> ActiveCursor<Cursor, BlockNumber> {
+ 
+ /// How to clear the records of historic migrations.
+ #[derive(
+-	Debug, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, scale_info::TypeInfo,
++	Debug, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking,
+ )]
+ pub enum HistoricCleanupSelector<Id> {
+ 	/// Clear exactly these entries.
+@@ -305,7 +303,7 @@ pub trait MockedMigrations: SteppedMigrations {
+ /// Wrapper for pre-upgrade bytes, allowing us to impl MEL on it.
+ ///
+ /// For `try-runtime` testing only.
+-#[derive(Debug, Clone, Eq, PartialEq, Encode, Decode, scale_info::TypeInfo, Default)]
++#[derive(Debug, Clone, Eq, PartialEq, Encode, Decode, Default)]
+ struct PreUpgradeBytesWrapper(pub Vec<u8>);
+ 
+ /// Data stored by the pre-upgrade hook of the MBMs. Only used for `try-runtime` testing.
+diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
+index 4aeb42b..ee64dc7 100644
+--- a/substrate/frame/src/lib.rs
++++ b/substrate/frame/src/lib.rs
+@@ -571,7 +571,6 @@ pub mod derive {
+ 		CloneNoBound, DebugNoBound, DefaultNoBound, EqNoBound, OrdNoBound, PartialEqNoBound,
+ 		PartialOrdNoBound, RuntimeDebugNoBound,
+ 	};
+-	pub use scale_info::TypeInfo;
+ 	pub use serde;
+ 	/// The `serde` `Serialize`/`Deserialize` derive macros and traits.
+ 	///
+@@ -631,7 +630,6 @@ pub mod deps {
+ 	pub use sp_runtime;
+ 
+ 	pub use codec;
+-	pub use scale_info;
+ 
+ 	#[cfg(feature = "runtime")]
+ 	pub use frame_executive;
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/freeze_reason.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/freeze_reason.rs
+index b36d54f..937de16 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/freeze_reason.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/freeze_reason.rs
+@@ -62,7 +62,6 @@ pub fn expand_outer_freeze_reason(pallet_decls: &[Pallet], scrate: &TokenStream)
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+ 			#scrate::__private::codec::MaxEncodedLen,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::RuntimeDebug,
+ 		)]
+ 		pub enum RuntimeFreezeReason {
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/hold_reason.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/hold_reason.rs
+index b729c3d..e311aff 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/hold_reason.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/hold_reason.rs
+@@ -62,7 +62,6 @@ pub fn expand_outer_hold_reason(pallet_decls: &[Pallet], scrate: &TokenStream) -
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+ 			#scrate::__private::codec::MaxEncodedLen,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::RuntimeDebug,
+ 		)]
+ 		pub enum RuntimeHoldReason {
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/lock_id.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/lock_id.rs
+index 902acc5..14c3ecb 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/lock_id.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/lock_id.rs
+@@ -55,7 +55,6 @@ pub fn expand_outer_lock_id(pallet_decls: &[Pallet], scrate: &TokenStream) -> To
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+ 			#scrate::__private::codec::MaxEncodedLen,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::RuntimeDebug,
+ 		)]
+ 		pub enum RuntimeLockId {
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/origin.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/origin.rs
+index 7883541..06ba18c 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/origin.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/origin.rs
+@@ -205,7 +205,6 @@ pub fn expand_outer_origin(
+ 			#scrate::__private::codec::Encode,
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::codec::MaxEncodedLen,
+ 		)]
+ 		#[allow(non_camel_case_types)]
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/outer_enums.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/outer_enums.rs
+index 1495bd2..e8610c5 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/outer_enums.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/outer_enums.rs
+@@ -160,7 +160,6 @@ pub fn expand_outer_enum(
+ 			#scrate::__private::codec::Encode,
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::Debug,
+ 		)]
+ 		#[allow(non_camel_case_types)]
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/slash_reason.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/slash_reason.rs
+index a0e441d..60b0e28 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/slash_reason.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/slash_reason.rs
+@@ -55,7 +55,6 @@ pub fn expand_outer_slash_reason(pallet_decls: &[Pallet], scrate: &TokenStream)
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+ 			#scrate::__private::codec::MaxEncodedLen,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::RuntimeDebug,
+ 		)]
+ 		pub enum RuntimeSlashReason {
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/task.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/task.rs
+index b1cf4f8..6cba751 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/task.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/task.rs
+@@ -89,7 +89,6 @@ pub fn expand_outer_task(
+ 			#scrate::__private::codec::Encode,
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::RuntimeDebug,
+ 		)]
+ 		pub enum RuntimeTask {
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/view_function.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/view_function.rs
+index 082a2e6..996122b 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/expand/view_function.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/expand/view_function.rs
+@@ -44,7 +44,6 @@ pub fn expand_outer_query(
+ 			#scrate::__private::codec::Encode,
+ 			#scrate::__private::codec::Decode,
+ 			#scrate::__private::codec::DecodeWithMemTracking,
+-			#scrate::__private::scale_info::TypeInfo,
+ 			#scrate::__private::RuntimeDebug,
+ 		)]
+ 		pub enum #runtime_view_function {}
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+index 1a33431..dc08bd9 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+@@ -439,7 +439,6 @@ fn construct_runtime_final_expansion(
+ 
+ 		#[derive(
+ 			Clone, Copy, PartialEq, Eq, #scrate::sp_runtime::RuntimeDebug,
+-			#scrate::__private::scale_info::TypeInfo
+ 		)]
+ 		pub struct #name;
+ 		impl #scrate::sp_runtime::traits::GetRuntimeBlockType for #name {
+diff --git a/substrate/frame/support/procedural/src/dynamic_params.rs b/substrate/frame/support/procedural/src/dynamic_params.rs
+index 9cc04e8..4932af6 100644
+--- a/substrate/frame/support/procedural/src/dynamic_params.rs
++++ b/substrate/frame/support/procedural/src/dynamic_params.rs
+@@ -269,7 +269,6 @@ impl ToTokens for DynamicPalletParamAttr {
+ 					#scrate::__private::codec::DecodeWithMemTracking,
+ 					#scrate::__private::codec::MaxEncodedLen,
+ 					#scrate::__private::RuntimeDebug,
+-					#scrate::__private::scale_info::TypeInfo
+ 				)]
+ 				#vis enum Parameters {
+ 					#(
+@@ -288,7 +287,6 @@ impl ToTokens for DynamicPalletParamAttr {
+ 					#scrate::__private::codec::DecodeWithMemTracking,
+ 					#scrate::__private::codec::MaxEncodedLen,
+ 					#scrate::__private::RuntimeDebug,
+-					#scrate::__private::scale_info::TypeInfo
+ 				)]
+ 				#vis enum #key_ident {
+ 					#(
+@@ -307,7 +305,6 @@ impl ToTokens for DynamicPalletParamAttr {
+ 					#scrate::__private::codec::DecodeWithMemTracking,
+ 					#scrate::__private::codec::MaxEncodedLen,
+ 					#scrate::__private::RuntimeDebug,
+-					#scrate::__private::scale_info::TypeInfo
+ 				)]
+ 				#vis enum #value_ident {
+ 					#(
+@@ -342,7 +339,6 @@ impl ToTokens for DynamicPalletParamAttr {
+ 						#scrate::__private::codec::DecodeWithMemTracking,
+ 						#scrate::__private::codec::MaxEncodedLen,
+ 						#scrate::__private::RuntimeDebug,
+-						#scrate::__private::scale_info::TypeInfo
+ 					)]
+ 					#vis struct #key_names;
+ 
+@@ -480,7 +476,6 @@ impl ToTokens for DynamicParamAggregatedEnum {
+ 				#scrate::__private::codec::DecodeWithMemTracking,
+ 				#scrate::__private::codec::MaxEncodedLen,
+ 				#scrate::sp_runtime::RuntimeDebug,
+-				#scrate::__private::scale_info::TypeInfo
+ 			)]
+ 			#vis enum #name {
+ 				#(
+@@ -500,7 +495,6 @@ impl ToTokens for DynamicParamAggregatedEnum {
+ 				#scrate::__private::codec::DecodeWithMemTracking,
+ 				#scrate::__private::codec::MaxEncodedLen,
+ 				#scrate::sp_runtime::RuntimeDebug,
+-				#scrate::__private::scale_info::TypeInfo
+ 			)]
+ 			#vis enum #params_key_ident {
+ 				#(
+@@ -519,7 +513,6 @@ impl ToTokens for DynamicParamAggregatedEnum {
+ 				#scrate::__private::codec::DecodeWithMemTracking,
+ 				#scrate::__private::codec::MaxEncodedLen,
+ 				#scrate::sp_runtime::RuntimeDebug,
+-				#scrate::__private::scale_info::TypeInfo
+ 			)]
+ 			#vis enum #params_value_ident {
+ 				#(
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/tasks.rs b/substrate/frame/support/procedural/src/pallet/expand/tasks.rs
+index 6cd2436..c772462 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/tasks.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/tasks.rs
+@@ -100,11 +100,9 @@ impl TaskEnumDef {
+ 					#frame_support::pallet_prelude::Encode,
+ 					#frame_support::pallet_prelude::Decode,
+ 					#frame_support::pallet_prelude::DecodeWithMemTracking,
+-					#frame_support::pallet_prelude::TypeInfo,
+ 				)]
+ 				#[codec(encode_bound())]
+ 				#[codec(decode_bound())]
+-				#[scale_info(skip_type_params(#type_use_generics))]
+ 				#vis enum #ident #generics {
+ 					#variants
+ 					#[doc(hidden)]
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
+index 4e4d2da..59fd153 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
+@@ -105,7 +105,6 @@ fn expand_view_function(
+ 			#frame_support::__private::codec::Encode,
+ 			#frame_support::__private::codec::Decode,
+ 			#frame_support::__private::codec::DecodeWithMemTracking,
+-			#frame_support::__private::scale_info::TypeInfo,
+ 		)]
+ 		#[codec(encode_bound())]
+ 		#[codec(decode_bound())]
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/composite.rs b/substrate/frame/support/procedural/src/pallet/parse/composite.rs
+index b3131d2..0af01eb 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/composite.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/composite.rs
+@@ -155,7 +155,6 @@ impl CompositeDef {
+ 					#scrate::__private::codec::Decode,
+ 					#scrate::__private::codec::DecodeWithMemTracking,
+ 					#scrate::__private::codec::MaxEncodedLen,
+-					#scrate::__private::scale_info::TypeInfo,
+ 					#scrate::__private::RuntimeDebug,
+ 				)]
+ 			};
+@@ -163,10 +162,6 @@ impl CompositeDef {
+ 		}
+ 
+ 		if has_instance {
+-			item.attrs.push(syn::parse_quote! {
+-				#[scale_info(skip_type_params(I))]
+-			});
+-
+ 			item.variants.push(syn::parse_quote! {
+ 				#[doc(hidden)]
+ 				#[codec(skip)]
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/config.rs b/substrate/frame/support/procedural/src/pallet/parse/config.rs
+index b354bc3..64b5c79 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/config.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/config.rs
+@@ -269,25 +269,6 @@ pub fn replace_self_by_t(input: proc_macro2::TokenStream) -> proc_macro2::TokenS
+ 		.collect()
+ }
+ 
+-/// Check that the trait item requires the `TypeInfo` bound (or similar).
+-fn contains_type_info_bound(ty: &TraitItemType) -> bool {
+-	const KNOWN_TYPE_INFO_BOUNDS: &[&str] = &[
+-		// Explicit TypeInfo trait.
+-		"TypeInfo",
+-		// Implicit known substrate traits that implement type info.
+-		// Note: Aim to keep this list as small as possible.
+-		"Parameter",
+-	];
+-
+-	ty.bounds.iter().any(|bound| {
+-		let syn::TypeParamBound::Trait(bound) = bound else { return false };
+-
+-		KNOWN_TYPE_INFO_BOUNDS
+-			.iter()
+-			.any(|known| bound.path.segments.last().map_or(false, |last| last.ident == *known))
+-	})
+-}
+-
+ impl ConfigDef {
+ 	pub fn try_from(
+ 		frame_system: &syn::Path,
+@@ -421,17 +402,6 @@ impl ConfigDef {
+ 						Pallet constant already collect the metadata for the type.",
+ 					))
+ 				}
+-
+-				if let syn::TraitItem::Type(ref ty) = trait_item {
+-					if !contains_type_info_bound(ty) {
+-						let msg = format!(
+-						"Invalid #[pallet::include_metadata] in #[pallet::config], collected type `{}` \
+-						does not implement `TypeInfo` or `Parameter`",
+-						ty.ident,
+-					);
+-						return Err(syn::Error::new(span, msg));
+-					}
+-				}
+ 			}
+ 
+ 			if !already_no_default && enable_default {
+diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+index 04057b0..519076b 100644
+--- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
++++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+@@ -252,7 +252,6 @@ fn construct_runtime_final_expansion(
+ 
+ 		#[derive(
+ 			Clone, Copy, PartialEq, Eq, #scrate::sp_runtime::RuntimeDebug,
+-			#scrate::__private::scale_info::TypeInfo
+ 		)]
+ 		pub struct #name;
+ 		impl #scrate::sp_runtime::traits::GetRuntimeBlockType for #name {
+diff --git a/substrate/frame/support/src/dispatch.rs b/substrate/frame/support/src/dispatch.rs
+index 8ff2af9..d5b0caa 100644
+--- a/substrate/frame/support/src/dispatch.rs
++++ b/substrate/frame/support/src/dispatch.rs
+@@ -21,7 +21,6 @@
+ use crate::traits::UnfilteredDispatchable;
+ use codec::{Codec, Decode, DecodeWithMemTracking, Encode, EncodeLike, MaxEncodedLen};
+ use core::fmt;
+-use scale_info::TypeInfo;
+ #[cfg(feature = "std")]
+ use serde::{Deserialize, Serialize};
+ use sp_runtime::{
+@@ -79,7 +78,6 @@ pub trait CheckIfFeeless {
+ 	Encode,
+ 	Decode,
+ 	DecodeWithMemTracking,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ pub enum RawOrigin<AccountId> {
+@@ -126,11 +124,11 @@ impl<AccountId> RawOrigin<AccountId> {
+ ///
+ /// When using `decl_module` all arguments for call functions must implement this trait.
+ pub trait Parameter:
+-	Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug + scale_info::TypeInfo
++	Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug
+ {
+ }
+ impl<T> Parameter for T where
+-	T: Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug + scale_info::TypeInfo
++	T: Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug
+ {
+ }
+ 
+@@ -151,7 +149,7 @@ pub trait PaysFee<T> {
+ 
+ /// Explicit enum to denote if a transaction pays fee or not.
+ #[derive(
+-	Clone, Copy, Eq, PartialEq, RuntimeDebug, Encode, Decode, DecodeWithMemTracking, TypeInfo,
++	Clone, Copy, Eq, PartialEq, RuntimeDebug, Encode, Decode, DecodeWithMemTracking,
+ )]
+ pub enum Pays {
+ 	/// Transactor will pay related fees.
+@@ -188,7 +186,7 @@ impl From<bool> for Pays {
+ #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+ #[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
+ #[derive(
+-	PartialEq, Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, TypeInfo,
++	PartialEq, Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug,
+ )]
+ pub enum DispatchClass {
+ 	/// A normal dispatch.
+@@ -255,7 +253,7 @@ impl<'a> OneOrMany<DispatchClass> for &'a [DispatchClass] {
+ }
+ 
+ /// A bundle of static information collected from the `#[pallet::weight]` attributes.
+-#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo)]
++#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode)]
+ pub struct DispatchInfo {
+ 	/// Weight of this transaction's call.
+ 	pub call_weight: Weight,
+@@ -320,7 +318,6 @@ pub fn extract_actual_pays_fee(result: &DispatchResultWithPostInfo, info: &Dispa
+ 	Encode,
+ 	Decode,
+ 	DecodeWithMemTracking,
+-	TypeInfo,
+ )]
+ pub struct PostDispatchInfo {
+ 	/// Actual weight consumed by a call or `None` which stands for the worst case static weight.
+@@ -447,7 +444,7 @@ where
+ }
+ 
+ /// A struct holding value for each `DispatchClass`.
+-#[derive(Clone, Eq, PartialEq, Default, Debug, Encode, Decode, TypeInfo, MaxEncodedLen)]
++#[derive(Clone, Eq, PartialEq, Default, Debug, Encode, Decode, MaxEncodedLen)]
+ pub struct PerDispatchClass<T> {
+ 	/// Value for `Normal` extrinsics.
+ 	normal: T,
+@@ -1221,7 +1218,6 @@ mod per_dispatch_class_tests {
+ #[cfg(test)]
+ mod test_extensions {
+ 	use codec::{Decode, DecodeWithMemTracking, Encode};
+-	use scale_info::TypeInfo;
+ 	use sp_runtime::{
+ 		impl_tx_ext_default,
+ 		traits::{
+@@ -1235,7 +1231,7 @@ mod test_extensions {
+ 	use super::{DispatchResult, PostDispatchInfo};
+ 
+ 	/// Test extension that refunds half its cost if the preset inner flag is set.
+-	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
+ 	pub struct HalfCostIf(pub bool);
+ 
+ 	impl<RuntimeCall: Dispatchable> TransactionExtension<RuntimeCall> for HalfCostIf {
+@@ -1277,7 +1273,7 @@ mod test_extensions {
+ 
+ 	/// Test extension that refunds its cost if the actual post dispatch weight up until this point
+ 	/// in the extension pipeline is less than the preset inner `ref_time` amount.
+-	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
+ 	pub struct FreeIfUnder(pub u64);
+ 
+ 	impl<RuntimeCall: Dispatchable> TransactionExtension<RuntimeCall> for FreeIfUnder
+@@ -1323,7 +1319,7 @@ mod test_extensions {
+ 
+ 	/// Test extension that sets its actual post dispatch `ref_time` weight to the preset inner
+ 	/// amount.
+-	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
+ 	pub struct ActualWeightIs(pub u64);
+ 
+ 	impl<RuntimeCall: Dispatchable> TransactionExtension<RuntimeCall> for ActualWeightIs {
+diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
+index cdce481..9cb4a51 100644
+--- a/substrate/frame/support/src/lib.rs
++++ b/substrate/frame/support/src/lib.rs
+@@ -52,7 +52,6 @@ pub mod __private {
+ 	pub use codec;
+ 	pub use log;
+ 	pub use paste;
+-	pub use scale_info;
+ 	pub use serde;
+ 	pub use serde_json;
+ 	pub use sp_core::{Get, OpaqueMetadata, Void};
+@@ -121,18 +120,17 @@ pub use sp_runtime::{
+ };
+ 
+ use codec::{Decode, Encode};
+-use scale_info::TypeInfo;
+ use sp_runtime::TypeId;
+ 
+ /// A unified log target for support operations.
+ pub const LOG_TARGET: &str = "runtime::frame-support";
+ 
+ /// A type that cannot be instantiated.
+-#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone, TypeInfo)]
++#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
+ pub enum Never {}
+ 
+ /// A pallet identifier. These are per pallet and should be stored in a registry somewhere.
+-#[derive(Clone, Copy, Eq, PartialEq, Encode, Decode, TypeInfo)]
++#[derive(Clone, Copy, Eq, PartialEq, Encode, Decode)]
+ pub struct PalletId(pub [u8; 8]);
+ 
+ impl TypeId for PalletId {
+@@ -912,7 +910,6 @@ pub mod pallet_prelude {
+ 	pub use core::marker::PhantomData;
+ 	pub use frame_support::pallet_macros::*;
+ 	pub use frame_support_procedural::{inject_runtime_type, register_default_impl};
+-	pub use scale_info::TypeInfo;
+ 	pub use sp_inherents::MakeFatalError;
+ 	pub use sp_runtime::{
+ 		traits::{
+diff --git a/substrate/frame/support/src/migrations.rs b/substrate/frame/support/src/migrations.rs
+index 3fdf8d6..b45c723 100644
+--- a/substrate/frame/support/src/migrations.rs
++++ b/substrate/frame/support/src/migrations.rs
+@@ -551,7 +551,7 @@ pub trait SteppedMigration {
+ }
+ 
+ /// Error that can occur during a [`SteppedMigration`].
+-#[derive(Debug, Encode, Decode, MaxEncodedLen, scale_info::TypeInfo)]
++#[derive(Debug, Encode, Decode, MaxEncodedLen)]
+ pub enum SteppedMigrationError {
+ 	// Transient errors:
+ 	/// The remaining weight is not enough to do anything.
+diff --git a/substrate/frame/support/src/traits/messages.rs b/substrate/frame/support/src/traits/messages.rs
+index f2bbb2f..8496d62 100644
+--- a/substrate/frame/support/src/traits/messages.rs
++++ b/substrate/frame/support/src/traits/messages.rs
+@@ -20,14 +20,13 @@
+ use super::storage::Footprint;
+ use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, MaxEncodedLen};
+ use core::{fmt::Debug, marker::PhantomData};
+-use scale_info::TypeInfo;
+ use sp_core::{ConstU32, Get, TypedGet};
+ use sp_runtime::{traits::Convert, BoundedSlice, RuntimeDebug};
+ use sp_weights::{Weight, WeightMeter};
+ 
+ /// Errors that can happen when attempting to process a message with
+ /// [`ProcessMessage::process_message()`].
+-#[derive(Copy, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, TypeInfo, Debug)]
++#[derive(Copy, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, Debug)]
+ pub enum ProcessMessageError {
+ 	/// The message data format is unknown (e.g. unrecognised header)
+ 	BadFormat,
+@@ -53,7 +52,7 @@ pub enum ProcessMessageError {
+ /// Can process messages from a specific origin.
+ pub trait ProcessMessage {
+ 	/// The transport from where a message originates.
+-	type Origin: FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + TypeInfo + Debug;
++	type Origin: FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + Debug;
+ 
+ 	/// Process the given message, using no more than the remaining `meter` weight to do so.
+ 	///
+diff --git a/substrate/frame/support/src/traits/misc.rs b/substrate/frame/support/src/traits/misc.rs
+index 9fef438..168b53e 100644
+--- a/substrate/frame/support/src/traits/misc.rs
++++ b/substrate/frame/support/src/traits/misc.rs
+@@ -21,7 +21,6 @@ use crate::dispatch::{DispatchResult, Parameter};
+ use alloc::{vec, vec::Vec};
+ use codec::{CompactLen, Decode, DecodeLimit, Encode, EncodeLike, Input, MaxEncodedLen};
+ use impl_trait_for_tuples::impl_for_tuples;
+-use scale_info::{build::Fields, meta_type, Path, Type, TypeInfo, TypeParameter};
+ use sp_arithmetic::traits::{CheckedAdd, CheckedMul, CheckedSub, One, Saturating};
+ use sp_core::bounded::bounded_vec::TruncateFrom;
+ 
+@@ -927,13 +926,7 @@ pub trait ExtrinsicCall: sp_runtime::traits::ExtrinsicLike {
+ }
+ 
+ impl<Address, Call, Signature, Extra> ExtrinsicCall
+-	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
+-where
+-	Address: TypeInfo,
+-	Call: TypeInfo,
+-	Signature: TypeInfo,
+-	Extra: TypeInfo,
+-{
++	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra> {
+ 	type Call = Call;
+ 
+ 	fn call(&self) -> &Call {
+@@ -948,13 +941,7 @@ pub trait InherentBuilder: ExtrinsicCall {
+ }
+ 
+ impl<Address, Call, Signature, Extra> InherentBuilder
+-	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
+-where
+-	Address: TypeInfo,
+-	Call: TypeInfo,
+-	Signature: TypeInfo,
+-	Extra: TypeInfo,
+-{
++	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra> {
+ 	fn new_inherent(call: Self::Call) -> Self {
+ 		Self::new_bare(call)
+ 	}
+@@ -977,13 +964,7 @@ pub trait SignedTransactionBuilder: ExtrinsicCall {
+ }
+ 
+ impl<Address, Call, Signature, Extension> SignedTransactionBuilder
+-	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension>
+-where
+-	Address: TypeInfo,
+-	Call: TypeInfo,
+-	Signature: TypeInfo,
+-	Extension: TypeInfo,
+-{
++	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension> {
+ 	type Address = Address;
+ 	type Signature = Signature;
+ 	type Extension = Extension;
+@@ -1082,20 +1063,6 @@ impl<T: MaxEncodedLen> MaxEncodedLen for WrapperOpaque<T> {
+ 	}
+ }
+ 
+-impl<T: TypeInfo + 'static> TypeInfo for WrapperOpaque<T> {
+-	type Identity = Self;
+-	fn type_info() -> Type {
+-		Type::builder()
+-			.path(Path::new("WrapperOpaque", module_path!()))
+-			.type_params(vec![TypeParameter::new("T", Some(meta_type::<T>()))])
+-			.composite(
+-				Fields::unnamed()
+-					.field(|f| f.compact::<u32>())
+-					.field(|f| f.ty::<T>().type_name("T")),
+-			)
+-	}
+-}
+-
+ /// A wrapper for any type `T` which implement encode/decode in a way compatible with `Vec<u8>`.
+ ///
+ /// This type is similar to [`WrapperOpaque`], but it differs in the way it stores the type `T`.
+@@ -1169,20 +1136,6 @@ impl<T: MaxEncodedLen> MaxEncodedLen for WrapperKeepOpaque<T> {
+ 	}
+ }
+ 
+-impl<T: TypeInfo + 'static> TypeInfo for WrapperKeepOpaque<T> {
+-	type Identity = Self;
+-	fn type_info() -> Type {
+-		Type::builder()
+-			.path(Path::new("WrapperKeepOpaque", module_path!()))
+-			.type_params(vec![TypeParameter::new("T", Some(meta_type::<T>()))])
+-			.composite(
+-				Fields::unnamed()
+-					.field(|f| f.compact::<u32>())
+-					.field(|f| f.ty::<T>().type_name("T")),
+-			)
+-	}
+-}
+-
+ /// A interface for looking up preimages from their hash on chain.
+ pub trait PreimageProvider<Hash> {
+ 	/// Returns whether a preimage exists for a given hash.
+diff --git a/substrate/frame/support/src/traits/preimages.rs b/substrate/frame/support/src/traits/preimages.rs
+index e0c76b8..d85b01d 100644
+--- a/substrate/frame/support/src/traits/preimages.rs
++++ b/substrate/frame/support/src/traits/preimages.rs
+@@ -19,7 +19,6 @@
+ 
+ use alloc::borrow::Cow;
+ use codec::{Decode, DecodeWithMemTracking, Encode, EncodeLike, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ use sp_core::RuntimeDebug;
+ use sp_runtime::{
+ 	traits::{ConstU32, Hash},
+@@ -39,7 +38,6 @@ const MAX_LEGACY_LEN: u32 = 1_000_000;
+ 	Clone,
+ 	Eq,
+ 	PartialEq,
+-	TypeInfo,
+ 	RuntimeDebug,
+ )]
+ #[codec(mel_bound())]
+diff --git a/substrate/frame/support/src/traits/schedule.rs b/substrate/frame/support/src/traits/schedule.rs
+index 2bf53d5..2402fa4 100644
+--- a/substrate/frame/support/src/traits/schedule.rs
++++ b/substrate/frame/support/src/traits/schedule.rs
+@@ -22,7 +22,6 @@ use super::PreimageProvider;
+ use alloc::vec::Vec;
+ use codec::{Codec, Decode, DecodeWithMemTracking, Encode, EncodeLike, MaxEncodedLen};
+ use core::{fmt::Debug, result::Result};
+-use scale_info::TypeInfo;
+ use sp_runtime::{traits::Saturating, DispatchError, RuntimeDebug};
+ 
+ /// Information relating to the period of a scheduled task. First item is the length of the
+@@ -44,7 +43,6 @@ pub type Priority = u8;
+ 	PartialEq,
+ 	Eq,
+ 	RuntimeDebug,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ pub enum DispatchTime<BlockNumber> {
+@@ -73,7 +71,7 @@ pub const HARD_DEADLINE: Priority = 63;
+ pub const LOWEST_PRIORITY: Priority = 255;
+ 
+ /// Type representing an encodable value or the hash of the encoding of such a value.
+-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo, MaxEncodedLen)]
++#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, MaxEncodedLen)]
+ pub enum MaybeHashed<T, Hash> {
+ 	/// The value itself.
+ 	Value(T),
+@@ -88,7 +86,7 @@ impl<T, H> From<T> for MaybeHashed<T, H> {
+ }
+ 
+ /// Error type for `MaybeHashed::lookup`.
+-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo, MaxEncodedLen)]
++#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, MaxEncodedLen)]
+ pub enum LookupError {
+ 	/// A call of this hash was not known.
+ 	Unknown,
+@@ -149,7 +147,7 @@ pub mod v1 {
+ 	/// A type that can be used as a scheduler.
+ 	pub trait Anon<BlockNumber, Call, RuntimeOrigin> {
+ 		/// An address which can be used for removing a scheduled task.
+-		type Address: Codec + Clone + Eq + EncodeLike + Debug + TypeInfo + MaxEncodedLen;
++		type Address: Codec + Clone + Eq + EncodeLike + Debug + MaxEncodedLen;
+ 
+ 		/// Schedule a dispatch to happen at the beginning of some block in the future.
+ 		///
+@@ -318,7 +316,7 @@ pub mod v2 {
+ 	/// A type that can be used as a scheduler.
+ 	pub trait Anon<BlockNumber, Call, RuntimeOrigin> {
+ 		/// An address which can be used for removing a scheduled task.
+-		type Address: Codec + Clone + Eq + EncodeLike + Debug + TypeInfo + MaxEncodedLen;
++		type Address: Codec + Clone + Eq + EncodeLike + Debug + MaxEncodedLen;
+ 		/// A means of expressing a call by the hash of its encoded data.
+ 		type Hash;
+ 
+@@ -411,7 +409,7 @@ pub mod v3 {
+ 	/// A type that can be used as a scheduler.
+ 	pub trait Anon<BlockNumber, Call, Origin> {
+ 		/// An address which can be used for removing a scheduled task.
+-		type Address: Codec + MaxEncodedLen + Clone + Eq + EncodeLike + Debug + TypeInfo;
++		type Address: Codec + MaxEncodedLen + Clone + Eq + EncodeLike + Debug;
+ 		/// The hasher used in the runtime.
+ 		type Hasher: sp_runtime::traits::Hash;
+ 
+diff --git a/substrate/frame/support/src/traits/storage.rs b/substrate/frame/support/src/traits/storage.rs
+index 4f0e860..5458455 100644
+--- a/substrate/frame/support/src/traits/storage.rs
++++ b/substrate/frame/support/src/traits/storage.rs
+@@ -22,7 +22,6 @@ use codec::{Decode, Encode, FullCodec, MaxEncodedLen};
+ use core::marker::PhantomData;
+ use frame_support::CloneNoBound;
+ use impl_trait_for_tuples::impl_for_tuples;
+-use scale_info::TypeInfo;
+ pub use sp_core::storage::TrackedStorageKey;
+ use sp_core::Get;
+ use sp_runtime::{
+@@ -94,7 +93,7 @@ pub trait StorageInstance {
+ }
+ 
+ /// Metadata about storage from the runtime.
+-#[derive(Debug, codec::Encode, codec::Decode, Eq, PartialEq, Clone, scale_info::TypeInfo)]
++#[derive(Debug, codec::Encode, codec::Decode, Eq, PartialEq, Clone)]
+ pub struct StorageInfo {
+ 	/// Encoded string of pallet name.
+ 	pub pallet_name: Vec<u8>,
+@@ -214,7 +213,7 @@ where
+ }
+ 
+ /// Placeholder marking functionality disabled. Useful for disabling various (sub)features.
+-#[derive(CloneNoBound, Debug, Encode, Eq, Decode, TypeInfo, MaxEncodedLen, PartialEq)]
++#[derive(CloneNoBound, Debug, Encode, Eq, Decode, MaxEncodedLen, PartialEq)]
+ pub struct Disabled;
+ impl<A, F> Consideration<A, F> for Disabled {
+ 	fn new(_: &A, _: F) -> Result<Self, DispatchError> {
+@@ -244,7 +243,7 @@ impl<A, F> Consideration<A, F> for Disabled {
+ /// it.
+ #[must_use]
+ pub trait Consideration<AccountId, Footprint>:
+-	Member + FullCodec + TypeInfo + MaxEncodedLen
++	Member + FullCodec + MaxEncodedLen
+ {
+ 	/// Create a ticket for the `new` footprint attributable to `who`. This ticket *must* ultimately
+ 	/// be consumed through `update` or `drop` once the footprint changes or is removed.
+diff --git a/substrate/frame/support/src/traits/tasks.rs b/substrate/frame/support/src/traits/tasks.rs
+index 0b5d0c0..556e6e9 100644
+--- a/substrate/frame/support/src/traits/tasks.rs
++++ b/substrate/frame/support/src/traits/tasks.rs
+@@ -21,7 +21,6 @@
+ use alloc::{vec, vec::IntoIter};
+ use codec::FullCodec;
+ use core::{fmt::Debug, iter::Iterator};
+-use scale_info::TypeInfo;
+ use sp_runtime::DispatchError;
+ use sp_weights::Weight;
+ 
+@@ -32,7 +31,6 @@ pub mod __private {
+ 	pub use alloc::{vec, vec::IntoIter};
+ 	pub use codec::FullCodec;
+ 	pub use core::{fmt::Debug, iter::Iterator};
+-	pub use scale_info::TypeInfo;
+ 	pub use sp_runtime::DispatchError;
+ 	pub use sp_weights::Weight;
+ }
+@@ -40,7 +38,7 @@ pub mod __private {
+ /// A general-purpose trait which defines a type of service work (i.e., work to performed by an
+ /// off-chain worker) including methods for enumerating, validating, indexing, and running
+ /// tasks of this type.
+-pub trait Task: Sized + FullCodec + TypeInfo + Clone + Debug + PartialEq + Eq {
++pub trait Task: Sized + FullCodec + Clone + Debug + PartialEq + Eq {
+ 	/// An [`Iterator`] over tasks of this type used as the return type for `enumerate`.
+ 	type Enumeration: Iterator;
+ 
+diff --git a/substrate/frame/support/src/traits/tokens/currency/reservable.rs b/substrate/frame/support/src/traits/tokens/currency/reservable.rs
+index 60ea9a7..24671cf 100644
+--- a/substrate/frame/support/src/traits/tokens/currency/reservable.rs
++++ b/substrate/frame/support/src/traits/tokens/currency/reservable.rs
+@@ -17,7 +17,6 @@
+ 
+ //! The reservable currency trait.
+ 
+-use scale_info::TypeInfo;
+ use sp_core::Get;
+ 
+ use super::{super::misc::BalanceStatus, Currency};
+@@ -111,7 +110,7 @@ impl<AccountId> ReservableCurrency<AccountId> for () {
+ pub trait NamedReservableCurrency<AccountId>: ReservableCurrency<AccountId> {
+ 	/// An identifier for a reserve. Used for disambiguating different reserves so that
+ 	/// they can be individually replaced or removed.
+-	type ReserveIdentifier: codec::Encode + TypeInfo + 'static;
++	type ReserveIdentifier: codec::Encode + 'static;
+ 
+ 	/// Deducts up to `value` from reserved balance of `who`. This function cannot fail.
+ 	///
+diff --git a/substrate/frame/support/src/traits/tokens/fungible/freeze.rs b/substrate/frame/support/src/traits/tokens/fungible/freeze.rs
+index 96efbc6..cf7de94 100644
+--- a/substrate/frame/support/src/traits/tokens/fungible/freeze.rs
++++ b/substrate/frame/support/src/traits/tokens/fungible/freeze.rs
+@@ -20,7 +20,6 @@
+ //! See the [`crate::traits::fungible`] doc for more information about fungible traits
+ //! including the place of the Freezes in FRAME.
+ 
+-use scale_info::TypeInfo;
+ use sp_arithmetic::{
+ 	traits::{CheckedAdd, CheckedSub},
+ 	ArithmeticError,
+@@ -36,7 +35,7 @@ use crate::{ensure, traits::tokens::Fortitude};
+ /// accordingly.
+ pub trait Inspect<AccountId>: super::Inspect<AccountId> {
+ 	/// An identifier for a freeze.
+-	type Id: codec::Encode + TypeInfo + 'static;
++	type Id: codec::Encode + 'static;
+ 
+ 	/// Amount of funds frozen in reserve by `who` for the given `id`.
+ 	fn balance_frozen(id: &Self::Id, who: &AccountId) -> Self::Balance;
+diff --git a/substrate/frame/support/src/traits/tokens/fungible/hold.rs b/substrate/frame/support/src/traits/tokens/fungible/hold.rs
+index 6737cfe..a812882 100644
+--- a/substrate/frame/support/src/traits/tokens/fungible/hold.rs
++++ b/substrate/frame/support/src/traits/tokens/fungible/hold.rs
+@@ -31,7 +31,6 @@ use crate::{
+ 		Restriction::{self, Free, OnHold},
+ 	},
+ };
+-use scale_info::TypeInfo;
+ use sp_arithmetic::{
+ 	traits::{CheckedAdd, CheckedSub, Zero},
+ 	ArithmeticError,
+@@ -45,7 +44,7 @@ pub trait Inspect<AccountId>: super::Inspect<AccountId> {
+ 	/// An identifier for a hold. Used for disambiguating different holds so that
+ 	/// they can be individually replaced or removed and funds from one hold don't accidentally
+ 	/// become unreserved or slashed for another.
+-	type Reason: codec::Encode + TypeInfo + 'static;
++	type Reason: codec::Encode + 'static;
+ 
+ 	/// Amount of funds on hold (for all hold reasons) of `who`.
+ 	fn total_balance_on_hold(who: &AccountId) -> Self::Balance;
+diff --git a/substrate/frame/support/src/traits/tokens/fungible/mod.rs b/substrate/frame/support/src/traits/tokens/fungible/mod.rs
+index c67755e..bb7f97c 100644
+--- a/substrate/frame/support/src/traits/tokens/fungible/mod.rs
++++ b/substrate/frame/support/src/traits/tokens/fungible/mod.rs
+@@ -163,7 +163,6 @@ mod union_of;
+ use codec::{Decode, Encode, MaxEncodedLen};
+ use core::marker::PhantomData;
+ use frame_support_procedural::{CloneNoBound, EqNoBound, PartialEqNoBound, RuntimeDebugNoBound};
+-use scale_info::TypeInfo;
+ #[cfg(feature = "runtime-benchmarks")]
+ use sp_runtime::Saturating;
+ 
+@@ -203,11 +202,9 @@ use crate::{
+ 	PartialEqNoBound,
+ 	Encode,
+ 	Decode,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ 	RuntimeDebugNoBound,
+ )]
+-#[scale_info(skip_type_params(A, F, R, D, Fp))]
+ #[codec(mel_bound())]
+ pub struct FreezeConsideration<A, F, R, D, Fp>(F::Balance, PhantomData<fn() -> (A, R, D, Fp)>)
+ where
+@@ -265,11 +262,9 @@ impl<
+ 	PartialEqNoBound,
+ 	Encode,
+ 	Decode,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ 	RuntimeDebugNoBound,
+ )]
+-#[scale_info(skip_type_params(A, F, R, D, Fp))]
+ #[codec(mel_bound())]
+ pub struct HoldConsideration<A, F, R, D, Fp = Footprint>(
+ 	F::Balance,
+@@ -339,11 +334,9 @@ impl<
+ 	PartialEqNoBound,
+ 	Encode,
+ 	Decode,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ 	RuntimeDebugNoBound,
+ )]
+-#[scale_info(skip_type_params(A, Fx, Rx, D, Fp))]
+ #[codec(mel_bound())]
+ pub struct LoneFreezeConsideration<A, Fx, Rx, D, Fp>(PhantomData<fn() -> (A, Fx, Rx, D, Fp)>);
+ impl<
+@@ -384,11 +377,9 @@ impl<
+ 	PartialEqNoBound,
+ 	Encode,
+ 	Decode,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ 	RuntimeDebugNoBound,
+ )]
+-#[scale_info(skip_type_params(A, Fx, Rx, D, Fp))]
+ #[codec(mel_bound())]
+ pub struct LoneHoldConsideration<A, Fx, Rx, D, Fp>(PhantomData<fn() -> (A, Fx, Rx, D, Fp)>);
+ impl<
+diff --git a/substrate/frame/support/src/traits/tokens/fungible/union_of.rs b/substrate/frame/support/src/traits/tokens/fungible/union_of.rs
+index f8d476d..01e7a55 100644
+--- a/substrate/frame/support/src/traits/tokens/fungible/union_of.rs
++++ b/substrate/frame/support/src/traits/tokens/fungible/union_of.rs
+@@ -30,7 +30,6 @@ use frame_support::traits::{
+ 	},
+ 	AccountTouch,
+ };
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	traits::Convert,
+ 	DispatchError, DispatchResult, Either,
+@@ -41,7 +40,7 @@ use sp_runtime::{
+ /// The `NativeOrWithId` enum classifies an asset as either `Native` to the current chain or as an
+ /// asset with a specific ID.
+ #[derive(
+-	Decode, DecodeWithMemTracking, Encode, Default, MaxEncodedLen, TypeInfo, Clone, RuntimeDebug, Eq,
++	Decode, DecodeWithMemTracking, Encode, Default, MaxEncodedLen, Clone, RuntimeDebug, Eq,
+ )]
+ pub enum NativeOrWithId<AssetId>
+ where
+diff --git a/substrate/frame/support/src/traits/tokens/fungibles/freeze.rs b/substrate/frame/support/src/traits/tokens/fungibles/freeze.rs
+index 244f700..68e947f 100644
+--- a/substrate/frame/support/src/traits/tokens/fungibles/freeze.rs
++++ b/substrate/frame/support/src/traits/tokens/fungibles/freeze.rs
+@@ -20,7 +20,6 @@
+ //! See the [`crate::traits::fungibles`] doc for more information about fungibles traits.
+ 
+ use crate::{ensure, traits::tokens::Fortitude};
+-use scale_info::TypeInfo;
+ use sp_arithmetic::{
+ 	traits::{CheckedAdd, CheckedSub},
+ 	ArithmeticError,
+@@ -34,7 +33,7 @@ use sp_runtime::{DispatchResult, TokenError};
+ /// accordingly.
+ pub trait Inspect<AccountId>: super::Inspect<AccountId> {
+ 	/// An identifier for a freeze.
+-	type Id: codec::Encode + TypeInfo + 'static;
++	type Id: codec::Encode + 'static;
+ 
+ 	/// Amount of funds held in reserve by `who` for the given `id`.
+ 	fn balance_frozen(asset: Self::AssetId, id: &Self::Id, who: &AccountId) -> Self::Balance;
+diff --git a/substrate/frame/support/src/traits/tokens/fungibles/hold.rs b/substrate/frame/support/src/traits/tokens/fungibles/hold.rs
+index 026bfc8..9391521 100644
+--- a/substrate/frame/support/src/traits/tokens/fungibles/hold.rs
++++ b/substrate/frame/support/src/traits/tokens/fungibles/hold.rs
+@@ -30,7 +30,6 @@ use crate::{
+ 		Restriction::{self, Free, OnHold},
+ 	},
+ };
+-use scale_info::TypeInfo;
+ use sp_arithmetic::{
+ 	traits::{CheckedAdd, CheckedSub, Zero},
+ 	ArithmeticError,
+@@ -44,7 +43,7 @@ pub trait Inspect<AccountId>: super::Inspect<AccountId> {
+ 	/// An identifier for a hold. Used for disambiguating different holds so that
+ 	/// they can be individually replaced or removed and funds from one hold don't accidentally
+ 	/// become unreserved or slashed for another.
+-	type Reason: codec::Encode + TypeInfo + 'static;
++	type Reason: codec::Encode + 'static;
+ 
+ 	/// Amount of funds on hold (for all hold reasons) of `who`.
+ 	fn total_balance_on_hold(asset: Self::AssetId, who: &AccountId) -> Self::Balance;
+diff --git a/substrate/frame/support/src/traits/tokens/misc.rs b/substrate/frame/support/src/traits/tokens/misc.rs
+index 1b171df..15d2ba0 100644
+--- a/substrate/frame/support/src/traits/tokens/misc.rs
++++ b/substrate/frame/support/src/traits/tokens/misc.rs
+@@ -17,7 +17,7 @@
+ 
+ //! Miscellaneous types.
+ 
+-use crate::{traits::Contains, TypeInfo};
++use crate::traits::Contains;
+ use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, HasCompact, MaxEncodedLen};
+ use core::fmt::Debug;
+ use sp_arithmetic::traits::{AtLeast32BitUnsigned, Zero};
+@@ -186,7 +186,6 @@ pub enum ExistenceRequirement {
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	RuntimeDebug,
+-	scale_info::TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ pub enum BalanceStatus {
+@@ -240,7 +239,6 @@ pub trait AssetId:
+ 	+ Eq
+ 	+ PartialEq
+ 	+ Debug
+-	+ scale_info::TypeInfo
+ 	+ MaxEncodedLen
+ {
+ }
+@@ -251,7 +249,6 @@ impl<
+ 			+ Eq
+ 			+ PartialEq
+ 			+ Debug
+-			+ scale_info::TypeInfo
+ 			+ MaxEncodedLen,
+ 	> AssetId for T
+ {
+@@ -266,7 +263,6 @@ pub trait Balance:
+ 	+ Copy
+ 	+ Default
+ 	+ Debug
+-	+ scale_info::TypeInfo
+ 	+ MaxEncodedLen
+ 	+ Send
+ 	+ Sync
+@@ -282,7 +278,6 @@ impl<
+ 			+ Copy
+ 			+ Default
+ 			+ Debug
+-			+ scale_info::TypeInfo
+ 			+ MaxEncodedLen
+ 			+ Send
+ 			+ Sync
+@@ -387,7 +382,7 @@ impl<A, R, B, C: Convert<R, B>> GetSalary<R, A, B> for ConvertRank<C> {
+ }
+ 
+ /// An identifier and balance.
+-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, MaxEncodedLen, TypeInfo)]
++#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, MaxEncodedLen)]
+ pub struct IdAmount<Id, Balance> {
+ 	/// An identifier for this item.
+ 	pub id: Id,
+diff --git a/substrate/frame/support/src/traits/tokens/pay.rs b/substrate/frame/support/src/traits/tokens/pay.rs
+index 5a7ed4d..a599b6a 100644
+--- a/substrate/frame/support/src/traits/tokens/pay.rs
++++ b/substrate/frame/support/src/traits/tokens/pay.rs
+@@ -19,7 +19,6 @@
+ 
+ use codec::{Decode, Encode, FullCodec, MaxEncodedLen};
+ use core::fmt::Debug;
+-use scale_info::TypeInfo;
+ use sp_core::{RuntimeDebug, TypedGet};
+ use sp_runtime::DispatchError;
+ 
+@@ -38,7 +37,7 @@ pub trait Pay {
+ 	/// with. When implementing, it should be clear from the context what that asset is.
+ 	type AssetKind;
+ 	/// An identifier given to an individual payment.
+-	type Id: FullCodec + MaxEncodedLen + TypeInfo + Clone + Eq + PartialEq + Debug + Copy;
++	type Id: FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + Debug + Copy;
+ 	/// An error which could be returned by the Pay type
+ 	type Error: Debug;
+ 	/// Make a payment and return an identifier for later evaluation of success in some off-chain
+@@ -68,7 +67,7 @@ pub trait Pay {
+ }
+ 
+ /// Status for making a payment via the `Pay::pay` trait function.
+-#[derive(Encode, Decode, Eq, PartialEq, Clone, TypeInfo, MaxEncodedLen, RuntimeDebug)]
++#[derive(Encode, Decode, Eq, PartialEq, Clone, MaxEncodedLen, RuntimeDebug)]
+ pub enum PaymentStatus {
+ 	/// Payment is in progress. Nothing to report yet.
+ 	InProgress,
+diff --git a/substrate/frame/support/src/traits/try_runtime/mod.rs b/substrate/frame/support/src/traits/try_runtime/mod.rs
+index 284ba3d..83dff1c 100644
+--- a/substrate/frame/support/src/traits/try_runtime/mod.rs
++++ b/substrate/frame/support/src/traits/try_runtime/mod.rs
+@@ -28,7 +28,7 @@ use sp_arithmetic::traits::AtLeast32BitUnsigned;
+ use sp_runtime::TryRuntimeError;
+ 
+ /// Which state tests to execute.
+-#[derive(codec::Encode, codec::Decode, Clone, scale_info::TypeInfo, PartialEq)]
++#[derive(codec::Encode, codec::Decode, Clone, PartialEq)]
+ pub enum Select {
+ 	/// None of them.
+ 	None,
+@@ -95,7 +95,7 @@ impl std::str::FromStr for Select {
+ }
+ 
+ /// Select which checks should be run when trying a runtime upgrade upgrade.
+-#[derive(codec::Encode, codec::Decode, Clone, Debug, Copy, scale_info::TypeInfo, PartialEq)]
++#[derive(codec::Encode, codec::Decode, Clone, Debug, Copy, PartialEq)]
+ pub enum UpgradeCheckSelect {
+ 	/// Run no checks.
+ 	None,
+diff --git a/substrate/frame/support/src/view_functions.rs b/substrate/frame/support/src/view_functions.rs
+index cba451b..aa1170e 100644
+--- a/substrate/frame/support/src/view_functions.rs
++++ b/substrate/frame/support/src/view_functions.rs
+@@ -19,11 +19,10 @@
+ 
+ use alloc::vec::Vec;
+ use codec::{Decode, DecodeAll, Encode, Output};
+-use scale_info::TypeInfo;
+ use sp_runtime::RuntimeDebug;
+ 
+ /// The unique identifier for a view function.
+-#[derive(Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Clone, Encode, Decode, RuntimeDebug)]
+ pub struct ViewFunctionId {
+ 	/// The part of the id for dispatching view functions from the top level of the runtime.
+ 	///
+@@ -44,7 +43,7 @@ impl From<ViewFunctionId> for [u8; 32] {
+ }
+ 
+ /// Error type for view function dispatching.
+-#[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Encode, Decode, RuntimeDebug)]
+ pub enum ViewFunctionDispatchError {
+ 	/// View functions are not implemented for this runtime.
+ 	NotImplemented,
+diff --git a/substrate/frame/system/src/extensions/check_genesis.rs b/substrate/frame/system/src/extensions/check_genesis.rs
+index 81131e4..16da6e1 100644
+--- a/substrate/frame/system/src/extensions/check_genesis.rs
++++ b/substrate/frame/system/src/extensions/check_genesis.rs
+@@ -17,7 +17,6 @@
+ 
+ use crate::{pallet_prelude::BlockNumberFor, Config, Pallet};
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	impl_tx_ext_default,
+ 	traits::{TransactionExtension, Zero},
+@@ -30,8 +29,7 @@ use sp_runtime::{
+ ///
+ /// Note that while a transaction with invalid `genesis_hash` will fail to be decoded,
+ /// the extension does not affect any other fields of `TransactionValidity` directly.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct CheckGenesis<T: Config + Send + Sync>(core::marker::PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> core::fmt::Debug for CheckGenesis<T> {
+diff --git a/substrate/frame/system/src/extensions/check_mortality.rs b/substrate/frame/system/src/extensions/check_mortality.rs
+index 9c76ee3..db7673d 100644
+--- a/substrate/frame/system/src/extensions/check_mortality.rs
++++ b/substrate/frame/system/src/extensions/check_mortality.rs
+@@ -18,7 +18,6 @@
+ use crate::{pallet_prelude::BlockNumberFor, BlockHash, Config, Pallet};
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+ use frame_support::pallet_prelude::TransactionSource;
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	generic::Era,
+ 	impl_tx_ext_default,
+@@ -34,8 +33,7 @@ use sp_runtime::{
+ /// # Transaction Validity
+ ///
+ /// The extension affects `longevity` of the transaction according to the [`Era`] definition.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct CheckMortality<T: Config + Send + Sync>(pub Era, core::marker::PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> CheckMortality<T> {
+diff --git a/substrate/frame/system/src/extensions/check_non_zero_sender.rs b/substrate/frame/system/src/extensions/check_non_zero_sender.rs
+index 0fd02d7..2693424 100644
+--- a/substrate/frame/system/src/extensions/check_non_zero_sender.rs
++++ b/substrate/frame/system/src/extensions/check_non_zero_sender.rs
+@@ -19,7 +19,6 @@ use crate::Config;
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+ use core::marker::PhantomData;
+ use frame_support::{pallet_prelude::TransactionSource, traits::OriginTrait, DefaultNoBound};
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	impl_tx_ext_default,
+ 	traits::{DispatchInfoOf, TransactionExtension},
+@@ -27,8 +26,7 @@ use sp_runtime::{
+ };
+ 
+ /// Check to ensure that the sender is not the zero address.
+-#[derive(Encode, Decode, DecodeWithMemTracking, DefaultNoBound, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, DefaultNoBound, Clone, Eq, PartialEq)]
+ pub struct CheckNonZeroSender<T>(PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> core::fmt::Debug for CheckNonZeroSender<T> {
+diff --git a/substrate/frame/system/src/extensions/check_nonce.rs b/substrate/frame/system/src/extensions/check_nonce.rs
+index 16ee8be..b7e8565 100644
+--- a/substrate/frame/system/src/extensions/check_nonce.rs
++++ b/substrate/frame/system/src/extensions/check_nonce.rs
+@@ -21,7 +21,6 @@ use codec::{Decode, DecodeWithMemTracking, Encode};
+ use frame_support::{
+ 	dispatch::DispatchInfo, pallet_prelude::TransactionSource, RuntimeDebugNoBound,
+ };
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	traits::{
+ 		AsSystemOriginSigner, DispatchInfoOf, Dispatchable, One, PostDispatchInfoOf,
+@@ -46,8 +45,7 @@ use sp_weights::Weight;
+ /// step. This means that other extensions ahead of `CheckNonce` in the pipeline must not alter the
+ /// nonce during their own preparation step, or else the transaction may be rejected during dispatch
+ /// or lead to an inconsistent account state.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct CheckNonce<T: Config>(#[codec(compact)] pub T::Nonce);
+ 
+ impl<T: Config> CheckNonce<T> {
+diff --git a/substrate/frame/system/src/extensions/check_spec_version.rs b/substrate/frame/system/src/extensions/check_spec_version.rs
+index f3f5f44..7046a91 100644
+--- a/substrate/frame/system/src/extensions/check_spec_version.rs
++++ b/substrate/frame/system/src/extensions/check_spec_version.rs
+@@ -17,7 +17,6 @@
+ 
+ use crate::{Config, Pallet};
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	impl_tx_ext_default, traits::TransactionExtension,
+ 	transaction_validity::TransactionValidityError,
+@@ -29,8 +28,7 @@ use sp_runtime::{
+ ///
+ /// The transaction with incorrect `spec_version` are considered invalid. The validity
+ /// is not affected in any other way.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct CheckSpecVersion<T: Config + Send + Sync>(core::marker::PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> core::fmt::Debug for CheckSpecVersion<T> {
+diff --git a/substrate/frame/system/src/extensions/check_tx_version.rs b/substrate/frame/system/src/extensions/check_tx_version.rs
+index 1992bf0..cbb2739 100644
+--- a/substrate/frame/system/src/extensions/check_tx_version.rs
++++ b/substrate/frame/system/src/extensions/check_tx_version.rs
+@@ -17,7 +17,6 @@
+ 
+ use crate::{Config, Pallet};
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	impl_tx_ext_default, traits::TransactionExtension,
+ 	transaction_validity::TransactionValidityError,
+@@ -29,8 +28,7 @@ use sp_runtime::{
+ ///
+ /// The transaction with incorrect `transaction_version` are considered invalid. The validity
+ /// is not affected in any other way.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct CheckTxVersion<T: Config + Send + Sync>(core::marker::PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> core::fmt::Debug for CheckTxVersion<T> {
+diff --git a/substrate/frame/system/src/extensions/check_weight.rs b/substrate/frame/system/src/extensions/check_weight.rs
+index 39596fc..f0a3b90 100644
+--- a/substrate/frame/system/src/extensions/check_weight.rs
++++ b/substrate/frame/system/src/extensions/check_weight.rs
+@@ -22,7 +22,6 @@ use frame_support::{
+ 	pallet_prelude::TransactionSource,
+ 	traits::Get,
+ };
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	traits::{
+ 		DispatchInfoOf, Dispatchable, PostDispatchInfoOf, TransactionExtension, ValidateResult,
+@@ -38,8 +37,7 @@ use sp_weights::Weight;
+ ///
+ /// This extension does not influence any fields of `TransactionValidity` in case the
+ /// transaction is valid.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default)]
+ pub struct CheckWeight<T: Config + Send + Sync>(core::marker::PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> CheckWeight<T>
+diff --git a/substrate/frame/system/src/extensions/weight_reclaim.rs b/substrate/frame/system/src/extensions/weight_reclaim.rs
+index de33bfd..6075fff 100644
+--- a/substrate/frame/system/src/extensions/weight_reclaim.rs
++++ b/substrate/frame/system/src/extensions/weight_reclaim.rs
+@@ -18,7 +18,6 @@
+ use crate::Config;
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+ use frame_support::dispatch::{DispatchInfo, PostDispatchInfo};
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	traits::{
+ 		DispatchInfoOf, Dispatchable, PostDispatchInfoOf, TransactionExtension, ValidateResult,
+@@ -33,8 +32,7 @@ use sp_weights::Weight;
+ /// After the dispatch of the extrinsic, calculate the unused weight using the post dispatch
+ /// information and update the block consumed weight according to the new calculated extrinsic
+ /// weight.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default)]
+ pub struct WeightReclaim<T: Config + Send + Sync>(core::marker::PhantomData<T>);
+ 
+ impl<T: Config + Send + Sync> WeightReclaim<T>
+diff --git a/substrate/frame/system/src/lib.rs b/substrate/frame/system/src/lib.rs
+index d6f848c..8565ff8 100644
+--- a/substrate/frame/system/src/lib.rs
++++ b/substrate/frame/system/src/lib.rs
+@@ -142,7 +142,6 @@ use frame_support::{
+ 	},
+ 	Parameter,
+ };
+-use scale_info::TypeInfo;
+ use sp_core::storage::well_known_keys;
+ use sp_runtime::{
+ 	traits::{DispatchInfoOf, PostDispatchInfoOf},
+@@ -253,8 +252,7 @@ impl<MaxNormal: Get<u32>, MaxOverflow: Get<u32>> ConsumerLimits for (MaxNormal,
+ 
+ /// Information needed when a new runtime binary is submitted and needs to be authorized before
+ /// replacing the current runtime.
+-#[derive(Decode, Encode, Default, PartialEq, Eq, MaxEncodedLen, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Decode, Encode, Default, PartialEq, Eq, MaxEncodedLen)]
+ pub struct CodeUpgradeAuthorization<T>
+ where
+ 	T: Config,
+@@ -288,7 +286,6 @@ where
+ 	Encode,
+ 	Decode,
+ 	DecodeWithMemTracking,
+-	TypeInfo,
+ )]
+ pub struct DispatchEventInfo {
+ 	/// Weight of this transaction.
+@@ -566,7 +563,7 @@ pub mod pallet {
+ 			+ MaxEncodedLen;
+ 
+ 		/// The hashing system (algorithm) being used in the runtime (e.g. Blake2).
+-		type Hashing: Hash<Output = Self::Hash> + TypeInfo;
++		type Hashing: Hash<Output = Self::Hash>;
+ 
+ 		/// The user account identifier type for the runtime.
+ 		type AccountId: Parameter
+@@ -614,7 +611,7 @@ pub mod pallet {
+ 
+ 		/// Data to be associated with an account (other than nonce/transaction counter, which this
+ 		/// pallet does regardless).
+-		type AccountData: Member + FullCodec + Clone + Default + TypeInfo + MaxEncodedLen;
++		type AccountData: Member + FullCodec + Clone + Default + MaxEncodedLen;
+ 
+ 		/// Handler for when a new account has just been created.
+ 		type OnNewAccount: OnNewAccount<Self::AccountId>;
+@@ -1152,7 +1149,7 @@ pub type Key = Vec<u8>;
+ pub type KeyValue = (Vec<u8>, Vec<u8>);
+ 
+ /// A phase of a block's execution.
+-#[derive(Encode, Decode, RuntimeDebug, TypeInfo, MaxEncodedLen)]
++#[derive(Encode, Decode, RuntimeDebug, MaxEncodedLen)]
+ #[cfg_attr(feature = "std", derive(Serialize, PartialEq, Eq, Clone))]
+ pub enum Phase {
+ 	/// Applying an extrinsic.
+@@ -1170,7 +1167,7 @@ impl Default for Phase {
+ }
+ 
+ /// Record of an event happening.
+-#[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Encode, Decode, RuntimeDebug)]
+ #[cfg_attr(feature = "std", derive(Serialize, PartialEq, Eq, Clone))]
+ pub struct EventRecord<E: Parameter + Member, T> {
+ 	/// The phase of the block it happened in.
+@@ -1199,7 +1196,7 @@ type EventIndex = u32;
+ pub type RefCount = u32;
+ 
+ /// Information of an account.
+-#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo, MaxEncodedLen)]
++#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
+ pub struct AccountInfo<Nonce, AccountData> {
+ 	/// The number of transactions this account has sent.
+ 	pub nonce: Nonce,
+@@ -1219,7 +1216,7 @@ pub struct AccountInfo<Nonce, AccountData> {
+ 
+ /// Stores the `spec_version` and `spec_name` of when the last runtime upgrade
+ /// happened.
+-#[derive(RuntimeDebug, Encode, Decode, TypeInfo)]
++#[derive(RuntimeDebug, Encode, Decode)]
+ #[cfg_attr(feature = "std", derive(PartialEq))]
+ pub struct LastRuntimeUpgradeInfo {
+ 	pub spec_version: codec::Compact<u32>,
+diff --git a/substrate/frame/system/src/limits.rs b/substrate/frame/system/src/limits.rs
+index ab5a98a..edc970a 100644
+--- a/substrate/frame/system/src/limits.rs
++++ b/substrate/frame/system/src/limits.rs
+@@ -29,11 +29,10 @@ use frame_support::{
+ 	dispatch::{DispatchClass, OneOrMany, PerDispatchClass},
+ 	weights::{constants, Weight},
+ };
+-use scale_info::TypeInfo;
+ use sp_runtime::{traits::Bounded, Perbill, RuntimeDebug};
+ 
+ /// Block length limit configuration.
+-#[derive(RuntimeDebug, Clone, codec::Encode, codec::Decode, TypeInfo)]
++#[derive(RuntimeDebug, Clone, codec::Encode, codec::Decode)]
+ pub struct BlockLength {
+ 	/// Maximal total length in bytes for each extrinsic class.
+ 	///
+@@ -95,7 +94,7 @@ pub type ValidationResult = Result<BlockWeights, ValidationErrors>;
+ const DEFAULT_NORMAL_RATIO: Perbill = Perbill::from_percent(75);
+ 
+ /// `DispatchClass`-specific weight configuration.
+-#[derive(RuntimeDebug, Clone, codec::Encode, codec::Decode, TypeInfo)]
++#[derive(RuntimeDebug, Clone, codec::Encode, codec::Decode)]
+ pub struct WeightsPerClass {
+ 	/// Base weight of single extrinsic of given class.
+ 	pub base_extrinsic: Weight,
+@@ -195,7 +194,7 @@ pub struct WeightsPerClass {
+ ///
+ /// As a consequence of `reserved` space, total consumed block weight might exceed `max_block`
+ /// value, so this parameter should rather be thought of as "target block weight" than a hard limit.
+-#[derive(RuntimeDebug, Clone, codec::Encode, codec::Decode, TypeInfo)]
++#[derive(RuntimeDebug, Clone, codec::Encode, codec::Decode)]
+ pub struct BlockWeights {
+ 	/// Base weight of block execution.
+ 	pub base_block: Weight,
+diff --git a/substrate/frame/system/src/mock.rs b/substrate/frame/system/src/mock.rs
+index 80bc759..755b911 100644
+--- a/substrate/frame/system/src/mock.rs
++++ b/substrate/frame/system/src/mock.rs
+@@ -78,7 +78,7 @@ impl OnKilledAccount<u64> for RecordKilled {
+ 	}
+ }
+ 
+-#[derive(Debug, TypeInfo)]
++#[derive(Debug)]
+ pub struct DefaultNonceProvider;
+ impl Get<u64> for DefaultNonceProvider {
+ 	fn get() -> u64 {
+diff --git a/substrate/frame/system/src/offchain.rs b/substrate/frame/system/src/offchain.rs
+index bedfdde..1e5a338 100644
+--- a/substrate/frame/system/src/offchain.rs
++++ b/substrate/frame/system/src/offchain.rs
+@@ -58,7 +58,6 @@
+ 
+ use alloc::{boxed::Box, collections::btree_set::BTreeSet, vec::Vec};
+ use codec::Encode;
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	app_crypto::RuntimeAppPublic,
+ 	traits::{ExtrinsicLike, IdentifyAccount, One},
+@@ -440,11 +439,10 @@ pub trait SigningTypes: crate::Config {
+ 		+ IdentifyAccount<AccountId = Self::AccountId>
+ 		+ core::fmt::Debug
+ 		+ codec::Codec
+-		+ Ord
+-		+ scale_info::TypeInfo;
++		+ Ord;
+ 
+ 	/// A matching `Signature` type.
+-	type Signature: Clone + PartialEq + core::fmt::Debug + codec::Codec + scale_info::TypeInfo;
++	type Signature: Clone + PartialEq + core::fmt::Debug + codec::Codec;
+ }
+ 
+ /// Common interface for the `CreateTransaction` trait family to unify the `Call` type.
+@@ -461,7 +459,7 @@ pub trait CreateTransactionBase<LocalCall> {
+ /// Interface for creating a transaction.
+ pub trait CreateTransaction<LocalCall>: CreateTransactionBase<LocalCall> {
+ 	/// The extension.
+-	type Extension: TypeInfo;
++	type Extension;
+ 
+ 	/// Create a transaction using the call and the desired transaction extension.
+ 	fn create_transaction(
+diff --git a/substrate/frame/timestamp/src/lib.rs b/substrate/frame/timestamp/src/lib.rs
+index 2cc5c73..2361b19 100644
+--- a/substrate/frame/timestamp/src/lib.rs
++++ b/substrate/frame/timestamp/src/lib.rs
+@@ -174,8 +174,7 @@ pub mod pallet {
+ 			+ AtLeast32Bit
+ 			+ Scale<BlockNumberFor<Self>, Output = Self::Moment>
+ 			+ Copy
+-			+ MaxEncodedLen
+-			+ scale_info::StaticTypeInfo;
++			+ MaxEncodedLen;
+ 
+ 		/// Something which can be notified (e.g. another pallet) when the timestamp is set.
+ 		///
+diff --git a/substrate/frame/transaction-payment/skip-feeless-payment/src/lib.rs b/substrate/frame/transaction-payment/skip-feeless-payment/src/lib.rs
+index 97b2bd2..9407771 100644
+--- a/substrate/frame/transaction-payment/skip-feeless-payment/src/lib.rs
++++ b/substrate/frame/transaction-payment/skip-feeless-payment/src/lib.rs
+@@ -45,7 +45,6 @@ use frame_support::{
+ 	traits::{IsType, OriginTrait},
+ 	weights::Weight,
+ };
+-use scale_info::{StaticTypeInfo, TypeInfo};
+ use sp_runtime::{
+ 	traits::{
+ 		DispatchInfoOf, DispatchOriginOf, Implication, PostDispatchInfoOf, TransactionExtension,
+@@ -86,14 +85,6 @@ pub mod pallet {
+ #[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct SkipCheckIfFeeless<T, S>(pub S, core::marker::PhantomData<T>);
+ 
+-// Make this extension "invisible" from the outside (ie metadata type information)
+-impl<T, S: StaticTypeInfo> TypeInfo for SkipCheckIfFeeless<T, S> {
+-	type Identity = S;
+-	fn type_info() -> scale_info::Type {
+-		S::type_info()
+-	}
+-}
+-
+ impl<T, S: Encode> core::fmt::Debug for SkipCheckIfFeeless<T, S> {
+ 	#[cfg(feature = "std")]
+ 	fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+diff --git a/substrate/frame/transaction-payment/skip-feeless-payment/src/mock.rs b/substrate/frame/transaction-payment/skip-feeless-payment/src/mock.rs
+index 3a1aff8..d661492 100644
+--- a/substrate/frame/transaction-payment/skip-feeless-payment/src/mock.rs
++++ b/substrate/frame/transaction-payment/skip-feeless-payment/src/mock.rs
+@@ -39,7 +39,7 @@ parameter_types! {
+ 	pub static ValidateCount: u32 = 0;
+ }
+ 
+-#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
+ pub struct DummyExtension;
+ 
+ impl TransactionExtension<RuntimeCall> for DummyExtension {
+diff --git a/substrate/frame/transaction-payment/src/lib.rs b/substrate/frame/transaction-payment/src/lib.rs
+index b56d193..5e65dfd 100644
+--- a/substrate/frame/transaction-payment/src/lib.rs
++++ b/substrate/frame/transaction-payment/src/lib.rs
+@@ -48,7 +48,6 @@
+ #![cfg_attr(not(feature = "std"), no_std)]
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ 
+ use frame_support::{
+ 	dispatch::{
+@@ -295,7 +294,7 @@ where
+ }
+ 
+ /// Storage releases of the pallet.
+-#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
++#[derive(Encode, Decode, Clone, Copy, PartialEq, Eq, RuntimeDebug, MaxEncodedLen)]
+ pub enum Releases {
+ 	/// Original version of the pallet.
+ 	V1Ancient,
+@@ -708,8 +707,7 @@ where
+ ///
+ /// Operational transactions will receive an additional priority bump, so that they are normally
+ /// considered before regular transactions.
+-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
+-#[scale_info(skip_type_params(T))]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
+ pub struct ChargeTransactionPayment<T: Config>(#[codec(compact)] BalanceOf<T>);
+ 
+ impl<T: Config> ChargeTransactionPayment<T>
+diff --git a/substrate/frame/transaction-payment/src/types.rs b/substrate/frame/transaction-payment/src/types.rs
+index d6b4a65..6995862 100644
+--- a/substrate/frame/transaction-payment/src/types.rs
++++ b/substrate/frame/transaction-payment/src/types.rs
+@@ -21,14 +21,12 @@ use codec::{Decode, Encode};
+ #[cfg(feature = "std")]
+ use serde::{Deserialize, Serialize};
+ 
+-use scale_info::TypeInfo;
+-
+ use sp_runtime::traits::{AtLeast32BitUnsigned, Zero};
+ 
+ use frame_support::dispatch::DispatchClass;
+ 
+ /// The base fee and adjusted weight and length fees constitute the _inclusion fee_.
+-#[derive(Encode, Decode, Clone, Eq, PartialEq, TypeInfo)]
++#[derive(Encode, Decode, Clone, Eq, PartialEq)]
+ #[cfg_attr(feature = "std", derive(Debug, Serialize, Deserialize))]
+ #[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
+ pub struct InclusionFee<Balance> {
+@@ -64,7 +62,7 @@ impl<Balance: AtLeast32BitUnsigned + Copy> InclusionFee<Balance> {
+ ///   - (Optional) `inclusion_fee`: Only the `Pays::Yes` transaction can have the inclusion fee.
+ ///   - `tip`: If included in the transaction, the tip will be added on top. Only signed
+ ///     transactions can have a tip.
+-#[derive(Encode, Decode, Clone, Eq, PartialEq, TypeInfo)]
++#[derive(Encode, Decode, Clone, Eq, PartialEq)]
+ #[cfg_attr(feature = "std", derive(Debug, Serialize, Deserialize))]
+ #[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
+ pub struct FeeDetails<Balance> {
+@@ -92,7 +90,7 @@ impl<Balance: AtLeast32BitUnsigned + Copy> FeeDetails<Balance> {
+ 
+ /// Information related to a dispatchable's class, weight, and fee that can be queried from the
+ /// runtime.
+-#[derive(Eq, PartialEq, Encode, Decode, Default, TypeInfo)]
++#[derive(Eq, PartialEq, Encode, Decode, Default)]
+ #[cfg_attr(feature = "std", derive(Debug, Serialize, Deserialize, Clone))]
+ #[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
+ #[cfg_attr(
+diff --git a/substrate/primitives/api/src/lib.rs b/substrate/primitives/api/src/lib.rs
+index caa7db1..9cb1b79 100644
+--- a/substrate/primitives/api/src/lib.rs
++++ b/substrate/primitives/api/src/lib.rs
+@@ -95,7 +95,6 @@ pub mod __private {
+ 	pub use alloc::vec;
+ 	pub use codec::{self, Decode, DecodeLimit, Encode};
+ 	pub use core::{mem, slice};
+-	pub use scale_info;
+ 	pub use sp_core::offchain;
+ 	#[cfg(not(feature = "std"))]
+ 	pub use sp_core::to_substrate_wasm_fn_return_value;
+diff --git a/substrate/primitives/application-crypto/src/lib.rs b/substrate/primitives/application-crypto/src/lib.rs
+index 5e90c49..0b4d749 100644
+--- a/substrate/primitives/application-crypto/src/lib.rs
++++ b/substrate/primitives/application-crypto/src/lib.rs
+@@ -39,8 +39,6 @@ pub use codec;
+ #[doc(hidden)]
+ pub use core::ops::Deref;
+ #[doc(hidden)]
+-pub use scale_info;
+-#[doc(hidden)]
+ #[cfg(feature = "serde")]
+ pub use serde;
+ 
+@@ -252,7 +250,6 @@ macro_rules! app_crypto_public_full_crypto {
+ 				$crate::codec::DecodeWithMemTracking,
+ 				$crate::RuntimeDebug,
+ 				$crate::codec::MaxEncodedLen,
+-				$crate::scale_info::TypeInfo,
+ 			)]
+ 			#[codec(crate = $crate::codec)]
+ 			pub struct Public($public);
+@@ -289,7 +286,6 @@ macro_rules! app_crypto_public_not_full_crypto {
+ 				$crate::codec::DecodeWithMemTracking,
+ 				$crate::RuntimeDebug,
+ 				$crate::codec::MaxEncodedLen,
+-				$crate::scale_info::TypeInfo,
+ 			)]
+ 			pub struct Public($public);
+ 		}
+@@ -434,7 +430,6 @@ macro_rules! app_crypto_signature_full_crypto {
+ 				$crate::codec::Decode,
+ 				$crate::codec::DecodeWithMemTracking,
+ 				$crate::RuntimeDebug,
+-				$crate::scale_info::TypeInfo,
+ 			)]
+ 			#[derive(Hash)]
+ 			pub struct Signature($sig);
+@@ -469,7 +464,6 @@ macro_rules! app_crypto_signature_not_full_crypto {
+ 				$crate::codec::Decode,
+ 				$crate::codec::DecodeWithMemTracking,
+ 				$crate::RuntimeDebug,
+-				$crate::scale_info::TypeInfo,
+ 			)]
+ 			pub struct Signature($sig);
+ 		}
+diff --git a/substrate/primitives/application-crypto/src/traits.rs b/substrate/primitives/application-crypto/src/traits.rs
+index 1789d9b..58d9bc0 100644
+--- a/substrate/primitives/application-crypto/src/traits.rs
++++ b/substrate/primitives/application-crypto/src/traits.rs
+@@ -16,7 +16,6 @@
+ // limitations under the License.
+ 
+ use codec::Codec;
+-use scale_info::TypeInfo;
+ 
+ use alloc::vec::Vec;
+ use core::fmt::Debug;
+@@ -110,7 +109,7 @@ pub trait RuntimeAppPublic: Sized {
+ 	const ID: KeyTypeId;
+ 
+ 	/// The signature that will be generated when signing with the corresponding private key.
+-	type Signature: Debug + Eq + PartialEq + Clone + TypeInfo + Codec;
++	type Signature: Debug + Eq + PartialEq + Clone + Codec;
+ 
+ 	/// Returns all public keys for this application in the keystore.
+ 	fn all() -> crate::Vec<Self>;
+@@ -141,8 +140,7 @@ impl<T> RuntimeAppPublic for T
+ where
+ 	T: AppPublic + AsRef<<T as AppPublic>::Generic>,
+ 	<T as AppPublic>::Generic: RuntimePublic,
+-	<T as AppCrypto>::Signature: TypeInfo
+-		+ Codec
++	<T as AppCrypto>::Signature: Codec
+ 		+ From<<<T as AppPublic>::Generic as RuntimePublic>::Signature>
+ 		+ AsRef<<<T as AppPublic>::Generic as RuntimePublic>::Signature>,
+ {
+diff --git a/substrate/primitives/arithmetic/src/fixed_point.rs b/substrate/primitives/arithmetic/src/fixed_point.rs
+index 920a8af..81bc02b 100644
+--- a/substrate/primitives/arithmetic/src/fixed_point.rs
++++ b/substrate/primitives/arithmetic/src/fixed_point.rs
+@@ -405,7 +405,6 @@ macro_rules! implement_fixed {
+ 			Eq,
+ 			PartialOrd,
+ 			Ord,
+-			scale_info::TypeInfo,
+ 		)]
+ 		pub struct $name($inner_type);
+ 
+diff --git a/substrate/primitives/arithmetic/src/lib.rs b/substrate/primitives/arithmetic/src/lib.rs
+index b46f548..13f039b 100644
+--- a/substrate/primitives/arithmetic/src/lib.rs
++++ b/substrate/primitives/arithmetic/src/lib.rs
+@@ -56,7 +56,6 @@ use core::{cmp::Ordering, fmt::Debug};
+ use traits::{BaseArithmetic, One, SaturatedConversion, Unsigned, Zero};
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ 
+ #[cfg(feature = "serde")]
+ use serde::{Deserialize, Serialize};
+@@ -71,7 +70,6 @@ use serde::{Deserialize, Serialize};
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	Debug,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+diff --git a/substrate/primitives/arithmetic/src/per_things.rs b/substrate/primitives/arithmetic/src/per_things.rs
+index 51c3bdc..064a421 100644
+--- a/substrate/primitives/arithmetic/src/per_things.rs
++++ b/substrate/primitives/arithmetic/src/per_things.rs
+@@ -589,7 +589,7 @@ macro_rules! implement_per_thing {
+ 		///
+ 		#[doc = $title]
+ 		#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+-		#[derive(Encode, DecodeWithMemTracking, Copy, Clone, PartialEq, Eq, codec::MaxEncodedLen, PartialOrd, Ord, scale_info::TypeInfo)]
++		#[derive(Encode, DecodeWithMemTracking, Copy, Clone, PartialEq, Eq, codec::MaxEncodedLen, PartialOrd, Ord)]
+ 		pub struct $name($type);
+ 
+ 		/// Implementation makes any compact encoding of `PerThing::Inner` valid,
+diff --git a/substrate/primitives/consensus/babe/src/digests.rs b/substrate/primitives/consensus/babe/src/digests.rs
+index 6516a3c..5afb0c9 100644
+--- a/substrate/primitives/consensus/babe/src/digests.rs
++++ b/substrate/primitives/consensus/babe/src/digests.rs
+@@ -28,10 +28,9 @@ use sp_core::sr25519::vrf::VrfSignature;
+ use sp_runtime::{DigestItem, RuntimeDebug};
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ 
+ /// Raw BABE primary slot assignment pre-digest.
+-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
++#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
+ pub struct PrimaryPreDigest {
+ 	/// Authority index
+ 	pub authority_index: super::AuthorityIndex,
+@@ -42,7 +41,7 @@ pub struct PrimaryPreDigest {
+ }
+ 
+ /// BABE secondary slot assignment pre-digest.
+-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
++#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
+ pub struct SecondaryPlainPreDigest {
+ 	/// Authority index
+ 	///
+@@ -56,7 +55,7 @@ pub struct SecondaryPlainPreDigest {
+ }
+ 
+ /// BABE secondary deterministic slot assignment with VRF outputs.
+-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
++#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
+ pub struct SecondaryVRFPreDigest {
+ 	/// Authority index
+ 	pub authority_index: super::AuthorityIndex,
+@@ -69,7 +68,7 @@ pub struct SecondaryVRFPreDigest {
+ /// A BABE pre-runtime digest. This contains all data required to validate a
+ /// block and for the BABE runtime module. Slots can be assigned to a primary
+ /// (VRF based) and to a secondary (slot number based).
+-#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
++#[derive(Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
+ pub enum PreDigest {
+ 	/// A primary VRF-based slot assignment.
+ 	#[codec(index = 1)]
+@@ -147,7 +146,6 @@ pub struct NextEpochDescriptor {
+ 	Clone,
+ 	RuntimeDebug,
+ 	MaxEncodedLen,
+-	scale_info::TypeInfo,
+ )]
+ pub enum NextConfigDescriptor {
+ 	/// Version 1.
+diff --git a/substrate/primitives/consensus/babe/src/lib.rs b/substrate/primitives/consensus/babe/src/lib.rs
+index b29785b..a351536 100644
+--- a/substrate/primitives/consensus/babe/src/lib.rs
++++ b/substrate/primitives/consensus/babe/src/lib.rs
+@@ -28,7 +28,6 @@ pub mod inherents;
+ #[cfg(not(feature = "std"))]
+ use alloc::vec::Vec;
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ #[cfg(feature = "serde")]
+ use serde::{Deserialize, Serialize};
+ use sp_runtime::{traits::Header, ConsensusEngineId, RuntimeDebug};
+@@ -134,7 +133,7 @@ pub enum ConsensusLog {
+ }
+ 
+ /// Configuration data used by the BABE consensus engine.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
+ pub struct BabeConfigurationV1 {
+ 	/// The slot duration in milliseconds for BABE. Currently, only
+ 	/// the value provided by this type at genesis will be used.
+@@ -182,7 +181,7 @@ impl From<BabeConfigurationV1> for BabeConfiguration {
+ }
+ 
+ /// Configuration data used by the BABE consensus engine.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
+ pub struct BabeConfiguration {
+ 	/// The slot duration in milliseconds for BABE. Currently, only
+ 	/// the value provided by this type at genesis will be used.
+@@ -229,7 +228,6 @@ impl BabeConfiguration {
+ 	DecodeWithMemTracking,
+ 	RuntimeDebug,
+ 	MaxEncodedLen,
+-	TypeInfo,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub enum AllowedSlots {
+@@ -254,7 +252,7 @@ impl AllowedSlots {
+ }
+ 
+ /// Configuration data used by the BABE consensus engine that may change with epochs.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, MaxEncodedLen, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, MaxEncodedLen)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct BabeEpochConfiguration {
+ 	/// A constant value that is used in the threshold calculation formula.
+@@ -342,7 +340,7 @@ where
+ /// the runtime API boundary this type is unknown and as such we keep this
+ /// opaque representation, implementors of the runtime API will have to make
+ /// sure that all usages of `OpaqueKeyOwnershipProof` refer to the same type.
+-#[derive(Decode, Encode, PartialEq, TypeInfo)]
++#[derive(Decode, Encode, PartialEq)]
+ pub struct OpaqueKeyOwnershipProof(Vec<u8>);
+ impl OpaqueKeyOwnershipProof {
+ 	/// Create a new `OpaqueKeyOwnershipProof` using the given encoded
+@@ -359,7 +357,7 @@ impl OpaqueKeyOwnershipProof {
+ }
+ 
+ /// BABE epoch information
+-#[derive(Decode, Encode, PartialEq, Eq, Clone, Debug, TypeInfo)]
++#[derive(Decode, Encode, PartialEq, Eq, Clone, Debug)]
+ pub struct Epoch {
+ 	/// The epoch index.
+ 	pub epoch_index: u64,
+diff --git a/substrate/primitives/consensus/grandpa/src/lib.rs b/substrate/primitives/consensus/grandpa/src/lib.rs
+index 2d220e4..80ac47b 100644
+--- a/substrate/primitives/consensus/grandpa/src/lib.rs
++++ b/substrate/primitives/consensus/grandpa/src/lib.rs
+@@ -26,7 +26,6 @@ use serde::Serialize;
+ 
+ use alloc::vec::Vec;
+ use codec::{Codec, Decode, DecodeWithMemTracking, Encode};
+-use scale_info::TypeInfo;
+ #[cfg(feature = "std")]
+ use sp_keystore::KeystorePtr;
+ use sp_runtime::{
+@@ -128,7 +127,7 @@ pub type CompactCommit<Header> = finality_grandpa::CompactCommit<
+ ///
+ /// This is meant to be stored in the db and passed around the network to other
+ /// nodes, and are used by syncing nodes to prove authority set handoffs.
+-#[derive(Clone, Encode, Decode, PartialEq, Eq, TypeInfo)]
++#[derive(Clone, Encode, Decode, PartialEq, Eq)]
+ #[cfg_attr(feature = "std", derive(Debug))]
+ pub struct GrandpaJustification<Header: HeaderT> {
+ 	pub round: u64,
+@@ -137,7 +136,7 @@ pub struct GrandpaJustification<Header: HeaderT> {
+ }
+ 
+ /// A scheduled change of authority set.
+-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(Serialize))]
+ pub struct ScheduledChange<N> {
+ 	/// The new authorities after the change, along with their respective weights.
+@@ -231,7 +230,7 @@ impl<N: Codec> ConsensusLog<N> {
+ /// GRANDPA happens when a voter votes on the same round (either at prevote or
+ /// precommit stage) for different blocks. Proving is achieved by collecting the
+ /// signed messages of conflicting votes.
+-#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq, TypeInfo)]
++#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq)]
+ pub struct EquivocationProof<H, N> {
+ 	set_id: SetId,
+ 	equivocation: Equivocation<H, N>,
+@@ -265,7 +264,7 @@ impl<H, N> EquivocationProof<H, N> {
+ 
+ /// Wrapper object for GRANDPA equivocation proofs, useful for unifying prevote
+ /// and precommit equivocations under a common type.
+-#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq, TypeInfo)]
++#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq)]
+ pub enum Equivocation<H, N> {
+ 	/// Proof of equivocation at prevote stage.
+ 	Prevote(
+diff --git a/substrate/primitives/consensus/slots/src/lib.rs b/substrate/primitives/consensus/slots/src/lib.rs
+index 21f6f2e..ec22617 100644
+--- a/substrate/primitives/consensus/slots/src/lib.rs
++++ b/substrate/primitives/consensus/slots/src/lib.rs
+@@ -20,7 +20,6 @@
+ #![cfg_attr(not(feature = "std"), no_std)]
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ use sp_timestamp::Timestamp;
+ 
+ /// Unit type wrapper that represents a slot.
+@@ -36,7 +35,6 @@ use sp_timestamp::Timestamp;
+ 	Default,
+ 	Ord,
+ 	Hash,
+-	TypeInfo,
+ )]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+ #[repr(transparent)]
+@@ -154,7 +152,6 @@ impl From<Slot> for u64 {
+ 	Ord,
+ 	PartialEq,
+ 	Eq,
+-	TypeInfo,
+ )]
+ #[repr(transparent)]
+ pub struct SlotDuration(u64);
+@@ -185,7 +182,7 @@ impl SlotDuration {
+ /// produces more than one block on the same slot. The proof of equivocation
+ /// are the given distinct headers that were signed by the validator and which
+ /// include the slot number.
+-#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, TypeInfo, Eq)]
++#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq)]
+ pub struct EquivocationProof<Header, Id> {
+ 	/// Returns the authority id of the equivocator.
+ 	pub offender: Id,
+diff --git a/substrate/primitives/core/src/crypto.rs b/substrate/primitives/core/src/crypto.rs
+index 04b3920..5de935e 100644
+--- a/substrate/primitives/core/src/crypto.rs
++++ b/substrate/primitives/core/src/crypto.rs
+@@ -30,7 +30,6 @@ pub use core::ops::Deref;
+ use itertools::Itertools;
+ #[cfg(feature = "std")]
+ use rand::{rngs::OsRng, RngCore};
+-use scale_info::TypeInfo;
+ pub use secrecy::{ExposeSecret, SecretString};
+ use sp_runtime_interface::pass_by::PassByInner;
+ pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
+@@ -511,7 +510,6 @@ pub trait Signature: CryptoType + ByteArray + PartialEq + Eq + Clone + Send + Sy
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	MaxEncodedLen,
+-	TypeInfo,
+ )]
+ #[cfg_attr(feature = "std", derive(Hash))]
+ pub struct AccountId32([u8; 32]);
+@@ -1053,7 +1051,6 @@ pub trait CryptoType {
+ 	Decode,
+ 	PassByInner,
+ 	crate::RuntimeDebug,
+-	TypeInfo,
+ )]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+ pub struct KeyTypeId(pub [u8; 4]);
+diff --git a/substrate/primitives/core/src/crypto_bytes.rs b/substrate/primitives/core/src/crypto_bytes.rs
+index 1964109..1005e78 100644
+--- a/substrate/primitives/core/src/crypto_bytes.rs
++++ b/substrate/primitives/core/src/crypto_bytes.rs
+@@ -24,7 +24,6 @@ use crate::{
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+ use core::marker::PhantomData;
+-use scale_info::TypeInfo;
+ 
+ use sp_runtime_interface::pass_by::{self, PassBy, PassByInner};
+ 
+@@ -59,14 +58,6 @@ impl<const N: usize, T> Clone for CryptoBytes<N, T> {
+ 	}
+ }
+ 
+-impl<const N: usize, T> TypeInfo for CryptoBytes<N, T> {
+-	type Identity = [u8; N];
+-
+-	fn type_info() -> scale_info::Type {
+-		Self::Identity::type_info()
+-	}
+-}
+-
+ impl<const N: usize, T> PartialOrd for CryptoBytes<N, T> {
+ 	fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
+ 		self.0.partial_cmp(&other.0)
+@@ -86,7 +77,7 @@ impl<const N: usize, T> PartialEq for CryptoBytes<N, T> {
+ }
+ 
+ impl<const N: usize, T> core::hash::Hash for CryptoBytes<N, T> {
+-	fn hash<H: scale_info::prelude::hash::Hasher>(&self, state: &mut H) {
++	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
+ 		self.0.hash(state)
+ 	}
+ }
+diff --git a/substrate/primitives/core/src/lib.rs b/substrate/primitives/core/src/lib.rs
+index 793b514..cf7e7dd 100644
+--- a/substrate/primitives/core/src/lib.rs
++++ b/substrate/primitives/core/src/lib.rs
+@@ -37,7 +37,6 @@ use alloc::vec::Vec;
+ #[doc(hidden)]
+ pub use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+ use core::ops::Deref;
+-use scale_info::TypeInfo;
+ #[cfg(feature = "serde")]
+ pub use serde;
+ #[cfg(feature = "serde")]
+@@ -147,7 +146,7 @@ impl alloc::str::FromStr for Bytes {
+ }
+ 
+ /// Stores the encoded `RuntimeMetadata` for the native side as opaque type.
+-#[derive(Encode, Decode, PartialEq, TypeInfo)]
++#[derive(Encode, Decode, PartialEq)]
+ pub struct OpaqueMetadata(Vec<u8>);
+ 
+ impl OpaqueMetadata {
+@@ -178,7 +177,6 @@ impl Deref for OpaqueMetadata {
+ 	DecodeWithMemTracking,
+ 	RuntimeDebug,
+ 	PassByInner,
+-	TypeInfo,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct OpaquePeerId(pub Vec<u8>);
+@@ -330,7 +328,6 @@ pub fn to_substrate_wasm_fn_return_value(value: &impl Encode) -> u64 {
+ 	Eq,
+ 	PartialEq,
+ 	RuntimeDebug,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ pub enum Void {}
+diff --git a/substrate/primitives/core/src/offchain/mod.rs b/substrate/primitives/core/src/offchain/mod.rs
+index 3112bc6..a7fd5a4 100644
+--- a/substrate/primitives/core/src/offchain/mod.rs
++++ b/substrate/primitives/core/src/offchain/mod.rs
+@@ -20,7 +20,6 @@
+ use crate::{OpaquePeerId, RuntimeDebug};
+ use alloc::{boxed::Box, vec::Vec};
+ use codec::{Decode, Encode};
+-use scale_info::TypeInfo;
+ use sp_runtime_interface::pass_by::{PassByCodec, PassByEnum, PassByInner};
+ 
+ pub use crate::crypto::KeyTypeId;
+@@ -184,7 +183,7 @@ impl TryFrom<u32> for HttpRequestStatus {
+ 
+ /// A blob to hold information about the local node's network state
+ /// without committing to its format.
+-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, PassByCodec, TypeInfo)]
++#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, PassByCodec)]
+ #[cfg_attr(feature = "std", derive(Default))]
+ pub struct OpaqueNetworkState {
+ 	/// PeerId of the local node in SCALE encoded.
+@@ -194,7 +193,7 @@ pub struct OpaqueNetworkState {
+ }
+ 
+ /// Simple blob to hold a `Multiaddr` without committing to its format.
+-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, PassByInner, TypeInfo)]
++#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, PassByInner)]
+ pub struct OpaqueMultiaddr(pub Vec<u8>);
+ 
+ impl OpaqueMultiaddr {
+diff --git a/substrate/primitives/core/src/sr25519.rs b/substrate/primitives/core/src/sr25519.rs
+index 48780f2..4ef3008 100644
+--- a/substrate/primitives/core/src/sr25519.rs
++++ b/substrate/primitives/core/src/sr25519.rs
+@@ -35,7 +35,6 @@ use schnorrkel::{
+ 
+ use crate::crypto::{CryptoType, CryptoTypeId, Derive, Public as TraitPublic, SignatureBytes};
+ use codec::{Decode, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ 
+ #[cfg(all(not(feature = "std"), feature = "serde"))]
+ use alloc::{format, string::String};
+@@ -377,7 +376,7 @@ pub mod vrf {
+ 	}
+ 
+ 	/// VRF signature data
+-	#[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
++	#[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen)]
+ 	pub struct VrfSignature {
+ 		/// VRF pre-output.
+ 		pub pre_output: VrfPreOutput,
+@@ -408,14 +407,6 @@ pub mod vrf {
+ 		}
+ 	}
+ 
+-	impl TypeInfo for VrfPreOutput {
+-		type Identity = [u8; VRF_PREOUT_LENGTH];
+-
+-		fn type_info() -> scale_info::Type {
+-			Self::Identity::type_info()
+-		}
+-	}
+-
+ 	/// VRF proof type suitable for schnorrkel operations.
+ 	#[derive(Clone, Debug, PartialEq, Eq)]
+ 	pub struct VrfProof(pub schnorrkel::vrf::VRFProof);
+@@ -439,14 +430,6 @@ pub mod vrf {
+ 		}
+ 	}
+ 
+-	impl TypeInfo for VrfProof {
+-		type Identity = [u8; VRF_PROOF_LENGTH];
+-
+-		fn type_info() -> scale_info::Type {
+-			Self::Identity::type_info()
+-		}
+-	}
+-
+ 	#[cfg(feature = "full_crypto")]
+ 	impl VrfCrypto for Pair {
+ 		type VrfInput = VrfTranscript;
+diff --git a/substrate/primitives/inherents/src/lib.rs b/substrate/primitives/inherents/src/lib.rs
+index 0ddc12d..18956a1 100644
+--- a/substrate/primitives/inherents/src/lib.rs
++++ b/substrate/primitives/inherents/src/lib.rs
+@@ -206,7 +206,7 @@ pub enum Error {
+ pub type InherentIdentifier = [u8; 8];
+ 
+ /// Inherent data to include in a block.
+-#[derive(Clone, Default, Encode, Decode, scale_info::TypeInfo)]
++#[derive(Clone, Default, Encode, Decode)]
+ pub struct InherentData {
+ 	/// All inherent data encoded with parity-scale-codec and an identifier.
+ 	data: BTreeMap<InherentIdentifier, Vec<u8>>,
+@@ -278,7 +278,7 @@ impl InherentData {
+ ///
+ /// When a fatal error occurs, all other errors are removed and the implementation needs to
+ /// abort checking inherents.
+-#[derive(Encode, Decode, Clone, scale_info::TypeInfo)]
++#[derive(Encode, Decode, Clone)]
+ pub struct CheckInherentsResult {
+ 	/// Did the check succeed?
+ 	okay: bool,
+diff --git a/substrate/primitives/runtime/src/curve.rs b/substrate/primitives/runtime/src/curve.rs
+index 2fc032c..c9a1d0c 100644
+--- a/substrate/primitives/runtime/src/curve.rs
++++ b/substrate/primitives/runtime/src/curve.rs
+@@ -22,10 +22,9 @@ use crate::{
+ 	Perbill,
+ };
+ use core::ops::Sub;
+-use scale_info::TypeInfo;
+ 
+ /// Piecewise Linear function in [0, 1] -> [0, 1].
+-#[derive(PartialEq, Eq, sp_core::RuntimeDebug, TypeInfo)]
++#[derive(PartialEq, Eq, sp_core::RuntimeDebug)]
+ pub struct PiecewiseLinear<'a> {
+ 	/// Array of points. Must be in order from the lowest abscissas to the highest.
+ 	pub points: &'a [(Perbill, Perbill)],
+diff --git a/substrate/primitives/runtime/src/generic/block.rs b/substrate/primitives/runtime/src/generic/block.rs
+index 687b784..1b1ba62 100644
+--- a/substrate/primitives/runtime/src/generic/block.rs
++++ b/substrate/primitives/runtime/src/generic/block.rs
+@@ -79,7 +79,7 @@ impl<Block: BlockT> fmt::Display for BlockId<Block> {
+ 
+ /// Abstraction over a substrate block.
+ #[derive(
+-	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, scale_info::TypeInfo,
++	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+diff --git a/substrate/primitives/runtime/src/generic/digest.rs b/substrate/primitives/runtime/src/generic/digest.rs
+index 593fbdd..751967f 100644
+--- a/substrate/primitives/runtime/src/generic/digest.rs
++++ b/substrate/primitives/runtime/src/generic/digest.rs
+@@ -26,17 +26,13 @@ use serde::{Deserialize, Serialize};
+ 
+ use crate::{
+ 	codec::{Decode, DecodeWithMemTracking, Encode, Error, Input},
+-	scale_info::{
+-		build::{Fields, Variants},
+-		Path, Type, TypeInfo,
+-	},
+ 	ConsensusEngineId,
+ };
+ use sp_core::RuntimeDebug;
+ 
+ /// Generic header digest.
+ #[derive(
+-	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, TypeInfo, Default,
++	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, Default,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct Digest {
+@@ -132,44 +128,6 @@ impl<'a> serde::Deserialize<'a> for DigestItem {
+ 	}
+ }
+ 
+-impl TypeInfo for DigestItem {
+-	type Identity = Self;
+-
+-	fn type_info() -> Type {
+-		Type::builder().path(Path::new("DigestItem", module_path!())).variant(
+-			Variants::new()
+-				.variant("PreRuntime", |v| {
+-					v.index(DigestItemType::PreRuntime as u8).fields(
+-						Fields::unnamed()
+-							.field(|f| f.ty::<ConsensusEngineId>().type_name("ConsensusEngineId"))
+-							.field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")),
+-					)
+-				})
+-				.variant("Consensus", |v| {
+-					v.index(DigestItemType::Consensus as u8).fields(
+-						Fields::unnamed()
+-							.field(|f| f.ty::<ConsensusEngineId>().type_name("ConsensusEngineId"))
+-							.field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")),
+-					)
+-				})
+-				.variant("Seal", |v| {
+-					v.index(DigestItemType::Seal as u8).fields(
+-						Fields::unnamed()
+-							.field(|f| f.ty::<ConsensusEngineId>().type_name("ConsensusEngineId"))
+-							.field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")),
+-					)
+-				})
+-				.variant("Other", |v| {
+-					v.index(DigestItemType::Other as u8)
+-						.fields(Fields::unnamed().field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")))
+-				})
+-				.variant("RuntimeEnvironmentUpdated", |v| {
+-					v.index(DigestItemType::RuntimeEnvironmentUpdated as u8).fields(Fields::unit())
+-				}),
+-		)
+-	}
+-}
+-
+ /// A 'referencing view' for digest item. Does not own its contents. Used by
+ /// final runtime implementations for encoding/decoding its log items.
+ #[derive(PartialEq, Eq, Clone, RuntimeDebug)]
+diff --git a/substrate/primitives/runtime/src/generic/era.rs b/substrate/primitives/runtime/src/generic/era.rs
+index c3762b3..ea9138d 100644
+--- a/substrate/primitives/runtime/src/generic/era.rs
++++ b/substrate/primitives/runtime/src/generic/era.rs
+@@ -134,50 +134,6 @@ impl Decode for Era {
+ 	}
+ }
+ 
+-/// Add Mortal{N}(u8) variants with the given indices, to describe custom encoding.
+-macro_rules! mortal_variants {
+-    ($variants:ident, $($index:literal),* ) => {
+-		$variants
+-		$(
+-			.variant(concat!(stringify!(Mortal), stringify!($index)), |v| v
+-				.index($index)
+-				.fields(scale_info::build::Fields::unnamed().field(|f| f.ty::<u8>()))
+-			)
+-		)*
+-    }
+-}
+-
+-impl scale_info::TypeInfo for Era {
+-	type Identity = Self;
+-
+-	fn type_info() -> scale_info::Type {
+-		let variants = scale_info::build::Variants::new().variant("Immortal", |v| v.index(0));
+-
+-		// this is necessary since the size of the encoded Mortal variant is `u16`, conditional on
+-		// the value of the first byte being > 0.
+-		let variants = mortal_variants!(
+-			variants, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+-			22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+-			44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
+-			66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87,
+-			88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
+-			108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124,
+-			125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141,
+-			142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158,
+-			159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175,
+-			176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192,
+-			193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209,
+-			210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226,
+-			227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243,
+-			244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
+-		);
+-
+-		scale_info::Type::builder()
+-			.path(scale_info::Path::new("Era", module_path!()))
+-			.variant(variants)
+-	}
+-}
+-
+ #[cfg(test)]
+ mod tests {
+ 	use super::*;
+diff --git a/substrate/primitives/runtime/src/generic/header.rs b/substrate/primitives/runtime/src/generic/header.rs
+index cde8098..2a87fe8 100644
+--- a/substrate/primitives/runtime/src/generic/header.rs
++++ b/substrate/primitives/runtime/src/generic/header.rs
+@@ -20,7 +20,6 @@
+ use crate::{
+ 	codec::{Codec, Decode, DecodeWithMemTracking, Encode},
+ 	generic::Digest,
+-	scale_info::TypeInfo,
+ 	traits::{self, AtLeast32BitUnsigned, BlockNumber, Hash as HashT, MaybeDisplay, Member},
+ };
+ #[cfg(feature = "serde")]
+@@ -29,9 +28,8 @@ use sp_core::U256;
+ 
+ /// Abstraction over a block header for a substrate chain.
+ #[derive(
+-	Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, sp_core::RuntimeDebug, TypeInfo,
++	Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, sp_core::RuntimeDebug,
+ )]
+-#[scale_info(skip_type_params(Hash))]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
+ #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
+diff --git a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
+index de68b8d..8bf72ae 100644
+--- a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
++++ b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
+@@ -31,7 +31,6 @@ use alloc::format;
+ use alloc::{vec, vec::Vec};
+ use codec::{Compact, Decode, DecodeWithMemTracking, Encode, EncodeLike, Error, Input};
+ use core::fmt;
+-use scale_info::{build::Fields, meta_type, Path, StaticTypeInfo, Type, TypeInfo, TypeParameter};
+ use sp_io::hashing::blake2_256;
+ use sp_weights::Weight;
+ 
+@@ -62,7 +61,7 @@ const EXTENSION_VERSION: ExtensionVersion = 0;
+ /// The `SignaturePayload` of `UncheckedExtrinsic`.
+ pub type UncheckedSignaturePayload<Address, Signature, Extension> = (Address, Signature, Extension);
+ 
+-impl<Address: TypeInfo, Signature: TypeInfo, Extension: TypeInfo> SignaturePayload
++impl<Address, Signature, Extension> SignaturePayload
+ 	for UncheckedSignaturePayload<Address, Signature, Extension>
+ {
+ 	type SignatureAddress = Address;
+@@ -233,40 +232,6 @@ pub struct UncheckedExtrinsic<Address, Call, Signature, Extension> {
+ 	pub function: Call,
+ }
+ 
+-/// Manual [`TypeInfo`] implementation because of custom encoding. The data is a valid encoded
+-/// `Vec<u8>`, but requires some logic to extract the signature and payload.
+-///
+-/// See [`UncheckedExtrinsic::encode`] and [`UncheckedExtrinsic::decode`].
+-impl<Address, Call, Signature, Extension> TypeInfo
+-	for UncheckedExtrinsic<Address, Call, Signature, Extension>
+-where
+-	Address: StaticTypeInfo,
+-	Call: 'static,
+-	Signature: StaticTypeInfo,
+-	Extension: StaticTypeInfo,
+-{
+-	type Identity = UncheckedExtrinsic<Address, Call, Signature, Extension>;
+-
+-	fn type_info() -> Type {
+-		Type::builder()
+-			.path(Path::new("UncheckedExtrinsic", module_path!()))
+-			// Include the type parameter types, even though they are not used directly in any of
+-			// the described fields. These type definitions can be used by downstream consumers
+-			// to help construct the custom decoding from the opaque bytes (see below).
+-			.type_params(vec![
+-				TypeParameter::new("Address", Some(meta_type::<Address>())),
+-				TypeParameter::new("Call", Some(meta_type::<()>())),
+-				TypeParameter::new("Signature", Some(meta_type::<Signature>())),
+-				TypeParameter::new("Extra", Some(meta_type::<Extension>())),
+-			])
+-			.docs(&["UncheckedExtrinsic raw bytes, requires custom decoding routine"])
+-			// Because of the custom encoding, we can only accurately describe the encoding as an
+-			// opaque `Vec<u8>`. Downstream consumers will need to manually implement the codec to
+-			// encode/decode the `signature` and `function` fields.
+-			.composite(Fields::unnamed().field(|f| f.ty::<Vec<u8>>()))
+-	}
+-}
+-
+ impl<Address, Call, Signature, Extension> UncheckedExtrinsic<Address, Call, Signature, Extension> {
+ 	/// New instance of a bare (ne unsigned) extrinsic. This could be used for an inherent or an
+ 	/// old-school "unsigned transaction" (which are new being deprecated in favour of general
+@@ -318,7 +283,7 @@ impl<Address, Call, Signature, Extension> UncheckedExtrinsic<Address, Call, Sign
+ 	}
+ }
+ 
+-impl<Address: TypeInfo, Call, Signature: TypeInfo, Extension: TypeInfo> ExtrinsicLike
++impl<Address, Call, Signature, Extension> ExtrinsicLike
+ 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
+ {
+ 	fn is_bare(&self) -> bool {
+diff --git a/substrate/primitives/runtime/src/legacy/byte_sized_error.rs b/substrate/primitives/runtime/src/legacy/byte_sized_error.rs
+index a592c75..13a44e0 100644
+--- a/substrate/primitives/runtime/src/legacy/byte_sized_error.rs
++++ b/substrate/primitives/runtime/src/legacy/byte_sized_error.rs
+@@ -19,12 +19,11 @@
+ 
+ use crate::{ArithmeticError, TokenError};
+ use codec::{Decode, Encode};
+-use scale_info::TypeInfo;
+ #[cfg(feature = "serde")]
+ use serde::{Deserialize, Serialize};
+ 
+ /// [`ModuleError`] type definition before BlockBuilder API version 6.
+-#[derive(Eq, Clone, Copy, Encode, Decode, Debug, TypeInfo)]
++#[derive(Eq, Clone, Copy, Encode, Decode, Debug)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct ModuleError {
+ 	/// Module index, matching the metadata module index.
+@@ -44,7 +43,7 @@ impl PartialEq for ModuleError {
+ }
+ 
+ /// [`DispatchError`] type definition before BlockBuilder API version 6.
+-#[derive(Eq, Clone, Copy, Encode, Decode, Debug, TypeInfo, PartialEq)]
++#[derive(Eq, Clone, Copy, Encode, Decode, Debug, PartialEq)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub enum DispatchError {
+ 	/// Some error occurred.
+diff --git a/substrate/primitives/runtime/src/lib.rs b/substrate/primitives/runtime/src/lib.rs
+index 2f4c483..426b083 100644
+--- a/substrate/primitives/runtime/src/lib.rs
++++ b/substrate/primitives/runtime/src/lib.rs
+@@ -52,8 +52,6 @@ extern crate alloc;
+ pub use alloc::vec::Vec;
+ #[doc(hidden)]
+ pub use codec;
+-#[doc(hidden)]
+-pub use scale_info;
+ #[cfg(feature = "serde")]
+ #[doc(hidden)]
+ pub use serde;
+@@ -80,7 +78,6 @@ use sp_core::{
+ 
+ use alloc::vec;
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+-use scale_info::TypeInfo;
+ 
+ pub mod curve;
+ pub mod generic;
+@@ -532,7 +529,7 @@ pub type DispatchResultWithInfo<T> = core::result::Result<T, DispatchErrorWithPo
+ 
+ /// Reason why a pallet call failed.
+ #[derive(
+-	Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, Debug, TypeInfo, MaxEncodedLen,
++	Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, Debug, MaxEncodedLen,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct ModuleError {
+@@ -562,7 +559,6 @@ impl PartialEq for ModuleError {
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	Debug,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+@@ -597,7 +593,6 @@ impl From<TransactionalError> for DispatchError {
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	Debug,
+-	TypeInfo,
+ 	PartialEq,
+ 	MaxEncodedLen,
+ )]
+@@ -643,7 +638,7 @@ pub enum DispatchError {
+ /// Result of a `Dispatchable` which contains the `DispatchResult` and additional information about
+ /// the `Dispatchable` that is only known post dispatch.
+ #[derive(
+-	Eq, PartialEq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, TypeInfo,
++	Eq, PartialEq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug,
+ )]
+ pub struct DispatchErrorWithPostInfo<Info>
+ where
+@@ -698,7 +693,6 @@ impl From<crate::traits::BadOrigin> for DispatchError {
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	Debug,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+@@ -967,7 +961,7 @@ macro_rules! assert_eq_error_rate_float {
+ 
+ /// Simple blob to hold an extrinsic without committing to its format and ensure it is serialized
+ /// correctly.
+-#[derive(PartialEq, Eq, Clone, Default, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++#[derive(PartialEq, Eq, Clone, Default, Encode, Decode, DecodeWithMemTracking)]
+ pub struct OpaqueExtrinsic(Vec<u8>);
+ 
+ impl OpaqueExtrinsic {
+@@ -1067,7 +1061,7 @@ impl<R> TransactionOutcome<R> {
+ }
+ 
+ /// Confines the kind of extrinsics that can be included in a block.
+-#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Encode, Decode, TypeInfo)]
++#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Encode, Decode)]
+ pub enum ExtrinsicInclusionMode {
+ 	/// All extrinsics are allowed to be included in this block.
+ 	#[default]
+@@ -1077,7 +1071,7 @@ pub enum ExtrinsicInclusionMode {
+ }
+ 
+ /// Simple blob that hold a value in an encoded form without committing to its type.
+-#[derive(Decode, Encode, PartialEq, TypeInfo)]
++#[derive(Decode, Encode, PartialEq)]
+ pub struct OpaqueValue(Vec<u8>);
+ impl OpaqueValue {
+ 	/// Create a new `OpaqueValue` using the given encoded representation.
+diff --git a/substrate/primitives/runtime/src/multiaddress.rs b/substrate/primitives/runtime/src/multiaddress.rs
+index 5a309af..32729d6 100644
+--- a/substrate/primitives/runtime/src/multiaddress.rs
++++ b/substrate/primitives/runtime/src/multiaddress.rs
+@@ -29,7 +29,6 @@ use codec::{Decode, DecodeWithMemTracking, Encode};
+ 	Eq,
+ 	Clone,
+ 	crate::RuntimeDebug,
+-	scale_info::TypeInfo,
+ )]
+ #[cfg_attr(feature = "std", derive(Hash))]
+ pub enum MultiAddress<AccountId, AccountIndex> {
+diff --git a/substrate/primitives/runtime/src/proving_trie/mod.rs b/substrate/primitives/runtime/src/proving_trie/mod.rs
+index 24a7147..70d304d 100644
+--- a/substrate/primitives/runtime/src/proving_trie/mod.rs
++++ b/substrate/primitives/runtime/src/proving_trie/mod.rs
+@@ -19,7 +19,7 @@
+ 
+ pub mod base16;
+ 
+-use crate::{Decode, DecodeWithMemTracking, DispatchError, Encode, MaxEncodedLen, TypeInfo};
++use crate::{Decode, DecodeWithMemTracking, DispatchError, Encode, MaxEncodedLen};
+ #[cfg(feature = "serde")]
+ use crate::{Deserialize, Serialize};
+ use alloc::vec::Vec;
+@@ -35,7 +35,6 @@ use sp_trie::{trie_types::TrieError as SpTrieError, VerifyError};
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	Debug,
+-	TypeInfo,
+ 	MaxEncodedLen,
+ )]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+diff --git a/substrate/primitives/runtime/src/testing.rs b/substrate/primitives/runtime/src/testing.rs
+index 8084ff5..ec35b80 100644
+--- a/substrate/primitives/runtime/src/testing.rs
++++ b/substrate/primitives/runtime/src/testing.rs
+@@ -20,7 +20,6 @@
+ use crate::{
+ 	codec::{Codec, Decode, DecodeWithMemTracking, Encode, MaxEncodedLen},
+ 	generic::{self, UncheckedExtrinsic},
+-	scale_info::TypeInfo,
+ 	traits::{self, BlakeTwo256, Dispatchable, OpaqueKeys},
+ 	DispatchResultWithInfo, KeyTypeId,
+ };
+@@ -50,7 +49,6 @@ use std::{cell::RefCell, fmt::Debug};
+ 	PartialOrd,
+ 	Ord,
+ 	MaxEncodedLen,
+-	TypeInfo,
+ )]
+ pub struct UintAuthorityId(pub u64);
+ 
+@@ -177,7 +175,6 @@ impl traits::Verify for UintAuthorityId {
+ 	Encode,
+ 	Decode,
+ 	DecodeWithMemTracking,
+-	TypeInfo,
+ )]
+ pub struct TestSignature(pub u64, pub Vec<u8>);
+ 
+@@ -213,7 +210,7 @@ impl Header {
+ 
+ /// Testing block
+ #[derive(
+-	PartialEq, Eq, Clone, Serialize, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo,
++	PartialEq, Eq, Clone, Serialize, Debug, Encode, Decode, DecodeWithMemTracking,
+ )]
+ pub struct Block<Xt> {
+ 	/// Block header
+@@ -276,7 +273,7 @@ where
+ pub type TestXt<Call, Extra> = UncheckedExtrinsic<u64, Call, (), Extra>;
+ 
+ /// Wrapper over a `u64` that can be used as a `RuntimeCall`.
+-#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, DecodeWithMemTracking)]
+ pub struct MockCallU64(pub u64);
+ 
+ impl Dispatchable for MockCallU64 {
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index 9ec5b23..f274a1b 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -19,7 +19,6 @@
+ 
+ use crate::{
+ 	generic::Digest,
+-	scale_info::{StaticTypeInfo, TypeInfo},
+ 	transaction_validity::{
+ 		TransactionSource, TransactionValidity, TransactionValidityError, UnknownTransaction,
+ 		ValidTransaction,
+@@ -233,7 +232,7 @@ pub trait Lookup {
+ /// context.
+ pub trait StaticLookup {
+ 	/// Type to lookup from.
+-	type Source: Codec + Clone + PartialEq + Debug + TypeInfo;
++	type Source: Codec + Clone + PartialEq + Debug;
+ 	/// Type to lookup into.
+ 	type Target;
+ 	/// Attempt a lookup.
+@@ -251,7 +250,7 @@ impl<T> Default for IdentityLookup<T> {
+ 	}
+ }
+ 
+-impl<T: Codec + Clone + PartialEq + Debug + TypeInfo> StaticLookup for IdentityLookup<T> {
++impl<T: Codec + Clone + PartialEq + Debug> StaticLookup for IdentityLookup<T> {
+ 	type Source = T;
+ 	type Target = T;
+ 	fn lookup(x: T) -> Result<T, LookupError> {
+@@ -276,7 +275,7 @@ impl<AccountId, AccountIndex> StaticLookup for AccountIdLookup<AccountId, Accoun
+ where
+ 	AccountId: Codec + Clone + PartialEq + Debug,
+ 	AccountIndex: Codec + Clone + PartialEq + Debug,
+-	crate::MultiAddress<AccountId, AccountIndex>: Codec + StaticTypeInfo,
++	crate::MultiAddress<AccountId, AccountIndex>: Codec,
+ {
+ 	type Source = crate::MultiAddress<AccountId, AccountIndex>;
+ 	type Target = AccountId;
+@@ -1022,7 +1021,6 @@ pub trait HashOutput:
+ 	+ DecodeWithMemTracking
+ 	+ EncodeLike
+ 	+ MaxEncodedLen
+-	+ TypeInfo
+ {
+ }
+ 
+@@ -1043,12 +1041,11 @@ impl<T> HashOutput for T where
+ 		+ DecodeWithMemTracking
+ 		+ EncodeLike
+ 		+ MaxEncodedLen
+-		+ TypeInfo
+ {
+ }
+ 
+ /// Blake2-256 Hash implementation.
+-#[derive(PartialEq, Eq, Clone, RuntimeDebug, TypeInfo)]
++#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct BlakeTwo256;
+ 
+@@ -1075,7 +1072,7 @@ impl Hash for BlakeTwo256 {
+ }
+ 
+ /// Keccak-256 Hash implementation.
+-#[derive(PartialEq, Eq, Clone, RuntimeDebug, TypeInfo)]
++#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct Keccak256;
+ 
+@@ -1190,7 +1187,6 @@ pub trait BlockNumber:
+ 	+ Into<U256>
+ 	+ TryFrom<U256>
+ 	+ Default
+-	+ TypeInfo
+ 	+ MaxEncodedLen
+ 	+ FullCodec
+ 	+ DecodeWithMemTracking
+@@ -1210,7 +1206,6 @@ impl<
+ 			+ Into<U256>
+ 			+ TryFrom<U256>
+ 			+ Default
+-			+ TypeInfo
+ 			+ MaxEncodedLen
+ 			+ FullCodec
+ 			+ DecodeWithMemTracking
+@@ -1233,7 +1228,6 @@ pub trait Header:
+ 	+ Eq
+ 	+ MaybeSerialize
+ 	+ Debug
+-	+ TypeInfo
+ 	+ 'static
+ {
+ 	/// Header number.
+@@ -1352,7 +1346,7 @@ pub trait Block:
+ #[deprecated = "Use `ExtrinsicLike` along with the `CreateTransaction` trait family instead"]
+ pub trait Extrinsic: Sized {
+ 	/// The function call.
+-	type Call: TypeInfo;
++	type Call;
+ 
+ 	/// The payload we carry for signed extrinsics.
+ 	///
+@@ -1416,17 +1410,17 @@ pub trait SignaturePayload {
+ 	/// The type of the address that signed the extrinsic.
+ 	///
+ 	/// Particular to a signed extrinsic.
+-	type SignatureAddress: TypeInfo;
++	type SignatureAddress;
+ 
+ 	/// The signature type of the extrinsic.
+ 	///
+ 	/// Particular to a signed extrinsic.
+-	type Signature: TypeInfo;
++	type Signature;
+ 
+ 	/// The additional data that is specific to the signed extrinsic.
+ 	///
+ 	/// Particular to a signed extrinsic.
+-	type SignatureExtra: TypeInfo;
++	type SignatureExtra;
+ }
+ 
+ impl SignaturePayload for () {
+@@ -1577,7 +1571,7 @@ impl Dispatchable for () {
+ }
+ 
+ /// Dispatchable impl containing an arbitrary value which panics if it actually is dispatched.
+-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug)]
+ pub struct FakeDispatchable<Inner>(pub Inner);
+ impl<Inner> From<Inner> for FakeDispatchable<Inner> {
+ 	fn from(inner: Inner) -> Self {
+@@ -1646,7 +1640,7 @@ pub trait AsTransactionAuthorizedOrigin {
+ /// that should be additionally associated with the transaction. It should be plain old data.
+ #[deprecated = "Use `TransactionExtension` instead."]
+ pub trait SignedExtension:
+-	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq + StaticTypeInfo
++	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq
+ {
+ 	/// Unique identifier of this signed extension.
+ 	///
+@@ -1662,7 +1656,7 @@ pub trait SignedExtension:
+ 
+ 	/// Any additional data that will go into the signed payload. This may be created dynamically
+ 	/// from the transaction using the `additional_signed` function.
+-	type AdditionalSigned: Codec + TypeInfo;
++	type AdditionalSigned: Codec;
+ 
+ 	/// The type that encodes information that can be passed from pre_dispatch to post-dispatch.
+ 	type Pre;
+@@ -2077,7 +2071,6 @@ macro_rules! impl_opaque_keys_inner {
+ 			$crate::codec::Encode,
+ 			$crate::codec::Decode,
+ 			$crate::codec::DecodeWithMemTracking,
+-			$crate::scale_info::TypeInfo,
+ 			$crate::RuntimeDebug,
+ 		)]
+ 		pub struct $name {
+@@ -2356,7 +2349,6 @@ pub trait BlockNumberProvider {
+ 		+ Ord
+ 		+ Eq
+ 		+ AtLeast32BitUnsigned
+-		+ TypeInfo
+ 		+ Debug
+ 		+ MaxEncodedLen
+ 		+ Copy
+diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
+index 8819ddc..ad985d0 100644
+--- a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
++++ b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
+@@ -20,7 +20,6 @@
+ 
+ #![allow(deprecated)]
+ 
+-use scale_info::TypeInfo;
+ use sp_core::RuntimeDebug;
+ 
+ use crate::{
+@@ -31,7 +30,7 @@ use crate::{
+ use super::*;
+ 
+ /// Adapter to use a `SignedExtension` in the place of a `TransactionExtension`.
+-#[derive(TypeInfo, Encode, Decode, DecodeWithMemTracking, Clone, PartialEq, Eq, RuntimeDebug)]
++#[derive(Encode, Decode, DecodeWithMemTracking, Clone, PartialEq, Eq, RuntimeDebug)]
+ #[deprecated = "Convert your SignedExtension to a TransactionExtension."]
+ pub struct AsTransactionExtension<SE: SignedExtension>(pub SE);
+ 
+diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
+index adf658c..8e197b4 100644
+--- a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
++++ b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
+@@ -18,7 +18,6 @@
+ //! The transaction extension trait.
+ 
+ use crate::{
+-	scale_info::{MetaType, StaticTypeInfo},
+ 	transaction_validity::{
+ 		TransactionSource, TransactionValidity, TransactionValidityError, ValidTransaction,
+ 	},
+@@ -228,7 +227,7 @@ pub type ValidateResult<Val, Call> =
+ /// correct amount of weight used during the call. This is because one cannot know the actual weight
+ /// of an extension after post dispatch without running the post dispatch ahead of time.
+ pub trait TransactionExtension<Call: Dispatchable>:
+-	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq + StaticTypeInfo
++	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq
+ {
+ 	/// Unique identifier of this signed extension.
+ 	///
+@@ -239,7 +238,7 @@ pub trait TransactionExtension<Call: Dispatchable>:
+ 	/// useful in authenticating the transaction. This is determined dynamically in part from the
+ 	/// on-chain environment using the `implicit` function and not directly contained in the
+ 	/// transaction itself and therefore is considered "implicit".
+-	type Implicit: Codec + StaticTypeInfo;
++	type Implicit: Codec;
+ 
+ 	/// Determine any additional data which was known at the time of transaction construction and
+ 	/// can be useful in authenticating the transaction. The expected usage of this is to include in
+diff --git a/substrate/primitives/runtime/src/transaction_validity.rs b/substrate/primitives/runtime/src/transaction_validity.rs
+index a48c8ee..08011e0 100644
+--- a/substrate/primitives/runtime/src/transaction_validity.rs
++++ b/substrate/primitives/runtime/src/transaction_validity.rs
+@@ -22,7 +22,6 @@ use crate::{
+ 	RuntimeDebug,
+ };
+ use alloc::{vec, vec::Vec};
+-use scale_info::TypeInfo;
+ 
+ /// Priority for a transaction. Additive. Higher is better.
+ pub type TransactionPriority = u64;
+@@ -35,7 +34,7 @@ pub type TransactionLongevity = u64;
+ pub type TransactionTag = Vec<u8>;
+ 
+ /// An invalid transaction validity.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+ pub enum InvalidTransaction {
+ 	/// The call of the transaction is not expected.
+@@ -126,7 +125,7 @@ impl From<InvalidTransaction> for &'static str {
+ }
+ 
+ /// An unknown transaction validity.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+ pub enum UnknownTransaction {
+ 	/// Could not lookup some information that is required to validate the transaction.
+@@ -150,7 +149,7 @@ impl From<UnknownTransaction> for &'static str {
+ }
+ 
+ /// Errors that can occur while checking the validity of a transaction.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+ pub enum TransactionValidityError {
+ 	/// The transaction is invalid.
+@@ -234,7 +233,7 @@ impl From<UnknownTransaction> for TransactionValidity {
+ /// Depending on the source we might apply different validation schemes.
+ /// For instance we can disallow specific kinds of transactions if they were not produced
+ /// by our local node (for instance off-chain workers).
+-#[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo, Hash)]
++#[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, Hash)]
+ pub enum TransactionSource {
+ 	/// Transaction is already included in block.
+ 	///
+@@ -259,7 +258,7 @@ pub enum TransactionSource {
+ }
+ 
+ /// Information concerning a valid transaction.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
+ pub struct ValidTransaction {
+ 	/// Priority of the transaction.
+ 	///
+diff --git a/substrate/primitives/runtime/src/type_with_default.rs b/substrate/primitives/runtime/src/type_with_default.rs
+index 5a1953f..3d72df3 100644
+--- a/substrate/primitives/runtime/src/type_with_default.rs
++++ b/substrate/primitives/runtime/src/type_with_default.rs
+@@ -31,7 +31,6 @@ use num_traits::{
+ 	CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl, CheckedShr, CheckedSub,
+ 	Num, NumCast, PrimInt, Saturating, ToPrimitive,
+ };
+-use scale_info::{StaticTypeInfo, TypeInfo};
+ use sp_core::Get;
+ 
+ #[cfg(feature = "serde")]
+@@ -51,17 +50,6 @@ impl<T, D: Get<T>> TypeWithDefault<T, D> {
+ 	}
+ }
+ 
+-// Hides implementation details from the outside (for metadata type information).
+-//
+-// The type info showed in metadata is the one of the inner value's type.
+-impl<T: StaticTypeInfo, D: Get<T> + 'static> TypeInfo for TypeWithDefault<T, D> {
+-	type Identity = Self;
+-
+-	fn type_info() -> scale_info::Type {
+-		T::type_info()
+-	}
+-}
+-
+ impl<T: Clone, D: Get<T>> Clone for TypeWithDefault<T, D> {
+ 	fn clone(&self) -> Self {
+ 		Self(self.0.clone(), PhantomData)
+diff --git a/substrate/primitives/session/src/lib.rs b/substrate/primitives/session/src/lib.rs
+index 3225097..f1375ec 100644
+--- a/substrate/primitives/session/src/lib.rs
++++ b/substrate/primitives/session/src/lib.rs
+@@ -48,7 +48,6 @@ pub type ValidatorCount = u32;
+ 	PartialEq,
+ 	Default,
+ 	RuntimeDebug,
+-	scale_info::TypeInfo,
+ )]
+ pub struct MembershipProof {
+ 	/// The session index on which the specific key is a member.
+diff --git a/substrate/primitives/staking/src/lib.rs b/substrate/primitives/staking/src/lib.rs
+index 024b93d..d0431c3 100644
+--- a/substrate/primitives/staking/src/lib.rs
++++ b/substrate/primitives/staking/src/lib.rs
+@@ -26,7 +26,6 @@ use crate::currency_to_vote::CurrencyToVote;
+ use alloc::{collections::btree_map::BTreeMap, vec, vec::Vec};
+ use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, HasCompact, MaxEncodedLen};
+ use core::ops::Sub;
+-use scale_info::TypeInfo;
+ use sp_runtime::{
+ 	traits::{AtLeast32BitUnsigned, Zero},
+ 	DispatchError, DispatchResult, Perbill, RuntimeDebug, Saturating,
+@@ -62,7 +61,7 @@ impl<AccountId> From<AccountId> for StakingAccount<AccountId> {
+ }
+ 
+ /// Representation of the status of a staker.
+-#[derive(RuntimeDebug, TypeInfo)]
++#[derive(RuntimeDebug)]
+ #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize, PartialEq, Eq, Clone))]
+ pub enum StakerStatus<AccountId> {
+ 	/// Chilling.
+@@ -171,7 +170,6 @@ pub trait StakingInterface {
+ 		+ Copy
+ 		+ MaxEncodedLen
+ 		+ FullCodec
+-		+ TypeInfo
+ 		+ Saturating;
+ 
+ 	/// AccountId type used by the staking system.
+@@ -356,7 +354,6 @@ pub trait StakingUnchecked: StakingInterface {
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	RuntimeDebug,
+-	TypeInfo,
+ 	Copy,
+ )]
+ pub struct IndividualExposure<AccountId, Balance: HasCompact> {
+@@ -378,7 +375,6 @@ pub struct IndividualExposure<AccountId, Balance: HasCompact> {
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	RuntimeDebug,
+-	TypeInfo,
+ )]
+ pub struct Exposure<AccountId, Balance: HasCompact> {
+ 	/// The total balance backing this validator.
+@@ -440,7 +436,7 @@ impl<
+ }
+ 
+ /// A snapshot of the stake backing a single validator in the system.
+-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
++#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, RuntimeDebug)]
+ pub struct ExposurePage<AccountId, Balance: HasCompact> {
+ 	/// The total balance of this chunk/page.
+ 	#[codec(compact)]
+@@ -469,7 +465,6 @@ impl<A, B: Default + HasCompact> Default for ExposurePage<A, B> {
+ 	Encode,
+ 	Decode,
+ 	RuntimeDebug,
+-	TypeInfo,
+ 	Default,
+ 	MaxEncodedLen,
+ )]
+@@ -537,7 +532,6 @@ pub trait DelegationInterface {
+ 		+ Copy
+ 		+ MaxEncodedLen
+ 		+ FullCodec
+-		+ TypeInfo
+ 		+ Saturating;
+ 
+ 	/// AccountId type used by the staking system.
+@@ -613,7 +607,6 @@ pub trait DelegationMigrator {
+ 		+ Copy
+ 		+ MaxEncodedLen
+ 		+ FullCodec
+-		+ TypeInfo
+ 		+ Saturating;
+ 
+ 	/// AccountId type used by the staking system.
+diff --git a/substrate/primitives/staking/src/offence.rs b/substrate/primitives/staking/src/offence.rs
+index 0d2aa66..7faf543 100644
+--- a/substrate/primitives/staking/src/offence.rs
++++ b/substrate/primitives/staking/src/offence.rs
+@@ -169,7 +169,7 @@ impl<Reporter, Offender, Res: Default> OnOffenceHandler<Reporter, Offender, Res>
+ }
+ 
+ /// A details about an offending authority for a particular kind of offence.
+-#[derive(Clone, PartialEq, Eq, Encode, Decode, sp_runtime::RuntimeDebug, scale_info::TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Decode, sp_runtime::RuntimeDebug)]
+ pub struct OffenceDetails<Reporter, Offender> {
+ 	/// The offending authority id
+ 	pub offender: Offender,
+@@ -252,7 +252,7 @@ impl<Reporter, Evidence> OffenceReportSystem<Reporter, Evidence> for () {
+ /// For instance used for the purposes of distinguishing who should be
+ /// prioritized for disablement.
+ #[derive(
+-	Clone, Copy, PartialEq, Eq, Encode, Decode, sp_runtime::RuntimeDebug, scale_info::TypeInfo,
++	Clone, Copy, PartialEq, Eq, Encode, Decode, sp_runtime::RuntimeDebug,
+ )]
+ pub struct OffenceSeverity(pub Perbill);
+ 
+diff --git a/substrate/primitives/trie/src/accessed_nodes_tracker.rs b/substrate/primitives/trie/src/accessed_nodes_tracker.rs
+index 378e3c2..67ca165 100644
+--- a/substrate/primitives/trie/src/accessed_nodes_tracker.rs
++++ b/substrate/primitives/trie/src/accessed_nodes_tracker.rs
+@@ -19,12 +19,11 @@
+ 
+ use alloc::collections::BTreeSet;
+ use core::hash::Hash;
+-use scale_info::TypeInfo;
+ use sp_core::{Decode, Encode};
+ use trie_db::{RecordedForKey, TrieAccess, TrieRecorder};
+ 
+ /// Error associated with the `AccessedNodesTracker` module.
+-#[derive(Encode, Decode, Clone, Eq, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Clone, Eq, PartialEq, Debug)]
+ pub enum Error {
+ 	/// The proof contains unused nodes.
+ 	UnusedNodes,
+diff --git a/substrate/primitives/trie/src/storage_proof.rs b/substrate/primitives/trie/src/storage_proof.rs
+index 28ebb39..dc945a9 100644
+--- a/substrate/primitives/trie/src/storage_proof.rs
++++ b/substrate/primitives/trie/src/storage_proof.rs
+@@ -19,14 +19,13 @@ use alloc::{collections::btree_set::BTreeSet, vec::Vec};
+ use codec::{Decode, DecodeWithMemTracking, Encode};
+ use core::iter::{DoubleEndedIterator, IntoIterator};
+ use hash_db::{HashDB, Hasher};
+-use scale_info::TypeInfo;
+ 
+ // Note that `LayoutV1` usage here (proof compaction) is compatible
+ // with `LayoutV0`.
+ use crate::LayoutV1 as Layout;
+ 
+ /// Error associated with the `storage_proof` module.
+-#[derive(Encode, Decode, Clone, Eq, PartialEq, Debug, TypeInfo)]
++#[derive(Encode, Decode, Clone, Eq, PartialEq, Debug)]
+ pub enum StorageProofError {
+ 	/// The proof contains duplicate nodes.
+ 	DuplicateNodes,
+@@ -39,7 +38,7 @@ pub enum StorageProofError {
+ /// The proof consists of the set of serialized nodes in the storage trie accessed when looking up
+ /// the keys covered by the proof. Verifying the proof requires constructing the partial trie from
+ /// the serialized nodes and performing the key lookups.
+-#[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
++#[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking)]
+ pub struct StorageProof {
+ 	trie_nodes: BTreeSet<Vec<u8>>,
+ }
+@@ -172,7 +171,7 @@ impl<H: Hasher> From<&StorageProof> for crate::MemoryDB<H> {
+ }
+ 
+ /// Storage proof in compact form.
+-#[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, TypeInfo)]
++#[derive(Debug, PartialEq, Eq, Clone, Encode, Decode)]
+ pub struct CompactProof {
+ 	pub encoded_nodes: Vec<Vec<u8>>,
+ }
+diff --git a/substrate/primitives/version/src/lib.rs b/substrate/primitives/version/src/lib.rs
+index 2e14646..cabc16a 100644
+--- a/substrate/primitives/version/src/lib.rs
++++ b/substrate/primitives/version/src/lib.rs
+@@ -45,7 +45,6 @@ use std::collections::HashSet;
+ #[doc(hidden)]
+ pub use alloc::borrow::Cow;
+ use codec::{Decode, Encode, Input};
+-use scale_info::TypeInfo;
+ #[allow(deprecated)]
+ pub use sp_runtime::{create_runtime_str, StateVersion};
+ #[doc(hidden)]
+@@ -162,7 +161,7 @@ macro_rules! create_apis_vec {
+ /// In particular: bug fixes should result in an increment of `spec_version` and possibly
+ /// `authoring_version`, absolutely not `impl_version` since they change the semantics of the
+ /// runtime.
+-#[derive(Clone, PartialEq, Eq, Encode, Default, sp_runtime::RuntimeDebug, TypeInfo)]
++#[derive(Clone, PartialEq, Eq, Encode, Default, sp_runtime::RuntimeDebug)]
+ pub struct RuntimeVersion {
+ 	/// Identifies the different Substrate runtimes. There'll be at least polkadot and node.
+ 	/// A different on-chain spec_name to that of the native runtime would normally result
+diff --git a/substrate/primitives/weights/src/lib.rs b/substrate/primitives/weights/src/lib.rs
+index b2c9562..f7e7ae3 100644
+--- a/substrate/primitives/weights/src/lib.rs
++++ b/substrate/primitives/weights/src/lib.rs
+@@ -26,7 +26,6 @@ mod weight_v2;
+ 
+ use bounded_collections::Get;
+ use codec::{Decode, Encode};
+-use scale_info::TypeInfo;
+ #[cfg(feature = "serde")]
+ use serde::{Deserialize, Serialize};
+ use smallvec::SmallVec;
+@@ -53,7 +52,7 @@ pub mod constants {
+ ///
+ /// NOTE: This is currently only measured in computational time, and will probably
+ /// be updated all together once proof size is accounted for.
+-#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo)]
++#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode)]
+ pub struct RuntimeDbWeight {
+ 	pub read: u64,
+ 	pub write: u64,
+@@ -85,7 +84,7 @@ impl RuntimeDbWeight {
+ ///
+ /// The `negative` value encodes whether the term is added or subtracted from the
+ /// overall polynomial result.
+-#[derive(Clone, Encode, Decode, TypeInfo)]
++#[derive(Clone, Encode, Decode)]
+ pub struct WeightToFeeCoefficient<Balance> {
+ 	/// The integral part of the coefficient.
+ 	pub coeff_integer: Balance,
+diff --git a/substrate/primitives/weights/src/weight_v2.rs b/substrate/primitives/weights/src/weight_v2.rs
+index 87e6e69..195e953 100644
+--- a/substrate/primitives/weights/src/weight_v2.rs
++++ b/substrate/primitives/weights/src/weight_v2.rs
+@@ -26,7 +26,6 @@ use super::*;
+ 	Decode,
+ 	DecodeWithMemTracking,
+ 	MaxEncodedLen,
+-	TypeInfo,
+ 	Eq,
+ 	PartialEq,
+ 	Copy,

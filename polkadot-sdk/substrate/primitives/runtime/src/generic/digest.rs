@@ -26,17 +26,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
 	codec::{Decode, DecodeWithMemTracking, Encode, Error, Input},
-	scale_info::{
-		build::{Fields, Variants},
-		Path, Type, TypeInfo,
-	},
 	ConsensusEngineId,
 };
 use sp_core::RuntimeDebug;
 
 /// Generic header digest.
 #[derive(
-	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, TypeInfo, Default,
+	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, Default,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Digest {
@@ -129,44 +125,6 @@ impl<'a> serde::Deserialize<'a> for DigestItem {
 		let r = sp_core::bytes::deserialize(de)?;
 		Decode::decode(&mut &r[..])
 			.map_err(|e| serde::de::Error::custom(format!("Decode error: {}", e)))
-	}
-}
-
-impl TypeInfo for DigestItem {
-	type Identity = Self;
-
-	fn type_info() -> Type {
-		Type::builder().path(Path::new("DigestItem", module_path!())).variant(
-			Variants::new()
-				.variant("PreRuntime", |v| {
-					v.index(DigestItemType::PreRuntime as u8).fields(
-						Fields::unnamed()
-							.field(|f| f.ty::<ConsensusEngineId>().type_name("ConsensusEngineId"))
-							.field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")),
-					)
-				})
-				.variant("Consensus", |v| {
-					v.index(DigestItemType::Consensus as u8).fields(
-						Fields::unnamed()
-							.field(|f| f.ty::<ConsensusEngineId>().type_name("ConsensusEngineId"))
-							.field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")),
-					)
-				})
-				.variant("Seal", |v| {
-					v.index(DigestItemType::Seal as u8).fields(
-						Fields::unnamed()
-							.field(|f| f.ty::<ConsensusEngineId>().type_name("ConsensusEngineId"))
-							.field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")),
-					)
-				})
-				.variant("Other", |v| {
-					v.index(DigestItemType::Other as u8)
-						.fields(Fields::unnamed().field(|f| f.ty::<Vec<u8>>().type_name("Vec<u8>")))
-				})
-				.variant("RuntimeEnvironmentUpdated", |v| {
-					v.index(DigestItemType::RuntimeEnvironmentUpdated as u8).fields(Fields::unit())
-				}),
-		)
 	}
 }
 

@@ -48,7 +48,6 @@ pub type ValidatorCount = u32;
 	PartialEq,
 	Default,
 	RuntimeDebug,
-	scale_info::TypeInfo,
 )]
 pub struct MembershipProof {
 	/// The session index on which the specific key is a member.

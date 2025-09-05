@@ -181,7 +181,6 @@ use sp_runtime::Saturating;
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
-	scale_info::TypeInfo,
 	MaxEncodedLen,
 )]
 pub enum MigrationCursor<Cursor, BlockNumber> {
@@ -219,7 +218,6 @@ impl<Cursor, BlockNumber> From<ActiveCursor<Cursor, BlockNumber>>
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
-	scale_info::TypeInfo,
 	MaxEncodedLen,
 )]
 pub struct ActiveCursor<Cursor, BlockNumber> {
@@ -244,7 +242,7 @@ impl<Cursor, BlockNumber> ActiveCursor<Cursor, BlockNumber> {
 
 /// How to clear the records of historic migrations.
 #[derive(
-	Debug, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, scale_info::TypeInfo,
+	Debug, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking,
 )]
 pub enum HistoricCleanupSelector<Id> {
 	/// Clear exactly these entries.
@@ -305,7 +303,7 @@ pub trait MockedMigrations: SteppedMigrations {
 /// Wrapper for pre-upgrade bytes, allowing us to impl MEL on it.
 ///
 /// For `try-runtime` testing only.
-#[derive(Debug, Clone, Eq, PartialEq, Encode, Decode, scale_info::TypeInfo, Default)]
+#[derive(Debug, Clone, Eq, PartialEq, Encode, Decode, Default)]
 struct PreUpgradeBytesWrapper(pub Vec<u8>);
 
 /// Data stored by the pre-upgrade hook of the MBMs. Only used for `try-runtime` testing.

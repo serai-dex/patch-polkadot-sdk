@@ -51,10 +51,6 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.schnellru]
 optional = true
 workspace = true
@@ -90,7 +86,6 @@ std = [
     "nohash-hasher",
     "parking_lot",
     "rand",
-    "scale-info/std",
     "schnellru",
     "sp-core/std",
     "sp-externalities/std",

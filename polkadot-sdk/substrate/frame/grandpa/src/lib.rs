@@ -45,7 +45,6 @@ use frame_support::{
 	WeakBoundedVec,
 };
 use frame_system::pallet_prelude::BlockNumberFor;
-use scale_info::TypeInfo;
 use sp_consensus_grandpa::{
 	ConsensusLog, EquivocationProof, ScheduledChange, SetId, GRANDPA_ENGINE_ID,
 	RUNTIME_LOG_TARGET as LOG_TARGET,
@@ -382,9 +381,8 @@ pub type BoundedAuthorityList<Limit> = WeakBoundedVec<(AuthorityId, AuthorityWei
 
 /// A stored pending change.
 /// `Limit` is the bound for `next_authorities`
-#[derive(Encode, Decode, TypeInfo, MaxEncodedLen)]
+#[derive(Encode, Decode, MaxEncodedLen)]
 #[codec(mel_bound(N: MaxEncodedLen, Limit: Get<u32>))]
-#[scale_info(skip_type_params(Limit))]
 pub struct StoredPendingChange<N, Limit> {
 	/// The block number this was scheduled at.
 	pub scheduled_at: N,
@@ -400,7 +398,7 @@ pub struct StoredPendingChange<N, Limit> {
 /// Current state of the GRANDPA authority set. State transitions must happen in
 /// the same order of states defined below, e.g. `Paused` implies a prior
 /// `PendingPause`.
-#[derive(Decode, Encode, TypeInfo, MaxEncodedLen)]
+#[derive(Decode, Encode, MaxEncodedLen)]
 #[cfg_attr(test, derive(Debug, PartialEq))]
 pub enum StoredState<N> {
 	/// The current authority set is live, and GRANDPA is enabled.

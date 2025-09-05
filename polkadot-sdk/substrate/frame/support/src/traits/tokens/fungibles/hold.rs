@@ -30,7 +30,6 @@ use crate::{
 		Restriction::{self, Free, OnHold},
 	},
 };
-use scale_info::TypeInfo;
 use sp_arithmetic::{
 	traits::{CheckedAdd, CheckedSub, Zero},
 	ArithmeticError,
@@ -44,7 +43,7 @@ pub trait Inspect<AccountId>: super::Inspect<AccountId> {
 	/// An identifier for a hold. Used for disambiguating different holds so that
 	/// they can be individually replaced or removed and funds from one hold don't accidentally
 	/// become unreserved or slashed for another.
-	type Reason: codec::Encode + TypeInfo + 'static;
+	type Reason: codec::Encode + 'static;
 
 	/// Amount of funds on hold (for all hold reasons) of `who`.
 	fn total_balance_on_hold(asset: Self::AssetId, who: &AccountId) -> Self::Balance;

@@ -18,7 +18,6 @@
 use crate::Config;
 use codec::{Decode, DecodeWithMemTracking, Encode};
 use frame_support::dispatch::{DispatchInfo, PostDispatchInfo};
-use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{
 		DispatchInfoOf, Dispatchable, PostDispatchInfoOf, TransactionExtension, ValidateResult,
@@ -33,8 +32,7 @@ use sp_weights::Weight;
 /// After the dispatch of the extrinsic, calculate the unused weight using the post dispatch
 /// information and update the block consumed weight according to the new calculated extrinsic
 /// weight.
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default)]
 pub struct WeightReclaim<T: Config + Send + Sync>(core::marker::PhantomData<T>);
 
 impl<T: Config + Send + Sync> WeightReclaim<T>

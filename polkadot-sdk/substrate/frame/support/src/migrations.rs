@@ -551,7 +551,7 @@ pub trait SteppedMigration {
 }
 
 /// Error that can occur during a [`SteppedMigration`].
-#[derive(Debug, Encode, Decode, MaxEncodedLen, scale_info::TypeInfo)]
+#[derive(Debug, Encode, Decode, MaxEncodedLen)]
 pub enum SteppedMigrationError {
 	// Transient errors:
 	/// The remaining weight is not enough to do anything.

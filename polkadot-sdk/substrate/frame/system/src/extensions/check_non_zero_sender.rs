@@ -19,7 +19,6 @@ use crate::Config;
 use codec::{Decode, DecodeWithMemTracking, Encode};
 use core::marker::PhantomData;
 use frame_support::{pallet_prelude::TransactionSource, traits::OriginTrait, DefaultNoBound};
-use scale_info::TypeInfo;
 use sp_runtime::{
 	impl_tx_ext_default,
 	traits::{DispatchInfoOf, TransactionExtension},
@@ -27,8 +26,7 @@ use sp_runtime::{
 };
 
 /// Check to ensure that the sender is not the zero address.
-#[derive(Encode, Decode, DecodeWithMemTracking, DefaultNoBound, Clone, Eq, PartialEq, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, DecodeWithMemTracking, DefaultNoBound, Clone, Eq, PartialEq)]
 pub struct CheckNonZeroSender<T>(PhantomData<T>);
 
 impl<T: Config + Send + Sync> core::fmt::Debug for CheckNonZeroSender<T> {

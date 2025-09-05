@@ -20,14 +20,13 @@
 use super::storage::Footprint;
 use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, MaxEncodedLen};
 use core::{fmt::Debug, marker::PhantomData};
-use scale_info::TypeInfo;
 use sp_core::{ConstU32, Get, TypedGet};
 use sp_runtime::{traits::Convert, BoundedSlice, RuntimeDebug};
 use sp_weights::{Weight, WeightMeter};
 
 /// Errors that can happen when attempting to process a message with
 /// [`ProcessMessage::process_message()`].
-#[derive(Copy, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, TypeInfo, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, Debug)]
 pub enum ProcessMessageError {
 	/// The message data format is unknown (e.g. unrecognised header)
 	BadFormat,
@@ -53,7 +52,7 @@ pub enum ProcessMessageError {
 /// Can process messages from a specific origin.
 pub trait ProcessMessage {
 	/// The transport from where a message originates.
-	type Origin: FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + TypeInfo + Debug;
+	type Origin: FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + Debug;
 
 	/// Process the given message, using no more than the remaining `meter` weight to do so.
 	///

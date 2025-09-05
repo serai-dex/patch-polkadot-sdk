@@ -95,7 +95,6 @@ pub mod __private {
 	pub use alloc::vec;
 	pub use codec::{self, Decode, DecodeLimit, Encode};
 	pub use core::{mem, slice};
-	pub use scale_info;
 	pub use sp_core::offchain;
 	#[cfg(not(feature = "std"))]
 	pub use sp_core::to_substrate_wasm_fn_return_value;

@@ -174,8 +174,7 @@ pub mod pallet {
 			+ AtLeast32Bit
 			+ Scale<BlockNumberFor<Self>, Output = Self::Moment>
 			+ Copy
-			+ MaxEncodedLen
-			+ scale_info::StaticTypeInfo;
+			+ MaxEncodedLen;
 
 		/// Something which can be notified (e.g. another pallet) when the timestamp is set.
 		///

@@ -92,10 +92,6 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.secrecy]
 features = ["alloc"]
 workspace = true
@@ -185,7 +181,6 @@ std = [
     "primitive-types/serde",
     "primitive-types/std",
     "rand",
-    "scale-info/std",
     "schnorrkel/std",
     "serde/std",
     "sp-crypto-hashing/std",
@@ -207,7 +202,6 @@ serde = [
     "dep:serde",
     "impl-serde",
     "primitive-types/serde_no_std",
-    "scale-info/serde",
     "sp-storage/serde",
 ]
 full_crypto = [

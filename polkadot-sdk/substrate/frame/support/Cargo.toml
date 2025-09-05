@@ -55,10 +55,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -129,7 +125,6 @@ std = [
     "environmental/std",
     "frame-support-procedural/std",
     "log/std",
-    "scale-info/std",
     "serde/std",
     "serde_json/std",
     "sp-api/std",
@@ -156,6 +151,6 @@ try-runtime = [
     "sp-runtime/try-runtime",
 ]
 experimental = ["frame-support-procedural/experimental"]
-full-metadata-docs = ["scale-info/docs"]
+full-metadata-docs = []
 tuples-96 = ["frame-support-procedural/tuples-96"]
 tuples-128 = ["frame-support-procedural/tuples-128"]

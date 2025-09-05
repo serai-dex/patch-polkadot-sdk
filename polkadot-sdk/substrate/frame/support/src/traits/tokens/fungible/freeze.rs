@@ -20,7 +20,6 @@
 //! See the [`crate::traits::fungible`] doc for more information about fungible traits
 //! including the place of the Freezes in FRAME.
 
-use scale_info::TypeInfo;
 use sp_arithmetic::{
 	traits::{CheckedAdd, CheckedSub},
 	ArithmeticError,
@@ -36,7 +35,7 @@ use crate::{ensure, traits::tokens::Fortitude};
 /// accordingly.
 pub trait Inspect<AccountId>: super::Inspect<AccountId> {
 	/// An identifier for a freeze.
-	type Id: codec::Encode + TypeInfo + 'static;
+	type Id: codec::Encode + 'static;
 
 	/// Amount of funds frozen in reserve by `who` for the given `id`.
 	fn balance_frozen(id: &Self::Id, who: &AccountId) -> Self::Balance;

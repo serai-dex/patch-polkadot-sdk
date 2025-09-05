@@ -22,7 +22,6 @@ use codec::{Decode, Encode, FullCodec, MaxEncodedLen};
 use core::marker::PhantomData;
 use frame_support::CloneNoBound;
 use impl_trait_for_tuples::impl_for_tuples;
-use scale_info::TypeInfo;
 pub use sp_core::storage::TrackedStorageKey;
 use sp_core::Get;
 use sp_runtime::{
@@ -94,7 +93,7 @@ pub trait StorageInstance {
 }
 
 /// Metadata about storage from the runtime.
-#[derive(Debug, codec::Encode, codec::Decode, Eq, PartialEq, Clone, scale_info::TypeInfo)]
+#[derive(Debug, codec::Encode, codec::Decode, Eq, PartialEq, Clone)]
 pub struct StorageInfo {
 	/// Encoded string of pallet name.
 	pub pallet_name: Vec<u8>,
@@ -214,7 +213,7 @@ where
 }
 
 /// Placeholder marking functionality disabled. Useful for disabling various (sub)features.
-#[derive(CloneNoBound, Debug, Encode, Eq, Decode, TypeInfo, MaxEncodedLen, PartialEq)]
+#[derive(CloneNoBound, Debug, Encode, Eq, Decode, MaxEncodedLen, PartialEq)]
 pub struct Disabled;
 impl<A, F> Consideration<A, F> for Disabled {
 	fn new(_: &A, _: F) -> Result<Self, DispatchError> {
@@ -244,7 +243,7 @@ impl<A, F> Consideration<A, F> for Disabled {
 /// it.
 #[must_use]
 pub trait Consideration<AccountId, Footprint>:
-	Member + FullCodec + TypeInfo + MaxEncodedLen
+	Member + FullCodec + MaxEncodedLen
 {
 	/// Create a ticket for the `new` footprint attributable to `who`. This ticket *must* ultimately
 	/// be consumed through `update` or `drop` once the footprint changes or is removed.

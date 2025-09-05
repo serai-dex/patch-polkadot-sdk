@@ -42,13 +42,6 @@ workspace = true
 [dependencies.pallet-timestamp]
 workspace = true
 
-[dependencies.scale-info]
-features = [
-    "derive",
-    "serde",
-]
-workspace = true
-
 [dependencies.sp-core]
 features = ["serde"]
 workspace = true
@@ -86,7 +79,6 @@ std = [
     "frame-system/std",
     "log/std",
     "pallet-timestamp/std",
-    "scale-info/std",
     "sp-core/std",
     "sp-io/std",
     "sp-runtime/std",

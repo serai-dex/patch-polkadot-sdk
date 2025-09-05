@@ -269,25 +269,6 @@ pub fn replace_self_by_t(input: proc_macro2::TokenStream) -> proc_macro2::TokenS
 		.collect()
 }
 
-/// Check that the trait item requires the `TypeInfo` bound (or similar).
-fn contains_type_info_bound(ty: &TraitItemType) -> bool {
-	const KNOWN_TYPE_INFO_BOUNDS: &[&str] = &[
-		// Explicit TypeInfo trait.
-		"TypeInfo",
-		// Implicit known substrate traits that implement type info.
-		// Note: Aim to keep this list as small as possible.
-		"Parameter",
-	];
-
-	ty.bounds.iter().any(|bound| {
-		let syn::TypeParamBound::Trait(bound) = bound else { return false };
-
-		KNOWN_TYPE_INFO_BOUNDS
-			.iter()
-			.any(|known| bound.path.segments.last().map_or(false, |last| last.ident == *known))
-	})
-}
-
 impl ConfigDef {
 	pub fn try_from(
 		frame_system: &syn::Path,
@@ -420,17 +401,6 @@ impl ConfigDef {
 						"Invalid #[pallet::include_metadata]: conflict with #[pallet::constant]. \
 						Pallet constant already collect the metadata for the type.",
 					))
-				}
-
-				if let syn::TraitItem::Type(ref ty) = trait_item {
-					if !contains_type_info_bound(ty) {
-						let msg = format!(
-						"Invalid #[pallet::include_metadata] in #[pallet::config], collected type `{}` \
-						does not implement `TypeInfo` or `Parameter`",
-						ty.ident,
-					);
-						return Err(syn::Error::new(span, msg));
-					}
 				}
 			}
 

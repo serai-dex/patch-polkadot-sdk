@@ -26,7 +26,6 @@ use super::*;
 	Decode,
 	DecodeWithMemTracking,
 	MaxEncodedLen,
-	TypeInfo,
 	Eq,
 	PartialEq,
 	Copy,

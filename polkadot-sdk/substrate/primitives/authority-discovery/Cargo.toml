@@ -26,10 +26,6 @@ workspace = true
 [dependencies.codec]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.sp-api]
 workspace = true
 
@@ -43,13 +39,11 @@ workspace = true
 default = ["std"]
 std = [
     "codec/std",
-    "scale-info/std",
     "sp-api/std",
     "sp-application-crypto/std",
     "sp-runtime/std",
 ]
 serde = [
-    "scale-info/serde",
     "sp-application-crypto/serde",
     "sp-runtime/serde",
 ]

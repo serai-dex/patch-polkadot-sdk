@@ -439,7 +439,6 @@ fn construct_runtime_final_expansion(
 
 		#[derive(
 			Clone, Copy, PartialEq, Eq, #scrate::sp_runtime::RuntimeDebug,
-			#scrate::__private::scale_info::TypeInfo
 		)]
 		pub struct #name;
 		impl #scrate::sp_runtime::traits::GetRuntimeBlockType for #name {

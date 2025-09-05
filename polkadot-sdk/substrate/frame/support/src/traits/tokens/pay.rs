@@ -19,7 +19,6 @@
 
 use codec::{Decode, Encode, FullCodec, MaxEncodedLen};
 use core::fmt::Debug;
-use scale_info::TypeInfo;
 use sp_core::{RuntimeDebug, TypedGet};
 use sp_runtime::DispatchError;
 
@@ -38,7 +37,7 @@ pub trait Pay {
 	/// with. When implementing, it should be clear from the context what that asset is.
 	type AssetKind;
 	/// An identifier given to an individual payment.
-	type Id: FullCodec + MaxEncodedLen + TypeInfo + Clone + Eq + PartialEq + Debug + Copy;
+	type Id: FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + Debug + Copy;
 	/// An error which could be returned by the Pay type
 	type Error: Debug;
 	/// Make a payment and return an identifier for later evaluation of success in some off-chain
@@ -68,7 +67,7 @@ pub trait Pay {
 }
 
 /// Status for making a payment via the `Pay::pay` trait function.
-#[derive(Encode, Decode, Eq, PartialEq, Clone, TypeInfo, MaxEncodedLen, RuntimeDebug)]
+#[derive(Encode, Decode, Eq, PartialEq, Clone, MaxEncodedLen, RuntimeDebug)]
 pub enum PaymentStatus {
 	/// Payment is in progress. Nothing to report yet.
 	InProgress,

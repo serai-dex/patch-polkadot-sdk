@@ -18,7 +18,6 @@
 use crate::{pallet_prelude::BlockNumberFor, BlockHash, Config, Pallet};
 use codec::{Decode, DecodeWithMemTracking, Encode};
 use frame_support::pallet_prelude::TransactionSource;
-use scale_info::TypeInfo;
 use sp_runtime::{
 	generic::Era,
 	impl_tx_ext_default,
@@ -34,8 +33,7 @@ use sp_runtime::{
 /// # Transaction Validity
 ///
 /// The extension affects `longevity` of the transaction according to the [`Era`] definition.
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
 pub struct CheckMortality<T: Config + Send + Sync>(pub Era, core::marker::PhantomData<T>);
 
 impl<T: Config + Send + Sync> CheckMortality<T> {

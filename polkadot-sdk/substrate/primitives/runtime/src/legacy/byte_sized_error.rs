@@ -19,12 +19,11 @@
 
 use crate::{ArithmeticError, TokenError};
 use codec::{Decode, Encode};
-use scale_info::TypeInfo;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 /// [`ModuleError`] type definition before BlockBuilder API version 6.
-#[derive(Eq, Clone, Copy, Encode, Decode, Debug, TypeInfo)]
+#[derive(Eq, Clone, Copy, Encode, Decode, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ModuleError {
 	/// Module index, matching the metadata module index.
@@ -44,7 +43,7 @@ impl PartialEq for ModuleError {
 }
 
 /// [`DispatchError`] type definition before BlockBuilder API version 6.
-#[derive(Eq, Clone, Copy, Encode, Decode, Debug, TypeInfo, PartialEq)]
+#[derive(Eq, Clone, Copy, Encode, Decode, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum DispatchError {
 	/// Some error occurred.

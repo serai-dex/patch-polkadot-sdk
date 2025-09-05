@@ -19,7 +19,6 @@
 
 use crate::{
 	generic::Digest,
-	scale_info::{StaticTypeInfo, TypeInfo},
 	transaction_validity::{
 		TransactionSource, TransactionValidity, TransactionValidityError, UnknownTransaction,
 		ValidTransaction,
@@ -233,7 +232,7 @@ pub trait Lookup {
 /// context.
 pub trait StaticLookup {
 	/// Type to lookup from.
-	type Source: Codec + Clone + PartialEq + Debug + TypeInfo;
+	type Source: Codec + Clone + PartialEq + Debug;
 	/// Type to lookup into.
 	type Target;
 	/// Attempt a lookup.
@@ -251,7 +250,7 @@ impl<T> Default for IdentityLookup<T> {
 	}
 }
 
-impl<T: Codec + Clone + PartialEq + Debug + TypeInfo> StaticLookup for IdentityLookup<T> {
+impl<T: Codec + Clone + PartialEq + Debug> StaticLookup for IdentityLookup<T> {
 	type Source = T;
 	type Target = T;
 	fn lookup(x: T) -> Result<T, LookupError> {
@@ -276,7 +275,7 @@ impl<AccountId, AccountIndex> StaticLookup for AccountIdLookup<AccountId, Accoun
 where
 	AccountId: Codec + Clone + PartialEq + Debug,
 	AccountIndex: Codec + Clone + PartialEq + Debug,
-	crate::MultiAddress<AccountId, AccountIndex>: Codec + StaticTypeInfo,
+	crate::MultiAddress<AccountId, AccountIndex>: Codec,
 {
 	type Source = crate::MultiAddress<AccountId, AccountIndex>;
 	type Target = AccountId;
@@ -1022,7 +1021,6 @@ pub trait HashOutput:
 	+ DecodeWithMemTracking
 	+ EncodeLike
 	+ MaxEncodedLen
-	+ TypeInfo
 {
 }
 
@@ -1043,12 +1041,11 @@ impl<T> HashOutput for T where
 		+ DecodeWithMemTracking
 		+ EncodeLike
 		+ MaxEncodedLen
-		+ TypeInfo
 {
 }
 
 /// Blake2-256 Hash implementation.
-#[derive(PartialEq, Eq, Clone, RuntimeDebug, TypeInfo)]
+#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct BlakeTwo256;
 
@@ -1075,7 +1072,7 @@ impl Hash for BlakeTwo256 {
 }
 
 /// Keccak-256 Hash implementation.
-#[derive(PartialEq, Eq, Clone, RuntimeDebug, TypeInfo)]
+#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Keccak256;
 
@@ -1190,7 +1187,6 @@ pub trait BlockNumber:
 	+ Into<U256>
 	+ TryFrom<U256>
 	+ Default
-	+ TypeInfo
 	+ MaxEncodedLen
 	+ FullCodec
 	+ DecodeWithMemTracking
@@ -1210,7 +1206,6 @@ impl<
 			+ Into<U256>
 			+ TryFrom<U256>
 			+ Default
-			+ TypeInfo
 			+ MaxEncodedLen
 			+ FullCodec
 			+ DecodeWithMemTracking
@@ -1233,7 +1228,6 @@ pub trait Header:
 	+ Eq
 	+ MaybeSerialize
 	+ Debug
-	+ TypeInfo
 	+ 'static
 {
 	/// Header number.
@@ -1352,7 +1346,7 @@ pub trait Block:
 #[deprecated = "Use `ExtrinsicLike` along with the `CreateTransaction` trait family instead"]
 pub trait Extrinsic: Sized {
 	/// The function call.
-	type Call: TypeInfo;
+	type Call;
 
 	/// The payload we carry for signed extrinsics.
 	///
@@ -1416,17 +1410,17 @@ pub trait SignaturePayload {
 	/// The type of the address that signed the extrinsic.
 	///
 	/// Particular to a signed extrinsic.
-	type SignatureAddress: TypeInfo;
+	type SignatureAddress;
 
 	/// The signature type of the extrinsic.
 	///
 	/// Particular to a signed extrinsic.
-	type Signature: TypeInfo;
+	type Signature;
 
 	/// The additional data that is specific to the signed extrinsic.
 	///
 	/// Particular to a signed extrinsic.
-	type SignatureExtra: TypeInfo;
+	type SignatureExtra;
 }
 
 impl SignaturePayload for () {
@@ -1577,7 +1571,7 @@ impl Dispatchable for () {
 }
 
 /// Dispatchable impl containing an arbitrary value which panics if it actually is dispatched.
-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug)]
 pub struct FakeDispatchable<Inner>(pub Inner);
 impl<Inner> From<Inner> for FakeDispatchable<Inner> {
 	fn from(inner: Inner) -> Self {
@@ -1646,7 +1640,7 @@ pub trait AsTransactionAuthorizedOrigin {
 /// that should be additionally associated with the transaction. It should be plain old data.
 #[deprecated = "Use `TransactionExtension` instead."]
 pub trait SignedExtension:
-	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq + StaticTypeInfo
+	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq
 {
 	/// Unique identifier of this signed extension.
 	///
@@ -1662,7 +1656,7 @@ pub trait SignedExtension:
 
 	/// Any additional data that will go into the signed payload. This may be created dynamically
 	/// from the transaction using the `additional_signed` function.
-	type AdditionalSigned: Codec + TypeInfo;
+	type AdditionalSigned: Codec;
 
 	/// The type that encodes information that can be passed from pre_dispatch to post-dispatch.
 	type Pre;
@@ -2077,7 +2071,6 @@ macro_rules! impl_opaque_keys_inner {
 			$crate::codec::Encode,
 			$crate::codec::Decode,
 			$crate::codec::DecodeWithMemTracking,
-			$crate::scale_info::TypeInfo,
 			$crate::RuntimeDebug,
 		)]
 		pub struct $name {
@@ -2356,7 +2349,6 @@ pub trait BlockNumberProvider {
 		+ Ord
 		+ Eq
 		+ AtLeast32BitUnsigned
-		+ TypeInfo
 		+ Debug
 		+ MaxEncodedLen
 		+ Copy

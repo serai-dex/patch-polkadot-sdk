@@ -55,10 +55,6 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -108,7 +104,6 @@ std = [
     "log/std",
     "num-traits/std",
     "rand",
-    "scale-info/std",
     "serde/std",
     "sp-application-crypto/std",
     "sp-arithmetic/std",
@@ -122,7 +117,6 @@ std = [
 ]
 serde = [
     "dep:serde",
-    "scale-info/serde",
     "sp-application-crypto/serde",
     "sp-arithmetic/serde",
     "sp-core/serde",

@@ -20,7 +20,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
 use sp_timestamp::Timestamp;
 
 /// Unit type wrapper that represents a slot.
@@ -36,7 +35,6 @@ use sp_timestamp::Timestamp;
 	Default,
 	Ord,
 	Hash,
-	TypeInfo,
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(transparent)]
@@ -154,7 +152,6 @@ impl From<Slot> for u64 {
 	Ord,
 	PartialEq,
 	Eq,
-	TypeInfo,
 )]
 #[repr(transparent)]
 pub struct SlotDuration(u64);
@@ -185,7 +182,7 @@ impl SlotDuration {
 /// produces more than one block on the same slot. The proof of equivocation
 /// are the given distinct headers that were signed by the validator and which
 /// include the slot number.
-#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, TypeInfo, Eq)]
+#[derive(Clone, Debug, Decode, DecodeWithMemTracking, Encode, PartialEq, Eq)]
 pub struct EquivocationProof<Header, Id> {
 	/// Returns the authority id of the equivocator.
 	pub offender: Id,

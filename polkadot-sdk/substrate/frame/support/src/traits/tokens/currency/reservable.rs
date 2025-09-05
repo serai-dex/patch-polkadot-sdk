@@ -17,7 +17,6 @@
 
 //! The reservable currency trait.
 
-use scale_info::TypeInfo;
 use sp_core::Get;
 
 use super::{super::misc::BalanceStatus, Currency};
@@ -111,7 +110,7 @@ impl<AccountId> ReservableCurrency<AccountId> for () {
 pub trait NamedReservableCurrency<AccountId>: ReservableCurrency<AccountId> {
 	/// An identifier for a reserve. Used for disambiguating different reserves so that
 	/// they can be individually replaced or removed.
-	type ReserveIdentifier: codec::Encode + TypeInfo + 'static;
+	type ReserveIdentifier: codec::Encode + 'static;
 
 	/// Deducts up to `value` from reserved balance of `who`. This function cannot fail.
 	///

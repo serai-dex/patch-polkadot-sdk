@@ -142,7 +142,6 @@ use frame_support::{
 	},
 	Parameter,
 };
-use scale_info::TypeInfo;
 use sp_core::storage::well_known_keys;
 use sp_runtime::{
 	traits::{DispatchInfoOf, PostDispatchInfoOf},
@@ -253,8 +252,7 @@ impl<MaxNormal: Get<u32>, MaxOverflow: Get<u32>> ConsumerLimits for (MaxNormal, 
 
 /// Information needed when a new runtime binary is submitted and needs to be authorized before
 /// replacing the current runtime.
-#[derive(Decode, Encode, Default, PartialEq, Eq, MaxEncodedLen, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Decode, Encode, Default, PartialEq, Eq, MaxEncodedLen)]
 pub struct CodeUpgradeAuthorization<T>
 where
 	T: Config,
@@ -288,7 +286,6 @@ where
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
-	TypeInfo,
 )]
 pub struct DispatchEventInfo {
 	/// Weight of this transaction.
@@ -566,7 +563,7 @@ pub mod pallet {
 			+ MaxEncodedLen;
 
 		/// The hashing system (algorithm) being used in the runtime (e.g. Blake2).
-		type Hashing: Hash<Output = Self::Hash> + TypeInfo;
+		type Hashing: Hash<Output = Self::Hash>;
 
 		/// The user account identifier type for the runtime.
 		type AccountId: Parameter
@@ -614,7 +611,7 @@ pub mod pallet {
 
 		/// Data to be associated with an account (other than nonce/transaction counter, which this
 		/// pallet does regardless).
-		type AccountData: Member + FullCodec + Clone + Default + TypeInfo + MaxEncodedLen;
+		type AccountData: Member + FullCodec + Clone + Default + MaxEncodedLen;
 
 		/// Handler for when a new account has just been created.
 		type OnNewAccount: OnNewAccount<Self::AccountId>;
@@ -1152,7 +1149,7 @@ pub type Key = Vec<u8>;
 pub type KeyValue = (Vec<u8>, Vec<u8>);
 
 /// A phase of a block's execution.
-#[derive(Encode, Decode, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+#[derive(Encode, Decode, RuntimeDebug, MaxEncodedLen)]
 #[cfg_attr(feature = "std", derive(Serialize, PartialEq, Eq, Clone))]
 pub enum Phase {
 	/// Applying an extrinsic.
@@ -1170,7 +1167,7 @@ impl Default for Phase {
 }
 
 /// Record of an event happening.
-#[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Encode, Decode, RuntimeDebug)]
 #[cfg_attr(feature = "std", derive(Serialize, PartialEq, Eq, Clone))]
 pub struct EventRecord<E: Parameter + Member, T> {
 	/// The phase of the block it happened in.
@@ -1199,7 +1196,7 @@ type EventIndex = u32;
 pub type RefCount = u32;
 
 /// Information of an account.
-#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo, MaxEncodedLen)]
+#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 pub struct AccountInfo<Nonce, AccountData> {
 	/// The number of transactions this account has sent.
 	pub nonce: Nonce,
@@ -1219,7 +1216,7 @@ pub struct AccountInfo<Nonce, AccountData> {
 
 /// Stores the `spec_version` and `spec_name` of when the last runtime upgrade
 /// happened.
-#[derive(RuntimeDebug, Encode, Decode, TypeInfo)]
+#[derive(RuntimeDebug, Encode, Decode)]
 #[cfg_attr(feature = "std", derive(PartialEq))]
 pub struct LastRuntimeUpgradeInfo {
 	pub spec_version: codec::Compact<u32>,

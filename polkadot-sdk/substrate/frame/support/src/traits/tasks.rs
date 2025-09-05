@@ -21,7 +21,6 @@
 use alloc::{vec, vec::IntoIter};
 use codec::FullCodec;
 use core::{fmt::Debug, iter::Iterator};
-use scale_info::TypeInfo;
 use sp_runtime::DispatchError;
 use sp_weights::Weight;
 
@@ -32,7 +31,6 @@ pub mod __private {
 	pub use alloc::{vec, vec::IntoIter};
 	pub use codec::FullCodec;
 	pub use core::{fmt::Debug, iter::Iterator};
-	pub use scale_info::TypeInfo;
 	pub use sp_runtime::DispatchError;
 	pub use sp_weights::Weight;
 }
@@ -40,7 +38,7 @@ pub mod __private {
 /// A general-purpose trait which defines a type of service work (i.e., work to performed by an
 /// off-chain worker) including methods for enumerating, validating, indexing, and running
 /// tasks of this type.
-pub trait Task: Sized + FullCodec + TypeInfo + Clone + Debug + PartialEq + Eq {
+pub trait Task: Sized + FullCodec + Clone + Debug + PartialEq + Eq {
 	/// An [`Iterator`] over tasks of this type used as the return type for `enumerate`.
 	type Enumeration: Iterator;
 

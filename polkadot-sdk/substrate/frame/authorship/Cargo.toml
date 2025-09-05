@@ -36,10 +36,6 @@ workspace = true
 [dependencies.impl-trait-for-tuples]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.sp-runtime]
 workspace = true
 
@@ -49,7 +45,6 @@ std = [
     "codec/std",
     "frame-support/std",
     "frame-system/std",
-    "scale-info/std",
     "sp-runtime/std",
 ]
 try-runtime = [

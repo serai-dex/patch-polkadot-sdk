@@ -571,7 +571,6 @@ pub mod derive {
 		CloneNoBound, DebugNoBound, DefaultNoBound, EqNoBound, OrdNoBound, PartialEqNoBound,
 		PartialOrdNoBound, RuntimeDebugNoBound,
 	};
-	pub use scale_info::TypeInfo;
 	pub use serde;
 	/// The `serde` `Serialize`/`Deserialize` derive macros and traits.
 	///
@@ -631,7 +630,6 @@ pub mod deps {
 	pub use sp_runtime;
 
 	pub use codec;
-	pub use scale_info;
 
 	#[cfg(feature = "runtime")]
 	pub use frame_executive;

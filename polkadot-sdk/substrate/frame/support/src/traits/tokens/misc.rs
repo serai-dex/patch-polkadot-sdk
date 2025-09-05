@@ -17,7 +17,7 @@
 
 //! Miscellaneous types.
 
-use crate::{traits::Contains, TypeInfo};
+use crate::traits::Contains;
 use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, HasCompact, MaxEncodedLen};
 use core::fmt::Debug;
 use sp_arithmetic::traits::{AtLeast32BitUnsigned, Zero};
@@ -186,7 +186,6 @@ pub enum ExistenceRequirement {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
-	scale_info::TypeInfo,
 	MaxEncodedLen,
 )]
 pub enum BalanceStatus {
@@ -240,7 +239,6 @@ pub trait AssetId:
 	+ Eq
 	+ PartialEq
 	+ Debug
-	+ scale_info::TypeInfo
 	+ MaxEncodedLen
 {
 }
@@ -251,7 +249,6 @@ impl<
 			+ Eq
 			+ PartialEq
 			+ Debug
-			+ scale_info::TypeInfo
 			+ MaxEncodedLen,
 	> AssetId for T
 {
@@ -266,7 +263,6 @@ pub trait Balance:
 	+ Copy
 	+ Default
 	+ Debug
-	+ scale_info::TypeInfo
 	+ MaxEncodedLen
 	+ Send
 	+ Sync
@@ -282,7 +278,6 @@ impl<
 			+ Copy
 			+ Default
 			+ Debug
-			+ scale_info::TypeInfo
 			+ MaxEncodedLen
 			+ Send
 			+ Sync
@@ -387,7 +382,7 @@ impl<A, R, B, C: Convert<R, B>> GetSalary<R, A, B> for ConvertRank<C> {
 }
 
 /// An identifier and balance.
-#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, MaxEncodedLen, TypeInfo)]
+#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, MaxEncodedLen)]
 pub struct IdAmount<Id, Balance> {
 	/// An identifier for this item.
 	pub id: Id,

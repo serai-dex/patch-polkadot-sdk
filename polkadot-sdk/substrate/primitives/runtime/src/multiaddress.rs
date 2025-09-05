@@ -29,7 +29,6 @@ use codec::{Decode, DecodeWithMemTracking, Encode};
 	Eq,
 	Clone,
 	crate::RuntimeDebug,
-	scale_info::TypeInfo,
 )]
 #[cfg_attr(feature = "std", derive(Hash))]
 pub enum MultiAddress<AccountId, AccountIndex> {

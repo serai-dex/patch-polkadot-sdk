@@ -31,7 +31,6 @@ use alloc::format;
 use alloc::{vec, vec::Vec};
 use codec::{Compact, Decode, DecodeWithMemTracking, Encode, EncodeLike, Error, Input};
 use core::fmt;
-use scale_info::{build::Fields, meta_type, Path, StaticTypeInfo, Type, TypeInfo, TypeParameter};
 use sp_io::hashing::blake2_256;
 use sp_weights::Weight;
 
@@ -62,7 +61,7 @@ const EXTENSION_VERSION: ExtensionVersion = 0;
 /// The `SignaturePayload` of `UncheckedExtrinsic`.
 pub type UncheckedSignaturePayload<Address, Signature, Extension> = (Address, Signature, Extension);
 
-impl<Address: TypeInfo, Signature: TypeInfo, Extension: TypeInfo> SignaturePayload
+impl<Address, Signature, Extension> SignaturePayload
 	for UncheckedSignaturePayload<Address, Signature, Extension>
 {
 	type SignatureAddress = Address;
@@ -233,40 +232,6 @@ pub struct UncheckedExtrinsic<Address, Call, Signature, Extension> {
 	pub function: Call,
 }
 
-/// Manual [`TypeInfo`] implementation because of custom encoding. The data is a valid encoded
-/// `Vec<u8>`, but requires some logic to extract the signature and payload.
-///
-/// See [`UncheckedExtrinsic::encode`] and [`UncheckedExtrinsic::decode`].
-impl<Address, Call, Signature, Extension> TypeInfo
-	for UncheckedExtrinsic<Address, Call, Signature, Extension>
-where
-	Address: StaticTypeInfo,
-	Call: 'static,
-	Signature: StaticTypeInfo,
-	Extension: StaticTypeInfo,
-{
-	type Identity = UncheckedExtrinsic<Address, Call, Signature, Extension>;
-
-	fn type_info() -> Type {
-		Type::builder()
-			.path(Path::new("UncheckedExtrinsic", module_path!()))
-			// Include the type parameter types, even though they are not used directly in any of
-			// the described fields. These type definitions can be used by downstream consumers
-			// to help construct the custom decoding from the opaque bytes (see below).
-			.type_params(vec![
-				TypeParameter::new("Address", Some(meta_type::<Address>())),
-				TypeParameter::new("Call", Some(meta_type::<()>())),
-				TypeParameter::new("Signature", Some(meta_type::<Signature>())),
-				TypeParameter::new("Extra", Some(meta_type::<Extension>())),
-			])
-			.docs(&["UncheckedExtrinsic raw bytes, requires custom decoding routine"])
-			// Because of the custom encoding, we can only accurately describe the encoding as an
-			// opaque `Vec<u8>`. Downstream consumers will need to manually implement the codec to
-			// encode/decode the `signature` and `function` fields.
-			.composite(Fields::unnamed().field(|f| f.ty::<Vec<u8>>()))
-	}
-}
-
 impl<Address, Call, Signature, Extension> UncheckedExtrinsic<Address, Call, Signature, Extension> {
 	/// New instance of a bare (ne unsigned) extrinsic. This could be used for an inherent or an
 	/// old-school "unsigned transaction" (which are new being deprecated in favour of general
@@ -318,7 +283,7 @@ impl<Address, Call, Signature, Extension> UncheckedExtrinsic<Address, Call, Sign
 	}
 }
 
-impl<Address: TypeInfo, Call, Signature: TypeInfo, Extension: TypeInfo> ExtrinsicLike
+impl<Address, Call, Signature, Extension> ExtrinsicLike
 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
 {
 	fn is_bare(&self) -> bool {

@@ -46,10 +46,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 optional = true
 workspace = true
@@ -89,7 +85,6 @@ std = [
     "frame-system/std",
     "linregress",
     "log/std",
-    "scale-info/std",
     "serde",
     "sp-api/std",
     "sp-application-crypto/std",

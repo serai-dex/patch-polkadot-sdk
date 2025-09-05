@@ -26,7 +26,6 @@ use crate::currency_to_vote::CurrencyToVote;
 use alloc::{collections::btree_map::BTreeMap, vec, vec::Vec};
 use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, HasCompact, MaxEncodedLen};
 use core::ops::Sub;
-use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{AtLeast32BitUnsigned, Zero},
 	DispatchError, DispatchResult, Perbill, RuntimeDebug, Saturating,
@@ -62,7 +61,7 @@ impl<AccountId> From<AccountId> for StakingAccount<AccountId> {
 }
 
 /// Representation of the status of a staker.
-#[derive(RuntimeDebug, TypeInfo)]
+#[derive(RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize, PartialEq, Eq, Clone))]
 pub enum StakerStatus<AccountId> {
 	/// Chilling.
@@ -171,7 +170,6 @@ pub trait StakingInterface {
 		+ Copy
 		+ MaxEncodedLen
 		+ FullCodec
-		+ TypeInfo
 		+ Saturating;
 
 	/// AccountId type used by the staking system.
@@ -356,7 +354,6 @@ pub trait StakingUnchecked: StakingInterface {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
-	TypeInfo,
 	Copy,
 )]
 pub struct IndividualExposure<AccountId, Balance: HasCompact> {
@@ -378,7 +375,6 @@ pub struct IndividualExposure<AccountId, Balance: HasCompact> {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
-	TypeInfo,
 )]
 pub struct Exposure<AccountId, Balance: HasCompact> {
 	/// The total balance backing this validator.
@@ -440,7 +436,7 @@ impl<
 }
 
 /// A snapshot of the stake backing a single validator in the system.
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, RuntimeDebug)]
 pub struct ExposurePage<AccountId, Balance: HasCompact> {
 	/// The total balance of this chunk/page.
 	#[codec(compact)]
@@ -469,7 +465,6 @@ impl<A, B: Default + HasCompact> Default for ExposurePage<A, B> {
 	Encode,
 	Decode,
 	RuntimeDebug,
-	TypeInfo,
 	Default,
 	MaxEncodedLen,
 )]
@@ -537,7 +532,6 @@ pub trait DelegationInterface {
 		+ Copy
 		+ MaxEncodedLen
 		+ FullCodec
-		+ TypeInfo
 		+ Saturating;
 
 	/// AccountId type used by the staking system.
@@ -613,7 +607,6 @@ pub trait DelegationMigrator {
 		+ Copy
 		+ MaxEncodedLen
 		+ FullCodec
-		+ TypeInfo
 		+ Saturating;
 
 	/// AccountId type used by the staking system.

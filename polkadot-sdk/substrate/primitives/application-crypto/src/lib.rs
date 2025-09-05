@@ -39,8 +39,6 @@ pub use codec;
 #[doc(hidden)]
 pub use core::ops::Deref;
 #[doc(hidden)]
-pub use scale_info;
-#[doc(hidden)]
 #[cfg(feature = "serde")]
 pub use serde;
 
@@ -252,7 +250,6 @@ macro_rules! app_crypto_public_full_crypto {
 				$crate::codec::DecodeWithMemTracking,
 				$crate::RuntimeDebug,
 				$crate::codec::MaxEncodedLen,
-				$crate::scale_info::TypeInfo,
 			)]
 			#[codec(crate = $crate::codec)]
 			pub struct Public($public);
@@ -289,7 +286,6 @@ macro_rules! app_crypto_public_not_full_crypto {
 				$crate::codec::DecodeWithMemTracking,
 				$crate::RuntimeDebug,
 				$crate::codec::MaxEncodedLen,
-				$crate::scale_info::TypeInfo,
 			)]
 			pub struct Public($public);
 		}
@@ -434,7 +430,6 @@ macro_rules! app_crypto_signature_full_crypto {
 				$crate::codec::Decode,
 				$crate::codec::DecodeWithMemTracking,
 				$crate::RuntimeDebug,
-				$crate::scale_info::TypeInfo,
 			)]
 			#[derive(Hash)]
 			pub struct Signature($sig);
@@ -469,7 +464,6 @@ macro_rules! app_crypto_signature_not_full_crypto {
 				$crate::codec::Decode,
 				$crate::codec::DecodeWithMemTracking,
 				$crate::RuntimeDebug,
-				$crate::scale_info::TypeInfo,
 			)]
 			pub struct Signature($sig);
 		}

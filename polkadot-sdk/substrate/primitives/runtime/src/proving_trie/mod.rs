@@ -19,7 +19,7 @@
 
 pub mod base16;
 
-use crate::{Decode, DecodeWithMemTracking, DispatchError, Encode, MaxEncodedLen, TypeInfo};
+use crate::{Decode, DecodeWithMemTracking, DispatchError, Encode, MaxEncodedLen};
 #[cfg(feature = "serde")]
 use crate::{Deserialize, Serialize};
 use alloc::vec::Vec;
@@ -35,7 +35,6 @@ use sp_trie::{trie_types::TrieError as SpTrieError, VerifyError};
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
-	TypeInfo,
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

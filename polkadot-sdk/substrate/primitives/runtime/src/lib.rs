@@ -52,8 +52,6 @@ extern crate alloc;
 pub use alloc::vec::Vec;
 #[doc(hidden)]
 pub use codec;
-#[doc(hidden)]
-pub use scale_info;
 #[cfg(feature = "serde")]
 #[doc(hidden)]
 pub use serde;
@@ -80,7 +78,6 @@ use sp_core::{
 
 use alloc::vec;
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
 
 pub mod curve;
 pub mod generic;
@@ -532,7 +529,7 @@ pub type DispatchResultWithInfo<T> = core::result::Result<T, DispatchErrorWithPo
 
 /// Reason why a pallet call failed.
 #[derive(
-	Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, Debug, TypeInfo, MaxEncodedLen,
+	Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, Debug, MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ModuleError {
@@ -562,7 +559,6 @@ impl PartialEq for ModuleError {
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
-	TypeInfo,
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -597,7 +593,6 @@ impl From<TransactionalError> for DispatchError {
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
-	TypeInfo,
 	PartialEq,
 	MaxEncodedLen,
 )]
@@ -643,7 +638,7 @@ pub enum DispatchError {
 /// Result of a `Dispatchable` which contains the `DispatchResult` and additional information about
 /// the `Dispatchable` that is only known post dispatch.
 #[derive(
-	Eq, PartialEq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, TypeInfo,
+	Eq, PartialEq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug,
 )]
 pub struct DispatchErrorWithPostInfo<Info>
 where
@@ -698,7 +693,6 @@ impl From<crate::traits::BadOrigin> for DispatchError {
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
-	TypeInfo,
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -967,7 +961,7 @@ macro_rules! assert_eq_error_rate_float {
 
 /// Simple blob to hold an extrinsic without committing to its format and ensure it is serialized
 /// correctly.
-#[derive(PartialEq, Eq, Clone, Default, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+#[derive(PartialEq, Eq, Clone, Default, Encode, Decode, DecodeWithMemTracking)]
 pub struct OpaqueExtrinsic(Vec<u8>);
 
 impl OpaqueExtrinsic {
@@ -1067,7 +1061,7 @@ impl<R> TransactionOutcome<R> {
 }
 
 /// Confines the kind of extrinsics that can be included in a block.
-#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Encode, Decode, TypeInfo)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Encode, Decode)]
 pub enum ExtrinsicInclusionMode {
 	/// All extrinsics are allowed to be included in this block.
 	#[default]
@@ -1077,7 +1071,7 @@ pub enum ExtrinsicInclusionMode {
 }
 
 /// Simple blob that hold a value in an encoded form without committing to its type.
-#[derive(Decode, Encode, PartialEq, TypeInfo)]
+#[derive(Decode, Encode, PartialEq)]
 pub struct OpaqueValue(Vec<u8>);
 impl OpaqueValue {
 	/// Create a new `OpaqueValue` using the given encoded representation.

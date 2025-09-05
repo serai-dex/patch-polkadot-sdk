@@ -22,7 +22,6 @@ use frame_support::{
 	pallet_prelude::TransactionSource,
 	traits::Get,
 };
-use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{
 		DispatchInfoOf, Dispatchable, PostDispatchInfoOf, TransactionExtension, ValidateResult,
@@ -38,8 +37,7 @@ use sp_weights::Weight;
 ///
 /// This extension does not influence any fields of `TransactionValidity` in case the
 /// transaction is valid.
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, Default)]
 pub struct CheckWeight<T: Config + Send + Sync>(core::marker::PhantomData<T>);
 
 impl<T: Config + Send + Sync> CheckWeight<T>

@@ -19,7 +19,6 @@
 use alloc::vec::Vec;
 use codec::{Decode, Encode};
 use frame_support::{dispatch::DispatchErrorWithPostInfo, pallet_prelude::*, traits::StorageInfo};
-use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_io::hashing::blake2_256;
@@ -28,7 +27,7 @@ use sp_storage::TrackedStorageKey;
 
 /// An alphabet of possible parameters to use for benchmarking.
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-#[derive(Encode, Decode, Clone, Copy, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Clone, Copy, PartialEq, Debug)]
 #[allow(missing_docs)]
 #[allow(non_camel_case_types)]
 pub enum BenchmarkParameter {
@@ -69,7 +68,7 @@ impl std::fmt::Display for BenchmarkParameter {
 
 /// The results of a single of benchmark.
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-#[derive(Encode, Decode, Clone, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Clone, PartialEq, Debug)]
 pub struct BenchmarkBatch {
 	/// The pallet containing this benchmark.
 	#[cfg_attr(feature = "std", serde(with = "serde_as_str"))]
@@ -108,7 +107,7 @@ pub struct BenchmarkBatchSplitResults {
 /// Contains duration of the function call in nanoseconds along with the benchmark parameters
 /// used for that benchmark result.
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
 pub struct BenchmarkResult {
 	pub components: Vec<(BenchmarkParameter, u32)>,
 	pub extrinsic_time: u128,
@@ -196,7 +195,7 @@ impl From<DispatchError> for BenchmarkError {
 }
 
 /// Configuration used to setup and run runtime benchmarks.
-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
 pub struct BenchmarkConfig {
 	/// The encoded name of the pallet to benchmark.
 	pub pallet: Vec<u8>,
@@ -215,14 +214,14 @@ pub struct BenchmarkConfig {
 /// A list of benchmarks available for a particular pallet and instance.
 ///
 /// All `Vec<u8>` must be valid utf8 strings.
-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
 pub struct BenchmarkList {
 	pub pallet: Vec<u8>,
 	pub instance: Vec<u8>,
 	pub benchmarks: Vec<BenchmarkMetadata>,
 }
 
-#[derive(Encode, Decode, Default, Clone, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Default, Clone, PartialEq, Debug)]
 pub struct BenchmarkMetadata {
 	pub name: Vec<u8>,
 	pub components: Vec<(BenchmarkParameter, u32, u32)>,

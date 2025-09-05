@@ -78,7 +78,7 @@ impl OnKilledAccount<u64> for RecordKilled {
 	}
 }
 
-#[derive(Debug, TypeInfo)]
+#[derive(Debug)]
 pub struct DefaultNonceProvider;
 impl Get<u64> for DefaultNonceProvider {
 	fn get() -> u64 {

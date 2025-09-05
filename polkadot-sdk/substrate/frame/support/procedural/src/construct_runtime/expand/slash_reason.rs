@@ -55,7 +55,6 @@ pub fn expand_outer_slash_reason(pallet_decls: &[Pallet], scrate: &TokenStream) 
 			#scrate::__private::codec::Decode,
 			#scrate::__private::codec::DecodeWithMemTracking,
 			#scrate::__private::codec::MaxEncodedLen,
-			#scrate::__private::scale_info::TypeInfo,
 			#scrate::__private::RuntimeDebug,
 		)]
 		pub enum RuntimeSlashReason {

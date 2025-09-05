@@ -30,10 +30,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -49,11 +45,7 @@ workspace = true
 default = ["std"]
 std = [
     "codec/std",
-    "scale-info/std",
     "serde/std",
     "sp-timestamp/std",
 ]
-serde = [
-    "dep:serde",
-    "scale-info/serde",
-]
+serde = ["dep:serde"]

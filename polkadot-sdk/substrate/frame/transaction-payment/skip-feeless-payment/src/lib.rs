@@ -45,7 +45,6 @@ use frame_support::{
 	traits::{IsType, OriginTrait},
 	weights::Weight,
 };
-use scale_info::{StaticTypeInfo, TypeInfo};
 use sp_runtime::{
 	traits::{
 		DispatchInfoOf, DispatchOriginOf, Implication, PostDispatchInfoOf, TransactionExtension,
@@ -85,14 +84,6 @@ pub mod pallet {
 /// A [`TransactionExtension`] that skips the wrapped extension if the dispatchable is feeless.
 #[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
 pub struct SkipCheckIfFeeless<T, S>(pub S, core::marker::PhantomData<T>);
-
-// Make this extension "invisible" from the outside (ie metadata type information)
-impl<T, S: StaticTypeInfo> TypeInfo for SkipCheckIfFeeless<T, S> {
-	type Identity = S;
-	fn type_info() -> scale_info::Type {
-		S::type_info()
-	}
-}
 
 impl<T, S: Encode> core::fmt::Debug for SkipCheckIfFeeless<T, S> {
 	#[cfg(feature = "std")]

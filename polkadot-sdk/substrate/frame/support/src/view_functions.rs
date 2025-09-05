@@ -19,11 +19,10 @@
 
 use alloc::vec::Vec;
 use codec::{Decode, DecodeAll, Encode, Output};
-use scale_info::TypeInfo;
 use sp_runtime::RuntimeDebug;
 
 /// The unique identifier for a view function.
-#[derive(Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Clone, Encode, Decode, RuntimeDebug)]
 pub struct ViewFunctionId {
 	/// The part of the id for dispatching view functions from the top level of the runtime.
 	///
@@ -44,7 +43,7 @@ impl From<ViewFunctionId> for [u8; 32] {
 }
 
 /// Error type for view function dispatching.
-#[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Encode, Decode, RuntimeDebug)]
 pub enum ViewFunctionDispatchError {
 	/// View functions are not implemented for this runtime.
 	NotImplemented,

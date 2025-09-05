@@ -26,7 +26,6 @@ mod weight_v2;
 
 use bounded_collections::Get;
 use codec::{Decode, Encode};
-use scale_info::TypeInfo;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use smallvec::SmallVec;
@@ -53,7 +52,7 @@ pub mod constants {
 ///
 /// NOTE: This is currently only measured in computational time, and will probably
 /// be updated all together once proof size is accounted for.
-#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo)]
+#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode)]
 pub struct RuntimeDbWeight {
 	pub read: u64,
 	pub write: u64,
@@ -85,7 +84,7 @@ impl RuntimeDbWeight {
 ///
 /// The `negative` value encodes whether the term is added or subtracted from the
 /// overall polynomial result.
-#[derive(Clone, Encode, Decode, TypeInfo)]
+#[derive(Clone, Encode, Decode)]
 pub struct WeightToFeeCoefficient<Balance> {
 	/// The integral part of the coefficient.
 	pub coeff_integer: Balance,

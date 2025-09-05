@@ -17,7 +17,6 @@
 
 use crate::{pallet_prelude::BlockNumberFor, Config, Pallet};
 use codec::{Decode, DecodeWithMemTracking, Encode};
-use scale_info::TypeInfo;
 use sp_runtime::{
 	impl_tx_ext_default,
 	traits::{TransactionExtension, Zero},
@@ -30,8 +29,7 @@ use sp_runtime::{
 ///
 /// Note that while a transaction with invalid `genesis_hash` will fail to be decoded,
 /// the extension does not affect any other fields of `TransactionValidity` directly.
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq, TypeInfo)]
-#[scale_info(skip_type_params(T))]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, Eq, PartialEq)]
 pub struct CheckGenesis<T: Config + Send + Sync>(core::marker::PhantomData<T>);
 
 impl<T: Config + Send + Sync> core::fmt::Debug for CheckGenesis<T> {

@@ -20,7 +20,6 @@
 //! See the [`crate::traits::fungibles`] doc for more information about fungibles traits.
 
 use crate::{ensure, traits::tokens::Fortitude};
-use scale_info::TypeInfo;
 use sp_arithmetic::{
 	traits::{CheckedAdd, CheckedSub},
 	ArithmeticError,
@@ -34,7 +33,7 @@ use sp_runtime::{DispatchResult, TokenError};
 /// accordingly.
 pub trait Inspect<AccountId>: super::Inspect<AccountId> {
 	/// An identifier for a freeze.
-	type Id: codec::Encode + TypeInfo + 'static;
+	type Id: codec::Encode + 'static;
 
 	/// Amount of funds held in reserve by `who` for the given `id`.
 	fn balance_frozen(asset: Self::AssetId, id: &Self::Id, who: &AccountId) -> Self::Balance;

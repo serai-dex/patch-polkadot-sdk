@@ -18,7 +18,6 @@
 //! The transaction extension trait.
 
 use crate::{
-	scale_info::{MetaType, StaticTypeInfo},
 	transaction_validity::{
 		TransactionSource, TransactionValidity, TransactionValidityError, ValidTransaction,
 	},
@@ -228,7 +227,7 @@ pub type ValidateResult<Val, Call> =
 /// correct amount of weight used during the call. This is because one cannot know the actual weight
 /// of an extension after post dispatch without running the post dispatch ahead of time.
 pub trait TransactionExtension<Call: Dispatchable>:
-	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq + StaticTypeInfo
+	Codec + DecodeWithMemTracking + Debug + Sync + Send + Clone + Eq + PartialEq
 {
 	/// Unique identifier of this signed extension.
 	///
@@ -239,7 +238,7 @@ pub trait TransactionExtension<Call: Dispatchable>:
 	/// useful in authenticating the transaction. This is determined dynamically in part from the
 	/// on-chain environment using the `implicit` function and not directly contained in the
 	/// transaction itself and therefore is considered "implicit".
-	type Implicit: Codec + StaticTypeInfo;
+	type Implicit: Codec;
 
 	/// Determine any additional data which was known at the time of transaction construction and
 	/// can be useful in authenticating the transaction. The expected usage of this is to include in

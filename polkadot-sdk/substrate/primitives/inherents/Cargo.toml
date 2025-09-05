@@ -35,10 +35,6 @@ workspace = true
 [dependencies.impl-trait-for-tuples]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.sp-runtime]
 optional = true
 workspace = true
@@ -52,7 +48,6 @@ default = ["std"]
 std = [
     "async-trait",
     "codec/std",
-    "scale-info/std",
     "sp-runtime/std",
     "thiserror",
 ]

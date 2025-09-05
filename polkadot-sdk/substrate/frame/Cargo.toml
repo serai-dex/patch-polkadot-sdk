@@ -45,10 +45,6 @@ workspace = true
 optional = true
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 workspace = true
 
@@ -141,7 +137,6 @@ std = [
     "frame-system/std",
     "frame-try-runtime?/std",
     "log/std",
-    "scale-info/std",
     "serde/std",
     "sp-api?/std",
     "sp-arithmetic/std",

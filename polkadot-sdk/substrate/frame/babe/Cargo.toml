@@ -49,13 +49,6 @@ workspace = true
 [dependencies.pallet-timestamp]
 workspace = true
 
-[dependencies.scale-info]
-features = [
-    "derive",
-    "serde",
-]
-workspace = true
-
 [dependencies.sp-application-crypto]
 features = ["serde"]
 workspace = true
@@ -93,7 +86,6 @@ std = [
     "pallet-authorship/std",
     "pallet-session/std",
     "pallet-timestamp/std",
-    "scale-info/std",
     "sp-application-crypto/std",
     "sp-consensus-babe/std",
     "sp-core/std",

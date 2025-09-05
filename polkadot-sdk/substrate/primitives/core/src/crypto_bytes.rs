@@ -24,7 +24,6 @@ use crate::{
 
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use core::marker::PhantomData;
-use scale_info::TypeInfo;
 
 use sp_runtime_interface::pass_by::{self, PassBy, PassByInner};
 
@@ -59,14 +58,6 @@ impl<const N: usize, T> Clone for CryptoBytes<N, T> {
 	}
 }
 
-impl<const N: usize, T> TypeInfo for CryptoBytes<N, T> {
-	type Identity = [u8; N];
-
-	fn type_info() -> scale_info::Type {
-		Self::Identity::type_info()
-	}
-}
-
 impl<const N: usize, T> PartialOrd for CryptoBytes<N, T> {
 	fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
 		self.0.partial_cmp(&other.0)
@@ -86,7 +77,7 @@ impl<const N: usize, T> PartialEq for CryptoBytes<N, T> {
 }
 
 impl<const N: usize, T> core::hash::Hash for CryptoBytes<N, T> {
-	fn hash<H: scale_info::prelude::hash::Hasher>(&self, state: &mut H) {
+	fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
 		self.0.hash(state)
 	}
 }

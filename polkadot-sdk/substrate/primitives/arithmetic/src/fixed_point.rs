@@ -405,7 +405,6 @@ macro_rules! implement_fixed {
 			Eq,
 			PartialOrd,
 			Ord,
-			scale_info::TypeInfo,
 		)]
 		pub struct $name($inner_type);
 

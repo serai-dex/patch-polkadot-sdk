@@ -19,12 +19,11 @@
 
 use alloc::collections::BTreeSet;
 use core::hash::Hash;
-use scale_info::TypeInfo;
 use sp_core::{Decode, Encode};
 use trie_db::{RecordedForKey, TrieAccess, TrieRecorder};
 
 /// Error associated with the `AccessedNodesTracker` module.
-#[derive(Encode, Decode, Clone, Eq, PartialEq, Debug, TypeInfo)]
+#[derive(Encode, Decode, Clone, Eq, PartialEq, Debug)]
 pub enum Error {
 	/// The proof contains unused nodes.
 	UnusedNodes,

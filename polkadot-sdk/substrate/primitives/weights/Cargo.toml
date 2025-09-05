@@ -30,10 +30,6 @@ workspace = true
 features = ["derive"]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 optional = true
 features = [
@@ -57,15 +53,13 @@ default = ["std"]
 std = [
     "bounded-collections/std",
     "codec/std",
-    "scale-info/std",
     "serde/std",
     "sp-arithmetic/std",
     "sp-debug-derive/std",
 ]
-full-metadata-docs = ["scale-info/docs"]
+full-metadata-docs = []
 serde = [
     "bounded-collections/serde",
     "dep:serde",
-    "scale-info/serde",
     "sp-arithmetic/serde",
 ]

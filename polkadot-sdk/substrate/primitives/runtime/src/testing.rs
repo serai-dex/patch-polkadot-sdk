@@ -20,7 +20,6 @@
 use crate::{
 	codec::{Codec, Decode, DecodeWithMemTracking, Encode, MaxEncodedLen},
 	generic::{self, UncheckedExtrinsic},
-	scale_info::TypeInfo,
 	traits::{self, BlakeTwo256, Dispatchable, OpaqueKeys},
 	DispatchResultWithInfo, KeyTypeId,
 };
@@ -50,7 +49,6 @@ use std::{cell::RefCell, fmt::Debug};
 	PartialOrd,
 	Ord,
 	MaxEncodedLen,
-	TypeInfo,
 )]
 pub struct UintAuthorityId(pub u64);
 
@@ -177,7 +175,6 @@ impl traits::Verify for UintAuthorityId {
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
-	TypeInfo,
 )]
 pub struct TestSignature(pub u64, pub Vec<u8>);
 
@@ -213,7 +210,7 @@ impl Header {
 
 /// Testing block
 #[derive(
-	PartialEq, Eq, Clone, Serialize, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo,
+	PartialEq, Eq, Clone, Serialize, Debug, Encode, Decode, DecodeWithMemTracking,
 )]
 pub struct Block<Xt> {
 	/// Block header
@@ -276,7 +273,7 @@ where
 pub type TestXt<Call, Extra> = UncheckedExtrinsic<u64, Call, (), Extra>;
 
 /// Wrapper over a `u64` that can be used as a `RuntimeCall`.
-#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, DecodeWithMemTracking)]
 pub struct MockCallU64(pub u64);
 
 impl Dispatchable for MockCallU64 {

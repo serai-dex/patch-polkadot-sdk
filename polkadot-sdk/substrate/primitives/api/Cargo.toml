@@ -34,10 +34,6 @@ default-features = true
 [dependencies.log]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.sp-api-proc-macro]
 workspace = true
 
@@ -75,7 +71,6 @@ std = [
     "codec/std",
     "hash-db",
     "log/std",
-    "scale-info/std",
     "sp-api-proc-macro/std",
     "sp-core/std",
     "sp-externalities",

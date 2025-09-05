@@ -20,7 +20,6 @@
 
 #![allow(deprecated)]
 
-use scale_info::TypeInfo;
 use sp_core::RuntimeDebug;
 
 use crate::{
@@ -31,7 +30,7 @@ use crate::{
 use super::*;
 
 /// Adapter to use a `SignedExtension` in the place of a `TransactionExtension`.
-#[derive(TypeInfo, Encode, Decode, DecodeWithMemTracking, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, PartialEq, Eq, RuntimeDebug)]
 #[deprecated = "Convert your SignedExtension to a TransactionExtension."]
 pub struct AsTransactionExtension<SE: SignedExtension>(pub SE);
 

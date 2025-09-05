@@ -35,7 +35,6 @@ use schnorrkel::{
 
 use crate::crypto::{CryptoType, CryptoTypeId, Derive, Public as TraitPublic, SignatureBytes};
 use codec::{Decode, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
 
 #[cfg(all(not(feature = "std"), feature = "serde"))]
 use alloc::{format, string::String};
@@ -377,7 +376,7 @@ pub mod vrf {
 	}
 
 	/// VRF signature data
-	#[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]
+	#[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, MaxEncodedLen)]
 	pub struct VrfSignature {
 		/// VRF pre-output.
 		pub pre_output: VrfPreOutput,
@@ -408,14 +407,6 @@ pub mod vrf {
 		}
 	}
 
-	impl TypeInfo for VrfPreOutput {
-		type Identity = [u8; VRF_PREOUT_LENGTH];
-
-		fn type_info() -> scale_info::Type {
-			Self::Identity::type_info()
-		}
-	}
-
 	/// VRF proof type suitable for schnorrkel operations.
 	#[derive(Clone, Debug, PartialEq, Eq)]
 	pub struct VrfProof(pub schnorrkel::vrf::VRFProof);
@@ -436,14 +427,6 @@ pub mod vrf {
 	impl MaxEncodedLen for VrfProof {
 		fn max_encoded_len() -> usize {
 			<[u8; VRF_PROOF_LENGTH]>::max_encoded_len()
-		}
-	}
-
-	impl TypeInfo for VrfProof {
-		type Identity = [u8; VRF_PROOF_LENGTH];
-
-		fn type_info() -> scale_info::Type {
-			Self::Identity::type_info()
 		}
 	}
 

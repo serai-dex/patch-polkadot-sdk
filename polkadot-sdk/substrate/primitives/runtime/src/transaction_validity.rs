@@ -22,7 +22,6 @@ use crate::{
 	RuntimeDebug,
 };
 use alloc::{vec, vec::Vec};
-use scale_info::TypeInfo;
 
 /// Priority for a transaction. Additive. Higher is better.
 pub type TransactionPriority = u64;
@@ -35,7 +34,7 @@ pub type TransactionLongevity = u64;
 pub type TransactionTag = Vec<u8>;
 
 /// An invalid transaction validity.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum InvalidTransaction {
 	/// The call of the transaction is not expected.
@@ -126,7 +125,7 @@ impl From<InvalidTransaction> for &'static str {
 }
 
 /// An unknown transaction validity.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum UnknownTransaction {
 	/// Could not lookup some information that is required to validate the transaction.
@@ -150,7 +149,7 @@ impl From<UnknownTransaction> for &'static str {
 }
 
 /// Errors that can occur while checking the validity of a transaction.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, Copy, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum TransactionValidityError {
 	/// The transaction is invalid.
@@ -234,7 +233,7 @@ impl From<UnknownTransaction> for TransactionValidity {
 /// Depending on the source we might apply different validation schemes.
 /// For instance we can disallow specific kinds of transactions if they were not produced
 /// by our local node (for instance off-chain workers).
-#[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, Hash)]
 pub enum TransactionSource {
 	/// Transaction is already included in block.
 	///
@@ -259,7 +258,7 @@ pub enum TransactionSource {
 }
 
 /// Information concerning a valid transaction.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
 pub struct ValidTransaction {
 	/// Priority of the transaction.
 	///

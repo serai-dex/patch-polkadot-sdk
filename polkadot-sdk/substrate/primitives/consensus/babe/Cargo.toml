@@ -30,10 +30,6 @@ workspace = true
 [dependencies.codec]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -69,7 +65,6 @@ default = ["std"]
 std = [
     "async-trait",
     "codec/std",
-    "scale-info/std",
     "serde/std",
     "sp-api/std",
     "sp-application-crypto/std",
@@ -81,7 +76,6 @@ std = [
 ]
 serde = [
     "dep:serde",
-    "scale-info/serde",
     "sp-application-crypto/serde",
     "sp-consensus-slots/serde",
     "sp-core/serde",

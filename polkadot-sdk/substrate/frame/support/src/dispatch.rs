@@ -21,7 +21,6 @@
 use crate::traits::UnfilteredDispatchable;
 use codec::{Codec, Decode, DecodeWithMemTracking, Encode, EncodeLike, MaxEncodedLen};
 use core::fmt;
-use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
@@ -79,7 +78,6 @@ pub trait CheckIfFeeless {
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
-	TypeInfo,
 	MaxEncodedLen,
 )]
 pub enum RawOrigin<AccountId> {
@@ -126,11 +124,11 @@ impl<AccountId> RawOrigin<AccountId> {
 ///
 /// When using `decl_module` all arguments for call functions must implement this trait.
 pub trait Parameter:
-	Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug + scale_info::TypeInfo
+	Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug
 {
 }
 impl<T> Parameter for T where
-	T: Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug + scale_info::TypeInfo
+	T: Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + fmt::Debug
 {
 }
 
@@ -151,7 +149,7 @@ pub trait PaysFee<T> {
 
 /// Explicit enum to denote if a transaction pays fee or not.
 #[derive(
-	Clone, Copy, Eq, PartialEq, RuntimeDebug, Encode, Decode, DecodeWithMemTracking, TypeInfo,
+	Clone, Copy, Eq, PartialEq, RuntimeDebug, Encode, Decode, DecodeWithMemTracking,
 )]
 pub enum Pays {
 	/// Transactor will pay related fees.
@@ -188,7 +186,7 @@ impl From<bool> for Pays {
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "std", serde(rename_all = "camelCase"))]
 #[derive(
-	PartialEq, Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, TypeInfo,
+	PartialEq, Eq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, RuntimeDebug,
 )]
 pub enum DispatchClass {
 	/// A normal dispatch.
@@ -255,7 +253,7 @@ impl<'a> OneOrMany<DispatchClass> for &'a [DispatchClass] {
 }
 
 /// A bundle of static information collected from the `#[pallet::weight]` attributes.
-#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode, TypeInfo)]
+#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode)]
 pub struct DispatchInfo {
 	/// Weight of this transaction's call.
 	pub call_weight: Weight,
@@ -320,7 +318,6 @@ pub fn extract_actual_pays_fee(result: &DispatchResultWithPostInfo, info: &Dispa
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
-	TypeInfo,
 )]
 pub struct PostDispatchInfo {
 	/// Actual weight consumed by a call or `None` which stands for the worst case static weight.
@@ -447,7 +444,7 @@ where
 }
 
 /// A struct holding value for each `DispatchClass`.
-#[derive(Clone, Eq, PartialEq, Default, Debug, Encode, Decode, TypeInfo, MaxEncodedLen)]
+#[derive(Clone, Eq, PartialEq, Default, Debug, Encode, Decode, MaxEncodedLen)]
 pub struct PerDispatchClass<T> {
 	/// Value for `Normal` extrinsics.
 	normal: T,
@@ -1221,7 +1218,6 @@ mod per_dispatch_class_tests {
 #[cfg(test)]
 mod test_extensions {
 	use codec::{Decode, DecodeWithMemTracking, Encode};
-	use scale_info::TypeInfo;
 	use sp_runtime::{
 		impl_tx_ext_default,
 		traits::{
@@ -1235,7 +1231,7 @@ mod test_extensions {
 	use super::{DispatchResult, PostDispatchInfo};
 
 	/// Test extension that refunds half its cost if the preset inner flag is set.
-	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
 	pub struct HalfCostIf(pub bool);
 
 	impl<RuntimeCall: Dispatchable> TransactionExtension<RuntimeCall> for HalfCostIf {
@@ -1277,7 +1273,7 @@ mod test_extensions {
 
 	/// Test extension that refunds its cost if the actual post dispatch weight up until this point
 	/// in the extension pipeline is less than the preset inner `ref_time` amount.
-	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
 	pub struct FreeIfUnder(pub u64);
 
 	impl<RuntimeCall: Dispatchable> TransactionExtension<RuntimeCall> for FreeIfUnder
@@ -1323,7 +1319,7 @@ mod test_extensions {
 
 	/// Test extension that sets its actual post dispatch `ref_time` weight to the preset inner
 	/// amount.
-	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+	#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
 	pub struct ActualWeightIs(pub u64);
 
 	impl<RuntimeCall: Dispatchable> TransactionExtension<RuntimeCall> for ActualWeightIs {

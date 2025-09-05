@@ -163,7 +163,6 @@ mod union_of;
 use codec::{Decode, Encode, MaxEncodedLen};
 use core::marker::PhantomData;
 use frame_support_procedural::{CloneNoBound, EqNoBound, PartialEqNoBound, RuntimeDebugNoBound};
-use scale_info::TypeInfo;
 #[cfg(feature = "runtime-benchmarks")]
 use sp_runtime::Saturating;
 
@@ -203,11 +202,9 @@ use crate::{
 	PartialEqNoBound,
 	Encode,
 	Decode,
-	TypeInfo,
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
-#[scale_info(skip_type_params(A, F, R, D, Fp))]
 #[codec(mel_bound())]
 pub struct FreezeConsideration<A, F, R, D, Fp>(F::Balance, PhantomData<fn() -> (A, R, D, Fp)>)
 where
@@ -265,11 +262,9 @@ impl<
 	PartialEqNoBound,
 	Encode,
 	Decode,
-	TypeInfo,
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
-#[scale_info(skip_type_params(A, F, R, D, Fp))]
 #[codec(mel_bound())]
 pub struct HoldConsideration<A, F, R, D, Fp = Footprint>(
 	F::Balance,
@@ -339,11 +334,9 @@ impl<
 	PartialEqNoBound,
 	Encode,
 	Decode,
-	TypeInfo,
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
-#[scale_info(skip_type_params(A, Fx, Rx, D, Fp))]
 #[codec(mel_bound())]
 pub struct LoneFreezeConsideration<A, Fx, Rx, D, Fp>(PhantomData<fn() -> (A, Fx, Rx, D, Fp)>);
 impl<
@@ -384,11 +377,9 @@ impl<
 	PartialEqNoBound,
 	Encode,
 	Decode,
-	TypeInfo,
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
-#[scale_info(skip_type_params(A, Fx, Rx, D, Fp))]
 #[codec(mel_bound())]
 pub struct LoneHoldConsideration<A, Fx, Rx, D, Fp>(PhantomData<fn() -> (A, Fx, Rx, D, Fp)>);
 impl<

@@ -28,7 +28,6 @@ pub mod inherents;
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use sp_runtime::{traits::Header, ConsensusEngineId, RuntimeDebug};
@@ -134,7 +133,7 @@ pub enum ConsensusLog {
 }
 
 /// Configuration data used by the BABE consensus engine.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
 pub struct BabeConfigurationV1 {
 	/// The slot duration in milliseconds for BABE. Currently, only
 	/// the value provided by this type at genesis will be used.
@@ -182,7 +181,7 @@ impl From<BabeConfigurationV1> for BabeConfiguration {
 }
 
 /// Configuration data used by the BABE consensus engine.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug)]
 pub struct BabeConfiguration {
 	/// The slot duration in milliseconds for BABE. Currently, only
 	/// the value provided by this type at genesis will be used.
@@ -229,7 +228,6 @@ impl BabeConfiguration {
 	DecodeWithMemTracking,
 	RuntimeDebug,
 	MaxEncodedLen,
-	TypeInfo,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum AllowedSlots {
@@ -254,7 +252,7 @@ impl AllowedSlots {
 }
 
 /// Configuration data used by the BABE consensus engine that may change with epochs.
-#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, MaxEncodedLen, TypeInfo)]
+#[derive(Clone, PartialEq, Eq, Encode, Decode, RuntimeDebug, MaxEncodedLen)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct BabeEpochConfiguration {
 	/// A constant value that is used in the threshold calculation formula.
@@ -342,7 +340,7 @@ where
 /// the runtime API boundary this type is unknown and as such we keep this
 /// opaque representation, implementors of the runtime API will have to make
 /// sure that all usages of `OpaqueKeyOwnershipProof` refer to the same type.
-#[derive(Decode, Encode, PartialEq, TypeInfo)]
+#[derive(Decode, Encode, PartialEq)]
 pub struct OpaqueKeyOwnershipProof(Vec<u8>);
 impl OpaqueKeyOwnershipProof {
 	/// Create a new `OpaqueKeyOwnershipProof` using the given encoded
@@ -359,7 +357,7 @@ impl OpaqueKeyOwnershipProof {
 }
 
 /// BABE epoch information
-#[derive(Decode, Encode, PartialEq, Eq, Clone, Debug, TypeInfo)]
+#[derive(Decode, Encode, PartialEq, Eq, Clone, Debug)]
 pub struct Epoch {
 	/// The epoch index.
 	pub epoch_index: u64,

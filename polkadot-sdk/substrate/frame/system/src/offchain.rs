@@ -58,7 +58,6 @@
 
 use alloc::{boxed::Box, collections::btree_set::BTreeSet, vec::Vec};
 use codec::Encode;
-use scale_info::TypeInfo;
 use sp_runtime::{
 	app_crypto::RuntimeAppPublic,
 	traits::{ExtrinsicLike, IdentifyAccount, One},
@@ -440,11 +439,10 @@ pub trait SigningTypes: crate::Config {
 		+ IdentifyAccount<AccountId = Self::AccountId>
 		+ core::fmt::Debug
 		+ codec::Codec
-		+ Ord
-		+ scale_info::TypeInfo;
+		+ Ord;
 
 	/// A matching `Signature` type.
-	type Signature: Clone + PartialEq + core::fmt::Debug + codec::Codec + scale_info::TypeInfo;
+	type Signature: Clone + PartialEq + core::fmt::Debug + codec::Codec;
 }
 
 /// Common interface for the `CreateTransaction` trait family to unify the `Call` type.
@@ -461,7 +459,7 @@ pub trait CreateTransactionBase<LocalCall> {
 /// Interface for creating a transaction.
 pub trait CreateTransaction<LocalCall>: CreateTransactionBase<LocalCall> {
 	/// The extension.
-	type Extension: TypeInfo;
+	type Extension;
 
 	/// Create a transaction using the call and the desired transaction extension.
 	fn create_transaction(

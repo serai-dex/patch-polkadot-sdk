@@ -127,6 +127,15 @@ fn main() {
         .unwrap();
     }
 
+    "remove_dependency" => {
+      let dep = HashSet::from([args.next().unwrap()]);
+      let remaining_crates = discover_all_crates_in_folder(".");
+      for item in remaining_crates {
+        let crate_toml_path = item.path.join("Cargo.toml");
+        remove_dependencies(crate_toml_path, dep.clone());
+      }
+    }
+
     "remove_feature" => {
       let feature = args.next().unwrap();
       for item in discover_all_crates_in_folder(".") {

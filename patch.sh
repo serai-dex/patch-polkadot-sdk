@@ -182,18 +182,26 @@ function remove_workspace_dependency {
   fi
 }
 
+function remove_dependency {
+  echo "Removing feature $1"
+  ./target/release/serai-polkadot-sdk remove_dependency $1
+  if [ $? -ne 0 ]; then
+    exit 5
+  fi
+}
+
 function remove_feature {
   echo "Removing feature $1"
   ./target/release/serai-polkadot-sdk remove_feature $1
   if [ $? -ne 0 ]; then
-    exit 5
+    exit 6
   fi
 }
 
 function remove_dev_dependencies {
   ./target/release/serai-polkadot-sdk remove_dev_dependencies
   if [ $? -ne 0 ]; then
-    exit 6
+    exit 7
   fi
 }
 
@@ -201,7 +209,7 @@ function cargo_upgrade {
   echo "Upgrading $1 to $2"
   ./target/release/serai-polkadot-sdk upgrade $1 $2
   if [ $? -ne 0 ]; then
-    exit 7
+    exit 8
   fi
 }
 
@@ -364,6 +372,9 @@ echo 'workspace = true' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
 remove_feature no-metadata-docs
 apply_patch remove_metadata
+
+remove_dependency scale-info
+apply_patch remove_scale-info
 
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
@@ -547,7 +558,7 @@ echo "Running \`cargo check\`"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 8
+  exit 9
 fi
 
 # Save >10 GB on what should be a static directory of no further use

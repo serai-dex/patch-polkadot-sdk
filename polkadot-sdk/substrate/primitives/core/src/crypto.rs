@@ -30,7 +30,6 @@ pub use core::ops::Deref;
 use itertools::Itertools;
 #[cfg(feature = "std")]
 use rand::{rngs::OsRng, RngCore};
-use scale_info::TypeInfo;
 pub use secrecy::{ExposeSecret, SecretString};
 use sp_runtime_interface::pass_by::PassByInner;
 pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
@@ -511,7 +510,6 @@ pub trait Signature: CryptoType + ByteArray + PartialEq + Eq + Clone + Send + Sy
 	Decode,
 	DecodeWithMemTracking,
 	MaxEncodedLen,
-	TypeInfo,
 )]
 #[cfg_attr(feature = "std", derive(Hash))]
 pub struct AccountId32([u8; 32]);
@@ -1053,7 +1051,6 @@ pub trait CryptoType {
 	Decode,
 	PassByInner,
 	crate::RuntimeDebug,
-	TypeInfo,
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct KeyTypeId(pub [u8; 4]);

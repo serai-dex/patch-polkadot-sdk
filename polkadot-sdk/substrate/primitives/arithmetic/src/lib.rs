@@ -56,7 +56,6 @@ use core::{cmp::Ordering, fmt::Debug};
 use traits::{BaseArithmetic, One, SaturatedConversion, Unsigned, Zero};
 
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -71,7 +70,6 @@ use serde::{Deserialize, Serialize};
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
-	TypeInfo,
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

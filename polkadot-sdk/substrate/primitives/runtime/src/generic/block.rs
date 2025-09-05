@@ -79,7 +79,7 @@ impl<Block: BlockT> fmt::Display for BlockId<Block> {
 
 /// Abstraction over a substrate block.
 #[derive(
-	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, scale_info::TypeInfo,
+	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]

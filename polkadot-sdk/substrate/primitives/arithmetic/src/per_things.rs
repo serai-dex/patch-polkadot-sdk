@@ -589,7 +589,7 @@ macro_rules! implement_per_thing {
 		///
 		#[doc = $title]
 		#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-		#[derive(Encode, DecodeWithMemTracking, Copy, Clone, PartialEq, Eq, codec::MaxEncodedLen, PartialOrd, Ord, scale_info::TypeInfo)]
+		#[derive(Encode, DecodeWithMemTracking, Copy, Clone, PartialEq, Eq, codec::MaxEncodedLen, PartialOrd, Ord)]
 		pub struct $name($type);
 
 		/// Implementation makes any compact encoding of `PerThing::Inner` valid,

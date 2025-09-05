@@ -39,7 +39,7 @@ parameter_types! {
 	pub static ValidateCount: u32 = 0;
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+#[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, DecodeWithMemTracking)]
 pub struct DummyExtension;
 
 impl TransactionExtension<RuntimeCall> for DummyExtension {

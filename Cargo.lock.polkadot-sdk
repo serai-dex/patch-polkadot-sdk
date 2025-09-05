@@ -1710,7 +1710,6 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "paste",
- "scale-info",
  "serde",
  "sp-api",
  "sp-application-crypto",
@@ -1731,7 +1730,6 @@ dependencies = [
  "frame-try-runtime",
  "log",
  "parity-scale-codec",
- "scale-info",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -1751,7 +1749,6 @@ dependencies = [
  "macro_magic",
  "parity-scale-codec",
  "paste",
- "scale-info",
  "serde",
  "serde_json",
  "sp-api",
@@ -1818,7 +1815,6 @@ dependencies = [
  "frame-support",
  "log",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-core",
  "sp-io",
@@ -4205,7 +4201,6 @@ dependencies = [
  "frame-system",
  "pallet-session",
  "parity-scale-codec",
- "scale-info",
  "sp-application-crypto",
  "sp-authority-discovery",
  "sp-runtime",
@@ -4219,7 +4214,6 @@ dependencies = [
  "frame-system",
  "impl-trait-for-tuples",
  "parity-scale-codec",
- "scale-info",
  "sp-runtime",
 ]
 
@@ -4235,7 +4229,6 @@ dependencies = [
  "pallet-session",
  "pallet-timestamp",
  "parity-scale-codec",
- "scale-info",
  "sp-application-crypto",
  "sp-consensus-babe",
  "sp-core",
@@ -4255,7 +4248,6 @@ dependencies = [
  "frame-system",
  "log",
  "parity-scale-codec",
- "scale-info",
  "sp-core",
  "sp-inherents",
  "sp-io",
@@ -4273,7 +4265,6 @@ dependencies = [
  "pallet-authorship",
  "pallet-session",
  "parity-scale-codec",
- "scale-info",
  "sp-application-crypto",
  "sp-consensus-grandpa",
  "sp-core",
@@ -4294,7 +4285,6 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "polkadot-sdk-frame",
- "scale-info",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -4310,7 +4300,6 @@ dependencies = [
  "log",
  "pallet-timestamp",
  "parity-scale-codec",
- "scale-info",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -4327,7 +4316,6 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
- "scale-info",
  "sp-runtime",
 ]
 
@@ -4340,7 +4328,6 @@ dependencies = [
  "frame-system",
  "log",
  "parity-scale-codec",
- "scale-info",
  "sp-inherents",
  "sp-io",
  "sp-runtime",
@@ -4356,7 +4343,6 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-core",
  "sp-io",
@@ -4585,7 +4571,6 @@ dependencies = [
  "frame-try-runtime",
  "log",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-api",
  "sp-arithmetic",
@@ -6291,7 +6276,6 @@ dependencies = [
  "parity-scale-codec",
  "sc-chain-spec",
  "sc-transaction-pool-api",
- "scale-info",
  "serde",
  "serde_json",
  "sp-core",
@@ -6603,7 +6587,6 @@ dependencies = [
  "derive_more",
  "parity-scale-codec",
  "scale-info-derive",
- "serde",
 ]
 
 [[package]]
@@ -6961,7 +6944,6 @@ dependencies = [
  "hash-db",
  "log",
  "parity-scale-codec",
- "scale-info",
  "sp-api-proc-macro",
  "sp-core",
  "sp-externalities",
@@ -6991,7 +6973,6 @@ name = "sp-application-crypto"
 version = "40.1.0"
 dependencies = [
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-core",
  "sp-io",
@@ -7004,7 +6985,6 @@ dependencies = [
  "integer-sqrt",
  "num-traits",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "static_assertions",
 ]
@@ -7014,7 +6994,6 @@ name = "sp-authority-discovery"
 version = "36.0.0"
 dependencies = [
  "parity-scale-codec",
- "scale-info",
  "sp-api",
  "sp-application-crypto",
  "sp-runtime",
@@ -7066,7 +7045,6 @@ version = "0.42.1"
 dependencies = [
  "async-trait",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-api",
  "sp-application-crypto",
@@ -7084,7 +7062,6 @@ dependencies = [
  "finality-grandpa",
  "log",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-api",
  "sp-application-crypto",
@@ -7098,7 +7075,6 @@ name = "sp-consensus-slots"
 version = "0.42.1"
 dependencies = [
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-timestamp",
 ]
@@ -7126,7 +7102,6 @@ dependencies = [
  "paste",
  "primitive-types",
  "rand 0.8.5",
- "scale-info",
  "schnorrkel",
  "secrecy",
  "serde",
@@ -7194,7 +7169,6 @@ name = "sp-genesis-builder"
 version = "0.17.0"
 dependencies = [
  "parity-scale-codec",
- "scale-info",
  "serde_json",
  "sp-api",
  "sp-runtime",
@@ -7207,7 +7181,6 @@ dependencies = [
  "async-trait",
  "impl-trait-for-tuples",
  "parity-scale-codec",
- "scale-info",
  "sp-runtime",
  "thiserror 2.0.16",
 ]
@@ -7298,7 +7271,6 @@ dependencies = [
  "parity-scale-codec",
  "paste",
  "rand 0.8.5",
- "scale-info",
  "serde",
  "sp-application-crypto",
  "sp-arithmetic",
@@ -7346,7 +7318,6 @@ name = "sp-session"
 version = "38.1.0"
 dependencies = [
  "parity-scale-codec",
- "scale-info",
  "sp-api",
  "sp-core",
  "sp-keystore",
@@ -7360,7 +7331,6 @@ version = "38.0.0"
 dependencies = [
  "impl-trait-for-tuples",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "sp-core",
  "sp-runtime",
@@ -7442,7 +7412,6 @@ dependencies = [
  "parity-scale-codec",
  "parking_lot",
  "rand 0.8.5",
- "scale-info",
  "schnellru",
  "sp-core",
  "sp-externalities",
@@ -7459,7 +7428,6 @@ dependencies = [
  "impl-serde",
  "parity-scale-codec",
  "parity-wasm",
- "scale-info",
  "serde",
  "sp-crypto-hashing-proc-macro",
  "sp-runtime",
@@ -7496,7 +7464,6 @@ version = "31.1.0"
 dependencies = [
  "bounded-collections",
  "parity-scale-codec",
- "scale-info",
  "serde",
  "smallvec",
  "sp-arithmetic",

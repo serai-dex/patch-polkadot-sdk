@@ -27,10 +27,6 @@ workspace = true
 features = ["bytes"]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde_json]
 features = [
     "alloc",
@@ -48,7 +44,6 @@ workspace = true
 default = ["std"]
 std = [
     "codec/std",
-    "scale-info/std",
     "serde_json/std",
     "sp-api/std",
     "sp-runtime/std",

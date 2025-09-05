@@ -30,10 +30,6 @@ workspace = true
 [dependencies.impl-trait-for-tuples]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.serde]
 features = [
     "alloc",
@@ -52,7 +48,6 @@ workspace = true
 default = ["std"]
 std = [
     "codec/std",
-    "scale-info/std",
     "serde/std",
     "sp-core/std",
     "sp-runtime/std",

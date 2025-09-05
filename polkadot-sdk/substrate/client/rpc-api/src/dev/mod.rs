@@ -25,11 +25,10 @@ pub mod error;
 use codec::{Decode, Encode};
 use error::Error;
 use jsonrpsee::proc_macros::rpc;
-use scale_info::TypeInfo;
 use serde::{Deserialize, Serialize};
 
 /// Statistics of a block returned by the `dev_getBlockStats` RPC.
-#[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, Debug, TypeInfo, Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BlockStats {
 	/// The length in bytes of the storage proof produced by executing the block.

@@ -206,7 +206,7 @@ pub enum Error {
 pub type InherentIdentifier = [u8; 8];
 
 /// Inherent data to include in a block.
-#[derive(Clone, Default, Encode, Decode, scale_info::TypeInfo)]
+#[derive(Clone, Default, Encode, Decode)]
 pub struct InherentData {
 	/// All inherent data encoded with parity-scale-codec and an identifier.
 	data: BTreeMap<InherentIdentifier, Vec<u8>>,
@@ -278,7 +278,7 @@ impl InherentData {
 ///
 /// When a fatal error occurs, all other errors are removed and the implementation needs to
 /// abort checking inherents.
-#[derive(Encode, Decode, Clone, scale_info::TypeInfo)]
+#[derive(Encode, Decode, Clone)]
 pub struct CheckInherentsResult {
 	/// Did the check succeed?
 	okay: bool,

@@ -44,10 +44,6 @@ workspace = true
 [dependencies.log]
 workspace = true
 
-[dependencies.scale-info]
-features = ["derive"]
-workspace = true
-
 [dependencies.sp-inherents]
 workspace = true
 
@@ -72,7 +68,6 @@ std = [
     "frame-support/std",
     "frame-system/std",
     "log/std",
-    "scale-info/std",
     "sp-inherents/std",
     "sp-io?/std",
     "sp-runtime/std",

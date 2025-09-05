@@ -52,7 +52,6 @@ pub mod __private {
 	pub use codec;
 	pub use log;
 	pub use paste;
-	pub use scale_info;
 	pub use serde;
 	pub use serde_json;
 	pub use sp_core::{Get, OpaqueMetadata, Void};
@@ -121,18 +120,17 @@ pub use sp_runtime::{
 };
 
 use codec::{Decode, Encode};
-use scale_info::TypeInfo;
 use sp_runtime::TypeId;
 
 /// A unified log target for support operations.
 pub const LOG_TARGET: &str = "runtime::frame-support";
 
 /// A type that cannot be instantiated.
-#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone, TypeInfo)]
+#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
 pub enum Never {}
 
 /// A pallet identifier. These are per pallet and should be stored in a registry somewhere.
-#[derive(Clone, Copy, Eq, PartialEq, Encode, Decode, TypeInfo)]
+#[derive(Clone, Copy, Eq, PartialEq, Encode, Decode)]
 pub struct PalletId(pub [u8; 8]);
 
 impl TypeId for PalletId {
@@ -912,7 +910,6 @@ pub mod pallet_prelude {
 	pub use core::marker::PhantomData;
 	pub use frame_support::pallet_macros::*;
 	pub use frame_support_procedural::{inject_runtime_type, register_default_impl};
-	pub use scale_info::TypeInfo;
 	pub use sp_inherents::MakeFatalError;
 	pub use sp_runtime::{
 		traits::{
