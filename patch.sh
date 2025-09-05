@@ -291,6 +291,10 @@ apply_patch remove_storage_type_info
 # Remove `TypeInfo` from call
 apply_patch remove_call_type_info
 
+# Remove the `SS58prefix` constant
+apply_patch remove_ss58_prefix
+find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Prefix > {}.2 && rm {} && mv {}.2 {}" \;
+
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
 remove_crate_tree substrate/frame/asset-conversion
@@ -337,7 +341,7 @@ remove_crate_tree substrate/frame/transaction-payment/asset-tx-payment
 remove_crate_tree substrate/frame/treasury
 remove_crate_tree substrate/frame/vesting
 
-# Remove the `scripts` used for testing
+# Remove the scripts used for testing
 remove_crate_tree substrate/scripts
 
 # Remove fuzzers
@@ -360,10 +364,6 @@ remove_crate_tree substrate/utils/frame/omni-bencher
 
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
-
-# Remove the `SS58prefix` constant
-apply_patch remove_ss58_prefix
-find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Prefix > {}.2 && rm {} && mv {}.2 {}" \;
 
 remove_crate_tree substrate/client/executor/runtime-test
 
