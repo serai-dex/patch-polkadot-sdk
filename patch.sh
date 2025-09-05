@@ -189,11 +189,8 @@ remove_crate_tree substrate/frame/examples
 # Remove the deprecated crates
 remove_crate_tree substrate/deprecated
 
-# Remove the "kitchensink" runtime, which has everything including the kitchen
-# sink, as we remove most things
-remove_crate_tree substrate/utils/frame/generate-bags/node-runtime
-remove_crate_tree substrate/test-utils/cli
-remove_crate_tree substrate/bin/node
+# Remove the provided binaries, which we don't use
+remove_crate_tree substrate/bin
 
 # Remove the unused "bitswap" protocol
 silent_rm polkadot-sdk/substrate/client/network/build.rs
@@ -322,7 +319,7 @@ remove_crate_tree substrate/frame/assets
 remove_crate_tree substrate/frame/assets-freezer
 remove_crate_tree substrate/frame/assets-holder
 remove_crate_tree substrate/frame/atomic-swap
-remove_crate_tree substrate/frame/bags-list && remove_crate_tree substrate/utils/frame/generate-bags
+remove_crate_tree substrate/frame/bags-list
 remove_crate_tree substrate/frame/balances
 remove_crate_tree substrate/frame/benchmarking/pov
 remove_crate_tree substrate/frame/bounties
@@ -387,8 +384,6 @@ remove_crate_tree substrate/frame/utility
 remove_crate_tree substrate/scripts
 
 # Remove unused utilities
-remove_crate_tree substrate/bin/utils/chain-spec-builder
-remove_crate_tree substrate/bin/utils/subkey
 remove_crate_tree substrate/client/runtime-utilities
 remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
@@ -401,13 +396,9 @@ remove_crate_tree substrate/primitives/core/fuzz
 remove_crate_tree substrate/primitives/state-machine/fuzz
 
 # Remove benchmarking code we don't use
-remove_crate_tree substrate/frame/election-provider-support/benchmarking
-remove_crate_tree substrate/frame/offences/benchmarking
 remove_crate_tree substrate/frame/session/benchmarking
 remove_crate_tree substrate/frame/system/benchmarking
 apply_patch remove_frame_system_benchmarking
-remove_crate_tree substrate/utils/frame/benchmarking-cli
-remove_crate_tree substrate/utils/frame/omni-bencher
 
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
@@ -418,9 +409,6 @@ remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
 remove_crate_tree substrate/primitives/test-primitives
 
 # Perform upgrades to preferred versions
-cargo_upgrade wasmtime 36.0.0
-cargo_upgrade rustix 1.0.0
-
 cargo_upgrade array-bytes 7.0.0
 # TODO cargo_upgrade async-channel 2.0.0
 cargo_upgrade asynchronous-codec 0.7.0
@@ -444,10 +432,12 @@ cargo_upgrade partial_sort 1.0.0
 cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
+cargo_upgrade rustix 1.0.0
 cargo_upgrade strum 0.27.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
+cargo_upgrade wasmtime 36.0.0
 cargo_upgrade zstd 0.13.0
 
 cd polkadot-sdk
