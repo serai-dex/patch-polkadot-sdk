@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use litep2p::types::multiaddr::{
+use multiaddr_17::{
 	Error as LiteP2pError, Iter as LiteP2pIter, Multiaddr as LiteP2pMultiaddr,
 	Protocol as LiteP2pProtocol,
 };

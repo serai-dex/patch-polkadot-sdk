@@ -78,6 +78,7 @@ pub enum Error {
 	#[error("Connection closed")]
 	ConnectionClosed,
 	/// Litep2p error.
+	#[cfg(feature = "litep2p")]
 	#[error("Litep2p error: `{0}`")]
 	Litep2p(litep2p::Error),
 }

@@ -86,6 +86,7 @@ workspace = true
 
 [dependencies.litep2p]
 workspace = true
+optional = true
 
 [dependencies.log]
 workspace = true
@@ -193,3 +194,7 @@ default-features = true
 
 [features]
 default = []
+litep2p = [
+    "dep:litep2p",
+    "sc-network-types/litep2p",
+]

@@ -907,6 +907,7 @@ pub enum NetworkBackendType {
 	/// Use litep2p for P2P networking.
 	///
 	/// This is the preferred option for Substrate-based chains.
+	#[cfg(feature = "litep2p")]
 	#[default]
 	Litep2p,
 
@@ -916,6 +917,7 @@ pub enum NetworkBackendType {
 	/// ecosystem switches entirely to litep2p. The backend will enter
 	/// a "best-effort" maintenance mode, where only critical issues will
 	/// get fixed. If you are unsure, please use `NetworkBackendType::Litep2p`.
+	#[cfg_attr(not(feature = "litep2p"), default)]
 	Libp2p,
 }
 

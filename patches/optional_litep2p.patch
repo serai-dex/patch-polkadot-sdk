@@ -1,0 +1,295 @@
+diff --git a/substrate/client/network/types/Cargo.toml b/substrate/client/network/types/Cargo.toml
+index 6ad1689..743ad8a 100644
+--- a/substrate/client/network/types/Cargo.toml
++++ b/substrate/client/network/types/Cargo.toml
+@@ -12,13 +12,15 @@ documentation = "https://docs.rs/sc-network-types"
+ [dependencies]
+ bs58 = { workspace = true, default-features = true }
+ bytes = { workspace = true, default-features = false }
+-ed25519-dalek = { workspace = true, default-features = true }
++ed25519-dalek = { workspace = true, default-features = true, features = ["rand_core"] }
+ libp2p-identity = { features = ["ed25519", "peerid", "rand"], workspace = true }
+ libp2p-kad = { workspace = true, default-features = false }
+-litep2p = { workspace = true }
++litep2p = { workspace = true, optional = true }
+ log = { workspace = true, default-features = true }
+ multiaddr = { workspace = true }
++multiaddr-17 = { package = "multiaddr", version = "0.17", default-features = false }
+ multihash = { workspace = true }
++multihash-17 = { package = "multihash", version = "0.17", default-features = false, features = ["std", "multihash-impl", "identity", "sha2"] }
+ rand = { workspace = true, default-features = true }
+ thiserror = { workspace = true }
+ zeroize = { workspace = true }
+diff --git a/substrate/client/network/types/src/ed25519.rs b/substrate/client/network/types/src/ed25519.rs
+index acaa017..429904f 100644
+--- a/substrate/client/network/types/src/ed25519.rs
++++ b/substrate/client/network/types/src/ed25519.rs
+@@ -22,6 +22,7 @@ use crate::PeerId;
+ use core::{cmp, fmt, hash};
+ use ed25519_dalek::{self as ed25519, Signer as _, Verifier as _};
+ use libp2p_identity::ed25519 as libp2p_ed25519;
++#[cfg(feature = "litep2p")]
+ use litep2p::crypto::ed25519 as litep2p_ed25519;
+ use zeroize::Zeroize;
+
+@@ -80,6 +81,7 @@ impl fmt::Debug for Keypair {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<litep2p_ed25519::Keypair> for Keypair {
+ 	fn from(kp: litep2p_ed25519::Keypair) -> Self {
+ 		Self::try_from_bytes(&mut kp.to_bytes())
+@@ -87,6 +89,7 @@ impl From<litep2p_ed25519::Keypair> for Keypair {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<Keypair> for litep2p_ed25519::Keypair {
+ 	fn from(kp: Keypair) -> Self {
+ 		Self::try_from_bytes(&mut kp.to_bytes())
+@@ -185,10 +188,11 @@ impl PublicKey {
+
+ 	/// Convert public key to `PeerId`.
+ 	pub fn to_peer_id(&self) -> PeerId {
+-		litep2p::PeerId::from(litep2p::crypto::PublicKey::Ed25519(self.clone().into())).into()
++		libp2p_identity::PeerId::from_multihash(crate::multihash::Code::Identity.digest(&self.to_bytes()).into()).unwrap().into()
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<litep2p_ed25519::PublicKey> for PublicKey {
+ 	fn from(k: litep2p_ed25519::PublicKey) -> Self {
+ 		Self::try_from_bytes(&k.to_bytes())
+@@ -196,6 +200,7 @@ impl From<litep2p_ed25519::PublicKey> for PublicKey {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<PublicKey> for litep2p_ed25519::PublicKey {
+ 	fn from(k: PublicKey) -> Self {
+ 		Self::try_from_bytes(&k.to_bytes())
+@@ -264,12 +269,14 @@ impl Drop for SecretKey {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<litep2p_ed25519::SecretKey> for SecretKey {
+ 	fn from(sk: litep2p_ed25519::SecretKey) -> Self {
+ 		Self::try_from_bytes(&mut sk.to_bytes()).expect("Ed25519 key to be 32 bytes length")
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<SecretKey> for litep2p_ed25519::SecretKey {
+ 	fn from(sk: SecretKey) -> Self {
+ 		Self::try_from_bytes(&mut sk.to_bytes())
+diff --git a/substrate/client/network/types/src/kad.rs b/substrate/client/network/types/src/kad.rs
+index e844f97..97988e4 100644
+--- a/substrate/client/network/types/src/kad.rs
++++ b/substrate/client/network/types/src/kad.rs
+@@ -19,6 +19,7 @@
+ use crate::{multihash::Multihash, PeerId};
+ use bytes::Bytes;
+ use libp2p_kad::RecordKey as Libp2pKey;
++#[cfg(feature = "litep2p")]
+ use litep2p::protocol::libp2p::kademlia::{Record as Litep2pRecord, RecordKey as Litep2pKey};
+ use std::{error::Error, fmt, time::Instant};
+
+@@ -56,12 +57,14 @@ impl From<Multihash> for Key {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<Litep2pKey> for Key {
+ 	fn from(key: Litep2pKey) -> Self {
+ 		Self::from(key.to_vec())
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<Key> for Litep2pKey {
+ 	fn from(key: Key) -> Self {
+ 		Self::from(key.to_vec())
+@@ -114,6 +117,7 @@ impl From<libp2p_kad::Record> for Record {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<Record> for Litep2pRecord {
+ 	fn from(val: Record) -> Self {
+ 		let vec: Vec<u8> = val.key.to_vec();
+diff --git a/substrate/client/network/types/src/multiaddr.rs b/substrate/client/network/types/src/multiaddr.rs
+index 925e24f..0bd652c 100644
+--- a/substrate/client/network/types/src/multiaddr.rs
++++ b/substrate/client/network/types/src/multiaddr.rs
+@@ -16,7 +16,7 @@
+ // You should have received a copy of the GNU General Public License
+ // along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+-use litep2p::types::multiaddr::{
++use multiaddr_17::{
+ 	Error as LiteP2pError, Iter as LiteP2pIter, Multiaddr as LiteP2pMultiaddr,
+ 	Protocol as LiteP2pProtocol,
+ };
+diff --git a/substrate/client/network/types/src/multiaddr/protocol.rs b/substrate/client/network/types/src/multiaddr/protocol.rs
+index 35fcaa5..3afda6e 100644
+--- a/substrate/client/network/types/src/multiaddr/protocol.rs
++++ b/substrate/client/network/types/src/multiaddr/protocol.rs
+@@ -18,7 +18,7 @@
+
+ use crate::multihash::Multihash;
+ use libp2p_identity::PeerId;
+-use litep2p::types::multiaddr::Protocol as LiteP2pProtocol;
++use multiaddr_17::Protocol as LiteP2pProtocol;
+ use multiaddr::Protocol as LibP2pProtocol;
+ use std::{
+ 	borrow::Cow,
+@@ -68,7 +68,7 @@ pub enum Protocol<'a> {
+
+ impl Display for Protocol<'_> {
+ 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+-		let protocol = LiteP2pProtocol::from(self.clone());
++		let protocol = LibP2pProtocol::from(self.clone());
+ 		Display::fmt(&protocol, f)
+ 	}
+ }
+diff --git a/substrate/client/network/types/src/multihash.rs b/substrate/client/network/types/src/multihash.rs
+index 321211c..1606196 100644
+--- a/substrate/client/network/types/src/multihash.rs
++++ b/substrate/client/network/types/src/multihash.rs
+@@ -19,7 +19,7 @@
+ //! [`Multihash`] implemenattion used by substrate. Currently it's a wrapper over
+ //! multihash used by litep2p, but it can be switched to other implementation if needed.
+
+-use litep2p::types::multihash::{
++use multihash_17::{
+ 	Code as LiteP2pCode, Error as LiteP2pError, Multihash as LiteP2pMultihash, MultihashDigest as _,
+ };
+ use std::fmt::{self, Debug};
+diff --git a/substrate/client/network/types/src/peer_id.rs b/substrate/client/network/types/src/peer_id.rs
+index 076be0a..f82ad8e 100644
+--- a/substrate/client/network/types/src/peer_id.rs
++++ b/substrate/client/network/types/src/peer_id.rs
+@@ -155,24 +155,28 @@ impl From<&PeerId> for libp2p_identity::PeerId {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<litep2p::PeerId> for PeerId {
+ 	fn from(peer_id: litep2p::PeerId) -> Self {
+ 		PeerId { multihash: Multihash::from_bytes(&peer_id.to_bytes()).expect("to succeed") }
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<PeerId> for litep2p::PeerId {
+ 	fn from(peer_id: PeerId) -> Self {
+ 		litep2p::PeerId::from_bytes(&peer_id.to_bytes()).expect("to succeed")
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<&litep2p::PeerId> for PeerId {
+ 	fn from(peer_id: &litep2p::PeerId) -> Self {
+ 		PeerId { multihash: Multihash::from_bytes(&peer_id.to_bytes()).expect("to succeed") }
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<&PeerId> for litep2p::PeerId {
+ 	fn from(peer_id: &PeerId) -> Self {
+ 		litep2p::PeerId::from_bytes(&peer_id.to_bytes()).expect("to succeed")
+diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Cargo.toml
+index 1f40ea9..1cd5381 100644
+--- a/substrate/client/network/Cargo.toml
++++ b/substrate/client/network/Cargo.toml
+@@ -34,7 +34,7 @@ futures-timer = { workspace = true }
+ ip_network = { workspace = true }
+ libp2p = { features = ["dns", "identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "websocket", "yamux"], workspace = true }
+ linked_hash_set = { workspace = true }
+-litep2p = { workspace = true }
++litep2p = { workspace = true, optional = true }
+ log = { workspace = true, default-features = true }
+ mockall = { workspace = true }
+ parking_lot = { workspace = true, default-features = true }
+@@ -91,6 +91,7 @@ criterion = { workspace = true, default-features = true, features = ["async_toki
+
+ [features]
+ default = []
++litep2p = ["dep:litep2p", "sc-network-types/litep2p"]
+
+ [[bench]]
+ name = "notifications_protocol"
+diff --git a/substrate/client/network/src/config.rs b/substrate/client/network/src/config.rs
+index dd7e77e..9748954 100644
+--- a/substrate/client/network/src/config.rs
++++ b/substrate/client/network/src/config.rs
+@@ -914,6 +914,7 @@ pub enum NetworkBackendType {
+ 	/// Use litep2p for P2P networking.
+ 	///
+ 	/// This is the preferred option for Substrate-based chains.
++	#[cfg(feature = "litep2p")]
+ 	#[default]
+ 	Litep2p,
+
+@@ -923,6 +924,7 @@ pub enum NetworkBackendType {
+ 	/// ecosystem switches entirely to litep2p. The backend will enter
+ 	/// a "best-effort" maintenance mode, where only critical issues will
+ 	/// get fixed. If you are unsure, please use `NetworkBackendType::Litep2p`.
++	#[cfg_attr(not(feature = "litep2p"), default)]
+ 	Libp2p,
+ }
+
+diff --git a/substrate/client/network/src/error.rs b/substrate/client/network/src/error.rs
+index 376b846..0593b86 100644
+--- a/substrate/client/network/src/error.rs
++++ b/substrate/client/network/src/error.rs
+@@ -78,6 +78,7 @@ pub enum Error {
+ 	#[error("Connection closed")]
+ 	ConnectionClosed,
+ 	/// Litep2p error.
++	#[cfg(feature = "litep2p")]
+ 	#[error("Litep2p error: `{0}`")]
+ 	Litep2p(litep2p::Error),
+ }
+diff --git a/substrate/client/network/src/lib.rs b/substrate/client/network/src/lib.rs
+index f19c4dd..6ab19fd 100644
+--- a/substrate/client/network/src/lib.rs
++++ b/substrate/client/network/src/lib.rs
+@@ -244,6 +244,7 @@
+
+ mod behaviour;
+ mod bitswap;
++#[cfg(feature = "litep2p")]
+ mod litep2p;
+ mod protocol;
+
+@@ -264,6 +265,7 @@ pub mod transport;
+ pub mod types;
+ pub mod utils;
+
++#[cfg(feature = "litep2p")]
+ pub use crate::litep2p::Litep2pNetworkBackend;
+ pub use event::{DhtEvent, Event};
+ #[doc(inline)]
+diff --git a/substrate/client/network/src/types.rs b/substrate/client/network/src/types.rs
+index 5289389..111bda0 100644
+--- a/substrate/client/network/src/types.rs
++++ b/substrate/client/network/src/types.rs
+@@ -96,6 +96,7 @@ impl AsRef<str> for ProtocolName {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<ProtocolName> for litep2p::ProtocolName {
+ 	fn from(protocol: ProtocolName) -> Self {
+ 		match protocol {
+@@ -105,6 +106,7 @@ impl From<ProtocolName> for litep2p::ProtocolName {
+ 	}
+ }
+
++#[cfg(feature = "litep2p")]
+ impl From<litep2p::ProtocolName> for ProtocolName {
+ 	fn from(protocol: litep2p::ProtocolName) -> Self {
+ 		match protocol {

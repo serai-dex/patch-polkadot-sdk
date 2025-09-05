@@ -18,7 +18,7 @@
 
 use crate::multihash::Multihash;
 use libp2p_identity::PeerId;
-use litep2p::types::multiaddr::Protocol as LiteP2pProtocol;
+use multiaddr_17::Protocol as LiteP2pProtocol;
 use multiaddr::Protocol as LibP2pProtocol;
 use std::{
 	borrow::Cow,
@@ -68,7 +68,7 @@ pub enum Protocol<'a> {
 
 impl Display for Protocol<'_> {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let protocol = LiteP2pProtocol::from(self.clone());
+		let protocol = LibP2pProtocol::from(self.clone());
 		Display::fmt(&protocol, f)
 	}
 }

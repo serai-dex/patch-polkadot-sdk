@@ -53,18 +53,6 @@ index dd7e77e..3db879e 100644
  	/// Notification metrics.
  	pub notification_metrics: NotificationMetrics,
  }
-diff --git a/substrate/client/network/src/lib.rs b/substrate/client/network/src/lib.rs
-index f19c4dd..5be7bde 100644
---- a/substrate/client/network/src/lib.rs
-+++ b/substrate/client/network/src/lib.rs
-@@ -243,7 +243,6 @@
- //! More precise usage details are still being worked on and will likely change in the future.
- 
- mod behaviour;
--mod bitswap;
- mod litep2p;
- mod protocol;
- 
 diff --git a/substrate/client/network/src/litep2p/mod.rs b/substrate/client/network/src/litep2p/mod.rs
 index ee11e90..0b2c21c 100644
 --- a/substrate/client/network/src/litep2p/mod.rs

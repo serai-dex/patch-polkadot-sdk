@@ -78,6 +78,9 @@ apply_patch remove_filetime
 # Stop propagation of `CARGO_FEATURE_STD` when performing a `no-std` build
 apply_patch do_not_inherit_std
 
+# Make litep2p optional
+apply_patch optional_litep2p
+
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
@@ -217,6 +220,7 @@ silent_rm polkadot-sdk/substrate/client/network/build.rs
 silent_rm polkadot-sdk/substrate/client/network/src/bitswap
 silent_rm polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 silent_rm polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
+remove_matching_lines ./polkadot-sdk/substrate/client/network/src/lib.rs "mod bitswap;$"
 apply_patch remove_bitswap
 
 # Remove the BEEFY consensus crates

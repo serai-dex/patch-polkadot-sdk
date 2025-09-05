@@ -19,6 +19,7 @@
 use crate::{multihash::Multihash, PeerId};
 use bytes::Bytes;
 use libp2p_kad::RecordKey as Libp2pKey;
+#[cfg(feature = "litep2p")]
 use litep2p::protocol::libp2p::kademlia::{Record as Litep2pRecord, RecordKey as Litep2pKey};
 use std::{error::Error, fmt, time::Instant};
 
@@ -56,12 +57,14 @@ impl From<Multihash> for Key {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<Litep2pKey> for Key {
 	fn from(key: Litep2pKey) -> Self {
 		Self::from(key.to_vec())
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<Key> for Litep2pKey {
 	fn from(key: Key) -> Self {
 		Self::from(key.to_vec())
@@ -114,6 +117,7 @@ impl From<libp2p_kad::Record> for Record {
 	}
 }
 
+#[cfg(feature = "litep2p")]
 impl From<Record> for Litep2pRecord {
 	fn from(val: Record) -> Self {
 		let vec: Vec<u8> = val.key.to_vec();

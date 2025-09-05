@@ -243,6 +243,7 @@
 //! More precise usage details are still being worked on and will likely change in the future.
 
 mod behaviour;
+#[cfg(feature = "litep2p")]
 mod litep2p;
 mod protocol;
 
@@ -263,6 +264,7 @@ pub mod transport;
 pub mod types;
 pub mod utils;
 
+#[cfg(feature = "litep2p")]
 pub use crate::litep2p::Litep2pNetworkBackend;
 pub use event::{DhtEvent, Event};
 #[doc(inline)]

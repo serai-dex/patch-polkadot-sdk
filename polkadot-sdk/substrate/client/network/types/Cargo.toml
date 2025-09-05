@@ -28,6 +28,7 @@ default-features = false
 [dependencies.ed25519-dalek]
 workspace = true
 default-features = true
+features = ["rand_core"]
 
 [dependencies.libp2p-identity]
 features = [
@@ -43,6 +44,7 @@ default-features = false
 
 [dependencies.litep2p]
 workspace = true
+optional = true
 
 [dependencies.log]
 workspace = true
@@ -51,8 +53,24 @@ default-features = true
 [dependencies.multiaddr]
 workspace = true
 
+[dependencies.multiaddr-17]
+package = "multiaddr"
+version = "0.17"
+default-features = false
+
 [dependencies.multihash]
 workspace = true
+
+[dependencies.multihash-17]
+package = "multihash"
+version = "0.17"
+default-features = false
+features = [
+    "std",
+    "multihash-impl",
+    "identity",
+    "sha2",
+]
 
 [dependencies.rand]
 workspace = true
