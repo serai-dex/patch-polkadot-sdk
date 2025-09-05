@@ -167,24 +167,20 @@ impl TypeId for PalletId {
 ///
 /// 1. Use the `verbatim` prefix type. This prefix type uses the given identifier as the
 /// `prefix`:
-#[doc = docify::embed!("src/tests/storage_alias.rs", verbatim_attribute)]
 ///
 /// 2. Use the `pallet_name` prefix type. This prefix type uses the name of the pallet as
 /// configured in    [`construct_runtime!`] as the `prefix`:
-#[doc = docify::embed!("src/tests/storage_alias.rs", pallet_name_attribute)]
 /// It requires that the given prefix type implements
 /// [`PalletInfoAccess`](traits::PalletInfoAccess) (which is always the case for FRAME pallet
 /// structs). In the example above, `Pallet<T>` is the prefix type.
 ///
 /// 3. Use the `dynamic` prefix type. This prefix type calls [`Get::get()`](traits::Get::get)
 ///    to get the `prefix`:
-#[doc = docify::embed!("src/tests/storage_alias.rs", dynamic_attribute)]
 /// It requires that the given prefix type implements [`Get<'static str>`](traits::Get).
 ///
 /// 4. Let the macro "guess" what kind of prefix type to use. This only supports verbatim or
 ///    pallet name. The macro uses the presence of generic arguments to the prefix type as an
 ///    indication that it should use the pallet name as the `prefix`:
-#[doc = docify::embed!("src/tests/storage_alias.rs", storage_alias_guess)]
 pub use frame_support_procedural::storage_alias;
 
 pub use frame_support_procedural::derive_impl;
@@ -2561,13 +2557,11 @@ pub mod pallet_macros {
 	/// the storage type, additional key specifications may be needed.
 	///
 	/// #### Example
-	#[doc = docify::embed!("src/lib.rs", example_storage_value_append)]
 	/// Similarly, there also exists a `::try_append()` method, which can be used when handling
 	/// types where an append operation might fail, such as a
 	/// [`BoundedVec`](frame_support::BoundedVec).
 	///
 	/// #### Example
-	#[doc = docify::embed!("src/lib.rs", example_storage_value_try_append)]
 	/// ### Optimized Length Decoding
 	///
 	/// All storage items — such as
@@ -2576,7 +2570,6 @@ pub mod pallet_macros {
 	/// incorporate the `::decode_len()` method. This method allows for efficient retrieval of
 	/// a collection's length without the necessity of decoding the entire dataset.
 	/// #### Example
-	#[doc = docify::embed!("src/lib.rs", example_storage_value_decode_len)]
 	/// ### Hashers
 	///
 	/// For all storage types, except
@@ -2624,7 +2617,6 @@ pub mod pallet_macros {
 	/// map.
 	///
 	/// #### Example
-	#[doc = docify::embed!("src/lib.rs", example_storage_value_map_prefixes)]
 	/// ## Related Macros
 	///
 	/// The following attribute macros can be used in conjunction with the `#[storage]` macro:
@@ -2780,7 +2772,6 @@ mod test {
 		const STORAGE_PREFIX: &'static str = "MyMap";
 	}
 
-	#[docify::export]
 	#[test]
 	pub fn example_storage_value_try_append() {
 		type MyVal = StorageValue<Prefix, BoundedVec<u8, ConstU32<10>>, ValueQuery>;
@@ -2794,7 +2785,6 @@ mod test {
 		});
 	}
 
-	#[docify::export]
 	#[test]
 	pub fn example_storage_value_append() {
 		type MyVal = StorageValue<Prefix, Vec<u8>, ValueQuery>;
@@ -2808,7 +2798,6 @@ mod test {
 		});
 	}
 
-	#[docify::export]
 	#[test]
 	pub fn example_storage_value_decode_len() {
 		type MyVal = StorageValue<Prefix, BoundedVec<u8, ConstU32<10>>, ValueQuery>;
@@ -2819,7 +2808,6 @@ mod test {
 		});
 	}
 
-	#[docify::export]
 	#[test]
 	pub fn example_storage_value_map_prefixes() {
 		type MyVal = StorageValue<Prefix1, u32, ValueQuery>;

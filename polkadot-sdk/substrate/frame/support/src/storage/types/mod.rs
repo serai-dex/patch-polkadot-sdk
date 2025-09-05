@@ -53,7 +53,6 @@ pub use value::StorageValue;
 ///   a value.
 ///
 /// ## Example
-#[doc = docify::embed!("src/storage/types/mod.rs", value_query_examples)]
 pub trait QueryKindTrait<Value, OnEmpty> {
 	/// Metadata for the storage kind.
 	const METADATA: StorageEntryModifierIR;
@@ -165,7 +164,6 @@ mod test {
 		const STORAGE_PREFIX: &'static str = "foo";
 	}
 
-	#[docify::export]
 	#[test]
 	pub fn value_query_examples() {
 		/// Custom default impl to be used with `ValueQuery`.

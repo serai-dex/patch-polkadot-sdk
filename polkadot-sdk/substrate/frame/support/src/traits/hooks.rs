@@ -343,7 +343,6 @@ pub trait IntegrityTest {
 	fn integrity_test() {}
 }
 
-#[cfg_attr(doc, aquamarine::aquamarine)]
 /// The pallet hooks trait. This is merely an umbrella trait for:
 ///
 /// - [`OnInitialize`]

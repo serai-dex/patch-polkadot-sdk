@@ -64,9 +64,6 @@ workspace = true
 [dependencies.sp-timestamp]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [features]
 default = ["std"]
 std = [

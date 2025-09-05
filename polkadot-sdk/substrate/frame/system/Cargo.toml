@@ -30,9 +30,6 @@ workspace = true
 features = ["derive"]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.frame-support]
 workspace = true
 

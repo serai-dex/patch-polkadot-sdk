@@ -31,9 +31,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.either]
 workspace = true
 
@@ -96,10 +93,6 @@ workspace = true
 features = ["log"]
 default-features = false
 
-[dependencies.simple-mermaid]
-version = "0.1.1"
-optional = true
-
 [dependencies.tuplex]
 version = "0.1.2"
 default-features = false
@@ -117,7 +110,6 @@ std = [
     "rand",
     "scale-info/std",
     "serde/std",
-    "simple-mermaid",
     "sp-application-crypto/std",
     "sp-arithmetic/std",
     "sp-core/std",

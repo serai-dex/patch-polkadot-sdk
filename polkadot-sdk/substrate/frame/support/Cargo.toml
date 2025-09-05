@@ -36,9 +36,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.environmental]
 workspace = true
 
@@ -137,9 +134,6 @@ workspace = true
 workspace = true
 
 [dependencies.tt-call]
-workspace = true
-
-[dependencies.aquamarine]
 workspace = true
 
 [features]

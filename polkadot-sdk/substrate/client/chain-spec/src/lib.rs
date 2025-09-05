@@ -232,7 +232,6 @@
 //! specification, use [`ChainSpec::as_json`].
 //!
 //! The sample code to generate a chain spec is as follows:
-#![doc = docify::embed!("src/chain_spec.rs", build_chain_spec_with_patch_works)]
 //! # JSON chain specification example
 //!
 //! The following are the plain and `raw` versions of the chain specification JSON files, resulting

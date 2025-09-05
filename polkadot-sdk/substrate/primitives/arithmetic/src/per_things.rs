@@ -25,9 +25,7 @@
 //! In use, you may see them being used as follows:
 //!
 //! > **[`Perbill`](Perbill), parts of a billion**
-#![doc = docify::embed!("./src/lib.rs", perbill_example)]
 //! > **[`Percent`](Percent), parts of a hundred**
-#![doc = docify::embed!("./src/lib.rs", percent_example)]
 //!
 //! Note that `Percent` is represented as a _rounded down_, fixed point
 //! number (see the example above). Unlike primitive types, types that implement
@@ -49,7 +47,6 @@
 //! As stated, one can also perform mathematics using these types directly. For example, finding the
 //! percentage of a particular item:
 
-#![doc = docify::embed!("./src/lib.rs", percent_mult)]
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};

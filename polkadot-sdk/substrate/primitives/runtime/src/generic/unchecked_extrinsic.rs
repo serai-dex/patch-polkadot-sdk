@@ -211,7 +211,6 @@ where
 /// could in principle be any other interaction. Transactions are either signed or unsigned. A
 /// sensible transaction pool should ensure that only transactions that are worthwhile are
 /// considered for block-building.
-#[cfg_attr(all(feature = "std", not(windows)), doc = simple_mermaid::mermaid!("../../docs/mermaid/extrinsics.mmd"))]
 /// This type is by no means enforced within Substrate, but given its genericness, it is highly
 /// likely that for most use-cases it will suffice. Thus, the encoding of this type will dictate
 /// exactly what bytes should be sent to a runtime to transact with it.
@@ -444,7 +443,6 @@ where
 	}
 }
 
-#[docify::export(unchecked_extrinsic_encode_impl)]
 impl<Address, Call, Signature, Extension> Encode
 	for UncheckedExtrinsic<Address, Call, Signature, Extension>
 where
@@ -679,7 +677,6 @@ mod legacy {
 		}
 	}
 
-	#[docify::export(unchecked_extrinsic_encode_impl)]
 	impl<Address, Call, Signature, Extra> Encode
 		for UncheckedExtrinsicV4<Address, Call, Signature, Extra>
 	where

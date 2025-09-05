@@ -525,7 +525,6 @@ pub mod pallet {
 			+ Clone
 			+ OriginTrait<Call = Self::RuntimeCall, AccountId = Self::AccountId>;
 
-		#[docify::export(system_runtime_call)]
 		/// The aggregated `RuntimeCall` type.
 		#[pallet::no_default_bounds]
 		type RuntimeCall: codec::Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + core::fmt::Debug
@@ -1414,7 +1413,6 @@ impl_ensure_origin_with_arg_ignoring_arg! {
 	{}
 }
 
-#[docify::export]
 /// Ensure that the origin `o` represents a signed extrinsic (i.e. transaction).
 /// Returns `Ok` with the account that signed the extrinsic or an `Err` otherwise.
 pub fn ensure_signed<OuterOrigin, AccountId>(o: OuterOrigin) -> Result<AccountId, BadOrigin>
@@ -1531,7 +1529,6 @@ impl<T: Config> Pallet<T> {
 	/// current runtime until there is another runtime upgrade.
 	///
 	/// Example:
-	#[doc = docify::embed!("src/tests.rs", last_runtime_upgrade_spec_version_usage)]
 	pub fn last_runtime_upgrade_spec_version() -> u32 {
 		LastRuntimeUpgrade::<T>::get().map_or(0, |l| l.spec_version.0)
 	}

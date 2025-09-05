@@ -22,9 +22,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 features = ["derive"]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.frame]
 workspace = true
 features = ["runtime"]

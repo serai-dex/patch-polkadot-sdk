@@ -443,14 +443,12 @@ mod normalize_tests {
 mod per_and_fixed_examples {
 	use super::*;
 
-	#[docify::export]
 	#[test]
 	fn percent_mult() {
 		let percent = Percent::from_rational(5u32, 100u32); // aka, 5%
 		let five_percent_of_100 = percent * 100u32; // 5% of 100 is 5.
 		assert_eq!(five_percent_of_100, 5)
 	}
-	#[docify::export]
 	#[test]
 	fn perbill_example() {
 		let p = Perbill::from_percent(80);
@@ -459,14 +457,12 @@ mod per_and_fixed_examples {
 		assert_eq!(p.deconstruct(), 800000000);
 	}
 
-	#[docify::export]
 	#[test]
 	fn percent_example() {
 		let percent = Percent::from_rational(190u32, 400u32);
 		assert_eq!(percent.deconstruct(), 47);
 	}
 
-	#[docify::export]
 	#[test]
 	fn fixed_u64_block_computation_example() {
 		// Calculate a very rudimentary on-chain price from supply / demand
@@ -490,7 +486,6 @@ mod per_and_fixed_examples {
 		assert_eq!(price, FixedU64::from_float(1.9));
 	}
 
-	#[docify::export]
 	#[test]
 	fn fixed_u64() {
 		// The difference between this and perthings is perthings operates within the relam of [0,
@@ -503,7 +498,6 @@ mod per_and_fixed_examples {
 		assert_eq!(rational_2.into_perbill(), Perbill::from_float(0.5));
 	}
 
-	#[docify::export]
 	#[test]
 	fn fixed_u64_operation_example() {
 		let rational_1 = FixedU64::from_rational(10, 5); // "200%" aka 2.

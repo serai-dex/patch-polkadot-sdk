@@ -119,6 +119,19 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^trie-bench"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasmi"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^zombienet"
 
+# Remove `simple-mermaid`
+remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/Cargo.toml "simple-mermaid"
+remove_matching_lines ./polkadot-sdk/Cargo.toml "simple-mermaid"
+
+# Remove `docify` from the dependencies
+find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
+remove_matching_lines ./polkadot-sdk/Cargo.toml "docify"
+
+# Remove `aquamarine` from the dependencies
+find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
+remove_matching_lines ./polkadot-sdk/Cargo.toml "aquamarine"
+
 # Now, set up the Rust binary and make all the invasive changes
 rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release
@@ -172,9 +185,8 @@ remove_crate_tree cumulus
 # Remove the `polkadot/` tree, intended for Polkadot
 remove_crate_tree polkadot
 
-# Remove the `docs/sdk` crate, which won't compile after this and isn't worth
-# the effort to patch
-remove_crate_tree docs/sdk
+# Remove the `docs` crate, which won't compile after this and isn't worth the effort to patch
+remove_crate_tree docs
 
 # Remove the `umbrella` crate, which we don't use, so we don't have to
 # re-generate it (requiring multiple bespoke binary tools be added to the system
@@ -185,6 +197,7 @@ remove_crate_tree umbrella
 remove_crate_tree templates
 # And the actual examples
 remove_crate_tree substrate/frame/examples
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/examples
 
 # Remove the deprecated crates
 remove_crate_tree substrate/deprecated
@@ -306,10 +319,6 @@ apply_patch remove_storage_type_info
 # Remove `TypeInfo` from call
 apply_patch remove_call_type_info
 
-# Remove the `SS58prefix` constant
-apply_patch remove_ss58_prefix
-find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Prefix > {}.2 && rm {} && mv {}.2 {}" \;
-
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
 remove_crate_tree substrate/frame/asset-conversion
@@ -407,6 +416,16 @@ remove_crate_tree substrate/test-utils
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
 remove_crate_tree substrate/primitives/test-primitives
+
+# Remove `aquamarine`, `docify` from the code
+# This is done last as it's quite slow, so it's best to do after we've achieved a small tree
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
+apply_patch remove_docify
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
+
+# Remove the `SS58prefix` constant
+apply_patch remove_ss58_prefix
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
 
 # Perform upgrades to preferred versions
 cargo_upgrade array-bytes 7.0.0

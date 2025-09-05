@@ -26,9 +26,6 @@ workspace = true
 [dependencies.codec]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.hash-db]
 optional = true
 workspace = true

@@ -31,9 +31,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.integer-sqrt]
 workspace = true
 

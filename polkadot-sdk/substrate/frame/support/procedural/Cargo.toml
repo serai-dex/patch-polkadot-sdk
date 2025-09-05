@@ -34,9 +34,6 @@ workspace = true
 [dependencies.derive-syn-parse]
 workspace = true
 
-[dependencies.docify]
-workspace = true
-
 [dependencies.expander]
 workspace = true
 
@@ -78,6 +75,3 @@ no-metadata-docs = []
 experimental = []
 tuples-96 = []
 tuples-128 = []
-
-[[example]]
-name = "proc_main"

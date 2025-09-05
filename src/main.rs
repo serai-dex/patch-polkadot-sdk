@@ -184,6 +184,7 @@ fn main() {
           .to_owned();
         remove_folder_of_crates(&relative_path.join("test").display().to_string());
         remove_folder_of_crates(&relative_path.join("benches").display().to_string());
+        remove_folder_of_crates(&relative_path.join("examples").display().to_string());
 
         let crate_toml_path = item.path.join("Cargo.toml");
         let crate_toml = fs::read_to_string(&crate_toml_path).unwrap();
@@ -212,8 +213,10 @@ fn main() {
           remove_dependencies_from_features(&mut crate_toml, &unique_dev_dependencies);
         }
 
-        // Remove all "bench"es
+        // Remove all benches
         crate_toml.remove("bench");
+        // Remove all examples
+        crate_toml.remove("example");
 
         fs::write(crate_toml_path, toml::to_string_pretty(&crate_toml).unwrap().as_bytes())
           .unwrap();
