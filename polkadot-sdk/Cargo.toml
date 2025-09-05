@@ -114,7 +114,6 @@ members = [
     "substrate/primitives/weights",
     "substrate/utils/fork-tree",
     "substrate/utils/prometheus",
-    "substrate/utils/substrate-bip39",
     "substrate/utils/wasm-builder",
 ]
 

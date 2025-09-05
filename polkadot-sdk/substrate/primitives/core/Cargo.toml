@@ -124,9 +124,6 @@ workspace = true
 [dependencies.ss58-registry]
 workspace = true
 
-[dependencies.substrate-bip39]
-workspace = true
-
 [dependencies.thiserror]
 optional = true
 workspace = true
@@ -225,7 +222,6 @@ std = [
     "sp-std/std",
     "sp-storage/std",
     "ss58-registry/std",
-    "substrate-bip39/std",
     "thiserror",
     "tracing",
     "zeroize/alloc",

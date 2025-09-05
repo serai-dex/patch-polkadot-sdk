@@ -392,6 +392,8 @@ remove_crate_tree substrate/bin/utils/subkey
 remove_crate_tree substrate/client/runtime-utilities
 remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
+remove_crate_tree substrate/utils/substrate-bip39
+apply_patch remove_substrate-bip39
 
 # Remove fuzzers
 remove_crate_tree substrate/primitives/arithmetic/fuzzer
