@@ -106,10 +106,6 @@ pub struct OffchainWorkerOptions<RA, Block: traits::Block, Storage, CE> {
 	pub network_provider: Arc<dyn NetworkProvider + Send + Sync>,
 	/// Is the node running as validator?
 	pub is_validator: bool,
-	/// Enable http requests from offchain workers?
-	///
-	/// If not enabled, any http request will panic.
-	pub enable_http_requests: bool,
 	/// Callback to create custom [`Extension`]s that should be registered for the
 	/// `offchain_worker` runtime call.
 	///
@@ -130,8 +126,6 @@ pub struct OffchainWorkerOptions<RA, Block: traits::Block, Storage, CE> {
 pub struct OffchainWorkers<RA, Block: traits::Block, Storage> {
 	runtime_api_provider: Arc<RA>,
 	thread_pool: Mutex<ThreadPool>,
-	shared_http_client: api::SharedClient,
-	enable_http_requests: bool,
 	keystore: Option<KeystorePtr>,
 	offchain_db: Option<OffchainDb<Storage>>,
 	transaction_pool: Option<OffchainTransactionPoolFactory<Block>>,
@@ -150,7 +144,6 @@ impl<RA, Block: traits::Block, Storage> OffchainWorkers<RA, Block, Storage> {
 			transaction_pool,
 			network_provider,
 			is_validator,
-			enable_http_requests,
 			custom_extensions,
 		}: OffchainWorkerOptions<RA, Block, Storage, CE>,
 	) -> std::io::Result<Self> {
@@ -160,8 +153,6 @@ impl<RA, Block: traits::Block, Storage> OffchainWorkers<RA, Block, Storage> {
 				"offchain-worker".into(),
 				num_cpus::get(),
 			)),
-			shared_http_client: api::SharedClient::new()?,
-			enable_http_requests,
 			keystore,
 			offchain_db: offchain_db.map(OffchainDb::new),
 			transaction_pool,
@@ -246,14 +237,12 @@ where
 			let (api, runner) = api::AsyncApi::new(
 				self.network_provider.clone(),
 				self.is_validator,
-				self.shared_http_client.clone(),
 			);
 			tracing::debug!(target: LOG_TARGET, "Spawning offchain workers at {hash:?}");
 			let header = header.clone();
 			let client = self.runtime_api_provider.clone();
 
 			let mut capabilities = offchain::Capabilities::all();
-			capabilities.set(offchain::Capabilities::HTTP, self.enable_http_requests);
 
 			let keystore = self.keystore.clone();
 			let db = self.offchain_db.clone();
@@ -464,7 +453,6 @@ mod tests {
 			transaction_pool: Some(OffchainTransactionPoolFactory::new(pool.clone())),
 			network_provider: network,
 			is_validator: false,
-			enable_http_requests: false,
 			custom_extensions: |_| Vec::new(),
 		})
 		.unwrap();

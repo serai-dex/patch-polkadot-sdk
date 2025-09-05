@@ -21,7 +21,6 @@ use std::{collections::HashSet, str::FromStr, sync::Arc, thread::sleep};
 use crate::NetworkProvider;
 use codec::{Decode, Encode};
 use futures::Future;
-pub use http::SharedClient;
 use sc_network::Multiaddr;
 use sc_network_types::PeerId;
 use sp_core::{
@@ -31,8 +30,6 @@ use sp_core::{
 	},
 	OpaquePeerId,
 };
-
-mod http;
 
 mod timestamp;
 
@@ -45,8 +42,6 @@ pub(crate) struct Api {
 	network_provider: Arc<dyn NetworkProvider + Send + Sync>,
 	/// Is this node a potential validator?
 	is_validator: bool,
-	/// Everything HTTP-related is handled by a different struct.
-	http: http::HttpApi,
 }
 
 impl offchain::Externalities for Api {
@@ -71,54 +66,6 @@ impl offchain::Externalities for Api {
 
 	fn random_seed(&mut self) -> [u8; 32] {
 		rand::random()
-	}
-
-	fn http_request_start(
-		&mut self,
-		method: &str,
-		uri: &str,
-		_meta: &[u8],
-	) -> Result<HttpRequestId, ()> {
-		self.http.request_start(method, uri)
-	}
-
-	fn http_request_add_header(
-		&mut self,
-		request_id: HttpRequestId,
-		name: &str,
-		value: &str,
-	) -> Result<(), ()> {
-		self.http.request_add_header(request_id, name, value)
-	}
-
-	fn http_request_write_body(
-		&mut self,
-		request_id: HttpRequestId,
-		chunk: &[u8],
-		deadline: Option<Timestamp>,
-	) -> Result<(), HttpError> {
-		self.http.request_write_body(request_id, chunk, deadline)
-	}
-
-	fn http_response_wait(
-		&mut self,
-		ids: &[HttpRequestId],
-		deadline: Option<Timestamp>,
-	) -> Vec<HttpRequestStatus> {
-		self.http.response_wait(ids, deadline)
-	}
-
-	fn http_response_headers(&mut self, request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
-		self.http.response_headers(request_id)
-	}
-
-	fn http_response_read_body(
-		&mut self,
-		request_id: HttpRequestId,
-		buffer: &mut [u8],
-		deadline: Option<Timestamp>,
-	) -> Result<usize, HttpError> {
-		self.http.response_read_body(request_id, buffer, deadline)
 	}
 
 	fn set_authorized_nodes(&mut self, nodes: Vec<OpaquePeerId>, authorized_only: bool) {
@@ -190,30 +137,24 @@ impl TryFrom<OpaqueNetworkState> for NetworkState {
 /// Offchain extensions implementation API
 ///
 /// This is the asynchronous processing part of the API.
-pub(crate) struct AsyncApi {
-	/// Everything HTTP-related is handled by a different struct.
-	http: Option<http::HttpWorker>,
-}
+pub(crate) struct AsyncApi {}
 
 impl AsyncApi {
 	/// Creates new Offchain extensions API implementation and the asynchronous processing part.
 	pub fn new(
 		network_provider: Arc<dyn NetworkProvider + Send + Sync>,
 		is_validator: bool,
-		shared_http_client: SharedClient,
 	) -> (Api, Self) {
-		let (http_api, http_worker) = http::http(shared_http_client);
+		let api = Api { network_provider, is_validator };
 
-		let api = Api { network_provider, is_validator, http: http_api };
-
-		let async_api = Self { http: Some(http_worker) };
+		let async_api = Self {};
 
 		(api, async_api)
 	}
 
 	/// Run a processing task for the API
 	pub fn process(self) -> impl Future<Output = ()> {
-		self.http.expect("`process` is only called once; qed")
+		async {}
 	}
 }
 
@@ -326,9 +267,8 @@ mod tests {
 	fn offchain_api() -> (Api, AsyncApi) {
 		sp_tracing::try_init_simple();
 		let mock = Arc::new(TestNetwork());
-		let shared_client = SharedClient::new().unwrap();
 
-		AsyncApi::new(mock, false, shared_client)
+		AsyncApi::new(mock, false)
 	}
 
 	fn offchain_db() -> OffchainDb<LocalStorage> {

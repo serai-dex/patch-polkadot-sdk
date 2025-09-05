@@ -66,6 +66,11 @@ apply_patch wasmtime
 # The same for `twox-hash`
 apply_patch twox-hash
 
+# Remove unused HTTP module and associated dependencies
+silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/offchain/http.rs
+silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
+apply_patch remove_offchain_http
+
 # Add a feature-flag for `polkavm-linker` within `substrate-wasm-builder`
 apply_patch wasm_builder_polkavm-linker_feature
 # Remove the `filetime` dependency from `substrate-wasm-builder`
@@ -419,8 +424,6 @@ cd ..
 
 echo "Patched"
 
-# TODO silent_rm substrate/client/offchain/src/api/http.rs
-# TODO silent_rm substrate/primitives/runtime/src/offchain/http.rs
 # TODO silent_rm substrate/primitives/metadata-ir/src/unstable.rs
 # TODO silent_rm substrate/primitives/metadata-ir/src/v14.rs
 # TODO silent_rm substrate/primitives/metadata-ir/src/v15.rs

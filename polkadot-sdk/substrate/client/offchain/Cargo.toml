@@ -23,17 +23,10 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies.bytes]
-workspace = true
-default-features = true
-
 [dependencies.codec]
 features = ["derive"]
 workspace = true
 default-features = true
-
-[dependencies.fnv]
-workspace = true
 
 [dependencies.futures]
 workspace = true
@@ -41,32 +34,7 @@ workspace = true
 [dependencies.futures-timer]
 workspace = true
 
-[dependencies.http-body-util]
-workspace = true
-
-[dependencies.hyper]
-features = [
-    "http1",
-    "http2",
-]
-workspace = true
-default-features = true
-
-[dependencies.hyper-rustls]
-workspace = true
-
-[dependencies.hyper-util]
-features = [
-    "client-legacy",
-    "http1",
-    "http2",
-]
-workspace = true
-
 [dependencies.num_cpus]
-workspace = true
-
-[dependencies.once_cell]
 workspace = true
 
 [dependencies.parking_lot]
@@ -76,9 +44,6 @@ default-features = true
 [dependencies.rand]
 workspace = true
 default-features = true
-
-[dependencies.rustls]
-workspace = true
 
 [dependencies.sc-client-api]
 default-features = true
@@ -93,10 +58,6 @@ default-features = true
 workspace = true
 
 [dependencies.sc-transaction-pool-api]
-default-features = true
-workspace = true
-
-[dependencies.sc-utils]
 default-features = true
 workspace = true
 
