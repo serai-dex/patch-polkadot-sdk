@@ -30,7 +30,6 @@ members = [
     "substrate/client/network/sync",
     "substrate/client/network/transactions",
     "substrate/client/network/types",
-    "substrate/client/offchain",
     "substrate/client/proposer-metrics",
     "substrate/client/rpc",
     "substrate/client/rpc-api",
@@ -1113,10 +1112,6 @@ default-features = false
 path = "substrate/client/network/types"
 default-features = false
 
-[workspace.dependencies.sc-offchain]
-path = "substrate/client/offchain"
-default-features = false
-
 [workspace.dependencies.sc-proposer-metrics]
 path = "substrate/client/proposer-metrics"
 default-features = false
@@ -1566,9 +1561,6 @@ default-features = false
 
 [workspace.dependencies.wasm-opt]
 version = "0.116"
-
-[workspace.dependencies.wasm-timer]
-version = "0.2.5"
 
 [workspace.dependencies.wasmtime]
 version = "36.0.0"

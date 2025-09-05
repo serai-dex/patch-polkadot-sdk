@@ -323,7 +323,7 @@ impl ProtocolController {
 			nodes: HashMap::new(),
 			reserved_nodes,
 			reserved_only: config.reserved_only,
-			next_periodic_alloc_slots: wasmtimer::Instant::now(),
+			next_periodic_alloc_slots: wasmtimer::std::Instant::now(),
 			to_notifications,
 			peer_store,
 		};
@@ -355,7 +355,7 @@ impl ProtocolController {
 				},
 				_ = next_alloc_slots => {
 					self.alloc_slots();
-					self.next_periodic_alloc_slots = wasmtimer::Instant::now() + Duration::new(1, 0);
+					self.next_periodic_alloc_slots = wasmtimer::std::Instant::now() + Duration::new(1, 0);
 				},
 			}
 		};

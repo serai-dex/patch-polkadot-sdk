@@ -52,10 +52,6 @@ workspace = true
 [dependencies.impl-trait-for-tuples]
 workspace = true
 
-[dependencies.k256]
-features = ["ecdsa"]
-workspace = true
-
 [dependencies.log]
 workspace = true
 
@@ -143,7 +139,6 @@ std = [
     "environmental/std",
     "frame-metadata/std",
     "frame-support-procedural/std",
-    "k256/std",
     "log/std",
     "scale-info/std",
     "serde/std",

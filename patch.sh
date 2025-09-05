@@ -100,10 +100,12 @@ apply_patch replace_wasm-timer_with_wasmtimer
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
+remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "k256"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ark-vrf"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ed25519-zebra"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "libsecp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "secp256k1"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "k256"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "w3f-bls"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519-dalek"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
@@ -347,6 +349,9 @@ apply_patch remove_storage_type_info
 # Remove `TypeInfo` from call
 apply_patch remove_call_type_info
 
+# Remove the unused `sc-offchain`
+remove_crate_tree substrate/client/offchain
+
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
 remove_crate_tree substrate/frame/asset-conversion
@@ -496,21 +501,26 @@ silent_rm .forklift
 silent_rm .github
 silent_rm .gitlab
 silent_rm docker
+silent_rm prdoc
 silent_rm scripts
 silent_rm substrate/.maintain
 silent_rm substrate/docker
+silent_rm substrate/docs
 silent_rm substrate/scripts
 silent_rm substrate/zombienet
-silent_rm prdoc
+silent_rm substrate/.dockerignore
+silent_rm substrate/.editorconfig
+silent_rm substrate/.git-blame-ignore-revs
+silent_rm substrate/.gitattributes
+silent_rm substrate/README.md
 silent_rm .gitignore
 silent_rm .gitlab-ci.yml
+silent_rm .prdoc.toml
 silent_rm .rustfmt.toml
-silent_rm Cargo.lock
 silent_rm CODE_OF_CONDUCT.md
 silent_rm CONTRIBUTING.md
-silent_rm README.md
-silent_rm .prdoc.toml
 silent_rm Plan.toml
+silent_rm README.md
 
 # Restore the committed `Cargo.lock` so this is deterministic, if one exists
 silent_rm ./Cargo.lock

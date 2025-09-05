@@ -157,13 +157,6 @@ workspace = true
 [dependencies.sp-runtime-interface]
 workspace = true
 
-[dependencies.k256]
-features = [
-    "alloc",
-    "ecdsa",
-]
-workspace = true
-
 [lib]
 bench = false
 
@@ -184,7 +177,6 @@ std = [
     "hash256-std-hasher/std",
     "impl-serde/std",
     "itertools",
-    "k256/std",
     "log/std",
     "merlin/std",
     "parking_lot",
@@ -214,7 +206,6 @@ serde = [
     "bs58/alloc",
     "dep:serde",
     "impl-serde",
-    "k256/serde",
     "primitive-types/serde_no_std",
     "scale-info/serde",
     "sp-storage/serde",
