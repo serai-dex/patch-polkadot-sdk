@@ -896,7 +896,7 @@ default-features = false
 version = "1.0.86"
 
 [workspace.dependencies.prometheus]
-version = "0.13.0"
+version = "0.14.0"
 default-features = false
 
 [workspace.dependencies.prometheus-endpoint]

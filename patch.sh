@@ -510,7 +510,10 @@ cargo_upgrade kvdb-rocksdb 0.20.0
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0
-# TODO cargo_upgrade prometheus 0.14.0
+
+cargo_upgrade prometheus 0.14.0
+apply_patch update_prometheus
+
 cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0

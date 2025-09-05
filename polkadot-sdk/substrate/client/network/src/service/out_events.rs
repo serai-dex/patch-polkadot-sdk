@@ -310,7 +310,7 @@ impl Metrics {
 						self.events_total.with_label_values(&[protocol_label, "sent", name]).inc();
 					});
 					self.notifications_sizes
-						.with_label_values(&[protocol, "sent", name])
+						.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), "sent", name])
 						.inc_by(u64::try_from(message.len()).unwrap_or(u64::MAX));
 				},
 		}
@@ -339,7 +339,7 @@ impl Metrics {
 							.inc();
 					});
 					self.notifications_sizes
-						.with_label_values(&[protocol, "received", name])
+						.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), "received", name])
 						.inc_by(u64::try_from(message.len()).unwrap_or(u64::MAX));
 				},
 		}

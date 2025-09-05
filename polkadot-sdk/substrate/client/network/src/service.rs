@@ -1482,7 +1482,7 @@ where
 						Ok(serve_time) => {
 							metrics
 								.requests_in_success_total
-								.with_label_values(&[&protocol])
+								.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol)])
 								.observe(serve_time.as_secs_f64());
 						},
 						Err(err) => {
@@ -1505,7 +1505,7 @@ where
 							if let Some(reason) = reason {
 								metrics
 									.requests_in_failure_total
-									.with_label_values(&[&protocol, reason])
+									.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), reason])
 									.inc();
 							}
 						},
@@ -1523,7 +1523,7 @@ where
 						Ok(_) => {
 							metrics
 								.requests_out_success_total
-								.with_label_values(&[&protocol])
+								.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol)])
 								.observe(duration.as_secs_f64());
 						},
 						Err(err) => {
@@ -1544,7 +1544,7 @@ where
 
 							metrics
 								.requests_out_failure_total
-								.with_label_values(&[&protocol, reason])
+								.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), reason])
 								.inc();
 						},
 					}

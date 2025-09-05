@@ -1,0 +1,124 @@
+diff --git a/substrate/client/network/src/litep2p/shim/request_response/metrics.rs b/substrate/client/network/src/litep2p/shim/request_response/metrics.rs
+index b04b6ed..1cc93d7 100644
+--- a/substrate/client/network/src/litep2p/shim/request_response/metrics.rs
++++ b/substrate/client/network/src/litep2p/shim/request_response/metrics.rs
+@@ -41,7 +41,7 @@ impl RequestResponseMetrics {
+ 		if let Some(metrics) = &self.metrics {
+ 			metrics
+ 				.requests_in_failure_total
+-				.with_label_values(&[&self.protocol, reason])
++				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol), reason])
+ 				.inc();
+ 		}
+ 	}
+@@ -51,7 +51,7 @@ impl RequestResponseMetrics {
+ 		if let Some(metrics) = &self.metrics {
+ 			metrics
+ 				.requests_in_success_total
+-				.with_label_values(&[&self.protocol])
++				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol)])
+ 				.observe(serve_time.as_secs_f64());
+ 		}
+ 	}
+@@ -61,7 +61,7 @@ impl RequestResponseMetrics {
+ 		if let Some(metrics) = &self.metrics {
+ 			metrics
+ 				.requests_out_failure_total
+-				.with_label_values(&[&self.protocol, reason])
++				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol), reason])
+ 				.inc();
+ 		}
+ 	}
+@@ -71,7 +71,7 @@ impl RequestResponseMetrics {
+ 		if let Some(metrics) = &self.metrics {
+ 			metrics
+ 				.requests_out_success_total
+-				.with_label_values(&[&self.protocol])
++				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol)])
+ 				.observe(duration.as_secs_f64());
+ 		}
+ 	}
+diff --git a/substrate/client/network/src/service.rs b/substrate/client/network/src/service.rs
+index a7e91e8..d9ae674 100644
+--- a/substrate/client/network/src/service.rs
++++ b/substrate/client/network/src/service.rs
+@@ -1482,7 +1482,7 @@ where
+ 						Ok(serve_time) => {
+ 							metrics
+ 								.requests_in_success_total
+-								.with_label_values(&[&protocol])
++								.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol)])
+ 								.observe(serve_time.as_secs_f64());
+ 						},
+ 						Err(err) => {
+@@ -1505,7 +1505,7 @@ where
+ 							if let Some(reason) = reason {
+ 								metrics
+ 									.requests_in_failure_total
+-									.with_label_values(&[&protocol, reason])
++									.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), reason])
+ 									.inc();
+ 							}
+ 						},
+@@ -1523,7 +1523,7 @@ where
+ 						Ok(_) => {
+ 							metrics
+ 								.requests_out_success_total
+-								.with_label_values(&[&protocol])
++								.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol)])
+ 								.observe(duration.as_secs_f64());
+ 						},
+ 						Err(err) => {
+@@ -1544,7 +1544,7 @@ where
+ 
+ 							metrics
+ 								.requests_out_failure_total
+-								.with_label_values(&[&protocol, reason])
++								.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), reason])
+ 								.inc();
+ 						},
+ 					}
+diff --git a/substrate/client/network/src/service/metrics.rs b/substrate/client/network/src/service/metrics.rs
+index e48c539..8b7942b 100644
+--- a/substrate/client/network/src/service/metrics.rs
++++ b/substrate/client/network/src/service/metrics.rs
+@@ -324,7 +324,7 @@ impl NotificationMetrics {
+ 	/// Register opened substream to Prometheus.
+ 	pub fn register_substream_opened(&self, protocol: &ProtocolName) {
+ 		if let Some(metrics) = &self.metrics {
+-			metrics.notifications_streams_opened_total.with_label_values(&[&protocol]).inc();
++			metrics.notifications_streams_opened_total.with_label_values(&[<_ as AsRef<str>>::as_ref(protocol)]).inc();
+ 		}
+ 	}
+ 
+@@ -333,7 +333,7 @@ impl NotificationMetrics {
+ 		if let Some(metrics) = &self.metrics {
+ 			metrics
+ 				.notifications_streams_closed_total
+-				.with_label_values(&[&protocol[..]])
++				.with_label_values(&[<_ as AsRef<str>>::as_ref(protocol)])
+ 				.inc();
+ 		}
+ 	}
+diff --git a/substrate/client/network/src/service/out_events.rs b/substrate/client/network/src/service/out_events.rs
+index ededccd..aac1aba 100644
+--- a/substrate/client/network/src/service/out_events.rs
++++ b/substrate/client/network/src/service/out_events.rs
+@@ -310,7 +310,7 @@ impl Metrics {
+ 						self.events_total.with_label_values(&[protocol_label, "sent", name]).inc();
+ 					});
+ 					self.notifications_sizes
+-						.with_label_values(&[protocol, "sent", name])
++						.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), "sent", name])
+ 						.inc_by(u64::try_from(message.len()).unwrap_or(u64::MAX));
+ 				},
+ 		}
+@@ -339,7 +339,7 @@ impl Metrics {
+ 							.inc();
+ 					});
+ 					self.notifications_sizes
+-						.with_label_values(&[protocol, "received", name])
++						.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), "received", name])
+ 						.inc_by(u64::try_from(message.len()).unwrap_or(u64::MAX));
+ 				},
+ 		}

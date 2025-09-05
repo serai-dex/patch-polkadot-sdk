@@ -41,7 +41,7 @@ impl RequestResponseMetrics {
 		if let Some(metrics) = &self.metrics {
 			metrics
 				.requests_in_failure_total
-				.with_label_values(&[&self.protocol, reason])
+				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol), reason])
 				.inc();
 		}
 	}
@@ -51,7 +51,7 @@ impl RequestResponseMetrics {
 		if let Some(metrics) = &self.metrics {
 			metrics
 				.requests_in_success_total
-				.with_label_values(&[&self.protocol])
+				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol)])
 				.observe(serve_time.as_secs_f64());
 		}
 	}
@@ -61,7 +61,7 @@ impl RequestResponseMetrics {
 		if let Some(metrics) = &self.metrics {
 			metrics
 				.requests_out_failure_total
-				.with_label_values(&[&self.protocol, reason])
+				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol), reason])
 				.inc();
 		}
 	}
@@ -71,7 +71,7 @@ impl RequestResponseMetrics {
 		if let Some(metrics) = &self.metrics {
 			metrics
 				.requests_out_success_total
-				.with_label_values(&[&self.protocol])
+				.with_label_values(&[<_ as AsRef<str>>::as_ref(&self.protocol)])
 				.observe(duration.as_secs_f64());
 		}
 	}
