@@ -360,13 +360,14 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec sh -c "cat {} | grep -v SS58Pr
 cd polkadot-sdk
 
 # Perform upgrades to preferred versions
-cargo +nightly update -Z unstable-options --breaking -p twox-hash --precise 2.1.1
+cargo +nightly update -Z unstable-options --breaking -p twox-hash --precise 2.0.0
 cargo +nightly update -Z unstable-options --breaking -p hex-literal --precise 1.0.0
-cargo +nightly update -Z unstable-options --breaking -p thiserror --precise 2.0.16
+cargo +nightly update -Z unstable-options --breaking -p thiserror --precise 2.0.0
 cargo +nightly update -Z unstable-options --breaking -p itertools --precise 0.14.0
-cargo +nightly update -Z unstable-options --breaking -p wasmtime --precise 36.0.2
-cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.3
-cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.3
+cargo +nightly update -Z unstable-options --breaking -p wasmtime --precise 36.0.0
+cargo +nightly update -Z unstable-options --breaking -p rustix --precise 1.0.0
+cargo +nightly update -Z unstable-options --breaking -p zstd --precise 0.13.0
+cargo +nightly update -Z unstable-options --breaking -p kvdb-rocksdb --precise 0.20.0
 
 # Remove misc unused files
 silent_rm .cargo
