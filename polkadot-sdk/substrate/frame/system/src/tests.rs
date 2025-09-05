@@ -775,6 +775,7 @@ fn runtime_upgraded_with_set_storage() {
 	});
 }
 
+/*
 #[test]
 fn events_not_emitted_during_genesis() {
 	new_test_ext().execute_with(|| {
@@ -790,6 +791,7 @@ fn events_not_emitted_during_genesis() {
 		assert!(System::events().len() == 1);
 	});
 }
+*/
 
 #[test]
 fn extrinsics_root_is_calculated_correctly() {

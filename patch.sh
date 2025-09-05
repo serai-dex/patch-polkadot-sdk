@@ -264,6 +264,9 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/core/src/lib.rs "mod p
 # TODO silent_rm substrate/primitives/core/src/ed25519.rs
 # TODO silent_rm substrate/primitives/keyring/src/ed25519.rs
 
+# Restore emission of events on genesis
+apply_patch events_on_genesis
+
 # Remove the runtime's metadata
 rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
 apply_patch remove_runtime_metadata

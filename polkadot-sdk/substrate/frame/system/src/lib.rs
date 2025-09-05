@@ -1794,8 +1794,6 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Deposits an event into this block's event record.
-	///
-	/// NOTE: Events not registered at the genesis block and quietly omitted.
 	pub fn deposit_event(event: impl Into<T::RuntimeEvent>) {
 		Self::deposit_event_indexed(&[], event.into());
 	}
@@ -1805,15 +1803,8 @@ impl<T: Config> Pallet<T> {
 	///
 	/// This will update storage entries that correspond to the specified topics.
 	/// It is expected that light-clients could subscribe to this topics.
-	///
-	/// NOTE: Events not registered at the genesis block and quietly omitted.
 	pub fn deposit_event_indexed(topics: &[T::Hash], event: T::RuntimeEvent) {
 		let block_number = Self::block_number();
-
-		// Don't populate events on genesis.
-		if block_number.is_zero() {
-			return
-		}
 
 		let phase = ExecutionPhase::<T>::get().unwrap_or_default();
 		let event = EventRecord { phase, event, topics: topics.to_vec() };
@@ -1822,9 +1813,7 @@ impl<T: Config> Pallet<T> {
 		let event_idx = {
 			let old_event_count = EventCount::<T>::get();
 			let new_event_count = match old_event_count.checked_add(1) {
-				// We've reached the maximum number of events at this block, just
-				// don't do anything and leave the event_count unaltered.
-				None => return,
+				None => panic!("events exceeded 2**32 within a single block"),
 				Some(nc) => nc,
 			};
 			EventCount::<T>::put(new_event_count);
@@ -1995,8 +1984,6 @@ impl<T: Config> Pallet<T> {
 	/// NOTE: This should only be used in tests. Reading events from the runtime can have a large
 	/// impact on the PoV size of a block. Users should use alternative and well bounded storage
 	/// items for any behavior like this.
-	///
-	/// NOTE: Events not registered at the genesis block and quietly omitted.
 	#[cfg(any(feature = "std", feature = "runtime-benchmarks", test))]
 	pub fn events() -> Vec<EventRecord<T::RuntimeEvent, T::Hash>> {
 		// Dereferencing the events here is fine since we are not in the memory-restricted runtime.
@@ -2120,44 +2107,28 @@ impl<T: Config> Pallet<T> {
 	}
 
 	/// Assert the given `event` exists.
-	///
-	/// NOTE: Events not registered at the genesis block and quietly omitted.
 	#[cfg(any(feature = "std", feature = "runtime-benchmarks", test))]
 	#[track_caller]
 	pub fn assert_has_event(event: T::RuntimeEvent) {
-		let warn = if Self::block_number().is_zero() {
-			"WARNING: block number is zero, and events are not registered at block number zero.\n"
-		} else {
-			""
-		};
-
 		let events = Self::events();
 		assert!(
 			events.iter().any(|record| record.event == event),
-			"{warn}expected event {event:?} not found in events {events:?}",
+			"expected event {event:?} not found in events {events:?}",
 		);
 	}
 
 	/// Assert the last event equal to the given `event`.
-	///
-	/// NOTE: Events not registered at the genesis block and quietly omitted.
 	#[cfg(any(feature = "std", feature = "runtime-benchmarks", test))]
 	#[track_caller]
 	pub fn assert_last_event(event: T::RuntimeEvent) {
-		let warn = if Self::block_number().is_zero() {
-			"WARNING: block number is zero, and events are not registered at block number zero.\n"
-		} else {
-			""
-		};
-
 		let last_event = Self::events()
 			.last()
-			.expect(&alloc::format!("{warn}events expected"))
+			.expect(&alloc::format!("events expected"))
 			.event
 			.clone();
 		assert_eq!(
 			last_event, event,
-			"{warn}expected event {event:?} is not equal to the last event {last_event:?}",
+			"expected event {event:?} is not equal to the last event {last_event:?}",
 		);
 	}
 
