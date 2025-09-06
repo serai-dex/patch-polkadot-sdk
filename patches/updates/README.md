@@ -1,5 +1,7 @@
 # Updates
 
+- `async-channel`: Updates from `async-channel 1` to `async-channel 2`.
+
 - `governor`: Updates from `governor 0.6` to `governor 0.10`.
 
 - `prometheus`: Updates from `prometheus 0.13` to `prometheus 0.14`.

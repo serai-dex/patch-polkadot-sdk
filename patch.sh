@@ -458,7 +458,7 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 
 # Perform upgrades to preferred versions
 cargo_upgrade array-bytes 7.0.0
-# TODO cargo_upgrade async-channel 2.0.0
+cargo_upgrade async-channel 2.0.0
 cargo_upgrade asynchronous-codec 0.7.0
 cargo_upgrade cfg-expr 0.20.0
 cargo_upgrade console 0.16.0

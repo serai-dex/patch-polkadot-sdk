@@ -66,7 +66,7 @@ impl<T> Clone for TracingUnboundedSender<T> {
 /// measure when a message is polled.
 #[derive(Debug)]
 pub struct TracingUnboundedReceiver<T> {
-	inner: Receiver<T>,
+	inner: Pin<Box<Receiver<T>>>,
 	name: &'static str,
 }
 
@@ -85,7 +85,7 @@ pub fn tracing_unbounded<T>(
 		warning_fired: Arc::new(AtomicBool::new(false)),
 		creation_backtrace: Arc::new(Backtrace::force_capture()),
 	};
-	let receiver = TracingUnboundedReceiver { inner: r, name: name.into() };
+	let receiver = TracingUnboundedReceiver { inner: Box::pin(r), name: name.into() };
 	(sender, receiver)
 }
 
@@ -188,7 +188,7 @@ impl<T> Stream for TracingUnboundedReceiver<T> {
 
 	fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<T>> {
 		let s = self.get_mut();
-		match Pin::new(&mut s.inner).poll_next(cx) {
+		match s.inner.as_mut().poll_next(cx) {
 			Poll::Ready(msg) => {
 				if msg.is_some() {
 					UNBOUNDED_CHANNELS_COUNTER.with_label_values(&[s.name, RECEIVED_LABEL]).inc();

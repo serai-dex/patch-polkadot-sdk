@@ -49,7 +49,7 @@ const MAX_LIGHT_REQUEST_QUEUE: usize = 20;
 
 /// Handler for incoming light client requests from a remote peer.
 pub struct LightClientRequestHandler<B, Client> {
-	request_receiver: async_channel::Receiver<IncomingRequest>,
+	request_receiver: core::pin::Pin<Box<async_channel::Receiver<IncomingRequest>>>,
 	/// Blockchain client.
 	client: Arc<Client>,
 	_block: PhantomData<B>,
@@ -79,12 +79,12 @@ where
 			tx,
 		);
 
-		(Self { client, request_receiver, _block: PhantomData::default() }, protocol_config)
+		(Self { client, request_receiver: Box::pin(request_receiver), _block: PhantomData::default() }, protocol_config)
 	}
 
 	/// Run [`LightClientRequestHandler`].
 	pub async fn run(mut self) {
-		while let Some(request) = self.request_receiver.next().await {
+		while let Some(request) = self.request_receiver.as_mut().next().await {
 			let IncomingRequest { peer, payload, pending_response } = request;
 
 			match self.handle_request(peer, payload) {

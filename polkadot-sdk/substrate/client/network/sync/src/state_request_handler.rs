@@ -119,7 +119,7 @@ enum SeenRequestsValue {
 /// Handler for incoming block requests from a remote peer.
 pub struct StateRequestHandler<B: BlockT, Client> {
 	client: Arc<Client>,
-	request_receiver: async_channel::Receiver<IncomingRequest>,
+	request_receiver: core::pin::Pin<Box<async_channel::Receiver<IncomingRequest>>>,
 	/// Maps from request to number of times we have seen this request.
 	///
 	/// This is used to check if a peer is spamming us with the same request.
@@ -157,12 +157,12 @@ where
 		let capacity = ByLength::new(num_peer_hint.max(1) as u32 * 2);
 		let seen_requests = LruMap::new(capacity);
 
-		(Self { client, request_receiver, seen_requests }, protocol_config)
+		(Self { client, request_receiver: Box::pin(request_receiver), seen_requests }, protocol_config)
 	}
 
 	/// Run [`StateRequestHandler`].
 	pub async fn run(mut self) {
-		while let Some(request) = self.request_receiver.next().await {
+		while let Some(request) = self.request_receiver.as_mut().next().await {
 			let IncomingRequest { peer, payload, pending_response } = request;
 
 			match self.handle_request(payload, pending_response, &peer) {
