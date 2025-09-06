@@ -35,14 +35,12 @@ index dd7e77e..3db879e 100644
  	/// Networking backend used for P2P communication.
  	pub network_backend: NetworkBackendType,
  }
-@@ -682,7 +679,6 @@ impl NetworkConfiguration {
+@@ -682,5 +679,4 @@ impl NetworkConfiguration {
  			kademlia_disjoint_query_paths: false,
  			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
  				.expect("value is a constant; constant is non-zero; qed."),
 -			ipfs_server: false,
- 			network_backend: NetworkBackendType::Litep2p,
- 		}
- 	}
+ 			network_backend: NetworkBackendType::default(),
 @@ -745,9 +741,6 @@ pub struct Params<Block: BlockT, H: ExHashT, N: NetworkBackend<Block, H>> {
  	/// Block announce protocol configuration
  	pub block_announce_config: N::NotificationProtocolConfig,

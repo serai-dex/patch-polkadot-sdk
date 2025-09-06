@@ -772,6 +772,7 @@ pub enum Direction {
 	Outbound,
 }
 
+#[cfg(feature = "litep2p")]
 impl From<litep2p::protocol::notification::Direction> for Direction {
 	fn from(direction: litep2p::protocol::notification::Direction) -> Self {
 		match direction {

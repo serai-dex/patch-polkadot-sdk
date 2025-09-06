@@ -679,7 +679,7 @@ impl NetworkConfiguration {
 			kademlia_disjoint_query_paths: false,
 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
 				.expect("value is a constant; constant is non-zero; qed."),
-			network_backend: NetworkBackendType::Litep2p,
+			network_backend: NetworkBackendType::default(),
 		}
 	}
 

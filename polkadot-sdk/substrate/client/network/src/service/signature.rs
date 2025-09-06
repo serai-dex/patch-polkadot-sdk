@@ -28,6 +28,7 @@ pub enum PublicKey {
 	Libp2p(libp2p::identity::PublicKey),
 
 	/// Libp2p public key.
+	#[cfg(feature = "litep2p")]
 	Litep2p(litep2p::crypto::PublicKey),
 }
 
@@ -36,6 +37,7 @@ impl PublicKey {
 	pub fn encode_protobuf(&self) -> Vec<u8> {
 		match self {
 			Self::Libp2p(public) => public.encode_protobuf(),
+			#[cfg(feature = "litep2p")]
 			Self::Litep2p(public) => public.to_protobuf_encoding(),
 		}
 	}
@@ -44,6 +46,7 @@ impl PublicKey {
 	pub fn to_peer_id(&self) -> sc_network_types::PeerId {
 		match self {
 			Self::Libp2p(public) => public.to_peer_id().into(),
+			#[cfg(feature = "litep2p")]
 			Self::Litep2p(public) => public.to_peer_id().into(),
 		}
 	}
@@ -51,23 +54,25 @@ impl PublicKey {
 
 /// Keypair.
 pub enum Keypair {
-	/// Litep2p keypair.
+	/// Libp2p keypair.
 	Libp2p(libp2p::identity::Keypair),
 
-	/// Libp2p keypair.
+	/// Litep2p keypair.
+	#[cfg(feature = "litep2p")]
 	Litep2p(litep2p::crypto::ed25519::Keypair),
 }
 
 impl Keypair {
 	/// Generate ed25519 keypair.
 	pub fn generate_ed25519() -> Self {
-		Keypair::Litep2p(litep2p::crypto::ed25519::Keypair::generate())
+		Keypair::Libp2p(libp2p::identity::Keypair::generate_ed25519())
 	}
 
 	/// Get [`Keypair`]'s public key.
 	pub fn public(&self) -> PublicKey {
 		match self {
 			Keypair::Libp2p(keypair) => PublicKey::Libp2p(keypair.public()),
+			#[cfg(feature = "litep2p")]
 			Keypair::Litep2p(keypair) => PublicKey::Litep2p(keypair.public().into()),
 		}
 	}
@@ -102,6 +107,7 @@ impl Signature {
 
 				Ok(Signature { public_key: PublicKey::Libp2p(public_key), bytes })
 			},
+			#[cfg(feature = "litep2p")]
 			Keypair::Litep2p(keypair) => {
 				let public_key = keypair.public();
 				let bytes = keypair.sign(message.as_ref());

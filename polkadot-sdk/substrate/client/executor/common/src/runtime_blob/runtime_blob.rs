@@ -196,6 +196,7 @@ impl RuntimeBlob {
 		match self.0 {
 			BlobKind::WebAssembly(raw_module) =>
 				serialize(raw_module).expect("serializing into a vec should succeed; qed"),
+                        #[cfg(feature = "polkavm")]
 			BlobKind::PolkaVM(ref blob) => blob.1.to_vec(),
 		}
 	}
@@ -203,6 +204,7 @@ impl RuntimeBlob {
 	fn as_webassembly_blob(&self) -> Result<&Module, WasmError> {
 		match self.0 {
 			BlobKind::WebAssembly(ref raw_module) => Ok(raw_module),
+                        #[cfg(feature = "polkavm")]
 			BlobKind::PolkaVM(..) => Err(WasmError::Other(
 				"expected a WebAssembly program; found a PolkaVM program blob".into(),
 			)),
@@ -212,6 +214,7 @@ impl RuntimeBlob {
 	fn as_webassembly_blob_mut(&mut self) -> Result<&mut Module, WasmError> {
 		match self.0 {
 			BlobKind::WebAssembly(ref mut raw_module) => Ok(raw_module),
+                        #[cfg(feature = "polkavm")]
 			BlobKind::PolkaVM(..) => Err(WasmError::Other(
 				"expected a WebAssembly program; found a PolkaVM program blob".into(),
 			)),
@@ -221,6 +224,7 @@ impl RuntimeBlob {
 	fn into_webassembly_blob(self) -> Result<Module, WasmError> {
 		match self.0 {
 			BlobKind::WebAssembly(raw_module) => Ok(raw_module),
+                        #[cfg(feature = "polkavm")]
 			BlobKind::PolkaVM(..) => Err(WasmError::Other(
 				"expected a WebAssembly program; found a PolkaVM program blob".into(),
 			)),
