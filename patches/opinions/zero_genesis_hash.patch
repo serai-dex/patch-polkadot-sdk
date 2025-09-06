@@ -1,7 +1,7 @@
-diff --git a/polkadot-sdk/substrate/frame/system/src/lib.rs b/polkadot-sdk/substrate/frame/system/src/lib.rs
+diff --git a/substrate/frame/system/src/lib.rs b/substrate/frame/system/src/lib.rs
 index be3c1f4..afb236a 100644
---- a/polkadot-sdk/substrate/frame/system/src/lib.rs
-+++ b/polkadot-sdk/substrate/frame/system/src/lib.rs
+--- a/substrate/frame/system/src/lib.rs
++++ b/substrate/frame/system/src/lib.rs
 @@ -1099,8 +1099,8 @@ pub mod pallet {
  	#[pallet::genesis_build]
  	impl<T: Config> BuildGenesisConfig for GenesisConfig<T> {
