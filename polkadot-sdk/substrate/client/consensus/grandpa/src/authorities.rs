@@ -494,7 +494,7 @@ where
 				// apply this change: make the set canonical
 				grandpa_log!(
 					initial_sync,
-					"👴 Applying authority set change forced at block #{:?}",
+					"Applying authority set change forced at block #{:?}",
 					change.canon_height,
 				);
 
@@ -576,7 +576,7 @@ where
 				if let Some(change) = change {
 					grandpa_log!(
 						initial_sync,
-						"👴 Applying authority set change scheduled at block #{:?}",
+						"Applying authority set change scheduled at block #{:?}",
 						change.canon_height,
 					);
 					telemetry!(

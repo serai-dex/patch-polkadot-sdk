@@ -468,6 +468,14 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 apply_patch removals/SS58Prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
 
+# Remove non-ASCII characters
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\"[^\x00-\x7F]  /\"/"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\"[^\x00-\x7F] /\"/"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\"[^\x00-\x7F]/\"/"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F]  \"/\"/"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F] \"/\"/"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F]\"/\"/"); echo "$STRIPPED" > {}' \;
+
 # Perform upgrades to preferred versions
 cargo_upgrade array-bytes 7.0.0
 cargo_upgrade async-channel 2.0.0

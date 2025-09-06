@@ -135,7 +135,7 @@ impl<B: BlockT> BlockAnnounceValidator<B> {
 		if number.is_zero() {
 			warn!(
 				target: LOG_TARGET,
-				"💔 Ignored genesis block (#0) announcement from {}: {}",
+				"Ignored genesis block (#0) announcement from {}: {}",
 				peer_id,
 				hash,
 			);
@@ -148,7 +148,7 @@ impl<B: BlockT> BlockAnnounceValidator<B> {
 			AllocateSlotForBlockAnnounceValidation::TotalMaximumSlotsReached => {
 				warn!(
 					target: LOG_TARGET,
-					"💔 Ignored block (#{} -- {}) announcement from {} because all validation slots are occupied.",
+					"Ignored block (#{} -- {}) announcement from {} because all validation slots are occupied.",
 					number,
 					hash,
 					peer_id,
@@ -158,7 +158,7 @@ impl<B: BlockT> BlockAnnounceValidator<B> {
 			AllocateSlotForBlockAnnounceValidation::MaximumPeerSlotsReached => {
 				debug!(
 					target: LOG_TARGET,
-					"💔 Ignored block (#{} -- {}) announcement from {} because all validation slots for this peer are occupied.",
+					"Ignored block (#{} -- {}) announcement from {} because all validation slots for this peer are occupied.",
 					number,
 					hash,
 					peer_id,
@@ -201,7 +201,7 @@ impl<B: BlockT> BlockAnnounceValidator<B> {
 					Err(e) => {
 						debug!(
 							target: LOG_TARGET,
-							"💔 Ignoring block announcement validation from {} of block {:?} due to internal error: {}.",
+							"Ignoring block announcement validation from {} of block {:?} due to internal error: {}.",
 							peer_id,
 							hash,
 							e,
@@ -257,7 +257,7 @@ impl<B: BlockT> BlockAnnounceValidator<B> {
 			Entry::Vacant(_) => {
 				error!(
 					target: LOG_TARGET,
-					"💔 Block announcement validation from peer {} finished for a slot that was not allocated!",
+					"Block announcement validation from peer {} finished for a slot that was not allocated!",
 					peer_id,
 				);
 			},

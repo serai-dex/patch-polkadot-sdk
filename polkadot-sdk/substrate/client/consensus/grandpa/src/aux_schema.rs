@@ -386,7 +386,7 @@ where
 	// genesis.
 	info!(
 		target: LOG_TARGET,
-		"👴 Loading GRANDPA authority set \
+		"Loading GRANDPA authority set \
 		from genesis on what appears to be first startup."
 	);
 

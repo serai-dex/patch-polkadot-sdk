@@ -958,12 +958,12 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 					Some(DiscoveryEvent::ExternalAddressDiscovered { address }) => {
 						match self.litep2p.public_addresses().add_address(address.clone().into()) {
 							Ok(inserted) => if inserted {
-								log::info!(target: LOG_TARGET, "🔍 Discovered new external address for our node: {address}");
+								log::info!(target: LOG_TARGET, "Discovered new external address for our node: {address}");
 							},
 							Err(err) => {
 								log::warn!(
 									target: LOG_TARGET,
-									"🔍 Failed to add discovered external address {address:?}: {err:?}",
+									"Failed to add discovered external address {address:?}: {err:?}",
 								);
 							},
 						}
@@ -979,11 +979,11 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 						};
 
 						if self.litep2p.public_addresses().remove_address(&address) {
-							log::info!(target: LOG_TARGET, "🔍 Expired external address for our node: {address}");
+							log::info!(target: LOG_TARGET, "Expired external address for our node: {address}");
 						} else {
 							log::warn!(
 								target: LOG_TARGET,
-								"🔍 Failed to remove expired external address {address:?}"
+								"Failed to remove expired external address {address:?}"
 							);
 						}
 					}

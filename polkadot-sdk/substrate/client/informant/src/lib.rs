@@ -120,7 +120,7 @@ where
 
 				match maybe_ancestor {
 					Ok(ref ancestor) if ancestor.hash != *last_hash => info!(
-						"♻️  Reorg on #{},{} to #{},{}, common ancestor #{},{}",
+						"️  Reorg on #{},{} to #{},{}, common ancestor #{},{}",
 						style(last_num).red().bold(),
 						PrintFullHashOnDebugLogging(&last_hash),
 						style(n.header.number()).green().bold(),
@@ -147,7 +147,7 @@ where
 				last_blocks.pop_front();
 			}
 
-			let best_indicator = if n.is_new_best { "🏆" } else { "🆕" };
+			let best_indicator = if n.is_new_best { "" } else { "" };
 			info!(
 				target: "substrate",
 				"{best_indicator} Imported #{} ({} → {})",

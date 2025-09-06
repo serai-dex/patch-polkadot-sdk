@@ -224,13 +224,13 @@ pub trait SimpleSlotWorker<B: BlockT> {
 			Either::Right(_) => {
 				info!(
 					target: log_target,
-					"⌛️ Discarding proposal for slot {}; block production took too long", slot,
+					"️ Discarding proposal for slot {}; block production took too long", slot,
 				);
 				// If the node was compiled with debug, tell the user to use release optimizations.
 				#[cfg(build_profile = "debug")]
 				info!(
 					target: log_target,
-					"👉 Recompile your node in `--release` mode to mitigate this problem.",
+					"Recompile your node in `--release` mode to mitigate this problem.",
 				);
 				telemetry!(
 					telemetry;
@@ -404,7 +404,7 @@ pub trait SimpleSlotWorker<B: BlockT> {
 
 		info!(
 			target: logging_target,
-			"🔖 Pre-sealed block for proposal at {}. Hash now {:?}, previously {:?}.",
+			"Pre-sealed block for proposal at {}. Hash now {:?}, previously {:?}.",
 			header_num,
 			block_import_params.post_hash(),
 			header_hash,

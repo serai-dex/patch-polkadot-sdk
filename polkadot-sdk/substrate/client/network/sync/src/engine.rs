@@ -675,7 +675,7 @@ where
 				if !success {
 					log::info!(
 						target: LOG_TARGET,
-						"💔 Invalid justification provided by {peer_id} for #{hash}",
+						"Invalid justification provided by {peer_id} for #{hash}",
 					);
 					self.network_service
 						.disconnect_peer(peer_id, self.block_announce_protocol_name.clone());

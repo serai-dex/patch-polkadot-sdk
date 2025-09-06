@@ -382,7 +382,7 @@ where
 		if info.finalized_state.is_none() {
 			let (genesis_block, mut op) = genesis_block_builder.build_genesis_block()?;
 			info!(
-				"🔨 Initializing Genesis block/state (state: {}, header-hash: {})",
+				"Initializing Genesis block/state (state: {}, header-hash: {})",
 				genesis_block.header().state_root(),
 				genesis_block.header().hash()
 			);

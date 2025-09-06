@@ -231,7 +231,7 @@ impl<B: BlockT> Speedometer<B> {
 				.checked_div(u128::from(elapsed_ms))
 				.map_or(0.0, |s| s as f64) /
 				10.0;
-			info!("📦 Current best block: {} ({:4.1} bps)", self.best_number, speed);
+			info!("Current best block: {} ({:4.1} bps)", self.best_number, speed);
 		} else {
 			// If the number of blocks can't be converted to a regular integer, then we need a more
 			// algebraic approach and we stay within the realm of integers.
@@ -243,7 +243,7 @@ impl<B: BlockT> Speedometer<B> {
 				.saturating_mul(one_thousand)
 				.checked_div(&elapsed)
 				.unwrap_or_else(Zero::zero);
-			info!("📦 Current best block: {} ({} bps)", self.best_number, speed)
+			info!("Current best block: {} ({} bps)", self.best_number, speed)
 		}
 	}
 
@@ -446,7 +446,7 @@ where
 				) {
 					// Importing is done, we can log the result and return.
 					info!(
-						"🎉 Imported {} blocks. Best: #{}",
+						"Imported {} blocks. Best: #{}",
 						read_block_count,
 						client.info().best_number
 					);

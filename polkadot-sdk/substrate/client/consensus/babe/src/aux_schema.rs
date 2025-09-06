@@ -83,7 +83,7 @@ pub fn load_epoch_changes<Block: BlockT, B: AuxStore>(
 		SharedEpochChanges::<Block, Epoch>::new(maybe_epoch_changes.unwrap_or_else(|| {
 			info!(
 				target: LOG_TARGET,
-				"👶 Creating empty BABE epoch changes on what appears to be first startup.",
+				"Creating empty BABE epoch changes on what appears to be first startup.",
 			);
 			EpochChangesFor::<Block, Epoch>::default()
 		}));

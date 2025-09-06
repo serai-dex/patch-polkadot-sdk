@@ -48,7 +48,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 		quote::quote! {
 			#frame_support::__private::log::info!(
 				target: #frame_support::LOG_TARGET,
-				"🐥 New pallet {:?} detected in the runtime. Initializing the on-chain storage version to match the storage version defined in the pallet: {:?}",
+				"New pallet {:?} detected in the runtime. Initializing the on-chain storage version to match the storage version defined in the pallet: {:?}",
 				#pallet_name,
 				#in_code_version
 			);
@@ -59,7 +59,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 			let default_version = #frame_support::traits::StorageVersion::new(0);
 			#frame_support::__private::log::info!(
 				target: #frame_support::LOG_TARGET,
-				"🐥 New pallet {:?} detected in the runtime. The pallet has no defined storage version, so the on-chain version is being initialized to {:?}.",
+				"New pallet {:?} detected in the runtime. The pallet has no defined storage version, so the on-chain version is being initialized to {:?}.",
 				#pallet_name,
 				default_version
 			);
@@ -72,7 +72,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 		quote::quote! {
 			#frame_support::__private::log::info!(
 				target: #frame_support::LOG_TARGET,
-				"⚠️ {} declares internal migrations (which *might* execute). \
+				"️ {} declares internal migrations (which *might* execute). \
 				 On-chain `{:?}` vs in-code storage version `{:?}`",
 				#pallet_name,
 				<Self as #frame_support::traits::GetStorageVersion>::on_chain_storage_version(),
@@ -84,7 +84,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 		quote::quote! {
 			#frame_support::__private::log::debug!(
 				target: #frame_support::LOG_TARGET,
-				"✅ no migration for {}",
+				"no migration for {}",
 				#pallet_name,
 			);
 		}
@@ -317,7 +317,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 				) -> Result<(), #frame_support::sp_runtime::TryRuntimeError> {
 					#frame_support::__private::log::info!(
 						target: #frame_support::LOG_TARGET,
-						"🩺 Running {:?} try-state checks",
+						"Running {:?} try-state checks",
 						#pallet_name,
 					);
 					<
@@ -327,7 +327,7 @@ pub fn expand_hooks(def: &mut Def) -> proc_macro2::TokenStream {
 					>::try_state(n).inspect_err(|err| {
 						#frame_support::__private::log::error!(
 							target: #frame_support::LOG_TARGET,
-							"❌ {:?} try_state checks failed: {:?}",
+							"{:?} try_state checks failed: {:?}",
 							#pallet_name,
 							err
 						);

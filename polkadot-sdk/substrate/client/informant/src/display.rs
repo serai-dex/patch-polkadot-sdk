@@ -102,12 +102,12 @@ impl<B: BlockT> InformantDisplay<B> {
 					sync_status,
 					_,
 					Some(WarpSyncProgress { phase: WarpSyncPhase::DownloadingBlocks(n), .. }),
-				) if !sync_status.is_major_syncing() => ("⏩", "Block history".into(), format!(", #{}", n)),
+				) if !sync_status.is_major_syncing() => ("", "Block history".into(), format!(", #{}", n)),
 				// Handle all phases besides the two phases we already handle above.
 				(_, _, Some(warp))
 					if !matches!(warp.phase, WarpSyncPhase::DownloadingBlocks(_)) =>
 					(
-						"⏩",
+						"",
 						"Warping".into(),
 						format!(
 							", {}, {:.2} Mib",
@@ -116,7 +116,7 @@ impl<B: BlockT> InformantDisplay<B> {
 						),
 					),
 				(_, Some(state), _) => (
-					"⚙️ ",
+					"",
 					"State sync".into(),
 					format!(
 						", {}, {}%, {:.2} Mib",
@@ -125,11 +125,11 @@ impl<B: BlockT> InformantDisplay<B> {
 						(state.size as f32) / (1024f32 * 1024f32)
 					),
 				),
-				(SyncState::Idle, _, _) => ("💤", "Idle".into(), "".into()),
+				(SyncState::Idle, _, _) => ("", "Idle".into(), "".into()),
 				(SyncState::Downloading { target }, _, _) =>
-					("⚙️ ", format!("Syncing{}", speed), format!(", target=#{target}")),
+					("", format!("Syncing{}", speed), format!(", target=#{target}")),
 				(SyncState::Importing { target }, _, _) =>
-					("⚙️ ", format!("Preparing{}", speed), format!(", target=#{target}")),
+					("", format!("Preparing{}", speed), format!(", target=#{target}")),
 			};
 
 		info!(

@@ -585,7 +585,7 @@ impl ConnectionHandler for NotifsHandler {
 						*pending_opening = false;
 					},
 					State::Open { .. } => {
-						log::error!(target: LOG_TARGET, "☎️ State mismatch in notifications handler");
+						log::error!(target: LOG_TARGET, "️ State mismatch in notifications handler");
 						debug_assert!(false);
 					},
 					State::Opening { ref mut in_substream, inbound } => {

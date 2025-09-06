@@ -157,7 +157,7 @@ where
 					Poll::Ready(Ok(())) => {
 						match self.as_mut().try_send_connection_messages(cx, &mut conn) {
 							Poll::Ready(Err(err)) => {
-								log::warn!(target: "telemetry", "⚠️  Disconnected from {}: {:?}", self.addr, err);
+								log::warn!(target: "telemetry", "️  Disconnected from {}: {:?}", self.addr, err);
 								socket = NodeSocket::wait_reconnect();
 							},
 							Poll::Ready(Ok(())) => {
@@ -171,7 +171,7 @@ where
 						}
 					},
 					Poll::Ready(Err(err)) => {
-						log::warn!(target: "telemetry", "⚠️  Disconnected from {}: {:?}", self.addr, err);
+						log::warn!(target: "telemetry", "️  Disconnected from {}: {:?}", self.addr, err);
 						socket = NodeSocket::wait_reconnect();
 					},
 					Poll::Pending => {
@@ -181,7 +181,7 @@ where
 				},
 				NodeSocket::Dialing(mut s) => match Future::poll(Pin::new(&mut s), cx) {
 					Poll::Ready(Ok(sink)) => {
-						log::debug!(target: "telemetry", "✅ Connected to {}", self.addr);
+						log::debug!(target: "telemetry", "Connected to {}", self.addr);
 
 						{
 							let mut index = 0;
@@ -228,7 +228,7 @@ where
 					},
 					Poll::Pending => break NodeSocket::Dialing(s),
 					Poll::Ready(Err(err)) => {
-						log::warn!(target: "telemetry", "❌ Error while dialing {}: {:?}", self.addr, err);
+						log::warn!(target: "telemetry", "Error while dialing {}: {:?}", self.addr, err);
 						socket = NodeSocket::wait_reconnect();
 					},
 				},
@@ -243,7 +243,7 @@ where
 							socket = NodeSocket::Dialing(d);
 						},
 						Err(err) => {
-							log::warn!(target: "telemetry", "❌ Error while re-dialing {}: {:?}", self.addr, err);
+							log::warn!(target: "telemetry", "Error while re-dialing {}: {:?}", self.addr, err);
 							socket = NodeSocket::wait_reconnect();
 						},
 					}
@@ -256,7 +256,7 @@ where
 					}
 				},
 				NodeSocket::Poisoned => {
-					log::error!(target: "telemetry", "‼️ Poisoned connection with {}", self.addr);
+					log::error!(target: "telemetry", "️ Poisoned connection with {}", self.addr);
 					break NodeSocket::Poisoned
 				},
 			}

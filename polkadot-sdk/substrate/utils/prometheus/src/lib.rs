@@ -99,7 +99,7 @@ async fn init_prometheus_with_listener(
 	listener: tokio::net::TcpListener,
 	registry: Registry,
 ) -> Result<(), Error> {
-	log::info!(target: "prometheus", "〽️ Prometheus exporter started at {}", listener.local_addr()?);
+	log::info!(target: "prometheus", "️ Prometheus exporter started at {}", listener.local_addr()?);
 
 	let server = hyper_util::server::conn::auto::Builder::new(hyper_util::rt::TokioExecutor::new());
 	let graceful = hyper_util::server::graceful::GracefulShutdown::new();

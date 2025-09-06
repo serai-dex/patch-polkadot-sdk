@@ -446,7 +446,7 @@ where
 		})
 		.transpose()?;
 
-	info!("📦 Highest known block at #{}", chain_info.best_number);
+	info!("Highest known block at #{}", chain_info.best_number);
 
 	let spawn_handle = task_manager.spawn_handle();
 

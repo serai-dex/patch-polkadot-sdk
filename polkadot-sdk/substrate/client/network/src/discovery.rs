@@ -785,7 +785,7 @@ impl NetworkBehaviour for DiscoveryBehaviour {
 					if peer_id != self.local_peer_id {
 						warn!(
 							target: LOG_TARGET,
-							"🔍 Discovered external address for a peer that is not us: {addr}",
+							"Discovered external address for a peer that is not us: {addr}",
 						);
 						// Ensure this address is not propagated to kademlia.
 						return
@@ -800,7 +800,7 @@ impl NetworkBehaviour for DiscoveryBehaviour {
 					if self.known_external_addresses.insert(address.clone()) {
 						info!(
 						  target: LOG_TARGET,
-						  "🔍 Discovered new external address for our node: {address}",
+						  "Discovered new external address for our node: {address}",
 						);
 					}
 				}

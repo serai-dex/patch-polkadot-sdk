@@ -517,7 +517,7 @@ where
 		telemetry,
 	};
 
-	info!(target: LOG_TARGET, "👶 Starting BABE Authorship worker");
+	info!(target: LOG_TARGET, "Starting BABE Authorship worker");
 
 	let slot_worker = sc_consensus_slots::start_slot_worker(
 		babe_link.config.slot_duration(),
@@ -1566,14 +1566,14 @@ where
 
 					warn!(
 						target: LOG_TARGET,
-						"👶 Epoch(s) skipped: from {} to {}", prev_index, epoch.epoch_index,
+						"Epoch(s) skipped: from {} to {}", prev_index, epoch.epoch_index,
 					);
 				}
 
 				log!(
 					target: LOG_TARGET,
 					log_level,
-					"👶 New epoch {} launching at block {} (block slot {} >= start slot {}).",
+					"New epoch {} launching at block {} (block slot {} >= start slot {}).",
 					viable_epoch.as_ref().epoch_index,
 					hash,
 					slot,
@@ -1585,7 +1585,7 @@ where
 				log!(
 					target: LOG_TARGET,
 					log_level,
-					"👶 Next epoch starts at slot {}",
+					"Next epoch starts at slot {}",
 					next_epoch.as_ref().start_slot,
 				);
 

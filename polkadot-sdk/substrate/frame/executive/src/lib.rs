@@ -476,7 +476,7 @@ where
 			Ok(bytes) => {
 				log::info!(
 					target: LOG_TARGET,
-					"✅ Entire runtime state decodes without error. {} bytes total.",
+					"Entire runtime state decodes without error. {} bytes total.",
 					bytes
 				);
 
