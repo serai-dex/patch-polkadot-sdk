@@ -102,6 +102,7 @@ apply_patch removals/offchain_http
 remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/Cargo.toml "memmap2"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
+remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "void"
 remove_matching_lines ./polkadot-sdk/substrate/client/service/Cargo.toml "static_init"
 remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "is-terminal"
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "frame-metadata"
@@ -494,8 +495,8 @@ cargo_upgrade governor 0.10.0
 cargo_upgrade hex-literal 1.0.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade kvdb-rocksdb 0.20.0
-cargo_upgrade libp2p ">= 0.54, <= 0.55"
-cargo_upgrade libp2p-kad ">= 0.46, <= 0.47"
+cargo_upgrade libp2p 0.56.0
+cargo_upgrade libp2p-kad 0.48.0
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0

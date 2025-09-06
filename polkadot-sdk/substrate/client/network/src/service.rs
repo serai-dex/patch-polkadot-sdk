@@ -113,17 +113,36 @@ pub mod traits;
 const LOG_TARGET: &str = "sub-libp2p";
 
 struct Libp2pBandwidthSink {
-	#[allow(deprecated)]
-	sink: Arc<transport::BandwidthSinks>,
+	sink: libp2p::metrics::Registry,
 }
 
+// A horrific implementation of the API to resolve existing API boundaries
+use core::str::FromStr;
 impl BandwidthSink for Libp2pBandwidthSink {
 	fn total_inbound(&self) -> u64 {
-		self.sink.total_inbound()
+		let mut buf = String::new();
+		prometheus_client::encoding::text::encode(&mut buf, &self.sink).unwrap();
+
+		let mut total = 0u64;
+		for line in buf.lines().filter(|line| !line.starts_with('#')).filter(|line| line.to_lowercase().contains("inbound")) {
+		  if let Some(part) = line.split(' ').skip(1).next() {
+			total = total.saturating_add(u64::from_str(part).unwrap_or(u64::MAX));
+		  }
+		}
+		total
 	}
 
 	fn total_outbound(&self) -> u64 {
-		self.sink.total_outbound()
+		let mut buf = String::new();
+		prometheus_client::encoding::text::encode(&mut buf, &self.sink).unwrap();
+
+		let mut total = 0u64;
+		for line in buf.lines().filter(|line| !line.starts_with('#')).filter(|line| line.to_lowercase().contains("outbound")) {
+		  if let Some(part) = line.split(' ').skip(1).next() {
+			total = total.saturating_add(u64::from_str(part).unwrap_or(u64::MAX));
+		  }
+		}
+		total
 	}
 }
 
@@ -1746,12 +1765,7 @@ where
 					if let Some(addresses) =
 						not_reported.then(|| self.boot_node_ids.get(&peer_id)).flatten()
 					{
-						if let DialError::WrongPeerId { obtained, endpoint } = &error {
-							if let ConnectedPoint::Dialer {
-								address,
-								role_override: _,
-								port_use: _,
-							} = endpoint
+						if let DialError::WrongPeerId { obtained, address } = &error {
 							{
 								let address_without_peer_id = parse_addr(address.clone().into())
 									.map_or_else(|_| address.clone(), |r| r.1.into());
@@ -1806,6 +1820,7 @@ where
 				local_addr,
 				send_back_addr,
 				error,
+				peer_id: _,
 			} => {
 				debug!(
 					target: LOG_TARGET,

@@ -26,6 +26,9 @@ workspace = true
 
 [build-dependencies]
 
+[dependencies]
+prometheus-client = "0.23"
+
 [dependencies.array-bytes]
 workspace = true
 default-features = true
@@ -78,6 +81,7 @@ features = [
     "tokio",
     "websocket",
     "yamux",
+    "metrics",
 ]
 workspace = true
 
@@ -180,9 +184,6 @@ features = [
     "asynchronous_codec",
     "futures",
 ]
-workspace = true
-
-[dependencies.void]
 workspace = true
 
 [dependencies.zeroize]

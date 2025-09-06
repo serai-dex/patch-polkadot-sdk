@@ -422,8 +422,8 @@ impl From<DiscoveryOut> for BehaviourOut {
 	}
 }
 
-impl From<void::Void> for BehaviourOut {
-	fn from(e: void::Void) -> Self {
-		void::unreachable(e)
+impl From<core::convert::Infallible> for BehaviourOut {
+	fn from(_: core::convert::Infallible) -> Self {
+		unreachable!()
 	}
 }

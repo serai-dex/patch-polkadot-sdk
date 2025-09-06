@@ -204,16 +204,14 @@ diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Carg
 index 1f40ea9..1cd5381 100644
 --- a/substrate/client/network/Cargo.toml
 +++ b/substrate/client/network/Cargo.toml
-@@ -34,7 +34,7 @@ futures-timer = { workspace = true }
- ip_network = { workspace = true }
- libp2p = { features = ["dns", "identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "websocket", "yamux"], workspace = true }
+@@ -37,5 +37,5 @@ futures-timer = { workspace = true }
  linked_hash_set = { workspace = true }
 -litep2p = { workspace = true }
 +litep2p = { workspace = true, optional = true }
  log = { workspace = true, default-features = true }
  mockall = { workspace = true }
  parking_lot = { workspace = true, default-features = true }
-@@ -91,6 +91,7 @@ criterion = { workspace = true, default-features = true, features = ["async_toki
+@@ -92,6 +92,7 @@ criterion = { workspace = true, default-features = true, features = ["async_toki
 
  [features]
  default = []
