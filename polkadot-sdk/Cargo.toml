@@ -632,9 +632,6 @@ version = "0.1.2"
 [workspace.dependencies.ip_network]
 version = "0.4.1"
 
-[workspace.dependencies.is-terminal]
-version = "0.4.9"
-
 [workspace.dependencies.is_executable]
 version = "1.0.1"
 

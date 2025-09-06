@@ -33,9 +33,6 @@ default-features = true
 [dependencies.console]
 workspace = true
 
-[dependencies.is-terminal]
-workspace = true
-
 [dependencies.libc]
 workspace = true
 

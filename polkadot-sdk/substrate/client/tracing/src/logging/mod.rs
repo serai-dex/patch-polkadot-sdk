@@ -33,7 +33,7 @@ pub(crate) type DefaultLogger = stderr_writer::MakeStderrWriter;
 pub use directives::*;
 pub use sc_tracing_proc_macro::*;
 
-use is_terminal::IsTerminal;
+use std::io::IsTerminal;
 use std::io;
 use tracing::Subscriber;
 use tracing_subscriber::{

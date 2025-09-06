@@ -100,6 +100,7 @@ apply_patch replace_wasm-timer_with_wasmtimer
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
+remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "is-terminal"
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "frame-metadata"
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "k256"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ark-vrf"
@@ -129,6 +130,7 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "^fraction"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^gethostname"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^handlebars"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^indicatif"
+remove_matching_lines ./polkadot-sdk/Cargo.toml "^is-terminal"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^jemalloc_pprof"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^landlock"
 remove_matching_lines ./polkadot-sdk/Cargo.toml "^merkleized-metadata"
@@ -161,6 +163,9 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "docify"
 # Remove `aquamarine` from the dependencies
 find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
 remove_matching_lines ./polkadot-sdk/Cargo.toml "aquamarine"
+
+# Remove `is-terminal`
+find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
 
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
