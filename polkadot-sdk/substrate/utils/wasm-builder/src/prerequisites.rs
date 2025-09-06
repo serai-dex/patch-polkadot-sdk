@@ -270,9 +270,9 @@ fn check_wasm_toolchain_installed(
 	if cargo_command.supports_wasm32v1_none_target() &&
 		!cargo_command.is_wasm32v1_none_target_installed()
 	{
-		build_helper::warning!("You are building WASM runtime using `wasm32-unknown-unknown` target, although Rust >= 1.84 supports `wasm32v1-none` target!");
-		build_helper::warning!("You can install it with `rustup target add wasm32v1-none --toolchain {toolchain}` if you're using `rustup`.");
-		build_helper::warning!("After installing `wasm32v1-none` target, you must rebuild WASM runtime from scratch, use `cargo clean` before building.");
+		println!("cargo:warning=You are building WASM runtime using `wasm32-unknown-unknown` target, although Rust >= 1.84 supports `wasm32v1-none` target!");
+		println!("cargo:warning=You can install it with `rustup target add wasm32v1-none --toolchain {toolchain}` if you're using `rustup`.");
+		println!("cargo:warning=After installing `wasm32v1-none` target, you must rebuild WASM runtime from scratch, use `cargo clean` before building.");
 	}
 
 	Ok(CargoCommandVersioned::new(cargo_command, version))

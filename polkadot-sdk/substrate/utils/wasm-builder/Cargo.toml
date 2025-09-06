@@ -22,9 +22,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies.build-helper]
-workspace = true
-
 [dependencies.cargo_metadata]
 workspace = true
 

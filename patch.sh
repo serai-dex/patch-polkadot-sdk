@@ -111,6 +111,7 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
+remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "build-helper"
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "frame-metadata"
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "merkleized-metadata"
 
@@ -129,6 +130,9 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "aquamarine"
 
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
+
+# Remove `build-helper`
+apply_patch removals/build-helper
 
 # Apply the patches which are explicitly opinions
 apply_patch_dir opinions

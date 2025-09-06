@@ -407,8 +407,8 @@ fn get_bool_environment_variable(name: &str) -> Option<bool> {
 	} else if value == "0" {
 		Some(false)
 	} else {
-		build_helper::warning!(
-			"the '{name}' environment variable has an invalid value; it must be either '1' or '0'",
+		println!(
+			"cargo:warning=the '{name}' environment variable has an invalid value; it must be either '1' or '0'",
 		);
 		std::process::exit(1);
 	}
@@ -432,8 +432,8 @@ impl RuntimeTarget {
 		} else if value == "riscv" {
 			Self::Riscv
 		} else {
-			build_helper::warning!(
-				"RUNTIME_TARGET environment variable must be set to either \"wasm\" or \"riscv\""
+			println!(
+				"cargo:warning=RUNTIME_TARGET environment variable must be set to either \"wasm\" or \"riscv\""
 			);
 			std::process::exit(1);
 		}

@@ -289,9 +289,6 @@ default-features = false
 version = "0.5.1"
 default-features = false
 
-[workspace.dependencies.build-helper]
-version = "0.1.1"
-
 [workspace.dependencies.byteorder]
 version = "1.3.2"
 default-features = false
