@@ -254,7 +254,7 @@ pub trait Benchmarking {
 	fn current_time() -> u128 {
 		std::time::SystemTime::now()
 			.duration_since(std::time::SystemTime::UNIX_EPOCH)
-			.expect("Unix time doesn't go backwards; qed")
+			.expect("Unix time doesn't go backwards")
 			.as_nanos()
 	}
 
@@ -466,7 +466,7 @@ pub trait BenchmarkingSetup<T, I = ()> {
 pub fn account<AccountId: Decode>(name: &'static str, index: u32, seed: u32) -> AccountId {
 	let entropy = (name, index, seed).using_encoded(blake2_256);
 	Decode::decode(&mut TrailingZeroInput::new(entropy.as_ref()))
-		.expect("infinite length input; no invalid inputs for type; qed")
+		.expect("infinite length input; no invalid inputs for type")
 }
 
 /// This caller account is automatically whitelisted for DB reads/writes by the benchmarking macro.

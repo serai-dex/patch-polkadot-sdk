@@ -182,7 +182,7 @@ pub fn derive(
 		},
 	};
 	let crate_path =
-		syn::parse_str::<Path>(&crate_path).expect("crate_name returns valid path; qed");
+		syn::parse_str::<Path>(&crate_path).expect("crate_name returns valid path");
 	let field_names = fields.named.iter().flat_map(|x| x.ident.as_ref()).collect::<Vec<_>>();
 	let field_types = fields.named.iter().map(|x| &x.ty).collect::<Vec<_>>();
 

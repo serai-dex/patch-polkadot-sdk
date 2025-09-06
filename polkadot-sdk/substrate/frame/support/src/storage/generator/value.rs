@@ -96,7 +96,7 @@ impl<T: FullCodec, G: StorageValue<T>> storage::StorageValue<T> for G {
 	}
 
 	fn mutate<R, F: FnOnce(&mut G::Query) -> R>(f: F) -> R {
-		Self::try_mutate(|v| Ok::<R, Never>(f(v))).expect("`Never` can not be constructed; qed")
+		Self::try_mutate(|v| Ok::<R, Never>(f(v))).expect("`Never` can not be constructed")
 	}
 
 	fn try_mutate<R, E, F: FnOnce(&mut G::Query) -> Result<R, E>>(f: F) -> Result<R, E> {
@@ -117,7 +117,7 @@ impl<T: FullCodec, G: StorageValue<T>> storage::StorageValue<T> for G {
 		F: FnOnce(&mut Option<T>) -> R,
 	{
 		Self::try_mutate_exists(|v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	fn try_mutate_exists<R, E, F>(f: F) -> Result<R, E>

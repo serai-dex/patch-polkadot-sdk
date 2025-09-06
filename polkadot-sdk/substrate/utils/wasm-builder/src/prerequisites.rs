@@ -90,9 +90,9 @@ impl<'a> DummyCrate<'a> {
 		target: RuntimeTarget,
 		ignore_target: bool,
 	) -> Self {
-		let temp = tempdir().expect("Creating temp dir does not fail; qed");
+		let temp = tempdir().expect("Creating temp dir does not fail");
 		let project_dir = temp.path();
-		fs::create_dir_all(project_dir.join("src")).expect("Creating src dir does not fail; qed");
+		fs::create_dir_all(project_dir.join("src")).expect("Creating src dir does not fail");
 
 		let manifest_path = project_dir.join("Cargo.toml");
 		match target {

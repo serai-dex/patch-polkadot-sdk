@@ -469,7 +469,7 @@ where
 
 		validate_blocks::<B>(&blocks, &peer_id, Some(request))?;
 
-		let block = blocks.pop().expect("`blocks` len checked above; qed");
+		let block = blocks.pop().expect("`blocks` len checked above");
 
 		let Some(block_header) = &block.header else {
 			debug!(

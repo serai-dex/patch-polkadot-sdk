@@ -273,7 +273,7 @@ impl Subscription {
 	/// Convert a result to a subscription message.
 	fn to_sub_message(&self, result: &impl Serialize) -> SubscriptionMessage {
 		SubscriptionMessage::new(self.0.method_name(), self.0.subscription_id(), result)
-			.expect("Serialize infallible; qed")
+			.expect("Serialize infallible")
 	}
 }
 

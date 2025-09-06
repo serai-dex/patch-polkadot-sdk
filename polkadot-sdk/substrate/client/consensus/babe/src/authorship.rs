@@ -116,7 +116,7 @@ pub(super) fn secondary_slot_author(
 
 	let expected_author = authorities.get(idx.as_u32() as usize).expect(
 		"authorities not empty; index constrained to list length; \
-				this is a valid index; qed",
+				this is a valid index",
 	);
 
 	Some(&expected_author.0)

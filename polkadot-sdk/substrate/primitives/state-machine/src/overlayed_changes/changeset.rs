@@ -35,7 +35,7 @@ use smallvec::SmallVec;
 
 const PROOF_OVERLAY_NON_EMPTY: &str = "\
 	An OverlayValue is always created with at least one transaction and dropped as soon
-	as the last transaction is removed; qed";
+	as the last transaction is removed";
 
 type DirtyKeysSets<K> = SmallVec<[Set<K>; 5]>;
 type Transactions<V> = SmallVec<[InnerValue<V>; 5]>;
@@ -378,7 +378,7 @@ impl OverlayedEntry<StorageEntry> {
 				let parent = self
 					.transactions
 					.get_mut(transactions - 2)
-					.expect("`set_prev` is only `Some(_)`, if the value came from parent; qed");
+					.expect("`set_prev` is only `Some(_)`, if the value came from parent");
 				restore_append_to_parent(
 					&mut parent.value,
 					data,
@@ -620,7 +620,7 @@ impl<K: Ord + Hash + Clone, V> OverlayedMap<K, V> {
 		}
 		while self.has_open_runtime_transactions() {
 			self.rollback_transaction_offchain()
-				.expect("The loop condition checks that the transaction depth is > 0; qed");
+				.expect("The loop condition checks that the transaction depth is > 0");
 		}
 		Ok(())
 	}
@@ -852,7 +852,7 @@ impl OverlayedChangeSet {
 		}
 		while self.has_open_runtime_transactions() {
 			self.rollback_transaction()
-				.expect("The loop condition checks that the transaction depth is > 0; qed");
+				.expect("The loop condition checks that the transaction depth is > 0");
 		}
 
 		Ok(())

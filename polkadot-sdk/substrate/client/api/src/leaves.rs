@@ -181,7 +181,7 @@ where
 			if number.0 > best_number {
 				assert!(
 					self.remove_leaf(&number, &hash),
-					"item comes from an iterator over storage; qed",
+					"item comes from an iterator over storage",
 				);
 			}
 		}

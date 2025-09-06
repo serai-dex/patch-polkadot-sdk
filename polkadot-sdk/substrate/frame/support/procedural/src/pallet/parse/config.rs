@@ -235,7 +235,7 @@ fn has_expected_system_config(path: syn::Path, frame_system: &syn::Path) -> bool
 			(false, true) =>
 			// We know that the only valid frame_system path is one that is `frame_system`, as
 			// `frame` re-exports it as such.
-				syn::parse2::<syn::Path>(quote::quote!(frame_system)).expect("is a valid path; qed"),
+				syn::parse2::<syn::Path>(quote::quote!(frame_system)).expect("is a valid path"),
 			(_, _) =>
 			// They are either both `frame_system` or both `polkadot_sdk_frame::xyz::frame_system`.
 				frame_system.clone(),
@@ -407,7 +407,7 @@ impl ConfigDef {
 			if !already_no_default && enable_default {
 				default_sub_trait
 					.as_mut()
-					.expect("is 'Some(_)' if 'enable_default'; qed")
+					.expect("is 'Some(_)' if 'enable_default'")
 					.items
 					.push((trait_item.clone(), already_no_default_bounds));
 			}

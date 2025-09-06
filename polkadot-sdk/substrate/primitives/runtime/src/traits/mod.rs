@@ -2000,14 +2000,14 @@ impl<T: Encode + Decode, Id: Encode + Decode + TypeId> AccountIdConversion<T> fo
 	fn into_sub_account_truncating<S: Encode>(&self, sub: S) -> T {
 		(Id::TYPE_ID, self, sub)
 			.using_encoded(|b| T::decode(&mut TrailingZeroInput(b)))
-			.expect("All byte sequences are valid `AccountIds`; qed")
+			.expect("All byte sequences are valid `AccountIds`")
 	}
 
 	// Same as `into_sub_account_truncating`, but returns `None` if any bytes would be truncated.
 	fn try_into_sub_account<S: Encode>(&self, sub: S) -> Option<T> {
 		let encoded_seed = (Id::TYPE_ID, self, sub).encode();
 		let account = T::decode(&mut TrailingZeroInput(&encoded_seed))
-			.expect("All byte sequences are valid `AccountIds`; qed");
+			.expect("All byte sequences are valid `AccountIds`");
 		// If the `account` generated has less bytes than the `encoded_seed`, then we know that
 		// bytes were truncated, and we return `None`.
 		if encoded_seed.len() <= account.encoded_size() {

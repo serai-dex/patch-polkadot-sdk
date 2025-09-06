@@ -383,7 +383,7 @@ pub fn epoch_start_slot(epoch_index: u64, genesis_slot: Slot, epoch_duration: u6
 	// (epoch_index * epoch_duration) + genesis_slot
 
 	const PROOF: &str = "slot number is u64; it should relate in some way to wall clock time; \
-						 if u64 is not enough we should crash for safety; qed.";
+						 if u64 is not enough we should crash for safety.";
 
 	epoch_index
 		.checked_mul(epoch_duration)

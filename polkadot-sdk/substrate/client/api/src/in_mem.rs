@@ -275,7 +275,7 @@ impl<Block: BlockT> Blockchain<Block> {
 			let block = storage
 				.blocks
 				.get_mut(&block)
-				.expect("hash was fetched from a block in the db; qed");
+				.expect("hash was fetched from a block in the db");
 
 			let block_justifications = match block {
 				StoredBlock::Header(_, ref mut j) | StoredBlock::Full(_, ref mut j) => j,
@@ -297,7 +297,7 @@ impl<Block: BlockT> Blockchain<Block> {
 		let block = storage
 			.blocks
 			.get_mut(&hash)
-			.expect("hash was fetched from a block in the db; qed");
+			.expect("hash was fetched from a block in the db");
 
 		let block_justifications = match block {
 			StoredBlock::Header(_, ref mut j) | StoredBlock::Full(_, ref mut j) => j,

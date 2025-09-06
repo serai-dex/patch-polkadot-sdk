@@ -847,7 +847,7 @@ macro_rules! hypothetically {
 		$crate::storage::transactional::with_transaction(|| -> $crate::__private::TransactionOutcome<Result<_, $crate::__private::DispatchError>> {
 			$crate::__private::TransactionOutcome::Rollback(Ok($e))
 		},
-		).expect("Always returning Ok; qed")
+		).expect("Always returning Ok")
 	};
 }
 

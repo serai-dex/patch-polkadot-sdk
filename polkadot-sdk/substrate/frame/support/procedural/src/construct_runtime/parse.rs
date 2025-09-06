@@ -615,7 +615,7 @@ impl Pallet {
 	pub fn get_attributes(&self) -> TokenStream {
 		self.cfg_pattern.iter().fold(TokenStream::new(), |acc, pattern| {
 			let attr = TokenStream::from_str(&format!("#[cfg({})]", pattern.original()))
-				.expect("was successfully parsed before; qed");
+				.expect("was successfully parsed before");
 			quote::quote! {
 				#acc
 				#attr

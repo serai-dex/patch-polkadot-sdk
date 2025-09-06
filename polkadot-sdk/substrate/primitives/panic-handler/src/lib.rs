@@ -142,7 +142,7 @@ fn strip_control_codes(input: &str) -> std::borrow::Cow<str> {
 			]
 		"#,
 		)
-		.expect("regex parsing doesn't fail; qed")
+		.expect("regex parsing doesn't fail")
 	});
 
 	RE.replace_all(input, "")

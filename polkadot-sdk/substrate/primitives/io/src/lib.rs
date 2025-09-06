@@ -1149,7 +1149,7 @@ pub trait Crypto {
 			.map_err(|_| EcdsaVerifyError::BadV)?;
 		let sig = RecoverableSignature::from_compact(&sig[..64], rid)
 			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = Message::from_digest_slice(msg).expect("Message is 32 bytes; qed");
+		let msg = Message::from_digest_slice(msg).expect("Message is 32 bytes");
 		let pubkey = SECP256K1
 			.recover_ecdsa(&msg, &sig)
 			.map_err(|_| EcdsaVerifyError::BadSignature)?;
@@ -1195,7 +1195,7 @@ pub trait Crypto {
 			.map_err(|_| EcdsaVerifyError::BadV)?;
 		let sig = RecoverableSignature::from_compact(&sig[..64], rid)
 			.map_err(|_| EcdsaVerifyError::BadRS)?;
-		let msg = Message::from_digest_slice(msg).expect("Message is 32 bytes; qed");
+		let msg = Message::from_digest_slice(msg).expect("Message is 32 bytes");
 		let pubkey = SECP256K1
 			.recover_ecdsa(&msg, &sig)
 			.map_err(|_| EcdsaVerifyError::BadSignature)?;

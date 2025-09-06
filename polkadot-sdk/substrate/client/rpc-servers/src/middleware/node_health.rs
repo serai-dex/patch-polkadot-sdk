@@ -145,7 +145,7 @@ fn http_response<S: Into<HttpBody>>(status_code: StatusCode, body: S) -> HttpRes
 		.status(status_code)
 		.header(http::header::CONTENT_TYPE, HEADER_VALUE_JSON)
 		.body(body.into())
-		.expect("Header is valid; qed")
+		.expect("Header is valid")
 }
 
 fn http_internal_error() -> HttpResponse {

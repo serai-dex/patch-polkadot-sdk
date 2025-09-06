@@ -83,7 +83,7 @@ impl<'a> From<&'a str> for ProtocolId {
 impl AsRef<str> for ProtocolId {
 	fn as_ref(&self) -> &str {
 		str::from_utf8(&self.0[..])
-			.expect("the only way to build a ProtocolId is through a UTF-8 String; qed")
+			.expect("the only way to build a ProtocolId is through a UTF-8 String")
 	}
 }
 
@@ -678,7 +678,7 @@ impl NetworkConfiguration {
 			allow_non_globals_in_dht: false,
 			kademlia_disjoint_query_paths: false,
 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
-				.expect("value is a constant; constant is non-zero; qed."),
+				.expect("value is a constant; constant is non-zero."),
 			network_backend: NetworkBackendType::default(),
 		}
 	}
@@ -813,7 +813,7 @@ impl<B: BlockT + 'static, H: ExHashT, N: NetworkBackend<B, H>> FullNetworkConfig
 	pub fn take_peer_store(&mut self) -> N::PeerStore {
 		self.peer_store
 			.take()
-			.expect("`PeerStore` can only be taken once when it's started; qed")
+			.expect("`PeerStore` can only be taken once when it's started")
 	}
 
 	/// Verify addresses are consistent with enabled transports.

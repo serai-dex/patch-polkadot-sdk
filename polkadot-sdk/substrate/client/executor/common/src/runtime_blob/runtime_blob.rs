@@ -130,11 +130,11 @@ impl RuntimeBlob {
 				// just in case to cover all of our bases.
 				raw_module
 					.insert_section(Section::Export(Default::default()))
-					.expect("an export section can be always inserted if it doesn't exist; qed");
+					.expect("an export section can be always inserted if it doesn't exist");
 			}
 			raw_module
 				.export_section_mut()
-				.expect("export section already existed or we just added it above, so it always exists; qed")
+				.expect("export section already existed or we just added it above, so it always exists")
 				.entries_mut()
 				.push(ExportEntry::new(memory_name, Internal::Memory(0)));
 
@@ -195,7 +195,7 @@ impl RuntimeBlob {
 	pub fn serialize(self) -> Vec<u8> {
 		match self.0 {
 			BlobKind::WebAssembly(raw_module) =>
-				serialize(raw_module).expect("serializing into a vec should succeed; qed"),
+				serialize(raw_module).expect("serializing into a vec should succeed"),
                         #[cfg(feature = "polkavm")]
 			BlobKind::PolkaVM(ref blob) => blob.1.to_vec(),
 		}

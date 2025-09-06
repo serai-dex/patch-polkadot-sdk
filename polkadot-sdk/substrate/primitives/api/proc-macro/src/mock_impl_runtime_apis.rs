@@ -415,8 +415,8 @@ fn generate_runtime_api_impls(impls: &[ItemImpl]) -> Result<GeneratedRuntimeApiI
 
 	Ok(GeneratedRuntimeApiImpls {
 		impls: quote!( #( #result )* ),
-		block_type: global_block_type.expect("There is a least one runtime api; qed"),
-		self_ty: *self_ty.expect("There is at least one runtime api; qed"),
+		block_type: global_block_type.expect("There is a least one runtime api"),
+		self_ty: *self_ty.expect("There is at least one runtime api"),
 	})
 }
 

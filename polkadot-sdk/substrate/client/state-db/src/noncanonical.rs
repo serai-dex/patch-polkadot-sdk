@@ -138,7 +138,7 @@ fn discard_descendants<BlockHash: Hash, Key: Hash>(
 		while let Some(i) = level.blocks.iter().position(|overlay| {
 			parents
 				.get(&overlay.hash)
-				.expect("there is a parent entry for each entry in levels; qed") ==
+				.expect("there is a parent entry for each entry in levels") ==
 				hash
 		}) {
 			let overlay = level.remove(i);
@@ -289,10 +289,10 @@ impl<BlockHash: Hash, Key: Hash> NonCanonicalOverlay<BlockHash, Key> {
 			number == front_block_number + self.levels.len() as u64
 		{
 			self.levels.push_back(OverlayLevel::new());
-			self.levels.back_mut().expect("can't be empty after insertion; qed")
+			self.levels.back_mut().expect("can't be empty after insertion")
 		} else {
 			self.levels.get_mut((number - front_block_number) as usize)
-				.expect("number is [front_block_number .. front_block_number + levels.len()) is asserted in precondition; qed")
+				.expect("number is [front_block_number .. front_block_number + levels.len()) is asserted in precondition")
 		};
 
 		if level.blocks.len() >= MAX_BLOCKS_PER_LEVEL as usize {
@@ -351,7 +351,7 @@ impl<BlockHash: Hash, Key: Hash> NonCanonicalOverlay<BlockHash, Key> {
 				let parent = self
 					.parents
 					.get(&overlay.hash)
-					.expect("there is a parent entry for each entry in levels; qed")
+					.expect("there is a parent entry for each entry in levels")
 					.clone();
 				if parent == *hash {
 					discarded_journals.push(overlay.journal_key.clone());

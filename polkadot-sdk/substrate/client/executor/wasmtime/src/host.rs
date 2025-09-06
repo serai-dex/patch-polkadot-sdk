@@ -52,7 +52,7 @@ impl HostState {
 
 	pub(crate) fn allocation_stats(&self) -> AllocationStats {
 		self.allocator.as_ref()
-			.expect("Allocator is always set and only unavailable when doing an allocation/deallocation; qed")
+			.expect("Allocator is always set and only unavailable when doing an allocation/deallocation")
 			.stats()
 	}
 }
@@ -69,7 +69,7 @@ impl<'a> HostContext<'a> {
 		self.caller
 			.data_mut()
 			.host_state_mut()
-			.expect("host state is not empty when calling a function in wasm; qed")
+			.expect("host state is not empty when calling a function in wasm")
 	}
 }
 
@@ -92,7 +92,7 @@ impl<'a> sp_wasm_interface::FunctionContext for HostContext<'a> {
 			.host_state_mut()
 			.allocator
 			.take()
-			.expect("allocator is not empty when calling a function in wasm; qed");
+			.expect("allocator is not empty when calling a function in wasm");
 
 		// We can not return on error early, as we need to store back allocator.
 		let res = allocator
@@ -110,7 +110,7 @@ impl<'a> sp_wasm_interface::FunctionContext for HostContext<'a> {
 			.host_state_mut()
 			.allocator
 			.take()
-			.expect("allocator is not empty when calling a function in wasm; qed");
+			.expect("allocator is not empty when calling a function in wasm");
 
 		// We can not return on error early, as we need to store back allocator.
 		let res = allocator

@@ -206,7 +206,7 @@ impl<T: 'static + Decode> FromFFIValue for Vec<T> {
 		if TypeId::of::<T>() == TypeId::of::<u8>() {
 			unsafe { mem::transmute(data) }
 		} else {
-			Self::decode(&mut &data[..]).expect("Host to wasm values are encoded correctly; qed")
+			Self::decode(&mut &data[..]).expect("Host to wasm values are encoded correctly")
 		}
 	}
 }
@@ -234,7 +234,7 @@ impl<T: 'static + Decode> FromFFIValue for [T] {
 			Ok(unsafe { mem::transmute(vec) })
 		} else {
 			Ok(Vec::<T>::decode(&mut &vec[..])
-				.expect("Wasm to host values are encoded correctly; qed"))
+				.expect("Wasm to host values are encoded correctly"))
 		}
 	}
 }

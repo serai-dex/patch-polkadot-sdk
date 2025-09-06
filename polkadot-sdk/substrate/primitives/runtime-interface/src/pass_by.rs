@@ -253,7 +253,7 @@ impl<T: codec::Codec> PassByImpl<T> for Codec<T> {
 			bytes::Bytes::from(unsafe { Vec::from_raw_parts(ptr as *mut u8, len, len) })
 		};
 
-		codec::decode_from_bytes(encoded).expect("Host to wasm values are encoded correctly; qed")
+		codec::decode_from_bytes(encoded).expect("Host to wasm values are encoded correctly")
 	}
 }
 
@@ -421,7 +421,7 @@ impl<T: Copy + Into<u8> + TryFrom<u8, Error = ()>> PassByImpl<T> for Enum<T> {
 	}
 
 	fn from_ffi_value(arg: Self::FFIType) -> T {
-		T::try_from(arg as u8).expect("Host to wasm provides a valid enum discriminant; qed")
+		T::try_from(arg as u8).expect("Host to wasm provides a valid enum discriminant")
 	}
 }
 

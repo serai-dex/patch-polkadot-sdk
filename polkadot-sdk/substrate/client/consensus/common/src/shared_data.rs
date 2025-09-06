@@ -76,7 +76,7 @@ impl<'a, T> SharedDataLocked<'a, T> {
 	/// Release the mutex, but keep the shared data locked.
 	pub fn release_mutex(mut self) -> SharedDataLockedUpgradable<T> {
 		SharedDataLockedUpgradable {
-			shared_data: self.shared_data.take().expect("`shared_data` is only taken on drop; qed"),
+			shared_data: self.shared_data.take().expect("`shared_data` is only taken on drop"),
 		}
 	}
 }

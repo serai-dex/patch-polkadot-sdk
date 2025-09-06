@@ -286,7 +286,7 @@ fn generate_runtime_api_base_structures() -> Result<TokenStream> {
 					let res = call(self);
 					std::cell::RefCell::borrow_mut(&self.transaction_depth)
 						.checked_sub(1)
-						.expect("Transactions are opened and closed together; qed");
+						.expect("Transactions are opened and closed together");
 
 					self.commit_or_rollback_transaction(
 						std::matches!(res, #crate_::TransactionOutcome::Commit(_))
@@ -395,7 +395,7 @@ fn generate_runtime_api_base_structures() -> Result<TokenStream> {
                     We only close a transaction when we opened one ourself.
                     Other parts of the runtime that make use of transactions (state-machine)
                     also balance their transactions. The runtime cannot close client initiated
-                    transactions; qed";
+                    transactions";
 
 					let res = if commit {
 						let res = if let Some(recorder) = &self.recorder {
@@ -451,7 +451,7 @@ fn extend_with_runtime_decl_path(mut trait_: Path) -> Path {
 			.segments
 			.last()
 			.as_ref()
-			.expect("Trait path should always contain at least one item; qed")
+			.expect("Trait path should always contain at least one item")
 			.ident;
 
 		generate_runtime_mod_name_for_trait(trait_name)
@@ -473,7 +473,7 @@ fn extend_with_api_version(mut trait_: Path, version: Option<u32>) -> Path {
 	let trait_name = &mut trait_
 		.segments
 		.last_mut()
-		.expect("Trait path should always contain at least one item; qed")
+		.expect("Trait path should always contain at least one item")
 		.ident;
 	*trait_name = versioned_trait_name(trait_name, version);
 
@@ -727,7 +727,7 @@ fn generate_runtime_api_versions(impls: &[ItemImpl]) -> Result<TokenStream> {
 		let trait_ = path
 			.segments
 			.pop()
-			.expect("extract_impl_trait already checks that this is valid; qed")
+			.expect("extract_impl_trait already checks that this is valid")
 			.into_value()
 			.ident;
 
@@ -856,7 +856,7 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
 		.dry(std::env::var("EXPAND_MACROS").is_err())
 		.verbose(true)
 		.write_to_out_dir(impl_)
-		.expect("Does not fail because of IO in OUT_DIR; qed");
+		.expect("Does not fail because of IO in OUT_DIR");
 
 	Ok(impl_)
 }

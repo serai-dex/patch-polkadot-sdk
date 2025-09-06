@@ -478,7 +478,7 @@ pub mod pallet {
 				self.keys.iter().chain(self.non_authority_keys.iter()).cloned()
 			{
 				Pallet::<T>::inner_set_keys(&val, keys)
-					.expect("genesis config must not contain duplicates; qed");
+					.expect("genesis config must not contain duplicates");
 				if frame_system::Pallet::<T>::inc_consumers_without_limit(&account).is_err() {
 					// This will leak a provider reference, however it only happens once (at
 					// genesis) so it's really not a big deal and we assume that the user wants to
@@ -816,7 +816,7 @@ impl<T: Config> Pallet<T> {
 		let old_keys = Self::inner_set_keys(&who, keys)?;
 		if old_keys.is_none() {
 			let assertion = frame_system::Pallet::<T>::inc_consumers(account).is_ok();
-			debug_assert!(assertion, "can_inc_consumer() returned true; no change since; qed");
+			debug_assert!(assertion, "can_inc_consumer() returned true; no change since");
 		}
 
 		Ok(())

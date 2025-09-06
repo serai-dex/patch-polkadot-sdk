@@ -291,7 +291,7 @@ impl<B: BlockT> Stream for BlockAnnounceValidator<B> {
 	/// Poll for finished block announce validations. The stream never terminates.
 	fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
 		let validation = futures::ready!(self.validations.poll_next_unpin(cx))
-			.expect("`FuturesStream` never terminates; qed");
+			.expect("`FuturesStream` never terminates");
 		self.deallocate_slot_for_block_announce_validation(validation.peer_id());
 
 		Poll::Ready(Some(validation))

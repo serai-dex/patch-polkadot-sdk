@@ -286,7 +286,7 @@ fn ensure_valid_return_type(item_fn: &ItemFn) -> Result<()> {
 		let seg = path
 			.segments
 			.last()
-			.expect("to be parsed as a TypePath, it must have at least one segment; qed");
+			.expect("to be parsed as a TypePath, it must have at least one segment");
 		let res: ResultDef = syn::parse2(seg.to_token_stream())?;
 		// ensure T in Result<T, E> is ()
 		let Type::Tuple(tup) = res.unit else { return non_unit(res.unit.span()) };
@@ -297,7 +297,7 @@ fn ensure_valid_return_type(item_fn: &ItemFn) -> Result<()> {
 		let seg = path
 			.segments
 			.last()
-			.expect("to be parsed as a TypePath, it must have at least one segment; qed");
+			.expect("to be parsed as a TypePath, it must have at least one segment");
 		syn::parse2::<keywords::BenchmarkError>(seg.to_token_stream())?;
 	}
 	Ok(())

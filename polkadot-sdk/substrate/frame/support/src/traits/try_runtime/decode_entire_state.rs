@@ -163,7 +163,7 @@ where
 		let info = Self::partial_storage_info()
 			.first()
 			.cloned()
-			.expect("Value has only one storage info; qed");
+			.expect("Value has only one storage info");
 		decode_storage_info::<Value>(info)
 	}
 }
@@ -183,7 +183,7 @@ where
 		let info = Self::partial_storage_info()
 			.first()
 			.cloned()
-			.expect("Map has only one storage info; qed");
+			.expect("Map has only one storage info");
 		decode_storage_info::<Value>(info)
 	}
 }
@@ -210,7 +210,7 @@ where
 	fn try_decode_entire_state() -> Result<usize, Vec<TryDecodeEntireStorageError>> {
 		let (map_info, counter_info) = match &Self::partial_storage_info()[..] {
 			[a, b] => (a.clone(), b.clone()),
-			_ => panic!("Counted map has two storage info items; qed"),
+			_ => panic!("Counted map has two storage info items"),
 		};
 		let mut decoded = decode_storage_info::<Counter>(counter_info)?;
 		decoded += decode_storage_info::<Value>(map_info)?;
@@ -246,7 +246,7 @@ where
 		let info = Self::partial_storage_info()
 			.first()
 			.cloned()
-			.expect("Double-map has only one storage info; qed");
+			.expect("Double-map has only one storage info");
 		decode_storage_info::<Value>(info)
 	}
 }
@@ -265,7 +265,7 @@ where
 		let info = Self::partial_storage_info()
 			.first()
 			.cloned()
-			.expect("N-map has only one storage info; qed");
+			.expect("N-map has only one storage info");
 		decode_storage_info::<Value>(info)
 	}
 }
@@ -283,7 +283,7 @@ where
 	fn try_decode_entire_state() -> Result<usize, Vec<TryDecodeEntireStorageError>> {
 		let (map_info, counter_info) = match &Self::partial_storage_info()[..] {
 			[a, b] => (a.clone(), b.clone()),
-			_ => panic!("Counted NMap has two storage info items; qed"),
+			_ => panic!("Counted NMap has two storage info items"),
 		};
 
 		let mut decoded = decode_storage_info::<Counter>(counter_info)?;

@@ -244,7 +244,7 @@ impl Analysis {
 					*counted.entry(p).or_default() += 1;
 				}
 				let others: Vec<u32> =
-					counted.iter().max_by_key(|i| i.1).expect("r is not empty; qed").0.clone();
+					counted.iter().max_by_key(|i| i.1).expect("r is not empty").0.clone();
 				let values = r
 					.iter()
 					.filter(|v| {
@@ -282,14 +282,14 @@ impl Analysis {
 						}
 					}
 				}
-				slopes.sort_by(|a, b| a.partial_cmp(b).expect("values well defined; qed"));
+				slopes.sort_by(|a, b| a.partial_cmp(b).expect("values well defined"));
 				let slope = slopes[slopes.len() / 2];
 
 				let mut offsets = vec![];
 				for &(x, y) in values.iter() {
 					offsets.push(y as f64 - slope * x as f64);
 				}
-				offsets.sort_by(|a, b| a.partial_cmp(b).expect("values well defined; qed"));
+				offsets.sort_by(|a, b| a.partial_cmp(b).expect("values well defined"));
 				let offset = offsets[offsets.len() / 2];
 
 				(offset, slope)

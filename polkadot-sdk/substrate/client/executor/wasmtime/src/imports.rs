@@ -69,7 +69,7 @@ where
 					.func_new("env", &name, func_ty.clone(), move |_, _, _| {
 					    Err(anyhow::Error::msg(error.clone()))
 					})
-					.expect("adding a missing import stub can only fail when the item already exists, and it is missing here; qed");
+					.expect("adding a missing import stub can only fail when the item already exists, and it is missing here");
 			}
 		} else {
 			let mut names = Vec::new();

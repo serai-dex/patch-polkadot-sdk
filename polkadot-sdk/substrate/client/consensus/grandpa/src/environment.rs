@@ -141,7 +141,7 @@ impl<Block: BlockT> CompletedRounds<Block> {
 	pub fn last(&self) -> &CompletedRound<Block> {
 		self.rounds
 			.first()
-			.expect("inner is never empty; always contains at least genesis; qed")
+			.expect("inner is never empty; always contains at least genesis")
 	}
 
 	/// Push a new completed round, oldest round is evicted if number of rounds
@@ -468,7 +468,7 @@ impl<BE, Block: BlockT, C, N: NetworkT<Block>, S: SyncingT<Block>, SC, VR>
 							.iter()
 							.map(|round| round.number)
 							.max()
-							.expect("There is always one completed round (genesis); qed");
+							.expect("There is always one completed round (genesis)");
 
 						metrics.finality_grandpa_round.set(highest);
 					}
@@ -535,7 +535,7 @@ where
 				// this is the header at which the new set will start
 				let header = self.client.header(h)?.expect(
 					"got block hash from registered pending change; \
-					 pending changes are only registered on block import; qed.",
+					 pending changes are only registered on block import.",
 				);
 
 				// its parent block is the last block in the current set
@@ -805,7 +805,7 @@ where
 			let (completed_rounds, current_rounds) = voter_set_state.with_current_round(round)?;
 			let current_round = current_rounds
 				.get(&round)
-				.expect("checked in with_current_round that key exists; qed.");
+				.expect("checked in with_current_round that key exists.");
 
 			if !current_round.can_propose() {
 				// we've already proposed in this round (in a previous run),
@@ -817,7 +817,7 @@ where
 			let mut current_rounds = current_rounds.clone();
 			let current_round = current_rounds
 				.get_mut(&round)
-				.expect("checked previously that key exists; qed.");
+				.expect("checked previously that key exists.");
 
 			*current_round = HasVoted::Yes(local_id, Vote::Propose(propose));
 
@@ -863,7 +863,7 @@ where
 			let (completed_rounds, current_rounds) = voter_set_state.with_current_round(round)?;
 			let current_round = current_rounds
 				.get(&round)
-				.expect("checked in with_current_round that key exists; qed.");
+				.expect("checked in with_current_round that key exists.");
 
 			if !current_round.can_prevote() {
 				// we've already prevoted in this round (in a previous run),
@@ -880,7 +880,7 @@ where
 			let mut current_rounds = current_rounds.clone();
 			let current_round = current_rounds
 				.get_mut(&round)
-				.expect("checked previously that key exists; qed.");
+				.expect("checked previously that key exists.");
 
 			*current_round = HasVoted::Yes(local_id, Vote::Prevote(propose.cloned(), prevote));
 
@@ -926,7 +926,7 @@ where
 			let (completed_rounds, current_rounds) = voter_set_state.with_current_round(round)?;
 			let current_round = current_rounds
 				.get(&round)
-				.expect("checked in with_current_round that key exists; qed.");
+				.expect("checked in with_current_round that key exists.");
 
 			if !current_round.can_precommit() {
 				// we've already precommitted in this round (in a previous run),
@@ -950,7 +950,7 @@ where
 			let mut current_rounds = current_rounds.clone();
 			let current_round = current_rounds
 				.get_mut(&round)
-				.expect("checked previously that key exists; qed.");
+				.expect("checked previously that key exists.");
 
 			*current_round = HasVoted::Yes(
 				local_id,
@@ -1212,7 +1212,7 @@ where
 	let mut target_header = match select_chain.finality_target(block, None).await {
 		Ok(target_hash) => client
 			.header(target_hash)?
-			.expect("Header known to exist after `finality_target` call; qed"),
+			.expect("Header known to exist after `finality_target` call"),
 		Err(err) => {
 			debug!(
 				target: LOG_TARGET,
@@ -1291,7 +1291,7 @@ where
 
 			target_header = client
 				.header(*target_header.parent_hash())?
-				.expect("Header known to exist after `finality_target` call; qed");
+				.expect("Header known to exist after `finality_target` call");
 		}
 
 		debug!(

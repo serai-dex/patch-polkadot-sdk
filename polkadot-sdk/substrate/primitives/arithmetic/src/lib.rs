@@ -245,7 +245,7 @@ where
 				output_with_idx[min_index].1 = output_with_idx[min_index]
 					.1
 					.checked_add(&per_round)
-					.expect("Proof provided in the module doc; qed.");
+					.expect("Proof provided in the module doc.");
 				if output_with_idx[min_index].1 >= threshold {
 					min_index += 1;
 					min_index %= count;
@@ -258,7 +258,7 @@ where
 			output_with_idx[min_index].1 = output_with_idx[min_index]
 				.1
 				.checked_add(&T::one())
-				.expect("Proof provided in the module doc; qed.");
+				.expect("Proof provided in the module doc.");
 			if output_with_idx[min_index].1 >= threshold {
 				min_index += 1;
 				min_index %= count;
@@ -273,7 +273,7 @@ where
 		// at this threshold we move to next index.
 		let threshold = output_with_idx
 			.first()
-			.expect("length of input is greater than zero; it must have a first; qed")
+			.expect("length of input is greater than zero; it must have a first")
 			.1;
 
 		if !per_round.is_zero() {

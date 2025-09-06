@@ -290,7 +290,7 @@ where
 		F: FnOnce(&mut QueryKind::Query) -> R,
 	{
 		Self::try_mutate(key, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	/// Mutate the value under the given keys when the closure returns `Ok`.
@@ -316,7 +316,7 @@ where
 		F: FnOnce(&mut Option<Value>) -> R,
 	{
 		Self::try_mutate_exists(key, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	/// Mutate the item, only if an `Ok` value is returned. Deletes the item if mutated to a `None`.

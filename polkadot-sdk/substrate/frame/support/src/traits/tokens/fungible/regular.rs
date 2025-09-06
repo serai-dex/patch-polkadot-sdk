@@ -506,7 +506,7 @@ pub trait Balanced<AccountId>: Inspect<AccountId> + Unbalanced<AccountId> {
 			Ok(d) => d,
 		};
 		let result = credit.offset(debt).try_drop();
-		debug_assert!(result.is_ok(), "ok deposit return must be equal to credit value; qed");
+		debug_assert!(result.is_ok(), "ok deposit return must be equal to credit value");
 		Ok(())
 	}
 
@@ -528,7 +528,7 @@ pub trait Balanced<AccountId>: Inspect<AccountId> + Unbalanced<AccountId> {
 			SameOrOther::None => Ok(Credit::<AccountId, Self>::zero()),
 			SameOrOther::Same(dust) => Ok(dust),
 			SameOrOther::Other(rest) => {
-				debug_assert!(false, "ok withdraw return must be at least debt value; qed");
+				debug_assert!(false, "ok withdraw return must be at least debt value");
 				Err(rest)
 			},
 		}

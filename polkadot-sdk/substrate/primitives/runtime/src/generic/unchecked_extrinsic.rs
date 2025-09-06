@@ -529,7 +529,7 @@ where
 	fn from(extrinsic: UncheckedExtrinsic<Address, Call, Signature, Extension>) -> Self {
 		Self::from_bytes(extrinsic.encode().as_slice()).expect(
 			"both OpaqueExtrinsic and UncheckedExtrinsic have encoding that is compatible with \
-				raw Vec<u8> encoding; qed",
+				raw Vec<u8> encoding",
 		)
 	}
 }

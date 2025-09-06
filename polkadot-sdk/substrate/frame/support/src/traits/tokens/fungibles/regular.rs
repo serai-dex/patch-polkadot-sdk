@@ -571,9 +571,9 @@ pub trait Balanced<AccountId>: Inspect<AccountId> + Unbalanced<AccountId> {
 		};
 		if let Ok(result) = credit.offset(debt) {
 			let result = result.try_drop();
-			debug_assert!(result.is_ok(), "ok deposit return must be equal to credit value; qed");
+			debug_assert!(result.is_ok(), "ok deposit return must be equal to credit value");
 		} else {
-			debug_assert!(false, "debt.asset is credit.asset; qed");
+			debug_assert!(false, "debt.asset is credit.asset");
 		}
 		Ok(())
 	}
@@ -596,11 +596,11 @@ pub trait Balanced<AccountId>: Inspect<AccountId> + Unbalanced<AccountId> {
 			Ok(SameOrOther::None) => Ok(Credit::<AccountId, Self>::zero(asset)),
 			Ok(SameOrOther::Same(dust)) => Ok(dust),
 			Ok(SameOrOther::Other(rest)) => {
-				debug_assert!(false, "ok withdraw return must be at least debt value; qed");
+				debug_assert!(false, "ok withdraw return must be at least debt value");
 				Err(rest)
 			},
 			Err(_) => {
-				debug_assert!(false, "debt.asset is credit.asset; qed");
+				debug_assert!(false, "debt.asset is credit.asset");
 				Ok(Credit::<AccountId, Self>::zero(asset))
 			},
 		}

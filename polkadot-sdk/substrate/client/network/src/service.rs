@@ -534,7 +534,7 @@ where
 
 				let config = SwarmConfig::with_executor(SpawnImpl(params.executor))
 					.with_substream_upgrade_protocol_override(upgrade::Version::V1)
-					.with_notify_handler_buffer_size(NonZeroUsize::new(32).expect("32 != 0; qed"))
+					.with_notify_handler_buffer_size(NonZeroUsize::new(32).expect("32 != 0"))
 					// NOTE: 24 is somewhat arbitrary and should be tuned in the future if
 					// necessary. See <https://github.com/paritytech/substrate/pull/6080>
 					.with_per_connection_event_buffer_size(24)

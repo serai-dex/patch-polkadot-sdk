@@ -585,7 +585,7 @@ impl<'a, H: Hasher> trie_db::TrieCache<NodeCodec<H>> for TrieCache<'a, H> {
 		}
 
 		Ok(&node?
-			.expect("you can always insert at least one element into the local cache; qed")
+			.expect("you can always insert at least one element into the local cache")
 			.node)
 	}
 
@@ -620,7 +620,7 @@ impl<'a, H: Hasher> trie_db::TrieCache<NodeCodec<H>> for TrieCache<'a, H> {
 			Ok(Some(cached_node)) => Some(&cached_node.node),
 			Ok(None) => {
 				unreachable!(
-					"you can always insert at least one element into the local cache; qed"
+					"you can always insert at least one element into the local cache"
 				);
 			},
 			Err(()) => None,

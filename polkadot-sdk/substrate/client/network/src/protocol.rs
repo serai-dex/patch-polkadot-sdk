@@ -295,7 +295,7 @@ impl<B: BlockT> NetworkBehaviour for Protocol<B> {
 			Poll::Ready(ToSwarm::GenerateEvent(ev)) => ev,
 			Poll::Ready(event) => {
 				return Poll::Ready(event.map_out(|_| {
-					unreachable!("`GenerateEvent` is handled in a branch above; qed")
+					unreachable!("`GenerateEvent` is handled in a branch above")
 				}));
 			},
 		};

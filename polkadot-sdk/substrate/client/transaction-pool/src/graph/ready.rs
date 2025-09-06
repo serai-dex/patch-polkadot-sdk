@@ -397,7 +397,7 @@ impl<Hash: hash::Hash + Member + Serialize, Ex> ReadyTransactions<Hash, Ex> {
 						removed.as_ref(),
 						if current_tag == tag { None } else { Some(&tx.hash) },
 						"The pool contains exactly one transaction providing given tag; the removed transaction
-						claims to provide that tag, so it has to be mapped to it's hash; qed"
+						claims to provide that tag, so it has to be mapped to it's hash"
 					);
 				}
 

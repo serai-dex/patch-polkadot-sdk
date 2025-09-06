@@ -794,12 +794,12 @@ pub const fn serialize_runtime_api_info(id: [u8; 8], version: u32) -> [u8; RUNTI
 pub fn deserialize_runtime_api_info(bytes: [u8; RUNTIME_API_INFO_SIZE]) -> ([u8; 8], u32) {
 	let id: [u8; 8] = bytes[0..8]
 		.try_into()
-		.expect("the source slice size is equal to the dest array length; qed");
+		.expect("the source slice size is equal to the dest array length");
 
 	let version = u32::from_le_bytes(
 		bytes[8..12]
 			.try_into()
-			.expect("the source slice size is equal to the array length; qed"),
+			.expect("the source slice size is equal to the array length"),
 	);
 
 	(id, version)

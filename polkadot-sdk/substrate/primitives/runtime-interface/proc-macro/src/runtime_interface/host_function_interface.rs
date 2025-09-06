@@ -252,7 +252,7 @@ fn generate_host_function_implementation(
 		let ffi_name = generate_ffi_value_var_name(&host_name)?;
 		let host_name_ident = match *host_name {
 			Pat::Ident(ref pat_ident) => pat_ident.ident.clone(),
-			_ => unreachable!("`generate_ffi_value_var_name` above would return an error on `Pat` != `Ident`; qed"),
+			_ => unreachable!("`generate_ffi_value_var_name` above would return an error on `Pat` != `Ident`"),
 		};
 
 		let ffi_ty = quote! { <#host_ty as #crate_::RIType>::FFIType };

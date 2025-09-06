@@ -264,7 +264,7 @@ where
 		let deny_unsafe = ext
 			.get::<DenyUnsafe>()
 			.cloned()
-			.expect("DenyUnsafe extension is always set by the substrate rpc server; qed");
+			.expect("DenyUnsafe extension is always set by the substrate rpc server");
 		self.backend.storage_size(block, key, deny_unsafe).await.map_err(Into::into)
 	}
 
@@ -331,7 +331,7 @@ where
 		let deny_unsafe = ext
 			.get::<DenyUnsafe>()
 			.cloned()
-			.expect("DenyUnsafe extension is always set by the substrate rpc server; qed");
+			.expect("DenyUnsafe extension is always set by the substrate rpc server");
 		self.backend.subscribe_storage(pending, keys, deny_unsafe)
 	}
 }

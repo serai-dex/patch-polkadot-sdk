@@ -98,7 +98,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 				let pallet_weight = def
 					.call
 					.as_ref()
-					.expect("we have methods; we have calls; qed")
+					.expect("we have methods; we have calls")
 					.inherited_call_weight
 					.as_ref()
 					.expect("the parser prevents this");

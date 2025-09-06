@@ -258,7 +258,7 @@ where
 		F: FnOnce(&mut Self::Query) -> R,
 	{
 		Self::try_mutate(k1, k2, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	fn mutate_exists<KArg1, KArg2, R, F>(k1: KArg1, k2: KArg2, f: F) -> R
@@ -268,7 +268,7 @@ where
 		F: FnOnce(&mut Option<V>) -> R,
 	{
 		Self::try_mutate_exists(k1, k2, |v| Ok::<R, Never>(f(v)))
-			.expect("`Never` can not be constructed; qed")
+			.expect("`Never` can not be constructed")
 	}
 
 	fn try_mutate<KArg1, KArg2, R, E, F>(k1: KArg1, k2: KArg2, f: F) -> Result<R, E>

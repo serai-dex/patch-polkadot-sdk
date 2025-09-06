@@ -476,6 +476,9 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F] \"/\"/"); echo "$STRIPPED" > {}' \;
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F]\"/\"/"); echo "$STRIPPED" > {}' \;
 
+# Remove "; qed"
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
+
 # Perform upgrades to preferred versions
 cargo_upgrade array-bytes 7.0.0
 cargo_upgrade async-channel 2.0.0

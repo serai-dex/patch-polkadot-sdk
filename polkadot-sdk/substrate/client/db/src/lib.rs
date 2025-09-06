@@ -1094,7 +1094,7 @@ impl<T: Clone> FrozenForDuration<T> {
 			lock.value = Some(new_value.clone());
 			new_value
 		} else {
-			lock.value.as_ref().expect("Checked with in branch above; qed").clone()
+			lock.value.as_ref().expect("Checked with in branch above").clone()
 		}
 	}
 }

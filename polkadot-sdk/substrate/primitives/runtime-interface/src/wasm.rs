@@ -129,7 +129,7 @@ impl<T: Copy> ExchangeableFunction<T> {
 	}
 }
 
-// Wasm does not support threads, so this is safe; qed.
+// Wasm does not support threads, so this is safe.
 unsafe impl<T> Sync for ExchangeableFunction<T> {}
 
 /// Restores a function implementation on drop.
@@ -140,6 +140,6 @@ pub struct RestoreImplementation<T: 'static + Copy>(&'static ExchangeableFunctio
 impl<T: Copy> Drop for RestoreImplementation<T> {
 	fn drop(&mut self) {
 		self.0
-			.restore_orig_implementation(self.1.take().expect("Value is only taken on drop; qed"));
+			.restore_orig_implementation(self.1.take().expect("Value is only taken on drop"));
 	}
 }

@@ -116,7 +116,7 @@ where
 	#[cfg(feature = "try-runtime")]
 	fn post_upgrade(state: alloc::vec::Vec<u8>) -> Result<(), sp_runtime::TryRuntimeError> {
 		use codec::Decode;
-		let keys_before = u64::decode(&mut state.as_ref()).expect("We encoded as u64 above; qed");
+		let keys_before = u64::decode(&mut state.as_ref()).expect("We encoded as u64 above");
 		let keys_now = Self::num_keys();
 		log::info!("ResetPallet<{}>: Keys remaining after migration: {keys_now}", P::name());
 

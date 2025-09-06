@@ -286,7 +286,7 @@ where
 
 		impl<'a, H, N> InnerGuard<'a, H, N> {
 			fn as_mut(&mut self) -> &mut AuthoritySet<H, N> {
-				self.guard.as_mut().expect("only taken on deconstruction; qed")
+				self.guard.as_mut().expect("only taken on deconstruction")
 			}
 
 			fn set_old(&mut self, old: AuthoritySet<H, N>) {
@@ -301,7 +301,7 @@ where
 			) -> Option<(AuthoritySet<H, N>, SharedDataLocked<'a, AuthoritySet<H, N>>)> {
 				self.old
 					.take()
-					.map(|old| (old, self.guard.take().expect("only taken on deconstruction; qed")))
+					.map(|old| (old, self.guard.take().expect("only taken on deconstruction")))
 			}
 		}
 
@@ -369,7 +369,7 @@ where
 							.map_err(|e| ConsensusError::ClientImport(e.to_string()))?
 							.expect(
 								"the given block number is less or equal than the current best finalized number; \
-								 current best finalized number must exist in chain; qed."
+								 current best finalized number must exist in chain."
 							);
 
 					NewAuthoritySet {
@@ -838,7 +838,7 @@ where
 			Ok(_) => {
 				assert!(
 					!enacts_change,
-					"returns Ok when no authority set change should be enacted; qed;"
+					"returns Ok when no authority set change should be enacted;"
 				);
 			},
 		}

@@ -784,7 +784,7 @@ where
 			MAX_EXTRINSIC_DEPTH,
 			&mut &encoded[..],
 		)
-		.expect("Decoding the encoded transaction works; qed");
+		.expect("Decoding the encoded transaction works");
 
 		// We use the dedicated `is_inherent` check here, since just relying on `Mandatory` dispatch
 		// class does not capture optional inherents.

@@ -163,10 +163,10 @@ pub fn initialize_hwbench_telemetry(
 	let mut connect_stream = telemetry_handle.on_connect_stream();
 	async move {
 		let payload = serde_json::to_value(&hwbench)
-			.expect("the `HwBench` can always be serialized into a JSON object; qed");
+			.expect("the `HwBench` can always be serialized into a JSON object");
 		let mut payload = match payload {
 			serde_json::Value::Object(map) => map,
-			_ => unreachable!("the `HwBench` always serializes into a JSON object; qed"),
+			_ => unreachable!("the `HwBench` always serializes into a JSON object"),
 		};
 		payload.insert("msg".into(), "sysinfo.hwbench".into());
 		while connect_stream.next().await.is_some() {

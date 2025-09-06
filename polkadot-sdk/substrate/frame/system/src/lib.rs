@@ -1948,7 +1948,7 @@ impl<T: Config> Pallet<T> {
 
 		let version = T::Version::get().state_version();
 		let storage_root = T::Hash::decode(&mut &sp_io::storage::root(version)[..])
-			.expect("Node is configured to use the same hash; qed");
+			.expect("Node is configured to use the same hash");
 
 		HeaderFor::<T>::new(number, extrinsics_root, storage_root, parent_hash, digest)
 	}

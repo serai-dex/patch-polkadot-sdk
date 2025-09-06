@@ -736,7 +736,7 @@ impl<T: Config> Pallet<T> {
 
 		let id = T::Migrations::nth_id(cursor.index).map(TryInto::try_into);
 		let Some(Ok(bounded_id)): Option<Result<IdentifierOf<T>, _>> = id else {
-			defensive!("integrity_test ensures that all identifiers are present and bounde; qed.");
+			defensive!("integrity_test ensures that all identifiers are present and bounde.");
 			Self::upgrade_failed(Some(cursor.index));
 			return None
 		};
@@ -764,7 +764,7 @@ impl<T: Config> Pallet<T> {
 			meter,
 		);
 		let Some((max_steps, next_cursor)) = max_steps.zip(next_cursor) else {
-			defensive!("integrity_test ensures that the tuple is valid; qed");
+			defensive!("integrity_test ensures that the tuple is valid");
 			Self::upgrade_failed(Some(cursor.index));
 			return None
 		};
@@ -773,7 +773,7 @@ impl<T: Config> Pallet<T> {
 		match next_cursor {
 			Ok(Some(next_cursor)) => {
 				let Ok(bound_next_cursor) = next_cursor.try_into() else {
-					defensive!("The integrity check ensures that all cursors' MEL bound fits into CursorMaxLen; qed");
+					defensive!("The integrity check ensures that all cursors' MEL bound fits into CursorMaxLen");
 					Self::upgrade_failed(Some(cursor.index));
 					return None
 				};

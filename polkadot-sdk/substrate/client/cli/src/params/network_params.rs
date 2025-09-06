@@ -239,7 +239,7 @@ impl NetworkParams {
 				is_dev || matches!(chain_type, ChainType::Local | ChainType::Development);
 
 		let allow_private_ip = match (self.allow_private_ip, self.no_private_ip) {
-			(true, true) => unreachable!("`*_private_ip` flags are mutually exclusive; qed"),
+			(true, true) => unreachable!("`*_private_ip` flags are mutually exclusive"),
 			(true, false) => true,
 			(false, true) => false,
 			(false, false) =>

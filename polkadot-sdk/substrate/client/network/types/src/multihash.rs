@@ -159,7 +159,7 @@ impl From<Multihash> for LiteP2pMultihash {
 impl From<multihash::Multihash<64>> for Multihash {
 	fn from(generic: multihash::Multihash<64>) -> Self {
 		LiteP2pMultihash::wrap(generic.code(), generic.digest())
-			.expect("both have size 64; qed")
+			.expect("both have size 64")
 			.into()
 	}
 }
@@ -167,7 +167,7 @@ impl From<multihash::Multihash<64>> for Multihash {
 impl From<Multihash> for multihash::Multihash<64> {
 	fn from(multihash: Multihash) -> Self {
 		multihash::Multihash::<64>::wrap(multihash.code(), multihash.digest())
-			.expect("both have size 64; qed")
+			.expect("both have size 64")
 	}
 }
 

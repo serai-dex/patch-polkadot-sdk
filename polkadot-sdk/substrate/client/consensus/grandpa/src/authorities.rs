@@ -470,7 +470,7 @@ where
 				let median_last_finalized = match change.delay_kind {
 					DelayKind::Best { ref median_last_finalized } => median_last_finalized.clone(),
 					_ => unreachable!(
-						"pending_forced_changes only contains forced changes; forced changes have delay kind Best; qed."
+						"pending_forced_changes only contains forced changes; forced changes have delay kind Best."
 					),
 				};
 

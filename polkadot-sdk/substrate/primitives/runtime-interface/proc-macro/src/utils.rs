@@ -108,7 +108,7 @@ impl RuntimeInterfaceFunctionSet {
 			(
 			v,
 			self.versions.get(&v).expect(
-				"If latest_version_to_call has a value, the key with this value is in the versions; qed",
+				"If latest_version_to_call has a value, the key with this value is in the versions",
 			),
 		)
 		})

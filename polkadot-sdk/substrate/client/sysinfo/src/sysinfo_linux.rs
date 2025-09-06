@@ -35,7 +35,7 @@ where
 	T: std::str::FromStr,
 {
 	Regex::new(regex)
-		.expect("regex is correct; qed")
+		.expect("regex is correct")
 		.captures(&data)?
 		.get(1)?
 		.as_str()

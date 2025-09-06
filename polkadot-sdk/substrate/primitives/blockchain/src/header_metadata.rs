@@ -237,7 +237,7 @@ impl<Block: BlockT> TreeRoute<Block> {
 		self.route.get(self.pivot).expect(
 			"tree-routes are computed between blocks; \
 			which are included in the route; \
-			thus it is never empty; qed",
+			thus it is never empty",
 		)
 	}
 

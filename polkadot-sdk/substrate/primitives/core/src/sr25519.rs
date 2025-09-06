@@ -151,7 +151,7 @@ impl Clone for Pair {
 		Pair(schnorrkel::Keypair {
 			public: self.0.public,
 			secret: schnorrkel::SecretKey::from_bytes(&self.0.secret.to_bytes()[..])
-				.expect("key is always the correct size; qed"),
+				.expect("key is always the correct size"),
 		})
 	}
 }

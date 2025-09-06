@@ -180,7 +180,7 @@ where
 				.block_hash(0u32.into())
 				.ok()
 				.flatten()
-				.expect("Genesis block exists; qed"),
+				.expect("Genesis block exists"),
 			fork_id,
 			tx,
 		);

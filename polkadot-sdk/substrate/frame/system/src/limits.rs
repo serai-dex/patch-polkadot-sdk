@@ -310,7 +310,7 @@ impl BlockWeights {
 				weights.max_total = block_weight.into();
 			})
 			.build()
-			.expect("We only specify max_total and leave base values as defaults; qed")
+			.expect("We only specify max_total and leave base values as defaults")
 	}
 
 	/// Create a sensible default weights system given only expected maximal block weight and the
@@ -331,7 +331,7 @@ impl BlockWeights {
 			})
 			.avg_block_initialization(Perbill::from_percent(10))
 			.build()
-			.expect("Sensible defaults are tested to be valid; qed")
+			.expect("Sensible defaults are tested to be valid")
 	}
 
 	/// Start constructing new `BlockWeights` object.

@@ -144,7 +144,7 @@ impl<B: BlockT> GossipEngine<B> {
 
 		for notification in past_messages {
 			tx.try_send(notification)
-				.expect("receiver known to be live, and buffer size known to suffice; qed");
+				.expect("receiver known to be live, and buffer size known to suffice");
 		}
 
 		self.message_sinks.entry(topic).or_default().push(tx);
@@ -313,7 +313,7 @@ impl<B: BlockT> Future for GossipEngine<B> {
 						match sink.start_send(notification.clone()) {
 							Ok(()) => {},
 							Err(e) if e.is_full() => {
-								unreachable!("Previously ensured that all sinks are ready; qed.")
+								unreachable!("Previously ensured that all sinks are ready.")
 							},
 							// Receiver got dropped. Will be removed in next iteration (See (1)).
 							Err(_) => {},

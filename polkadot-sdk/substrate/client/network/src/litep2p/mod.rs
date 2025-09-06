@@ -461,7 +461,7 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 					config.inbound_queue,
 					request_response_receivers
 						.remove(&config.protocol_name)
-						.expect("receiver exists as it was just added and there are no duplicate protocols; qed"),
+						.expect("receiver exists as it was just added and there are no duplicate protocols"),
 					request_response_senders.clone(),
 					metrics.clone(),
 				);

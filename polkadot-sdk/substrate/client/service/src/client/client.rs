@@ -837,7 +837,7 @@ where
 					runtime_api.record_proof();
 					let recorder = runtime_api
 						.proof_recorder()
-						.expect("Proof recording is enabled in the line above; qed.");
+						.expect("Proof recording is enabled in the line above.");
 					runtime_api.register_extension(ProofSizeExt::new(recorder));
 				}
 
@@ -939,7 +939,7 @@ where
 				.last()
 				.expect(
 					"The block to finalize is always the latest \
-						block in the route to the finalized block; qed",
+						block in the route to the finalized block",
 				)
 				.number;
 
@@ -956,7 +956,7 @@ where
 				.backend
 				.blockchain()
 				.header(hash)?
-				.expect("Block to finalize expected to be onchain; qed");
+				.expect("Block to finalize expected to be onchain");
 
 			operation.notify_finalized = Some(FinalizeSummary { header, finalized, stale_heads });
 		}

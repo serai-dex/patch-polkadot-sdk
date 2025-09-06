@@ -118,7 +118,7 @@ fn initialize() {
 	std::thread::Builder::new()
 		.name("log-autoflush".to_owned())
 		.spawn(log_autoflush_thread)
-		.expect("thread spawning doesn't normally fail; qed");
+		.expect("thread spawning doesn't normally fail");
 
 	// SAFETY: This is safe since we pass a valid pointer to `atexit`.
 	let errcode = unsafe { libc::atexit(on_exit) };
@@ -195,7 +195,7 @@ fn emergency_flush(buffer: &mut Vec<u8>, input: &[u8]) {
 
 impl Write for StderrWriter {
 	fn write(&mut self, input: &[u8]) -> Result<usize, std::io::Error> {
-		let buffer = self.buffer.as_mut().expect("buffer is only None after `drop`; qed");
+		let buffer = self.buffer.as_mut().expect("buffer is only None after `drop`");
 		if buffer.len() + input.len() >= EMERGENCY_FLUSH_THRESHOLD {
 			// Make sure we don't blow our memory budget. Normally this should never happen,
 			// but there are cases where we directly print out untrusted user input which
@@ -218,7 +218,7 @@ impl Write for StderrWriter {
 
 impl Drop for StderrWriter {
 	fn drop(&mut self) {
-		let buf = self.buffer.take().expect("buffer is only None after `drop`; qed");
+		let buf = self.buffer.take().expect("buffer is only None after `drop`");
 		if self.sync_flush_on_drop || buf.len() >= SYNC_FLUSH_THRESHOLD {
 			flush_logs(buf);
 		} else if self.original_len < ASYNC_FLUSH_THRESHOLD && buf.len() >= ASYNC_FLUSH_THRESHOLD {

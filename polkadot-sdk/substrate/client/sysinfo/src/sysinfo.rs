@@ -400,7 +400,7 @@ pub fn benchmark_cpu_parallelism(limit: ExecutionLimit, refhw_num_cores: usize) 
 			};
 			ready_to_run_benchmark.wait();
 			benchmark("CPU score", SIZE, limit.max_iterations(), limit.max_duration(), run)
-				.expect("benchmark cannot fail; qed")
+				.expect("benchmark cannot fail")
 		});
 		benchmark_threads.push(handle);
 	}
@@ -458,7 +458,7 @@ pub fn benchmark_memory(limit: ExecutionLimit) -> Throughput {
 	};
 
 	benchmark("memory score", SIZE, limit.max_iterations(), limit.max_duration(), run)
-		.expect("benchmark cannot fail; qed")
+		.expect("benchmark cannot fail")
 }
 
 struct TemporaryFile {
@@ -654,7 +654,7 @@ pub fn benchmark_sr25519_verify(limit: ExecutionLimit) -> Throughput {
 		limit.max_duration(),
 		run,
 	)
-	.expect("sr25519 verification cannot fail; qed")
+	.expect("sr25519 verification cannot fail")
 }
 
 /// Benchmarks the hardware and returns the results of those benchmarks.

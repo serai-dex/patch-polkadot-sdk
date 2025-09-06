@@ -201,7 +201,7 @@ where
 
 		start
 			.to_base()
-			.expect("We start from the `base` object, so it's always fully initialized; qed")
+			.expect("We start from the `base` object, so it's always fully initialized")
 	}
 }
 

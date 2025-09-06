@@ -33,7 +33,7 @@ pub(crate) struct MetadataExtraInfo {
 /// Returns the manifest dir from the `CARGO_MANIFEST_DIR` env.
 fn get_manifest_dir() -> PathBuf {
 	env::var("CARGO_MANIFEST_DIR")
-		.expect("`CARGO_MANIFEST_DIR` is always set for `build.rs` files; qed")
+		.expect("`CARGO_MANIFEST_DIR` is always set for `build.rs` files")
 		.into()
 }
 

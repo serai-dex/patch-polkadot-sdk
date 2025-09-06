@@ -240,7 +240,7 @@ where
 			api.record_proof();
 			let recorder = api
 				.proof_recorder()
-				.expect("Proof recording is enabled in the line above; qed.");
+				.expect("Proof recording is enabled in the line above.");
 			api.register_extension(ProofSizeExt::new(recorder));
 		}
 

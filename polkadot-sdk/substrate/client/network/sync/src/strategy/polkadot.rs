@@ -270,7 +270,7 @@ where
 			self.state.is_some() ||
 			match self.chain_sync {
 				Some(ref s) => s.status().state.is_major_syncing(),
-				None => unreachable!("At least one syncing strategy is active; qed"),
+				None => unreachable!("At least one syncing strategy is active"),
 			}
 	}
 
@@ -288,7 +288,7 @@ where
 		} else if let Some(ref chain_sync) = self.chain_sync {
 			chain_sync.status()
 		} else {
-			unreachable!("At least one syncing strategy is always active; qed")
+			unreachable!("At least one syncing strategy is always active")
 		}
 	}
 
@@ -315,7 +315,7 @@ where
 		} else if let Some(ref mut chain_sync) = self.chain_sync {
 			chain_sync.actions(network_service)?
 		} else {
-			unreachable!("At least one syncing strategy is always active; qed")
+			unreachable!("At least one syncing strategy is always active")
 		};
 
 		if actions.iter().any(SyncingAction::is_finished) {
@@ -475,7 +475,7 @@ where
 			self.chain_sync = Some(chain_sync);
 			Ok(())
 		} else {
-			unreachable!("Only warp & state strategies can finish; qed")
+			unreachable!("Only warp & state strategies can finish")
 		}
 	}
 }

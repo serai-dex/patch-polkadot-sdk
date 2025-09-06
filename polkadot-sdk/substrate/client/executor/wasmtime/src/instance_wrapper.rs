@@ -45,7 +45,7 @@ impl EntryPoint {
 				.data_mut()
 				.host_state
 				.as_mut()
-				.expect("host state cannot be empty while a function is being called; qed");
+				.expect("host state cannot be empty while a function is being called");
 
 			let backtrace = trap.downcast_ref::<wasmtime::WasmBacktrace>().map(|backtrace| {
 				// The logic to print out a backtrace is somewhat complicated,

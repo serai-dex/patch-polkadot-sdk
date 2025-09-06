@@ -410,7 +410,7 @@ pub trait Backend<Block: BlockT>:
 					match finalized_chain.iter().rev().nth(distance_from_finalized as usize) {
 						Some(header) => (header.number, header.hash),
 						None => {
-							let to_fetch = finalized_chain.front().expect("Not empty; qed");
+							let to_fetch = finalized_chain.front().expect("Not empty");
 							let metadata = match self.header_metadata(to_fetch.parent) {
 								Ok(metadata) => metadata,
 								Err(Error::UnknownBlock(_)) => {

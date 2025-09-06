@@ -133,7 +133,7 @@ impl DiscoveryConfig {
 			kademlia_protocol: None,
 			kademlia_legacy_protocol: None,
 			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
-				.expect("value is a constant; constant is non-zero; qed."),
+				.expect("value is a constant; constant is non-zero."),
 		}
 	}
 
@@ -275,7 +275,7 @@ impl DiscoveryConfig {
 			allow_non_globals_in_dht,
 			known_external_addresses: LruHashSet::new(
 				NonZeroUsize::new(MAX_KNOWN_EXTERNAL_ADDRESSES)
-					.expect("value is a constant; constant is non-zero; qed."),
+					.expect("value is a constant; constant is non-zero."),
 			),
 			records_to_publish: Default::default(),
 			kademlia_protocol,
@@ -393,7 +393,7 @@ impl DiscoveryBehaviour {
 				p == self
 					.kademlia_protocol
 					.as_ref()
-					.expect("kademlia protocol was checked above to be enabled; qed")
+					.expect("kademlia protocol was checked above to be enabled")
 			}) {
 				trace!(
 					target: LOG_TARGET,
@@ -1123,7 +1123,7 @@ impl NetworkBehaviour for DiscoveryBehaviour {
 				ToSwarm::Dial { opts } => return Poll::Ready(ToSwarm::Dial { opts }),
 				event => {
 					return Poll::Ready(event.map_out(|_| {
-						unreachable!("`GenerateEvent` is handled in a branch above; qed")
+						unreachable!("`GenerateEvent` is handled in a branch above")
 					}));
 				},
 			}
@@ -1156,10 +1156,10 @@ impl NetworkBehaviour for DiscoveryBehaviour {
 					return Poll::Ready(
 						event
 							.map_in(|_| {
-								unreachable!("`NotifyHandler` is handled in a branch above; qed")
+								unreachable!("`NotifyHandler` is handled in a branch above")
 							})
 							.map_out(|_| {
-								unreachable!("`GenerateEvent` is handled in a branch above; qed")
+								unreachable!("`GenerateEvent` is handled in a branch above")
 							}),
 					);
 				},

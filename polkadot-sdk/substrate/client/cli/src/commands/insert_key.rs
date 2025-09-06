@@ -72,7 +72,7 @@ impl InsertKeyCmd {
 				let keystore: KeystorePtr = LocalKeystore::open(path, password)?.into();
 				(keystore, public)
 			},
-			_ => unreachable!("keystore_config always returns path and password; qed"),
+			_ => unreachable!("keystore_config always returns path and password"),
 		};
 
 		let key_type =

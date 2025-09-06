@@ -131,7 +131,7 @@ fn get_frame_crate_path(def_crate: &str) -> Option<syn::Path> {
 		crate_name(&"polkadot-sdk-frame").or_else(|_| crate_name(&"frame"))
 	{
 		let path = format!("{}::deps::{}", name, def_crate.to_string().replace("-", "_"));
-		Some(syn::parse_str::<syn::Path>(&path).expect("is a valid path; qed"))
+		Some(syn::parse_str::<syn::Path>(&path).expect("is a valid path"))
 	} else {
 		None
 	}
@@ -140,7 +140,7 @@ fn get_frame_crate_path(def_crate: &str) -> Option<syn::Path> {
 fn get_sdk_crate_path(def_crate: &str) -> Option<syn::Path> {
 	if let Ok(FoundCrate::Name(name)) = crate_name(&"polkadot-sdk") {
 		let path = format!("{}::{}", name, def_crate.to_string()).replace("-", "_");
-		Some(syn::parse_str::<syn::Path>(&path).expect("is a valid path; qed"))
+		Some(syn::parse_str::<syn::Path>(&path).expect("is a valid path"))
 	} else {
 		None
 	}

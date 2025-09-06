@@ -200,7 +200,7 @@ mod tests {
 
 	static SECRET_PHRASE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
 		Regex::new(r"^(?P<phrase>[a-zA-Z0-9 ]+)?(?P<path>(//?[^/]+)*)(///(?P<password>.*))?$")
-			.expect("constructed from known-good static value; qed")
+			.expect("constructed from known-good static value")
 	});
 
 	fn check_with_regex(input: &str) {

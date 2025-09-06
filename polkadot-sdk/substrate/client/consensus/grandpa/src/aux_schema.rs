@@ -113,7 +113,7 @@ where
 			AuthoritySetChanges::empty(),
 		);
 
-		authority_set.expect("current_authorities is non-empty and weights are non-zero; qed.")
+		authority_set.expect("current_authorities is non-empty and weights are non-zero.")
 	}
 }
 
@@ -130,7 +130,7 @@ where
 			self.pending_forced_changes,
 			AuthoritySetChanges::empty(),
 		)
-		.expect("current_authorities is non-empty and weights are non-zero; qed.")
+		.expect("current_authorities is non-empty and weights are non-zero.")
 	}
 }
 
@@ -188,7 +188,7 @@ where
 		let set_id = new_set.set_id;
 
 		let base = last_round_state.prevote_ghost.expect(
-			"state is for completed round; completed rounds must have a prevote ghost; qed.",
+			"state is for completed round; completed rounds must have a prevote ghost.",
 		);
 
 		let mut current_rounds = CurrentRounds::<Block>::new();
@@ -245,7 +245,7 @@ where
 		)? {
 			Some(V1VoterSetState::Paused(last_round_number, set_state)) => {
 				let base = set_state.prevote_ghost
-					.expect("state is for completed round; completed rounds must have a prevote ghost; qed.");
+					.expect("state is for completed round; completed rounds must have a prevote ghost.");
 
 				VoterSetState::Paused {
 					completed_rounds: completed_rounds(last_round_number, set_state, base),
@@ -253,7 +253,7 @@ where
 			},
 			Some(V1VoterSetState::Live(last_round_number, set_state)) => {
 				let base = set_state.prevote_ghost
-					.expect("state is for completed round; completed rounds must have a prevote ghost; qed.");
+					.expect("state is for completed round; completed rounds must have a prevote ghost.");
 
 				let mut current_rounds = CurrentRounds::<Block>::new();
 				current_rounds.insert(last_round_number + 1, HasVoted::No);
@@ -266,7 +266,7 @@ where
 			None => {
 				let set_state = genesis_round();
 				let base = set_state.prevote_ghost
-					.expect("state is for completed round; completed rounds must have a prevote ghost; qed.");
+					.expect("state is for completed round; completed rounds must have a prevote ghost.");
 
 				VoterSetState::live(set_id, &set, base)
 			},
@@ -301,7 +301,7 @@ where
 			None => {
 				let state = genesis_round();
 				let base = state.prevote_ghost
-					.expect("state is for completed round; completed rounds must have a prevote ghost; qed.");
+					.expect("state is for completed round; completed rounds must have a prevote ghost.");
 
 				VoterSetState::live(new_set.set_id, &new_set, base)
 			},
@@ -370,7 +370,7 @@ where
 						None => {
 							let state = make_genesis_round();
 							let base = state.prevote_ghost
-							.expect("state is for completed round; completed rounds must have a prevote ghost; qed.");
+							.expect("state is for completed round; completed rounds must have a prevote ghost.");
 
 							VoterSetState::live(set.set_id, &set, base)
 						},
@@ -392,11 +392,11 @@ where
 
 	let genesis_authorities = genesis_authorities()?;
 	let genesis_set = AuthoritySet::genesis(genesis_authorities)
-		.expect("genesis authorities is non-empty; all weights are non-zero; qed.");
+		.expect("genesis authorities is non-empty; all weights are non-zero.");
 	let state = make_genesis_round();
 	let base = state
 		.prevote_ghost
-		.expect("state is for completed round; completed rounds must have a prevote ghost; qed.");
+		.expect("state is for completed round; completed rounds must have a prevote ghost.");
 
 	let genesis_state = VoterSetState::live(0, &genesis_set, base);
 

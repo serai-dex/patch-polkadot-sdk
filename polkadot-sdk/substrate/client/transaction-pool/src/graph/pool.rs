@@ -245,7 +245,7 @@ impl<B: ChainApi, L: EventHandler<B>> Pool<B, L> {
 		xt: ExtrinsicFor<B>,
 	) -> Result<ValidatedPoolSubmitOutcome<B>, B::Error> {
 		let res = self.submit_at(at, std::iter::once((source, xt))).await.pop();
-		res.expect("One extrinsic passed; one result returned; qed")
+		res.expect("One extrinsic passed; one result returned")
 	}
 
 	/// Import a single extrinsic and starts to watch its progress in the pool.

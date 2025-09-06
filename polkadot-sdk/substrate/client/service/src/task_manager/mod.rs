@@ -402,7 +402,7 @@ impl TaskManager {
 			futures::select! {
 				_ = t1 => Err(Error::Other("Essential task failed.".into())),
 				_ = t2 => Ok(()),
-				res = t3 => Err(res.map(|_| ()).expect_err("this future never ends; qed")),
+				res = t3 => Err(res.map(|_| ()).expect_err("this future never ends")),
 			}
 		})
 	}
@@ -450,7 +450,7 @@ impl Metrics {
 						"Duration in seconds of each invocation of Future::poll"
 					),
 					buckets: exponential_buckets(0.001, 4.0, 9)
-						.expect("function parameters are constant and always valid; qed"),
+						.expect("function parameters are constant and always valid"),
 				},
 				&["task_name", "task_group", "kind"]
 			)?, registry)?,

@@ -842,7 +842,7 @@ impl StorageDef {
 						if segments.last().map_or(false, |s| s.ident == "ResultQuery") =>
 						segments
 							.last()
-							.expect("segments is checked to have the last value; qed")
+							.expect("segments is checked to have the last value")
 							.clone(),
 					Type::Path(path)
 						if path.path.segments.last().map_or(false, |s| s.ident == "ValueQuery") =>
@@ -892,13 +892,13 @@ impl StorageDef {
 						let mut error = err_variant.clone();
 						let err_variant = error
 							.pop()
-							.expect("Checked to have at least 2; qed")
+							.expect("Checked to have at least 2")
 							.into_value()
 							.ident;
 
 						// Necessary here to eliminate the last double colon
 						let last =
-							error.pop().expect("Checked to have at least 2; qed").into_value();
+							error.pop().expect("Checked to have at least 2").into_value();
 						error.push_value(last);
 
 						Ok(Some(QueryKind::ResultQuery(

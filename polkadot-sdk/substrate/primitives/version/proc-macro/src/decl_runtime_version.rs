@@ -207,7 +207,7 @@ impl ParseRuntimeVersion {
 						"a single literal argument is expected, but parsing is failed",
 					));
 				}
-				let Expr::Lit(lit) = call.args.first().expect("Length checked above; qed") else {
+				let Expr::Lit(lit) = call.args.first().expect("Length checked above") else {
 					return Err(Error::new(
 						expr.span(),
 						"a single literal argument is expected, but parsing is failed",

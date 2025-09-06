@@ -194,7 +194,7 @@ fn copy_file_if_changed(src: PathBuf, dst: PathBuf) {
 
 	if src_file != dst_file {
 		fs::copy(&src, &dst).unwrap_or_else(|_| {
-			panic!("Copying `{}` to `{}` can not fail; qed", src.display(), dst.display())
+			panic!("Copying `{}` to `{}` can not fail", src.display(), dst.display())
 		});
 	}
 }

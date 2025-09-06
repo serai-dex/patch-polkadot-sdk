@@ -617,7 +617,7 @@ impl NetworkBehaviour for PeerInfoBehaviour {
 				},
 				Poll::Ready(event) => {
 					return Poll::Ready(event.map_in(Either::Left).map_out(|_| {
-						unreachable!("`GenerateEvent` is handled in a branch above; qed")
+						unreachable!("`GenerateEvent` is handled in a branch above")
 					}));
 				},
 			}
@@ -643,7 +643,7 @@ impl NetworkBehaviour for PeerInfoBehaviour {
 				},
 				Poll::Ready(event) => {
 					return Poll::Ready(event.map_in(Either::Right).map_out(|_| {
-						unreachable!("`GenerateEvent` is handled in a branch above; qed")
+						unreachable!("`GenerateEvent` is handled in a branch above")
 					}));
 				},
 			}

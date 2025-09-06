@@ -218,7 +218,7 @@ impl TelemetryWorker {
 		node_map: &mut HashMap<Id, Vec<(VerbosityLevel, Multiaddr)>>,
 		pending_connection_notifications: &mut Vec<(Multiaddr, ConnectionNotifierSender)>,
 	) {
-		let input = input.expect("the stream is never closed; qed");
+		let input = input.expect("the stream is never closed");
 
 		match input {
 			Register::Telemetry { id, endpoints, connection_message } => {
@@ -233,7 +233,7 @@ impl TelemetryWorker {
 						Some(obj)
 					},
 					Ok(_) => {
-						unreachable!("ConnectionMessage always serialize to an object; qed")
+						unreachable!("ConnectionMessage always serialize to an object")
 					},
 					Err(err) => {
 						log::error!(
@@ -306,7 +306,7 @@ impl TelemetryWorker {
 		node_pool: &mut HashMap<Multiaddr, Node<WsTrans>>,
 		node_map: &HashMap<Id, Vec<(VerbosityLevel, Multiaddr)>>,
 	) {
-		let (id, verbosity, payload) = input.expect("the stream is never closed; qed");
+		let (id, verbosity, payload) = input.expect("the stream is never closed");
 
 		let ts = chrono::Local::now().to_rfc3339();
 		let mut message = serde_json::Map::new();

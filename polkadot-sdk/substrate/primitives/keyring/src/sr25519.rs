@@ -93,7 +93,7 @@ impl Keyring {
 
 	pub fn pair(self) -> Pair {
 		Pair::from_string(&format!("//{}", <&'static str>::from(self)), None)
-			.expect("static values are known good; qed")
+			.expect("static values are known good")
 	}
 
 	/// Returns an iterator over all test accounts.
@@ -111,7 +111,7 @@ impl Keyring {
 
 	/// Create a crypto `Pair` from a numeric value.
 	pub fn numeric(idx: usize) -> Pair {
-		Pair::from_string(&format!("//{}", idx), None).expect("numeric values are known good; qed")
+		Pair::from_string(&format!("//{}", idx), None).expect("numeric values are known good")
 	}
 
 	/// Get account id of a `numeric` account.

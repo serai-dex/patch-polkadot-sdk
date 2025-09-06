@@ -145,8 +145,8 @@ where
 
 		self.backend
 			.pairs(Default::default())
-			.expect("never fails in tests; qed.")
-			.map(|key_value| key_value.expect("never fails in tests; qed."))
+			.expect("never fails in tests.")
+			.map(|key_value| key_value.expect("never fails in tests."))
 			.map(|(k, v)| (k, Some(v)))
 			.chain(self.overlay.changes_mut().map(|(k, v)| (k.clone(), v.value().cloned())))
 			.collect::<HashMap<_, _>>()
@@ -600,7 +600,7 @@ where
 		self.backend.wipe().expect(EXT_NOT_ALLOWED_TO_FAIL);
 		self.overlay
 			.enter_runtime()
-			.expect("We have reset the overlay above, so we can not be in the runtime; qed");
+			.expect("We have reset the overlay above, so we can not be in the runtime");
 	}
 
 	fn commit(&mut self) {
@@ -623,7 +623,7 @@ where
 			.expect(EXT_NOT_ALLOWED_TO_FAIL);
 		self.overlay
 			.enter_runtime()
-			.expect("We have reset the overlay above, so we can not be in the runtime; qed");
+			.expect("We have reset the overlay above, so we can not be in the runtime");
 	}
 
 	fn read_write_count(&self) -> (u32, u32, u32, u32) {

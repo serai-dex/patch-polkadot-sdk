@@ -568,7 +568,7 @@ impl NetworkBehaviour for RequestResponsesBehaviour {
 
 		Ok(MultiHandler::try_from_iter(iter).expect(
 			"Protocols are in a HashMap and there can be at most one handler per protocol name, \
-			 which is the only possible error; qed",
+			 which is the only possible error",
 		))
 	}
 
@@ -597,7 +597,7 @@ impl NetworkBehaviour for RequestResponsesBehaviour {
 
 		Ok(MultiHandler::try_from_iter(iter).expect(
 			"Protocols are in a HashMap and there can be at most one handler per protocol name, \
-			 which is the only possible error; qed",
+			 which is the only possible error",
 		))
 	}
 
@@ -744,7 +744,7 @@ impl NetworkBehaviour for RequestResponsesBehaviour {
 								event.map_in(|event| ((*protocol).to_string(), event)).map_out(
 									|_| {
 										unreachable!(
-											"`GenerateEvent` is handled in a branch above; qed"
+											"`GenerateEvent` is handled in a branch above"
 										)
 									},
 								),
@@ -967,7 +967,7 @@ impl NetworkBehaviour for RequestResponsesBehaviour {
 									 removed on success (`ResponseSent`) or failure \
 									 (`InboundFailure`). One can not receive a success event for a \
 									 request that either never arrived, or that has previously \
-									 failed; qed.",
+									 failed.",
 								);
 
 							if let Some(send_feedback) =

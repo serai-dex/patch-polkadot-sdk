@@ -174,7 +174,7 @@ impl<T> futures::Future for YieldAfter<T> {
 				let sender = this
 					.sender
 					.take()
-					.expect("sender is always Some unless the future is finished; qed");
+					.expect("sender is always Some unless the future is finished");
 				Poll::Ready((sender, this.interval))
 			},
 		}
