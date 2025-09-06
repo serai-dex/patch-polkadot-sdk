@@ -6,3 +6,6 @@
   introduces a `panic` if the amount of events exceeds `2**32`, where
   `polkadot-sdk` would begin silently dropping events. This risks a chain stall
   for giant blocks to ensure the event log is perfectly accurate.
+
+- `zero_genesis_hash`: Updates `frame-system` to use `[0; _]` for the current
+  block hash when building the genesis block itself.
