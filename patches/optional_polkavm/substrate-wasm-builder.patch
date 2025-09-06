@@ -2,8 +2,7 @@ diff --git a/substrate/utils/wasm-builder/Cargo.toml b/substrate/utils/wasm-buil
 index ba69d6d..8b3e21f 100644
 --- a/substrate/utils/wasm-builder/Cargo.toml
 +++ b/substrate/utils/wasm-builder/Cargo.toml
-@@ -21,7 +21,7 @@ console = { workspace = true }
- filetime = { workspace = true }
+@@ -21,6 +21,6 @@ console = { workspace = true }
  jobserver = { workspace = true }
  parity-wasm = { workspace = true }
 -polkavm-linker = { workspace = true }

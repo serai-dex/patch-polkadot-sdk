@@ -55,36 +55,29 @@ function apply_patch {
   fi
 }
 
+function apply_patch_dir {
+  ls patches/$1 | grep -v "README\.md" | while read -r patch; do
+    apply_patch $1/$(echo $patch | sed s/".patch"//)
+  done
+}
+
 function remove_matching_lines {
   ORIGINAL=$(cat $1)
   STRIPPED=$(echo "$ORIGINAL" | grep -v "$2")
   echo "$STRIPPED" > $1
 }
 
-# Apply the `wasmtime` patch, which will update the features within the `Cargo.toml`s
-apply_patch wasmtime
-# The same for `twox-hash`
-apply_patch twox-hash
-
-# Remove unused HTTP module and associated dependencies
-silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/offchain/http.rs
-silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
-apply_patch remove_offchain_http
-
-# Add a feature-flag for `polkavm-linker` within `substrate-wasm-builder`
-apply_patch wasm_builder_polkavm-linker_feature
-# Remove the `filetime` dependency from `substrate-wasm-builder`
-apply_patch remove_filetime
-# Stop propagation of `CARGO_FEATURE_STD` when performing a `no-std` build
-apply_patch do_not_inherit_std
-
-# Make `litep2p` optional
+# Apply the patches which are bug fixes
+apply_patch_dir fixes
+# Apply the patches which replace dependencies in favor of `std`
+apply_patch_dir std
+# Apply the patches which perform dependency updates
+apply_patch_dir updates
+# Make `litep2p`, `polkavm` optional
 apply_patch optional_litep2p
+apply_patch_dir optional_polkavm
 
-# Make `polkavm` optional
-apply_patch optional_polkavm
-
-# Replace `wasm-timer` with `wasmtimer`
+# Replace the `wasm-timer` dependency with `wasmtimer`
 remove_matching_lines ./polkadot-sdk/substrate/client/telemetry/Cargo.toml "wasm-timer"
 echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
@@ -95,9 +88,13 @@ echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/network/Cargo
 echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
 echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
-apply_patch replace_wasm-timer_with_wasmtimer
 
-# Remove some unused dependencies
+# Remove unused HTTP module and associated dependencies
+silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/offchain/http.rs
+silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
+apply_patch removals/offchain_http
+
+# Remove various unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
 remove_matching_lines ./polkadot-sdk/substrate/client/service/Cargo.toml "static_init"
@@ -132,6 +129,9 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "aquamarine"
 
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
+
+# Apply the patches which are explicitly opinions
+apply_patch_dir opinions
 
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
@@ -223,12 +223,13 @@ remove_crate_tree substrate/deprecated
 remove_crate_tree substrate/bin
 
 # Remove the unused "bitswap" protocol
+# https://github.com/libp2p/rust-libp2p/issues/2632
 silent_rm ./polkadot-sdk/substrate/client/network/build.rs
 silent_rm ./polkadot-sdk/substrate/client/network/src/bitswap
 silent_rm ./polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 silent_rm ./polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
 remove_matching_lines ./polkadot-sdk/substrate/client/network/src/lib.rs "mod bitswap;$"
-apply_patch remove_bitswap
+apply_patch removals/bitswap
 
 # Remove the BEEFY consensus crates
 remove_crate_tree substrate/client/consensus/beefy
@@ -254,7 +255,7 @@ remove_crate_tree substrate/client/consensus/manual-seal
 remove_crate_tree substrate/client/consensus/aura
 remove_crate_tree substrate/frame/aura
 remove_crate_tree substrate/primitives/consensus/aura
-apply_patch remove_aura
+apply_patch removals/aura
 
 remove_crate_tree substrate/frame/contracts
 remove_crate_tree substrate/frame/revive
@@ -285,12 +286,12 @@ remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod statem
 remove_crate_tree substrate/utils/binary-merkle-tree
 silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/base2.rs
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/mod.rs "mod base2;$"
-apply_patch remove_binary_merkle_tree_prover
+apply_patch removals/BinaryMerkleTreeProver
 
 # Remove the transaction storage code
 remove_crate_tree substrate/frame/transaction-storage
 remove_crate_tree substrate/primitives/transaction-storage-proof
-apply_patch remove_sp_transaction_storage_proof
+apply_patch removals/sp-transaction-storage-proof
 
 # Remove non-Ristretto cryptography
 remove_crate_tree substrate/primitives/crypto/ec-utils
@@ -313,55 +314,39 @@ silent_rm ./polkadot-sdk/substrate/frame/support/src/crypto/ecdsa.rs
 silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ed25519.rs
 silent_rm ./polkadot-sdk/substrate/primitives/core/src/ed25519.rs
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
-apply_patch remove_ecdsa_ed25519
+apply_patch removals/ecdsa_ed25519
 
-# Restore emission of events on genesis
-apply_patch events_on_genesis
+# Remove metadata
 
-# Remove the runtime's metadata
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
-apply_patch remove_runtime_metadata
-
-# Remove the metadata's hash from the runtime
-remove_feature metadata-hash
-silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
-remove_matching_lines ./polkadot-sdk/substrate/test-utils/runtime/build.rs "enable_metadata_hash"
-
-# Remove the extension which checks the metadata's hash from the runtime
+remove_crate_tree substrate/primitives/metadata-ir
 remove_crate_tree substrate/frame/metadata-hash-extension
-apply_patch remove_metadata_hash_extension
 
-# Remove `TypeInfo` from storage values
-apply_patch remove_storage_type_info
-
-# Remove `TypeInfo` from call
-apply_patch remove_call_type_info
-
-# Remote metadata entirely
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/deprecation.rs
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/constants.rs
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/doc_only.rs
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/documentation.rs
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/extra_constants.rs
 silent_rm ./polkadot-sdk/substrate/primitives/api/proc-macro/src/runtime_metadata.rs
-remove_crate_tree substrate/primitives/metadata-ir
+remove_feature no-metadata-docs
+
+silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
+remove_feature metadata-hash
+
+remove_dependency scale-info
+
+# Add `sp-api` as a direct dependency to `frame-support`, as it sets features on it
 echo '[dependencies.sp-api]' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
 echo 'workspace = true' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
-remove_feature no-metadata-docs
-apply_patch remove_metadata
 
-remove_dependency scale-info
-apply_patch remove_scale-info
+apply_patch_dir metadata
 
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
 # Remove the deprecated native executor
-apply_patch remove_native_executor
-
-# Remove `static_init`
-apply_patch remove_static_init
+apply_patch removals/NativeExecutor
 
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance
@@ -441,7 +426,7 @@ remove_crate_tree substrate/client/runtime-utilities
 remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
 remove_crate_tree substrate/utils/substrate-bip39
-apply_patch remove_substrate-bip39
+apply_patch removals/substrate-bip39
 
 # Remove fuzzers
 remove_crate_tree substrate/primitives/arithmetic/fuzzer
@@ -451,7 +436,7 @@ remove_crate_tree substrate/primitives/state-machine/fuzz
 # Remove benchmarking code we don't use
 remove_crate_tree substrate/frame/session/benchmarking
 remove_crate_tree substrate/frame/system/benchmarking
-apply_patch remove_frame_system_benchmarking
+apply_patch removals/frame-system-benchmarking
 
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
@@ -464,11 +449,11 @@ remove_crate_tree substrate/primitives/test-primitives
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
-apply_patch remove_docify
+apply_patch removals/docify
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
 
 # Remove the `SS58prefix` constant
-apply_patch remove_ss58_prefix
+apply_patch removals/SS58Prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
 
 # Perform upgrades to preferred versions
@@ -480,10 +465,7 @@ cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
 cargo_upgrade directories 6.0.0
 cargo_upgrade fs4 0.13.0
-
 cargo_upgrade governor 0.10.0
-apply_patch update_governor
-
 cargo_upgrade hex-literal 1.0.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade kvdb-rocksdb 0.20.0
@@ -491,10 +473,7 @@ cargo_upgrade kvdb-rocksdb 0.20.0
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0
-
 cargo_upgrade prometheus 0.14.0
-apply_patch update_prometheus
-
 cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
