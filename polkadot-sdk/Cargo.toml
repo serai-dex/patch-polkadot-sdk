@@ -523,9 +523,6 @@ default-features = false
 [workspace.dependencies.macro_magic]
 version = "0.6.0"
 
-[workspace.dependencies.memmap2]
-version = "0.9.3"
-
 [workspace.dependencies.memory-db]
 version = "0.32.0"
 default-features = false

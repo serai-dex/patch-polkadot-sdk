@@ -1,0 +1,39 @@
+diff --git a/substrate/client/chain-spec/src/chain_spec.rs b/substrate/client/chain-spec/src/chain_spec.rs
+index 764db13..7d76ba8 100644
+--- a/substrate/client/chain-spec/src/chain_spec.rs
++++ b/substrate/client/chain-spec/src/chain_spec.rs
+@@ -91,16 +91,8 @@ impl<EHF: HostFunctions> GenesisSource<EHF> {
+ 				let file = File::open(path).map_err(|e| {
+ 					format!("Error opening spec file at `{}`: {}", path.display(), e)
+ 				})?;
+-				// SAFETY: `mmap` is fundamentally unsafe since technically the file can change
+-				//         underneath us while it is mapped; in practice it's unlikely to be a
+-				//         problem
+-				let bytes = unsafe {
+-					memmap2::Mmap::map(&file).map_err(|e| {
+-						format!("Error mmaping spec file `{}`: {}", path.display(), e)
+-					})?
+-				};
+-
+-				let genesis: GenesisContainer = json::from_slice(&bytes)
++
++				let genesis: GenesisContainer = json::from_reader(&file)
+ 					.map_err(|e| format!("Error parsing spec file: {}", e))?;
+ 				Ok(genesis.genesis)
+ 			},
+@@ -544,14 +536,8 @@ impl<E: serde::de::DeserializeOwned, EHF> ChainSpec<E, EHF> {
+ 		let file = File::open(&path)
+ 			.map_err(|e| format!("Error opening spec file `{}`: {}", path.display(), e))?;
+ 
+-		// SAFETY: `mmap` is fundamentally unsafe since technically the file can change
+-		//         underneath us while it is mapped; in practice it's unlikely to be a problem
+-		let bytes = unsafe {
+-			memmap2::Mmap::map(&file)
+-				.map_err(|e| format!("Error mmaping spec file `{}`: {}", path.display(), e))?
+-		};
+ 		let client_spec =
+-			json::from_slice(&bytes).map_err(|e| format!("Error parsing spec file: {}", e))?;
++			json::from_reader(&file).map_err(|e| format!("Error parsing spec file: {}", e))?;
+ 
+ 		Ok(ChainSpec {
+ 			client_spec,

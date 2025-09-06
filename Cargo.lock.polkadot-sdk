@@ -5634,7 +5634,6 @@ version = "43.0.0"
 dependencies = [
  "array-bytes",
  "clap",
- "memmap2",
  "parity-scale-codec",
  "sc-chain-spec-derive",
  "sc-client-api",

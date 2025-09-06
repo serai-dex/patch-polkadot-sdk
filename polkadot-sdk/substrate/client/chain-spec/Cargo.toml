@@ -36,9 +36,6 @@ workspace = true
 features = ["derive"]
 workspace = true
 
-[dependencies.memmap2]
-workspace = true
-
 [dependencies.sc-chain-spec-derive]
 default-features = true
 workspace = true

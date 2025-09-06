@@ -95,6 +95,7 @@ silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
 apply_patch removals/offchain_http
 
 # Remove various unused dependencies
+remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/Cargo.toml "memmap2"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
 remove_matching_lines ./polkadot-sdk/substrate/client/service/Cargo.toml "static_init"
@@ -137,6 +138,9 @@ apply_patch removals/build-helper
 # Remove `dyn-clonable` for `dyn-clone`, where both are already in-use within this tree
 echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | sed s/"dyn-clonable"/"dyn-clone"/)" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
 apply_patch removals/dyn-clonable
+
+# Remove memmap2 and the associated unsafe calling code
+apply_patch removals/memmap2
 
 # Apply the patches which are explicitly opinions
 apply_patch_dir opinions
