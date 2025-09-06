@@ -115,46 +115,6 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "frame-metadata"
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "merkleized-metadata"
-# Also prune dated workspace dependency specifications we don't need
-# This lets us detect which ones are actually worth upgrading
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^alloy-core"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^always-assert"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^ark-"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^bincode"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^bounded-vec"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^cid"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^cmd_lib"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^colored"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^criterion"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^fraction"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^frame-metadata"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^gethostname"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^handlebars"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^indicatif"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^is-terminal"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^jemalloc_pprof"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^k256"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^landlock"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^libsecp256k1"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^merkleized-metadata"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^nix"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^procfs"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^quick_cache"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^rstest"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^schemars"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^seccompiler"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^secp256k1"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^serde-big-array"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^smoldot"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^subxt"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^sysinfo"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^tikv"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^tokio-tungstenite"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^trie-bench"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasmi"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^wasm-timer"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^w3f-bls"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "^zombienet"
 
 # Remove `simple-mermaid`
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
@@ -220,6 +180,13 @@ function cargo_upgrade {
   ./target/release/serai-polkadot-sdk upgrade $1 $2
   if [ $? -ne 0 ]; then
     exit 8
+  fi
+}
+
+function trim_workspace_dependencies {
+  ./target/release/serai-polkadot-sdk trim_workspace_dependencies
+  if [ $? -ne 0 ]; then
+    exit 9
   fi
 }
 
@@ -574,7 +541,7 @@ echo "Running \`cargo check\`"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 9
+  exit 10
 fi
 
 # Save >10 GB on what should be a static directory of no further use
@@ -583,5 +550,8 @@ cargo clean
 touch .patched
 
 cd ..
+
+# Remove unused dependencies from the workspace `Cargo.toml`
+trim_workspace_dependencies
 
 echo "Patched"

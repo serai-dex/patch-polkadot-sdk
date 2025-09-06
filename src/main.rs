@@ -248,6 +248,62 @@ fn main() {
         .unwrap();
     }
 
+    "trim_workspace_dependencies" => {
+      let all_crates_in_workspace = discover_all_crates_in_folder("substrate")
+        .into_iter()
+        .map(|dep| dep.name)
+        .collect::<HashSet<_>>();
+
+      let all_deps_in_lock_file = {
+        let mut root_dir = env::current_dir().unwrap();
+        while !root_dir.ends_with("polkadot-sdk") {
+          assert!(
+            root_dir.pop(),
+            "couldn't find polkadot-sdk directory at or above current directory"
+          );
+        }
+        let lock_path = root_dir.join("Cargo.lock");
+        let lock_toml = fs::read_to_string(&lock_path).unwrap();
+
+        let mut all = HashSet::with_capacity(1000);
+        for package in
+          toml::from_str::<toml::Table>(&lock_toml).unwrap()["package"].as_array().unwrap()
+        {
+          let package = package.as_table().unwrap();
+          if !all_crates_in_workspace.contains(package["name"].as_str().unwrap()) {
+            continue;
+          }
+          for dep in package.get("dependencies").and_then(toml::Value::as_array).unwrap_or(&vec![])
+          {
+            all.insert(dep.as_str().unwrap().split(' ').next().unwrap().to_owned());
+          }
+        }
+        all
+      };
+
+      let (workspace_toml_path, mut workspace_toml) = workspace_toml();
+
+      let dependencies = workspace_toml["workspace"]["dependencies"].as_table_mut().unwrap();
+      for key in dependencies.keys().map(Clone::clone).collect::<HashSet<_>>() {
+        if !all_deps_in_lock_file.contains(&key) {
+          // Check if it's an alias for a present package
+          if let Some(dep) = dependencies[&key].as_table() {
+            if let Some(dep) = dep.get("package") {
+              if all_deps_in_lock_file.contains(dep.as_str().unwrap()) {
+                continue;
+              }
+            }
+          }
+
+          // Remove it, as it's unused
+          dependencies.remove(&key);
+        }
+      }
+
+      fs::write(workspace_toml_path, toml::to_string_pretty(&workspace_toml).unwrap().as_bytes())
+        .unwrap();
+    }
+
     _ => panic!("unknown command"),
   }
 }
