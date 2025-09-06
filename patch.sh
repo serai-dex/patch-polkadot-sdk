@@ -558,4 +558,8 @@ cd ..
 # Remove unused dependencies from the workspace `Cargo.toml`
 trim_workspace_dependencies
 
+# Synchronoize the `polkadot-sdk` `Cargo.lock`
+silent_rm ./Cargo.lock.polkadot-sdk
+cp ./polkadot-sdk/Cargo.lock ./Cargo.lock.polkadot-sdk
+
 echo "Patched"

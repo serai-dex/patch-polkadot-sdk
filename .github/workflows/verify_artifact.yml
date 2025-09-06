@@ -29,9 +29,13 @@ jobs:
           find polkadot-sdk/ -type f -exec sha256sum {} \; > SHA256SUMS.committed
           rm -rf polkadot-sdk
 
+          # Back this up as the `patch.sh` script will automatically update it
+          cp Cargo.lock.polkadot-sdk Cargo.lock.polkadot-sdk.bak
+
           ./patch.sh
 
-          cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk
+          cmp Cargo.lock.polkadot-sdk Cargo.lock.polkadot-sdk.bak
+          cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk.bak
           # Remove this, as it wasn't present in this location when committed
           rm polkadot-sdk/Cargo.lock
 
@@ -41,7 +45,8 @@ jobs:
 
           # Running a second time should produce the exact same output, even if starting with a `polkadot-sdk` folder
           ./patch.sh --from-scratch
-          cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk
+          cmp Cargo.lock.polkadot-sdk Cargo.lock.polkadot-sdk.bak
+          cmp polkadot-sdk/Cargo.lock Cargo.lock.polkadot-sdk.bak
           rm polkadot-sdk/Cargo.lock
           rm -rf polkadot-sdk/.git
           find polkadot-sdk/ -type f -exec sha256sum {} \; > SHA256SUMS
