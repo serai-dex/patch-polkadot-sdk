@@ -327,14 +327,14 @@ impl<P: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>> frame_support::traits
 			KillStorageResult::AllRemoved(value) => value,
 			KillStorageResult::SomeRemaining(value) => {
 				log::error!(
-					"`clear_prefix` failed to remove all keys for {}. THIS SHOULD NEVER HAPPEN! ",
+					"`clear_prefix` failed to remove all keys for {}. THIS SHOULD NEVER HAPPEN!",
 					P::get()
 				);
 				value
 			},
 		} as u64;
 
-		log::info!("Removed {} {} keys ", keys_removed, P::get());
+		log::info!("Removed {} {} keys", keys_removed, P::get());
 
 		DbWeight::get().reads_writes(keys_removed + 1, keys_removed)
 	}
@@ -345,7 +345,7 @@ impl<P: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>> frame_support::traits
 
 		let hashed_prefix = twox_128(P::get().as_bytes());
 		match contains_prefixed_key(&hashed_prefix) {
-			true => log::info!("Found {} keys pre-removal ", P::get()),
+			true => log::info!("Found {} keys pre-removal", P::get()),
 			false => log::warn!(
 				"Migration RemovePallet<{}> can be removed (no keys found pre-removal).",
 				P::get()
@@ -361,10 +361,10 @@ impl<P: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>> frame_support::traits
 		let hashed_prefix = twox_128(P::get().as_bytes());
 		match contains_prefixed_key(&hashed_prefix) {
 			true => {
-				log::error!("{} has keys remaining post-removal ", P::get());
-				return Err("Keys remaining post-removal, this should never happen ".into())
+				log::error!("{} has keys remaining post-removal", P::get());
+				return Err("Keys remaining post-removal, this should never happen".into())
 			},
-			false => log::info!("No {} keys found post-removal ", P::get()),
+			false => log::info!("No {} keys found post-removal", P::get()),
 		};
 		Ok(())
 	}
@@ -438,14 +438,14 @@ impl<P: Get<&'static str>, S: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>>
 			KillStorageResult::AllRemoved(value) => value,
 			KillStorageResult::SomeRemaining(value) => {
 				log::error!(
-					"`clear_prefix` failed to remove all keys for storage `{}` from pallet `{}`. THIS SHOULD NEVER HAPPEN! ",
+					"`clear_prefix` failed to remove all keys for storage `{}` from pallet `{}`. THIS SHOULD NEVER HAPPEN!",
 					S::get(), P::get()
 				);
 				value
 			},
 		} as u64;
 
-		log::info!("Removed `{}` `{}` `{}` keys ", keys_removed, P::get(), S::get());
+		log::info!("Removed `{}` `{}` `{}` keys", keys_removed, P::get(), S::get());
 
 		DbWeight::get().reads_writes(keys_removed + 1, keys_removed)
 	}
@@ -456,7 +456,7 @@ impl<P: Get<&'static str>, S: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>>
 
 		let hashed_prefix = storage_prefix(P::get().as_bytes(), S::get().as_bytes());
 		match contains_prefixed_key(&hashed_prefix) {
-			true => log::info!("Found `{}` `{}` keys pre-removal ", P::get(), S::get()),
+			true => log::info!("Found `{}` `{}` keys pre-removal", P::get(), S::get()),
 			false => log::warn!(
 				"Migration RemoveStorage<{}, {}> can be removed (no keys found pre-removal).",
 				P::get(),
@@ -473,10 +473,10 @@ impl<P: Get<&'static str>, S: Get<&'static str>, DbWeight: Get<RuntimeDbWeight>>
 		let hashed_prefix = storage_prefix(P::get().as_bytes(), S::get().as_bytes());
 		match contains_prefixed_key(&hashed_prefix) {
 			true => {
-				log::error!("`{}` `{}` has keys remaining post-removal ", P::get(), S::get());
-				return Err("Keys remaining post-removal, this should never happen ".into())
+				log::error!("`{}` `{}` has keys remaining post-removal", P::get(), S::get());
+				return Err("Keys remaining post-removal, this should never happen".into())
 			},
-			false => log::info!("No `{}` `{}` keys found post-removal ", P::get(), S::get()),
+			false => log::info!("No `{}` `{}` keys found post-removal", P::get(), S::get()),
 		};
 		Ok(())
 	}

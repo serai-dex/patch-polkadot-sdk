@@ -303,7 +303,7 @@ impl<B: BlockT> ExtraRequests<B> {
 
 		if self.tree.finalize_root(&finalized_hash).is_none() {
 			warn!(target: LOG_TARGET,
-				"️ Imported {:?} {:?} which isn't a root in the tree: {:?}",
+				"Imported {:?} {:?} which isn't a root in the tree: {:?}",
 				finalized_hash, finalized_number, self.tree.roots().collect::<Vec<_>>()
 			);
 			return true

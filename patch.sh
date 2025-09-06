@@ -469,12 +469,10 @@ apply_patch removals/SS58Prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
 
 # Remove non-ASCII characters
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\"[^\x00-\x7F]  /\"/"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\"[^\x00-\x7F] /\"/"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\"[^\x00-\x7F]/\"/"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F]  \"/\"/"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F] \"/\"/"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/[^\x00-\x7F]\"/\"/"); echo "$STRIPPED" > {}' \;
+# Remove Unicode characters from the start of strings
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed -E "s/\"([ ]*[^\x00-\x7Fµ][ ]*)+/\"/"); echo "$STRIPPED" > {}' \;
+# Remove Unicode characters from the end of strings
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed -E "s/([ ]*[^\x00-\x7Fµ][ ]*)+\"/\"/"); echo "$STRIPPED" > {}' \;
 
 # Remove "; qed"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;

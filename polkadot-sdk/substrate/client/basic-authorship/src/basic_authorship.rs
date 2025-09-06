@@ -376,20 +376,20 @@ where
 			match block_builder.push(inherent) {
 				Err(ApplyExtrinsicFailed(Validity(e))) if e.was_mandatory() => {
 					error!(
-						"️ Mandatory inherent extrinsic returned error. Block cannot be produced."
+						"Mandatory inherent extrinsic returned error. Block cannot be produced."
 					);
 					return Err(ApplyExtrinsicFailed(Validity(e)))
 				},
 				Err(ApplyExtrinsicFailed(Validity(e))) if e.exhausted_resources() => {
 					warn!(
 						target: LOG_TARGET,
-						"️  Dropping non-mandatory inherent from overweight block."
+						"Dropping non-mandatory inherent from overweight block."
 					)
 				},
 				Err(e) => {
 					warn!(
 						target: LOG_TARGET,
-						"️ Inherent extrinsic returned unexpected error: {}. Dropping.", e
+						"Inherent extrinsic returned unexpected error: {}. Dropping.", e
 					);
 				},
 				Ok(_) => {},

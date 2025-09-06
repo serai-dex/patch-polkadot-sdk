@@ -157,7 +157,7 @@ where
 					Poll::Ready(Ok(())) => {
 						match self.as_mut().try_send_connection_messages(cx, &mut conn) {
 							Poll::Ready(Err(err)) => {
-								log::warn!(target: "telemetry", "️  Disconnected from {}: {:?}", self.addr, err);
+								log::warn!(target: "telemetry", "Disconnected from {}: {:?}", self.addr, err);
 								socket = NodeSocket::wait_reconnect();
 							},
 							Poll::Ready(Ok(())) => {
@@ -171,7 +171,7 @@ where
 						}
 					},
 					Poll::Ready(Err(err)) => {
-						log::warn!(target: "telemetry", "️  Disconnected from {}: {:?}", self.addr, err);
+						log::warn!(target: "telemetry", "Disconnected from {}: {:?}", self.addr, err);
 						socket = NodeSocket::wait_reconnect();
 					},
 					Poll::Pending => {
@@ -256,7 +256,7 @@ where
 					}
 				},
 				NodeSocket::Poisoned => {
-					log::error!(target: "telemetry", "️ Poisoned connection with {}", self.addr);
+					log::error!(target: "telemetry", "Poisoned connection with {}", self.addr);
 					break NodeSocket::Poisoned
 				},
 			}

@@ -224,7 +224,7 @@ pub trait SimpleSlotWorker<B: BlockT> {
 			Either::Right(_) => {
 				info!(
 					target: log_target,
-					"️ Discarding proposal for slot {}; block production took too long", slot,
+					"Discarding proposal for slot {}; block production took too long", slot,
 				);
 				// If the node was compiled with debug, tell the user to use release optimizations.
 				#[cfg(build_profile = "debug")]
