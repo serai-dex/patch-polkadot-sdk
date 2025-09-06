@@ -180,8 +180,7 @@ impl ReadRuntimeVersionExt {
 
 /// Something that can spawn tasks (blocking and non-blocking) with an assigned name
 /// and optional group.
-#[dyn_clonable::clonable]
-pub trait SpawnNamed: Clone + Send + Sync {
+pub trait SpawnNamed: dyn_clone::DynClone + Send + Sync {
 	/// Spawn the given blocking future.
 	///
 	/// The given `group` and `name` is used to identify the future in tracing.
@@ -201,6 +200,7 @@ pub trait SpawnNamed: Clone + Send + Sync {
 		future: futures::future::BoxFuture<'static, ()>,
 	);
 }
+dyn_clone::clone_trait_object!(SpawnNamed);
 
 impl SpawnNamed for Box<dyn SpawnNamed> {
 	fn spawn_blocking(
@@ -225,8 +225,7 @@ impl SpawnNamed for Box<dyn SpawnNamed> {
 /// and optional group.
 ///
 /// Essential tasks are special tasks that should take down the node when they end.
-#[dyn_clonable::clonable]
-pub trait SpawnEssentialNamed: Clone + Send + Sync {
+pub trait SpawnEssentialNamed: dyn_clone::DynClone + Send + Sync {
 	/// Spawn the given blocking future.
 	///
 	/// The given `group` and `name` is used to identify the future in tracing.
@@ -246,6 +245,7 @@ pub trait SpawnEssentialNamed: Clone + Send + Sync {
 		future: futures::future::BoxFuture<'static, ()>,
 	);
 }
+dyn_clone::clone_trait_object!(SpawnEssentialNamed);
 
 impl SpawnEssentialNamed for Box<dyn SpawnEssentialNamed> {
 	fn spawn_essential_blocking(

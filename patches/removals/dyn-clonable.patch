@@ -1,0 +1,38 @@
+diff --git a/substrate/primitives/core/src/traits.rs b/substrate/primitives/core/src/traits.rs
+index 851d891..5d040de 100644
+--- a/substrate/primitives/core/src/traits.rs
++++ b/substrate/primitives/core/src/traits.rs
+@@ -180,7 +180,6 @@ impl ReadRuntimeVersionExt {
+ 
+ /// Something that can spawn tasks (blocking and non-blocking) with an assigned name
+ /// and optional group.
+-#[dyn_clonable::clonable]
+-pub trait SpawnNamed: Clone + Send + Sync {
++pub trait SpawnNamed: dyn_clone::DynClone + Send + Sync {
+ 	/// Spawn the given blocking future.
+ 	///
+@@ -201,6 +200,7 @@ pub trait SpawnNamed: Clone + Send + Sync {
+ 		future: futures::future::BoxFuture<'static, ()>,
+ 	);
+ }
++dyn_clone::clone_trait_object!(SpawnNamed);
+ 
+ impl SpawnNamed for Box<dyn SpawnNamed> {
+ 	fn spawn_blocking(
+@@ -225,7 +225,6 @@ impl SpawnNamed for Box<dyn SpawnNamed> {
+ /// and optional group.
+ ///
+ /// Essential tasks are special tasks that should take down the node when they end.
+-#[dyn_clonable::clonable]
+-pub trait SpawnEssentialNamed: Clone + Send + Sync {
++pub trait SpawnEssentialNamed: dyn_clone::DynClone + Send + Sync {
+ 	/// Spawn the given blocking future.
+ 	///
+@@ -246,6 +245,7 @@ pub trait SpawnEssentialNamed: Clone + Send + Sync {
+ 		future: futures::future::BoxFuture<'static, ()>,
+ 	);
+ }
++dyn_clone::clone_trait_object!(SpawnEssentialNamed);
+ 
+ impl SpawnEssentialNamed for Box<dyn SpawnEssentialNamed> {
+ 	fn spawn_essential_blocking(

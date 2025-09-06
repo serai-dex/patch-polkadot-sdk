@@ -45,7 +45,7 @@ features = [
 ]
 workspace = true
 
-[dependencies.dyn-clonable]
+[dependencies.dyn-clone]
 optional = true
 workspace = true
 
@@ -165,7 +165,7 @@ std = [
     "bounded-collections/std",
     "bs58/std",
     "codec/std",
-    "dyn-clonable",
+    "dyn-clone",
     "full_crypto",
     "futures",
     "futures/thread-pool",

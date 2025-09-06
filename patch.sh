@@ -134,6 +134,10 @@ find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGIN
 # Remove `build-helper`
 apply_patch removals/build-helper
 
+# Remove `dyn-clonable` for `dyn-clone`, where both are already in-use within this tree
+echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | sed s/"dyn-clonable"/"dyn-clone"/)" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
+apply_patch removals/dyn-clonable
+
 # Apply the patches which are explicitly opinions
 apply_patch_dir opinions
 
