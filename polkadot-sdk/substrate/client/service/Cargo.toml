@@ -223,9 +223,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.static_init]
-workspace = true
-
 [dependencies.tempfile]
 workspace = true
 

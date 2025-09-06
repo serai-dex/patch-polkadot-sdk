@@ -100,6 +100,7 @@ apply_patch replace_wasm-timer_with_wasmtimer
 # Remove some unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
+remove_matching_lines ./polkadot-sdk/substrate/client/service/Cargo.toml "static_init"
 remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "is-terminal"
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "frame-metadata"
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "k256"
@@ -358,6 +359,9 @@ remove_crate_tree substrate/client/offchain
 
 # Remove the deprecated native executor
 apply_patch remove_native_executor
+
+# Remove `static_init`
+apply_patch remove_static_init
 
 # Remove unused pallets
 remove_crate_tree substrate/frame/alliance

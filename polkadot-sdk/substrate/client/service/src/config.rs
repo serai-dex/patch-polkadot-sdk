@@ -44,8 +44,8 @@ use std::{
 	net::SocketAddr,
 	num::NonZeroU32,
 	path::{Path, PathBuf},
+	sync::{Mutex, OnceLock},
 };
-use tempfile::TempDir;
 
 /// Service configuration.
 #[derive(Debug)]
@@ -221,8 +221,7 @@ impl Configuration {
 	}
 }
 
-#[static_init::dynamic(drop, lazy)]
-static mut BASE_PATH_TEMP: Option<TempDir> = None;
+static BASE_PATH_TEMP: OnceLock<Mutex<Option<PathBuf>>> = OnceLock::new();
 
 /// The base path that is used for everything that needs to be written on disk to run a node.
 #[derive(Clone, Debug)]
@@ -238,18 +237,12 @@ impl BasePath {
 	/// exits. Every call to this function will return the same path for the lifetime of the
 	/// program.
 	pub fn new_temp_dir() -> io::Result<BasePath> {
-		let mut temp = BASE_PATH_TEMP.write();
-
-		match &*temp {
-			Some(p) => Ok(Self::new(p.path())),
-			None => {
-				let temp_dir = tempfile::Builder::new().prefix("substrate").tempdir()?;
-				let path = PathBuf::from(temp_dir.path());
-
-				*temp = Some(temp_dir);
-				Ok(Self::new(path))
-			},
+		let mut path = BASE_PATH_TEMP.get_or_init(|| Mutex::new(None)).lock().unwrap();
+		if path.is_none() {
+		  let temp_dir = tempfile::Builder::new().prefix("substrate").tempdir()?;
+		  *path = Some(PathBuf::from(temp_dir.path()));
 		}
+		Ok(Self::new(path.as_ref().unwrap().as_path()))
 	}
 
 	/// Create a `BasePath` instance based on an existing path on disk.
