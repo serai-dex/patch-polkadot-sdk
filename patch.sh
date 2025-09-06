@@ -59,6 +59,10 @@ function apply_patch_dir {
   ls patches/$1 | grep -v "README\.md" | while read -r patch; do
     apply_patch $1/$(echo $patch | sed s/".patch"//)
   done
+  PATCHES_SUCCEEDED=$?
+  if [ $PATCHES_SUCCEEDED -ne 0 ]; then
+    exit $PATCHES_SUCCEEDED
+  fi
 }
 
 function remove_matching_lines {
