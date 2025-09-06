@@ -230,6 +230,18 @@ fn main() {
         fs::write(crate_toml_path, toml::to_string_pretty(&crate_toml).unwrap().as_bytes())
           .unwrap();
       }
+
+      // Also remove dev-only `opt-level = 3` which slow down compilation
+      let (workspace_toml_path, mut workspace_toml) = workspace_toml();
+      let table = workspace_toml["profile"]["dev"]["package"].as_table_mut().unwrap();
+      for key in table.keys().map(Clone::clone).collect::<HashSet<_>>() {
+        table[&key].as_table_mut().unwrap().remove("opt-level");
+        if table[&key].as_table().unwrap().is_empty() {
+          table.remove(&key);
+        }
+      }
+      fs::write(workspace_toml_path, toml::to_string_pretty(&workspace_toml).unwrap().as_bytes())
+        .unwrap();
     }
 
     "upgrade" => {
