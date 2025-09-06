@@ -494,13 +494,13 @@ version = "0.20.0"
 version = "0.2.155"
 
 [workspace.dependencies.libp2p]
-version = "0.54.1"
+version = ">= 0.54, <= 0.55"
 
 [workspace.dependencies.libp2p-identity]
 version = "0.2.9"
 
 [workspace.dependencies.libp2p-kad]
-version = "0.46.2"
+version = ">= 0.46, <= 0.47"
 default-features = false
 
 [workspace.dependencies.linked-hash-map]

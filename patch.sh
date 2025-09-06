@@ -194,7 +194,7 @@ function remove_dev_dependencies {
 
 function cargo_upgrade {
   echo "Upgrading $1 to $2"
-  ./target/release/serai-polkadot-sdk upgrade $1 $2
+  ./target/release/serai-polkadot-sdk upgrade $1 "$2"
   if [ $? -ne 0 ]; then
     exit 8
   fi
@@ -494,7 +494,8 @@ cargo_upgrade governor 0.10.0
 cargo_upgrade hex-literal 1.0.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade kvdb-rocksdb 0.20.0
-# TODO cargo_upgrade libp2p 0.56.0
+cargo_upgrade libp2p ">= 0.54, <= 0.55"
+cargo_upgrade libp2p-kad ">= 0.46, <= 0.47"
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0
