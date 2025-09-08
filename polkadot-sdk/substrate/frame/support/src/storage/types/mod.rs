@@ -53,6 +53,7 @@ pub use value::StorageValue;
 ///
 /// ## Example
 pub trait QueryKindTrait<Value, OnEmpty> {
+
 	/// Type returned on query
 	type Query: FullCodec + 'static;
 
@@ -73,6 +74,7 @@ impl<Value> QueryKindTrait<Value, crate::traits::GetDefault> for OptionQuery
 where
 	Value: FullCodec + 'static,
 {
+
 	type Query = Option<Value>;
 
 	fn from_optional_value_to_query(v: Option<Value>) -> Self::Query {
@@ -93,6 +95,7 @@ where
 	Error: FullCodec + 'static,
 	OnEmpty: crate::traits::Get<Result<Value, Error>>,
 {
+
 	type Query = Result<Value, Error>;
 
 	fn from_optional_value_to_query(v: Option<Value>) -> Self::Query {
@@ -114,6 +117,7 @@ where
 	Value: FullCodec + 'static,
 	OnEmpty: crate::traits::Get<Value>,
 {
+
 	type Query = Value;
 
 	fn from_optional_value_to_query(v: Option<Value>) -> Self::Query {
@@ -124,6 +128,7 @@ where
 		Some(v)
 	}
 }
+
 
 #[cfg(test)]
 mod test {

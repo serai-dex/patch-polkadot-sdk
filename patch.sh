@@ -215,10 +215,18 @@ function remove_feature {
   fi
 }
 
+function remove_trait {
+  echo "Removing trait $2 from $1"
+  ./target/release/serai-polkadot-sdk remove_trait $1 $2
+  if [ $? -ne 0 ]; then
+    exit 8
+  fi
+}
+
 function remove_dev_dependencies {
   ./target/release/serai-polkadot-sdk remove_dev_dependencies
   if [ $? -ne 0 ]; then
-    exit 8
+    exit 9
   fi
 }
 
@@ -226,14 +234,14 @@ function cargo_upgrade {
   echo "Upgrading $1 to $2"
   ./target/release/serai-polkadot-sdk upgrade $1 "$2"
   if [ $? -ne 0 ]; then
-    exit 9
+    exit 10
   fi
 }
 
 function trim_workspace_dependencies {
   ./target/release/serai-polkadot-sdk trim_workspace_dependencies
   if [ $? -ne 0 ]; then
-    exit 10
+    exit 11
   fi
 }
 
@@ -381,6 +389,17 @@ echo 'workspace = true' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
 
 apply_patch_dir metadata
+
+remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/hash.rs "metadata_ir"
+# remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/storage/types/key.rs "metadata_ir"
+ls ./polkadot-sdk/substrate/frame/support/src/storage/types | while read -r file; do
+  file=./polkadot-sdk/substrate/frame/support/src/storage/types/$file
+  remove_matching_lines $file "^use sp_metadata_ir"
+  echo "$(cat $file | sed s/"\, StorageEntryMetadataBuilder"// | sed s/"StorageEntryMetadataBuilder\, "//)" > $file
+done
+remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/storage/types/mod.rs "/// Metadata for the storage kind."
+remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/storage/types/mod.rs "const METADATA"
+remove_trait substrate/frame/support/src/storage/types "StorageEntryMetadataBuilder"
 
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
@@ -574,7 +593,7 @@ echo "Running \`cargo check\`"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 11
+  exit 12
 fi
 
 # Save >10 GB on what should be a static directory of no further use

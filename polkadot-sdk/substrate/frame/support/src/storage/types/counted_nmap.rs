@@ -621,6 +621,7 @@ where
 	}
 }
 
+
 impl<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues> crate::traits::StorageInfoTrait
 	for CountedStorageNMap<Prefix, Key, Value, QueryKind, OnEmpty, MaxValues>
 where
