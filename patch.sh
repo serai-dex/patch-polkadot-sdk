@@ -29,13 +29,22 @@ if [ ! -d "polkadot-sdk" ]; then
   cd ./polkadot-sdk
   git init
   git remote add origin https://github.com/paritytech/polkadot-sdk
-  git fetch --depth 1 origin $POLKADOT_SDK_COMMIT
   cd ..
 fi
 
 cd ./polkadot-sdk
 # Ensure we're starting from the intended commit
 git checkout -f $POLKADOT_SDK_COMMIT
+if [ $? -ne 0 ]; then
+  # Try to fetch the commit
+  git fetch --depth 1 origin $POLKADOT_SDK_COMMIT
+  # Try again to check it out
+  git checkout -f $POLKADOT_SDK_COMMIT
+  if [ $? -ne 0 ]; then
+    echo "Failed to checkout $POLKADOT_SDK_COMMIT"
+  fi
+  exit 2
+fi
 # Remove the existing `.patched` marker
 silent_rm .patched
 cd ..
@@ -51,7 +60,7 @@ function apply_patch {
   PATCH_SUCCEEDED=$?
   cd ..
   if [ $PATCH_SUCCEEDED -ne 0 ]; then
-    exit 2
+    exit 3
   fi
 }
 
@@ -158,7 +167,7 @@ function remove_crate_tree {
   echo "Removing crates $1"
   ./target/release/serai-polkadot-sdk remove_crate_tree $1
   if [ $? -ne 0 ]; then
-    exit 3
+    exit 4
   fi
 }
 
@@ -166,7 +175,7 @@ function remove_workspace_dependency {
   echo "Removing workspace dependency $1"
   ./target/release/serai-polkadot-sdk remove_workspace_dependency $1
   if [ $? -ne 0 ]; then
-    exit 4
+    exit 5
   fi
 }
 
@@ -174,7 +183,7 @@ function remove_dependency {
   echo "Removing feature $1"
   ./target/release/serai-polkadot-sdk remove_dependency $1
   if [ $? -ne 0 ]; then
-    exit 5
+    exit 6
   fi
 }
 
@@ -182,14 +191,14 @@ function remove_feature {
   echo "Removing feature $1"
   ./target/release/serai-polkadot-sdk remove_feature $1
   if [ $? -ne 0 ]; then
-    exit 6
+    exit 7
   fi
 }
 
 function remove_dev_dependencies {
   ./target/release/serai-polkadot-sdk remove_dev_dependencies
   if [ $? -ne 0 ]; then
-    exit 7
+    exit 8
   fi
 }
 
@@ -197,14 +206,14 @@ function cargo_upgrade {
   echo "Upgrading $1 to $2"
   ./target/release/serai-polkadot-sdk upgrade $1 "$2"
   if [ $? -ne 0 ]; then
-    exit 8
+    exit 9
   fi
 }
 
 function trim_workspace_dependencies {
   ./target/release/serai-polkadot-sdk trim_workspace_dependencies
   if [ $? -ne 0 ]; then
-    exit 9
+    exit 10
   fi
 }
 
@@ -551,7 +560,7 @@ echo "Running \`cargo check\`"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 10
+  exit 11
 fi
 
 # Save >10 GB on what should be a static directory of no further use
