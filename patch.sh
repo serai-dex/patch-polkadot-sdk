@@ -75,9 +75,20 @@ function apply_patch_dir {
 }
 
 function remove_matching_lines {
+  if [ ! -f $1 ]; then
+    return
+  fi
   ORIGINAL=$(cat $1)
   STRIPPED=$(echo "$ORIGINAL" | grep -v "$2")
   echo "$STRIPPED" > $1
+}
+
+function remove_module {
+  silent_rm $1/$2.rs
+  silent_rm $1/$2
+  remove_matching_lines $1/mod.rs "mod $2"
+  remove_matching_lines $1/lib.rs "mod $2"
+  remove_matching_lines $1.rs "mod $2"
 }
 
 # Apply the patches which are bug fixes
@@ -103,9 +114,18 @@ echo 'default-features = false' >> ./polkadot-sdk/substrate/client/network/Cargo
 echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
 
 # Remove unused HTTP module and associated dependencies
-silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/offchain/http.rs
+remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
 silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
 apply_patch removals/offchain_http
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "bytes"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "fnv"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "http-body-util"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "hyper"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "hyper-rustls"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "hyper-util"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "once_cell"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "rustls"
+remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "sc-utils"
 
 # Remove various unused dependencies
 remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/Cargo.toml "memmap2"
@@ -290,12 +310,9 @@ remove_crate_tree substrate/frame/revive
 remove_crate_tree substrate/client/mixnet
 remove_crate_tree substrate/frame/mixnet
 remove_crate_tree substrate/primitives/mixnet
-silent_rm ./polkadot-sdk/substrate/client/rpc-api/src/mixnet
-remove_matching_lines ./polkadot-sdk/substrate/client/rpc-api/src/lib.rs "mod mixnet;$"
-silent_rm ./polkadot-sdk/substrate/client/rpc/src/mixnet
-remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod mixnet;$"
-silent_rm ./polkadot-sdk/substrate/client/cli/src/params/mixnet_params.rs
-remove_matching_lines ./polkadot-sdk/substrate/client/cli/src/params/mod.rs "mod mixnet_params;$"
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src mixnet
+remove_module ./polkadot-sdk/substrate/client/rpc/src mixnet
+remove_module ./polkadot-sdk/substrate/client/cli/src/params mixnet_params
 sed -e s/" mixnet_params::\*,"//g -i ./polkadot-sdk/substrate/client/cli/src/params/mod.rs
 
 # Remove the 'statement store'
@@ -303,15 +320,12 @@ remove_crate_tree substrate/client/network/statement
 remove_crate_tree substrate/client/statement-store
 remove_crate_tree substrate/frame/statement
 remove_crate_tree substrate/primitives/statement-store
-silent_rm ./polkadot-sdk/substrate/client/rpc-api/src/statement
-remove_matching_lines ./polkadot-sdk/substrate/client/rpc-api/src/lib.rs "mod statement;$"
-silent_rm ./polkadot-sdk/substrate/client/rpc/src/statement
-remove_matching_lines ./polkadot-sdk/substrate/client/rpc/src/lib.rs "mod statement;$"
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src statement
+remove_module ./polkadot-sdk/substrate/client/rpc/src statement
 
 # Remove the binary Merkle tree code, as we only use the standard base-16 trie
 remove_crate_tree substrate/utils/binary-merkle-tree
-silent_rm ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/base2.rs
-remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie/mod.rs "mod base2;$"
+remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base2
 apply_patch removals/BinaryMerkleTreeProver
 
 # Remove the transaction storage code
