@@ -343,6 +343,48 @@ silent_rm ./polkadot-sdk/substrate/primitives/core/src/ed25519.rs
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
 apply_patch removals/ecdsa_ed25519
 
+# Remove unused pallets
+used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa migrations session support system timestamp try-runtime"
+ls ./polkadot-sdk/substrate/frame | while read -r folder; do
+  if [ -d ./polkadot-sdk/substrate/frame/$folder ]; then
+    if [ $(echo "$used_pallets src" | grep $folder | wc -l) -eq 0 ]; then
+      remove_crate_tree substrate/frame/$folder
+    fi
+  fi
+done
+
+# Remove unused primitives
+remove_crate_tree substrate/primitives/npos-elections
+
+# Remove the scripts used for testing
+remove_crate_tree substrate/scripts
+
+# Remove unused utilities
+remove_crate_tree substrate/client/runtime-utilities
+remove_crate_tree substrate/utils/build-script-utils
+remove_crate_tree substrate/utils/frame
+remove_crate_tree substrate/utils/substrate-bip39
+apply_patch removals/substrate-bip39
+
+# Remove fuzzers
+remove_crate_tree substrate/primitives/arithmetic/fuzzer
+remove_crate_tree substrate/primitives/core/fuzz
+remove_crate_tree substrate/primitives/state-machine/fuzz
+
+# Remove benchmarking code we don't use
+remove_crate_tree substrate/frame/benchmarking/pov
+remove_crate_tree substrate/frame/session/benchmarking
+remove_crate_tree substrate/frame/system/benchmarking
+apply_patch removals/frame-system-benchmarking
+
+# Remove all dev dependencies, tests, benches, etc.
+remove_dev_dependencies
+remove_crate_tree substrate/client/executor/runtime-test
+remove_crate_tree substrate/test-utils
+remove_crate_tree substrate/primitives/runtime-interface/test-wasm
+remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
+remove_crate_tree substrate/primitives/test-primitives
+
 # Remove metadata
 
 remove_crate_tree substrate/primitives/metadata-ir
@@ -386,108 +428,10 @@ remove_crate_tree substrate/client/offchain
 # Remove the deprecated native executor
 apply_patch removals/NativeExecutor
 
-# Remove unused pallets
-remove_crate_tree substrate/frame/alliance
-remove_crate_tree substrate/frame/asset-conversion
-remove_crate_tree substrate/frame/asset-rate
-remove_crate_tree substrate/frame/asset-rewards
-remove_crate_tree substrate/frame/assets
-remove_crate_tree substrate/frame/assets-freezer
-remove_crate_tree substrate/frame/assets-holder
-remove_crate_tree substrate/frame/atomic-swap
-remove_crate_tree substrate/frame/bags-list
-remove_crate_tree substrate/frame/balances
-remove_crate_tree substrate/frame/benchmarking/pov
-remove_crate_tree substrate/frame/bounties
-remove_crate_tree substrate/frame/broker
-remove_crate_tree substrate/frame/child-bounties
-remove_crate_tree substrate/frame/collective
-remove_crate_tree substrate/frame/conviction-voting
-remove_crate_tree substrate/frame/core-fellowship
-remove_crate_tree substrate/frame/delegated-staking
-remove_crate_tree substrate/frame/democracy
-remove_crate_tree substrate/frame/derivatives
-remove_crate_tree substrate/frame/dummy-dim
-remove_crate_tree substrate/frame/elections-phragmen
-remove_crate_tree substrate/frame/election-provider-multi-phase
-remove_crate_tree substrate/frame/election-provider-support && remove_crate_tree substrate/primitives/npos-elections
-remove_crate_tree substrate/frame/fast-unstake
-remove_crate_tree substrate/frame/identity
-remove_crate_tree substrate/frame/im-online
-remove_crate_tree substrate/frame/indices
-remove_crate_tree substrate/frame/insecure-randomness-collective-flip
-remove_crate_tree substrate/frame/lottery
-remove_crate_tree substrate/frame/membership
-remove_crate_tree substrate/frame/message-queue
-remove_crate_tree substrate/frame/meta-tx
-remove_crate_tree substrate/frame/multisig
-remove_crate_tree substrate/frame/nft-fractionalization
-remove_crate_tree substrate/frame/nfts
-remove_crate_tree substrate/frame/nis
-remove_crate_tree substrate/frame/node-authorization
-remove_crate_tree substrate/frame/nomination-pools
-remove_crate_tree substrate/frame/offences
-remove_crate_tree substrate/frame/paged-list
-remove_crate_tree substrate/frame/parameters
-remove_crate_tree substrate/frame/preimage
-remove_crate_tree substrate/frame/proxy
-remove_crate_tree substrate/frame/ranked-collective
-remove_crate_tree substrate/frame/recovery
-remove_crate_tree substrate/frame/referenda
-remove_crate_tree substrate/frame/remark
-remove_crate_tree substrate/frame/root-offences
-remove_crate_tree substrate/frame/root-testing
-remove_crate_tree substrate/frame/safe-mode
-remove_crate_tree substrate/frame/salary
-remove_crate_tree substrate/frame/scheduler
-remove_crate_tree substrate/frame/scored-pool
-remove_crate_tree substrate/frame/society
-remove_crate_tree substrate/frame/staking
-remove_crate_tree substrate/frame/state-trie-migration
-remove_crate_tree substrate/frame/sudo
-remove_crate_tree substrate/frame/tips
-remove_crate_tree substrate/frame/transaction-payment/asset-conversion-tx-payment
-remove_crate_tree substrate/frame/transaction-payment/asset-tx-payment
-remove_crate_tree substrate/frame/treasury
-remove_crate_tree substrate/frame/tx-pause
-remove_crate_tree substrate/frame/uniques
-remove_crate_tree substrate/frame/whitelist
-remove_crate_tree substrate/frame/verify-signature
-remove_crate_tree substrate/frame/vesting
-remove_crate_tree substrate/frame/utility
-
-# Remove the scripts used for testing
-remove_crate_tree substrate/scripts
-
-# Remove unused utilities
-remove_crate_tree substrate/client/runtime-utilities
-remove_crate_tree substrate/utils/build-script-utils
-remove_crate_tree substrate/utils/frame
-remove_crate_tree substrate/utils/substrate-bip39
-apply_patch removals/substrate-bip39
-
-# Remove fuzzers
-remove_crate_tree substrate/primitives/arithmetic/fuzzer
-remove_crate_tree substrate/primitives/core/fuzz
-remove_crate_tree substrate/primitives/state-machine/fuzz
-
-# Remove benchmarking code we don't use
-remove_crate_tree substrate/frame/session/benchmarking
-remove_crate_tree substrate/frame/system/benchmarking
-apply_patch removals/frame-system-benchmarking
-
-# Remove all dev dependencies, tests, benches, etc.
-remove_dev_dependencies
-remove_crate_tree substrate/client/executor/runtime-test
-remove_crate_tree substrate/test-utils
-remove_crate_tree substrate/primitives/runtime-interface/test-wasm
-remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
-remove_crate_tree substrate/primitives/test-primitives
-
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
 apply_patch removals/docify
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
 
 # Remove the `SS58prefix` constant
@@ -495,12 +439,14 @@ apply_patch removals/SS58Prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
 
 # Remove non-ASCII characters
+echo "Removing extraneous emojis"
 # Remove Unicode characters from the start of strings
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed -E "s/\"([ ]*[^\x00-\x7Fµ][ ]*)+/\"/"); echo "$STRIPPED" > {}' \;
 # Remove Unicode characters from the end of strings
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed -E "s/([ ]*[^\x00-\x7Fµ][ ]*)+\"/\"/"); echo "$STRIPPED" > {}' \;
 
 # Remove "; qed"
+echo "Removing extraneous \"qed\" claims"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
 
 # Remove unused dependencies
