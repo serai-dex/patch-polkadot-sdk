@@ -32,18 +32,11 @@ workspace = true
 [dependencies.sp-application-crypto]
 workspace = true
 
-[dependencies.sp-runtime]
-workspace = true
-
 [features]
 default = ["std"]
 std = [
     "codec/std",
     "sp-api/std",
     "sp-application-crypto/std",
-    "sp-runtime/std",
 ]
-serde = [
-    "sp-application-crypto/serde",
-    "sp-runtime/serde",
-]
+serde = ["sp-application-crypto/serde"]

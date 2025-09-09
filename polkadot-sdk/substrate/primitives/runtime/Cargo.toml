@@ -84,11 +84,6 @@ workspace = true
 [dependencies.sp-weights]
 workspace = true
 
-[dependencies.tracing]
-workspace = true
-features = ["log"]
-default-features = false
-
 [dependencies.tuplex]
 version = "0.1.2"
 default-features = false
@@ -112,7 +107,6 @@ std = [
     "sp-std/std",
     "sp-trie/std",
     "sp-weights/std",
-    "tracing/std",
     "tuplex/std",
 ]
 serde = [

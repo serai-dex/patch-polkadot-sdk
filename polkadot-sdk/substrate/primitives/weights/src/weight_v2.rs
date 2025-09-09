@@ -34,7 +34,6 @@ use super::*;
 	Default,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "json-schema", derive(schemars::JsonSchema))]
 pub struct Weight {
 	#[codec(compact)]
 	/// The weight of computational time used based on some reference hardware.

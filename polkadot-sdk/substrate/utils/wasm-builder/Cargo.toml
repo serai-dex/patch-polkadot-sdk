@@ -69,28 +69,8 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.sc-executor]
-optional = true
-workspace = true
-default-features = true
-
 [dependencies.shlex]
 workspace = true
-
-[dependencies.sp-core]
-optional = true
-workspace = true
-default-features = true
-
-[dependencies.sp-io]
-optional = true
-workspace = true
-default-features = true
-
-[dependencies.sp-tracing]
-optional = true
-workspace = true
-default-features = true
 
 [dependencies.sp-version]
 optional = true

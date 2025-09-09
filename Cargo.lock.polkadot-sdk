@@ -1756,7 +1756,6 @@ dependencies = [
  "frame-support",
  "parity-scale-codec",
  "sp-api",
- "sp-runtime",
 ]
 
 [[package]]
@@ -3990,7 +3989,6 @@ dependencies = [
  "pallet-session",
  "pallet-timestamp",
  "parity-scale-codec",
- "sp-application-crypto",
  "sp-consensus-babe",
  "sp-core",
  "sp-io",
@@ -4009,7 +4007,6 @@ dependencies = [
  "frame-system",
  "log",
  "parity-scale-codec",
- "sp-core",
  "sp-inherents",
  "sp-io",
  "sp-runtime",
@@ -4026,7 +4023,6 @@ dependencies = [
  "pallet-authorship",
  "pallet-session",
  "parity-scale-codec",
- "sp-application-crypto",
  "sp-consensus-grandpa",
  "sp-core",
  "sp-io",
@@ -4089,7 +4085,6 @@ dependencies = [
  "frame-system",
  "log",
  "parity-scale-codec",
- "sp-inherents",
  "sp-io",
  "sp-runtime",
  "sp-storage",
@@ -6270,7 +6265,6 @@ dependencies = [
  "sp-api",
  "sp-blockchain",
  "sp-core",
- "sp-crypto-hashing",
  "sp-runtime",
  "sp-tracing",
  "sp-transaction-pool",
@@ -6715,7 +6709,6 @@ dependencies = [
  "parity-scale-codec",
  "sp-api",
  "sp-application-crypto",
- "sp-runtime",
 ]
 
 [[package]]
@@ -6888,9 +6881,7 @@ name = "sp-genesis-builder"
 version = "0.17.0"
 dependencies = [
  "parity-scale-codec",
- "serde_json",
  "sp-api",
- "sp-runtime",
 ]
 
 [[package]]
@@ -6998,7 +6989,6 @@ dependencies = [
  "sp-std",
  "sp-trie",
  "sp-weights",
- "tracing",
  "tuplex",
 ]
 
@@ -7305,12 +7295,8 @@ dependencies = [
  "parity-scale-codec",
  "parity-wasm",
  "polkavm-linker",
- "sc-executor",
  "shlex",
- "sp-core",
- "sp-io",
  "sp-maybe-compressed-blob",
- "sp-tracing",
  "sp-version",
  "strum 0.27.2",
  "tempfile",

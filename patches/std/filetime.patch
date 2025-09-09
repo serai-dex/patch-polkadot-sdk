@@ -1,14 +1,3 @@
-diff --git a/substrate/utils/wasm-builder/Cargo.toml b/substrate/utils/wasm-builder/Cargo.toml
-index ba69d6d..f9bc9a6 100644
---- a/substrate/utils/wasm-builder/Cargo.toml
-+++ b/substrate/utils/wasm-builder/Cargo.toml
-@@ -18,6 +18,5 @@ targets = ["x86_64-unknown-linux-gnu"]
- build-helper = { workspace = true }
- cargo_metadata = { workspace = true }
- console = { workspace = true }
--filetime = { workspace = true }
- jobserver = { workspace = true }
- parity-wasm = { workspace = true }
 diff --git a/substrate/utils/wasm-builder/src/wasm_project.rs b/substrate/utils/wasm-builder/src/wasm_project.rs
 index 89b8f27..19f9692 100644
 --- a/substrate/utils/wasm-builder/src/wasm_project.rs

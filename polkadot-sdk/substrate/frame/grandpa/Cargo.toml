@@ -46,10 +46,6 @@ workspace = true
 [dependencies.pallet-session]
 workspace = true
 
-[dependencies.sp-application-crypto]
-features = ["serde"]
-workspace = true
-
 [dependencies.sp-consensus-grandpa]
 features = ["serde"]
 workspace = true
@@ -82,7 +78,6 @@ std = [
     "log/std",
     "pallet-authorship/std",
     "pallet-session/std",
-    "sp-application-crypto/std",
     "sp-consensus-grandpa/std",
     "sp-core/std",
     "sp-io/std",

@@ -86,10 +86,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-crypto-hashing]
-default-features = true
-workspace = true
-
 [dependencies.sp-runtime]
 default-features = true
 workspace = true

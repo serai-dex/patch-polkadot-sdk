@@ -66,6 +66,10 @@ workspace = true
 features = ["alloc"]
 workspace = true
 
+[dependencies.sp-api]
+features = []
+workspace = true
+
 [dependencies.sp-arithmetic]
 workspace = true
 
@@ -113,10 +117,6 @@ workspace = true
 
 [dependencies.tt-call]
 workspace = true
-
-[dependencies.sp-api]
-workspace = true
-default-features = false
 
 [features]
 default = ["std"]

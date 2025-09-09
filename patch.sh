@@ -102,12 +102,10 @@ apply_patch optional_litep2p
 apply_patch_dir optional_polkavm
 
 # Replace the `wasm-timer` dependency with `wasmtimer`
-remove_matching_lines ./polkadot-sdk/substrate/client/telemetry/Cargo.toml "wasm-timer"
 echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
-remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "wasm-timer"
 echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
 echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
@@ -117,54 +115,13 @@ echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/network/Cargo.tom
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
 silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
 apply_patch removals/offchain_http
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "bytes"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "fnv"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "http-body-util"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "hyper"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "hyper-rustls"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "hyper-util"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "once_cell"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "rustls"
-remove_matching_lines ./polkadot-sdk/substrate/client/offchain/Cargo.toml "sc-utils"
-
-# Remove various unused dependencies
-remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/Cargo.toml "memmap2"
-remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "cid"
-remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost"
-remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "void"
-remove_matching_lines ./polkadot-sdk/substrate/client/service/Cargo.toml "static_init"
-remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "is-terminal"
-remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "frame-metadata"
-remove_matching_lines ./polkadot-sdk/substrate/frame/support/Cargo.toml "k256"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ark-vrf"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "ed25519-zebra"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "libsecp256k1"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "secp256k1"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "k256"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "w3f-bls"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519-dalek"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256k1"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
-remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "build-helper"
-remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "frame-metadata"
-remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "merkleized-metadata"
-
-# Remove `simple-mermaid`
-remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/Cargo.toml "simple-mermaid"
-remove_matching_lines ./polkadot-sdk/Cargo.toml "simple-mermaid"
-
-# Remove `docify` from the dependencies
-find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
-remove_matching_lines ./polkadot-sdk/Cargo.toml "docify"
 
 # Remove `aquamarine` from the dependencies
 find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
-remove_matching_lines ./polkadot-sdk/Cargo.toml "aquamarine"
-
-# Remove `is-terminal`
-find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
+# Remove `docify` from the dependencies
+find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
+# Remove `simple-mermaid`
+remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
 
 # Remove `build-helper`
 apply_patch removals/build-helper
@@ -173,8 +130,21 @@ apply_patch removals/build-helper
 echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | sed s/"dyn-clonable"/"dyn-clone"/)" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
 apply_patch removals/dyn-clonable
 
+# Remove `is-terminal`
+find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
+
 # Remove memmap2 and the associated unsafe calling code
 apply_patch removals/memmap2
+
+# Remove `prost-build` from `sc-network`, which is unused yet `machete` doesn't realize
+remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost-build"
+# Remove `ed25519_dalek`, `libsecp256k1` from `sp-io`
+remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519-dalek"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
+
+# Remove schemars
+remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/src/weight_v2.rs "schemars"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.oml "schemars"
 
 # Apply the patches which are explicitly opinions
 apply_patch_dir opinions
@@ -239,9 +209,18 @@ function cargo_upgrade {
 }
 
 function trim_workspace_dependencies {
+  echo "Trimming the workspace \`Cargo.toml\` of unused dependencies"
   ./target/release/serai-polkadot-sdk trim_workspace_dependencies
   if [ $? -ne 0 ]; then
     exit 11
+  fi
+}
+
+function machete {
+  echo "Removing unused dependencies"
+  ./target/release/serai-polkadot-sdk machete
+  if [ $? -ne 0 ]; then
+    exit 12
   fi
 }
 
@@ -524,6 +503,9 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 # Remove "; qed"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
 
+# Remove unused dependencies
+machete
+
 # Perform upgrades to preferred versions
 cargo_upgrade array-bytes 7.0.0
 cargo_upgrade async-channel 2.0.0
@@ -593,7 +575,7 @@ echo "Running \`cargo check\`"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched \`polkadot-sdk\` failed to compile"
-  exit 12
+  exit 13
 fi
 
 # Save >10 GB on what should be a static directory of no further use

@@ -27,24 +27,12 @@ workspace = true
 features = ["bytes"]
 workspace = true
 
-[dependencies.serde_json]
-features = [
-    "alloc",
-    "arbitrary_precision",
-]
-workspace = true
-
 [dependencies.sp-api]
-workspace = true
-
-[dependencies.sp-runtime]
 workspace = true
 
 [features]
 default = ["std"]
 std = [
     "codec/std",
-    "serde_json/std",
     "sp-api/std",
-    "sp-runtime/std",
 ]

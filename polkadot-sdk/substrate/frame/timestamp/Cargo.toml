@@ -44,9 +44,6 @@ workspace = true
 [dependencies.log]
 workspace = true
 
-[dependencies.sp-inherents]
-workspace = true
-
 [dependencies.sp-io]
 optional = true
 workspace = true
@@ -68,7 +65,6 @@ std = [
     "frame-support/std",
     "frame-system/std",
     "log/std",
-    "sp-inherents/std",
     "sp-io?/std",
     "sp-runtime/std",
     "sp-storage/std",

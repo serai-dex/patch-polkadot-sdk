@@ -260,6 +260,67 @@ fn main() {
         .unwrap();
     }
 
+    "machete" => {
+      // Add an ignore statement for `machete`'s false positives
+      let (workspace_toml_path, _) = workspace_toml();
+      const IGNORE: &str = "
+      [workspace.metadata.cargo-machete]
+      ignored = [\"log\", \"parity-scale-codec\", \"codec\", \"sp-debug-derive\"]
+      ";
+      fs::write(&workspace_toml_path, fs::read_to_string(&workspace_toml_path).unwrap() + IGNORE)
+        .unwrap();
+
+      // Have `machete` apply the fix
+      std::process::Command::new("cargo").args(["machete", "--fix"]).output().unwrap();
+
+      // Remove the ignore statement to tidy up
+      let mut table =
+        toml::from_str::<toml::Table>(&fs::read_to_string(&workspace_toml_path).unwrap()).unwrap();
+      table["workspace"].as_table_mut().unwrap().remove("metadata");
+      fs::write(&workspace_toml_path, toml::to_string_pretty(&table).unwrap()).unwrap();
+
+      // Remove removed dependencies from inclusion in features
+      for item in discover_all_crates_in_folder("substrate") {
+        let crate_toml_path = item.path.join("Cargo.toml");
+
+        let mut crate_toml =
+          toml::from_str::<toml::Table>(&fs::read_to_string(&crate_toml_path).unwrap()).unwrap();
+        let deps = crate_toml
+          .get("dependencies")
+          .map(|deps| deps.as_table().unwrap().keys().cloned())
+          .into_iter()
+          .chain(
+            crate_toml
+              .get("features")
+              .map(|features| features.as_table().unwrap().keys().cloned())
+              .into_iter(),
+          )
+          .flatten()
+          .collect::<HashSet<_>>();
+        if let Some(features) = crate_toml.get_mut("features") {
+          let features = features.as_table_mut().unwrap();
+          for (_feature, enables) in features.iter_mut() {
+            let enables = enables.as_array_mut().unwrap();
+            remove_from_array(enables, |enabled| {
+              !deps.contains(
+                enabled
+                  .split("/")
+                  .next()
+                  .unwrap()
+                  .split("?")
+                  .next()
+                  .unwrap()
+                  .trim_start_matches("dep:"),
+              )
+            });
+          }
+        }
+
+        fs::write(crate_toml_path, toml::to_string_pretty(&crate_toml).unwrap().as_bytes())
+          .unwrap();
+      }
+    }
+
     "trim_workspace_dependencies" => {
       let all_crates_in_workspace = discover_all_crates_in_folder("substrate")
         .into_iter()
