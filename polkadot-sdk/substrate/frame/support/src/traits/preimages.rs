@@ -38,6 +38,7 @@ const MAX_LEGACY_LEN: u32 = 1_000_000;
 	Clone,
 	Eq,
 	PartialEq,
+
 	RuntimeDebug,
 )]
 #[codec(mel_bound())]

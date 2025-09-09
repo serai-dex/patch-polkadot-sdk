@@ -439,7 +439,8 @@ pub trait SigningTypes: crate::Config {
 		+ IdentifyAccount<AccountId = Self::AccountId>
 		+ core::fmt::Debug
 		+ codec::Codec
-		+ Ord;
+		+ Ord
+;
 
 	/// A matching `Signature` type.
 	type Signature: Clone + PartialEq + core::fmt::Debug + codec::Codec;

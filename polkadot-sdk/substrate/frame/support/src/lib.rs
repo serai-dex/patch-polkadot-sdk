@@ -1591,11 +1591,11 @@ pub mod pallet_macros {
 	///
 	/// 		/// A simple type.
 	/// 		// Type that would have been included in metadata, but is now excluded.
-	/// 		type SimpleType: From<u32> + TypeInfo;
+	/// 		type SimpleType: From<u32>;
 	///
 	/// 		// The `pallet::include_metadata` is used to selectively include this type in metadata.
 	/// 		#[pallet::include_metadata]
-	/// 		type SelectivelyInclude: From<u32> + TypeInfo;
+	/// 		type SelectivelyInclude: From<u32>;
 	/// 	}
 	///
 	/// 	#[pallet::event]
@@ -1623,7 +1623,7 @@ pub mod pallet_macros {
 	/// following traits:
 	///
 	/// ```ignore
-	/// Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, MaxEncodedLen, TypeInfo,
+	/// Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Encode, Decode, MaxEncodedLen,
 	/// RuntimeDebug
 	/// ```
 	///
@@ -2629,7 +2629,7 @@ pub mod pallet_macros {
 	///     # pub struct Pallet<T>(_);
 	/// 	/// On the spot declaration.
 	///     #[pallet::origin]
-	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, TypeInfo, MaxEncodedLen)]
+	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	/// 	pub enum Origin {
 	/// 		Foo,
 	/// 		Bar,
@@ -2647,7 +2647,7 @@ pub mod pallet_macros {
 	///     # pub trait Config: frame_system::Config {}
 	///     # #[pallet::pallet]
 	///     # pub struct Pallet<T>(_);
-	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, TypeInfo, MaxEncodedLen)]
+	/// 	#[derive(PartialEq, Eq, Clone, RuntimeDebug, Encode, Decode, MaxEncodedLen)]
 	/// 	pub enum RawOrigin {
 	/// 		Foo,
 	/// 		Bar,

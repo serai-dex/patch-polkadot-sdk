@@ -380,116 +380,138 @@ fn main() {
     "remove_trait" => {
       let folder = args.next().unwrap();
       let trait_t = args.next().unwrap();
-      for file in fs::read_dir(folder).unwrap() {
-        let file = file.unwrap();
-        if file.file_name().to_str().unwrap().ends_with(".rs") {
-          let contents = fs::read_to_string(file.path()).unwrap();
-          let mut keep: Vec<&str> = vec![];
-          let mut lines = contents.lines();
-          while let Some(mut line) = lines.next() {
-            if let Some(first) = line.split_whitespace().next() {
-              // If this is `trait trait_t` or `impl trait_t`...
-              let is_impl = first.starts_with("impl");
-              let is_trait = {
-                let is_access = first.starts_with("pub");
-                let mut first = first;
-                if is_access {
-                  first = line.split_whitespace().nth(1).unwrap();
-                }
-                first.starts_with("trait")
-              };
-
-              if is_impl || is_trait {
-                // Find the name of the implemented trait
-                let name = {
-                  let mut name = None;
-
-                  // One-line
-                  if line.chars().filter(|c| *c == '<').count() ==
-                    line.chars().filter(|c| *c == '>').count()
-                  {
-                    if line.contains('>') {
-                      name = line
-                        .split('>')
-                        .nth(1)
-                        .unwrap()
-                        .split_whitespace()
-                        .next()
-                        .map(str::to_owned);
-                    } else {
-                      let mut next = false;
-                      for part in line.split_whitespace() {
-                        if next {
-                          name = Some(part.to_owned());
-                          break;
-                        }
-                        if (part == "impl") || (part == "trait") {
-                          next = true;
-                        }
-                      }
-                    }
+      let mut queue = vec![folder];
+      while let Some(folder) = queue.pop() {
+        for file in fs::read_dir(folder).unwrap() {
+          let file = file.unwrap();
+          if file.file_type().unwrap().is_dir() {
+            queue.push(file.path().into_os_string().to_str().unwrap().to_owned());
+          }
+          if file.file_name().to_str().unwrap().ends_with(".rs") {
+            let contents = fs::read_to_string(file.path()).unwrap();
+            let mut keep: Vec<&str> = vec![];
+            let mut lines = contents.lines();
+            while let Some(mut line) = lines.next() {
+              if let Some(first) = line.split_whitespace().next() {
+                // If this is `trait trait_t` or `impl trait_t`...
+                let is_impl = first.split('<').next().unwrap() == "impl";
+                let is_access = first.split('(').next().unwrap() == "pub";
+                let is_trait = {
+                  let mut first = first;
+                  if is_access {
+                    first = line.split_whitespace().nth(1).unwrap();
                   }
-
-                  // Multi-line
-                  if name.is_none() {
-                    let mut brackets = line.chars().filter(|c| *c == '<').count() -
-                      line.chars().filter(|c| *c == '>').count();
-                    let remaining = lines.clone().collect::<Vec<_>>().join("\n");
-                    for (i, c) in remaining.char_indices() {
-                      if brackets == 0 {
-                        name = Some(remaining[i ..].split_whitespace().next().unwrap().to_owned());
-                        break;
-                      }
-                      if c == '<' {
-                        brackets += 1;
-                      }
-                      if c == '>' {
-                        brackets -= 1;
-                      }
-                    }
-                  }
-                  name.unwrap()
+                  first == "trait"
                 };
 
-                if name == trait_t {
-                  // Remove any directly preceding comments
-                  while let Some(prior) = keep.last() {
-                    if let Some(prior) = prior.split_whitespace().next() {
-                      if prior.starts_with("//") {
+                let count_brackets = |line: &str| {
+                  let left_brackets = line.chars().filter(|c| *c == '<').count();
+                  let right_brackets = line.chars().filter(|c| *c == '>').count();
+                  let mut arrows = 0;
+                  let mut line = line.chars();
+                  let mut last = line.next();
+                  for next in line {
+                    if (next == '>') && (last.unwrap() == '-') {
+                      arrows += 1;
+                    }
+                    last = Some(next);
+                  }
+                  left_brackets - (right_brackets - arrows)
+                };
+
+                if is_impl || is_trait {
+                  // Find the name of the implemented trait
+                  let name = {
+                    let mut name = None;
+
+                    // Potentially one-line
+                    if count_brackets(line) == 0 {
+                      let remaining = if is_access {
+                        line.split_whitespace().skip(1).collect::<Vec<_>>().join(" ")
+                      } else {
+                        line.trim_start().to_owned()
+                      };
+                      let mut brackets = 0;
+                      let mut last_char = None;
+                      for (i, c) in remaining.char_indices() {
+                        if (brackets == 0) && (c == ' ') {
+                          name =
+                            Some(remaining[i ..].split_whitespace().next().unwrap().to_owned());
+                          break;
+                        }
+                        if c == '<' {
+                          brackets += 1;
+                        }
+                        if (c == '>') && (last_char != Some('-')) {
+                          brackets -= 1;
+                        }
+                        last_char = Some(c);
+                      }
+                    }
+
+                    // Multi-line
+                    if name.is_none() {
+                      let mut brackets = count_brackets(line);
+                      let remaining = lines.clone().collect::<Vec<_>>().join("\n");
+                      let mut last_char = None;
+                      for (i, c) in remaining.char_indices() {
+                        if brackets == 0 {
+                          name =
+                            Some(remaining[i ..].split_whitespace().next().unwrap().to_owned());
+                          break;
+                        }
+                        if c == '<' {
+                          brackets += 1;
+                        }
+                        if (c == '>') && (last_char != Some('-')) {
+                          brackets -= 1;
+                        }
+                        last_char = Some(c);
+                      }
+                    }
+                    name.unwrap()
+                  };
+
+                  if name.split("::").last().unwrap() == trait_t {
+                    // Remove any directly preceding attributes/comments/whitespace
+                    while let Some(prior) = keep.last() {
+                      let prior = prior.split_whitespace().next().unwrap_or("");
+                      if prior.starts_with("//") || prior.starts_with("#[") || prior.is_empty() {
                         keep.pop();
                         continue;
                       }
+                      break;
                     }
-                    break;
-                  }
 
-                  // Find its opening bracket, which may be on another line
-                  while !line.contains("{") {
+                    // Find its opening bracket, which may be on another line
+                    while !line.contains("{") {
+                      line = lines.next().unwrap();
+                    }
+                    let mut brackets = line.chars().filter(|c| *c == '{').count() -
+                      line.chars().filter(|c| *c == '}').count();
+                    // Find its closing network
+                    // This expects brackets to not be nested on the same line nor commented
+                    while brackets != 0 {
+                      line = lines.next().unwrap();
+                      if line.contains("{") {
+                        brackets += 1;
+                      }
+                      if line.contains("}") {
+                        brackets -= 1;
+                      }
+                    }
+
+                    // Advance past the line with the closing bracket
                     line = lines.next().unwrap();
                   }
-                  let mut brackets = 1;
-                  // Find its closing network
-                  // This expects brackets to not be nested on the same line nor commented
-                  while brackets != 0 {
-                    line = lines.next().unwrap();
-                    if line.contains("{") {
-                      brackets += 1;
-                    }
-                    if line.contains("}") {
-                      brackets -= 1;
-                    }
-                  }
-
-                  // Advance past the line with the closing bracket
-                  line = lines.next().unwrap();
                 }
               }
+              // Push any lines we don't skip for being an `impl trait_t`
+              keep.push(line);
             }
-            // Push any lines we don't skip for being an `impl trait_t`
-            keep.push(line);
+            // Write the lines we're keeping
+            fs::write(file.path(), keep.join("\n").trim_end().to_owned() + "\n").unwrap();
           }
-          // Write the lines we're keeping
-          fs::write(file.path(), keep.join("\n").trim_end().to_owned() + "\n").unwrap();
         }
       }
     }

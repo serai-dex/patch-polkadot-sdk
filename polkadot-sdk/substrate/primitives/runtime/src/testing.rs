@@ -20,6 +20,7 @@
 use crate::{
 	codec::{Codec, Decode, DecodeWithMemTracking, Encode, MaxEncodedLen},
 	generic::{self, UncheckedExtrinsic},
+
 	traits::{self, BlakeTwo256, Dispatchable, OpaqueKeys},
 	DispatchResultWithInfo, KeyTypeId,
 };
@@ -49,6 +50,7 @@ use std::{cell::RefCell, fmt::Debug};
 	PartialOrd,
 	Ord,
 	MaxEncodedLen,
+
 )]
 pub struct UintAuthorityId(pub u64);
 
@@ -175,6 +177,7 @@ impl traits::Verify for UintAuthorityId {
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
+
 )]
 pub struct TestSignature(pub u64, pub Vec<u8>);
 

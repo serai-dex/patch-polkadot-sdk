@@ -511,7 +511,6 @@ impl<T: HasCompact, D: Get<T>> CompactAs for TypeWithDefault<T, D> {
 #[cfg(test)]
 mod tests {
 	use super::TypeWithDefault;
-	use scale_info::TypeInfo;
 	use sp_arithmetic::traits::{AtLeast16Bit, AtLeast32Bit, AtLeast8Bit};
 	use sp_core::Get;
 

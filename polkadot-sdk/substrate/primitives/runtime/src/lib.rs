@@ -52,6 +52,7 @@ extern crate alloc;
 pub use alloc::vec::Vec;
 #[doc(hidden)]
 pub use codec;
+#[doc(hidden)]
 #[cfg(feature = "serde")]
 #[doc(hidden)]
 pub use serde;
@@ -278,7 +279,7 @@ pub type ConsensusEngineId = [u8; 4];
 	DecodeWithMemTracking,
 	MaxEncodedLen,
 	RuntimeDebug,
-	TypeInfo,
+
 )]
 pub enum MultiSignature {
 	/// An Ed25519 signature.
@@ -351,7 +352,7 @@ impl TryFrom<MultiSignature> for ecdsa::Signature {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
-	TypeInfo,
+
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum MultiSigner {
@@ -479,7 +480,7 @@ impl Verify for MultiSignature {
 }
 
 /// Signature verify that can work with any known signature types..
-#[derive(Eq, PartialEq, Clone, Default, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(Eq, PartialEq, Clone, Default, Encode, Decode, RuntimeDebug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct AnySignature(H512);
 
@@ -559,6 +560,7 @@ impl PartialEq for ModuleError {
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
+
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -593,6 +595,7 @@ impl From<TransactionalError> for DispatchError {
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
+
 	PartialEq,
 	MaxEncodedLen,
 )]
@@ -693,6 +696,7 @@ impl From<crate::traits::BadOrigin> for DispatchError {
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
+
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

@@ -146,6 +146,7 @@ pub struct NextEpochDescriptor {
 	Clone,
 	RuntimeDebug,
 	MaxEncodedLen,
+
 )]
 pub enum NextConfigDescriptor {
 	/// Version 1.

@@ -1021,6 +1021,7 @@ pub trait HashOutput:
 	+ DecodeWithMemTracking
 	+ EncodeLike
 	+ MaxEncodedLen
+
 {
 }
 
@@ -1041,6 +1042,7 @@ impl<T> HashOutput for T where
 		+ DecodeWithMemTracking
 		+ EncodeLike
 		+ MaxEncodedLen
+
 {
 }
 
@@ -1187,6 +1189,7 @@ pub trait BlockNumber:
 	+ Into<U256>
 	+ TryFrom<U256>
 	+ Default
+
 	+ MaxEncodedLen
 	+ FullCodec
 	+ DecodeWithMemTracking
@@ -1206,6 +1209,7 @@ impl<
 			+ Into<U256>
 			+ TryFrom<U256>
 			+ Default
+
 			+ MaxEncodedLen
 			+ FullCodec
 			+ DecodeWithMemTracking
@@ -1228,6 +1232,7 @@ pub trait Header:
 	+ Eq
 	+ MaybeSerialize
 	+ Debug
+
 	+ 'static
 {
 	/// Header number.
@@ -2349,6 +2354,7 @@ pub trait BlockNumberProvider {
 		+ Ord
 		+ Eq
 		+ AtLeast32BitUnsigned
+
 		+ Debug
 		+ MaxEncodedLen
 		+ Copy

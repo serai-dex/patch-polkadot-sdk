@@ -717,7 +717,6 @@ where
 	}
 }
 
-
 impl<Prefix, Hasher1, Hasher2, Key1, Key2, Value, QueryKind, OnEmpty, MaxValues>
 	crate::traits::StorageInfoTrait
 	for StorageDoubleMap<Prefix, Hasher1, Key1, Hasher2, Key2, Value, QueryKind, OnEmpty, MaxValues>

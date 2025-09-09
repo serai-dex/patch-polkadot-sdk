@@ -134,6 +134,19 @@ impl Decode for Era {
 	}
 }
 
+/// Add Mortal{N}(u8) variants with the given indices, to describe custom encoding.
+macro_rules! mortal_variants {
+    ($variants:ident, $($index:literal),* ) => {
+		$variants
+		$(
+			.variant(concat!(stringify!(Mortal), stringify!($index)), |v| v
+				.index($index)
+				.fields(scale_info::build::Fields::unnamed().field(|f| f.ty::<u8>()))
+			)
+		)*
+    }
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;

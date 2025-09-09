@@ -405,6 +405,7 @@ macro_rules! implement_fixed {
 			Eq,
 			PartialOrd,
 			Ord,
+
 		)]
 		pub struct $name($inner_type);
 

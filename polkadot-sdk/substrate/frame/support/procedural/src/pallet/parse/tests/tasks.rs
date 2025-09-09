@@ -53,7 +53,7 @@ fn test_parse_pallet_with_task_enum_wrong_attribute() {
 			#[pallet::task_list]
 			impl<T: Config> frame_support::traits::Task for Task<T>
 			where
-				T: TypeInfo,
+				T,
 			{}
 
 			#[pallet::config]
@@ -75,7 +75,7 @@ fn test_parse_pallet_missing_task_enum() {
 			#[cfg(test)] // aha, this means it's being eaten
 			impl<T: Config> frame_support::traits::Task for Task<T>
 			where
-				T: TypeInfo,
+				T,
 			{}
 
 			#[pallet::config]
@@ -122,7 +122,7 @@ fn test_parse_pallet_manual_tasks_impl_without_manual_tasks_enum() {
 
 			impl<T: Config> frame_support::traits::Task for Task<T>
 			where
-				T: TypeInfo,
+				T,
 			{
 				type Enumeration = alloc::vec::IntoIter<Task<T>>;
 
@@ -153,7 +153,7 @@ fn test_parse_pallet_manual_task_enum_non_manual_impl() {
 			#[pallet::tasks_experimental]
 			impl<T: Config> frame_support::traits::Task for MyCustomTaskEnum<T>
 			where
-				T: TypeInfo,
+				T,
 			{}
 
 			#[pallet::config]
@@ -178,7 +178,7 @@ fn test_parse_pallet_non_manual_task_enum_manual_impl() {
 
 			impl<T: Config> frame_support::traits::Task for MyCustomTaskEnum<T>
 			where
-				T: TypeInfo,
+				T,
 			{}
 
 			#[pallet::config]
@@ -202,7 +202,7 @@ fn test_parse_pallet_manual_task_enum_manual_impl() {
 
 			impl<T: Config> frame_support::traits::Task for MyCustomTaskEnum<T>
 			where
-				T: TypeInfo,
+				T,
 			{}
 
 			#[pallet::config]
@@ -227,7 +227,7 @@ fn test_parse_pallet_manual_task_enum_mismatch_ident() {
 			#[pallet::tasks_experimental]
 			impl<T: Config> frame_support::traits::Task for MyCustomTaskEnum<T>
 			where
-				T: TypeInfo,
+				T,
 			{}
 
 			#[pallet::config]

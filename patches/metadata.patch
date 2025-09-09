@@ -1,3 +1,57 @@
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+index c6018e0..e433b42 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+@@ -401,13 +401,6 @@ fn construct_runtime_final_expansion(
+ 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
+ 	let tasks = expand::expand_outer_task(&name, &pallets, &scrate);
+ 	let query = expand::expand_outer_query(&name, &pallets, &scrate);
+-	let metadata = expand::expand_runtime_metadata(
+-		&name,
+-		&pallets,
+-		&scrate,
+-		&unchecked_extrinsic,
+-		&system_pallet.path,
+-	);
+ 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
+ 	let inherent =
+ 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
+@@ -495,8 +488,6 @@ fn construct_runtime_final_expansion(
+ 
+ 		#query
+ 
+-		#metadata
+-
+ 		#outer_config
+ 
+ 		#inherent
+diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+index 005b109..5508cda 100644
+--- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
++++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+@@ -234,13 +234,6 @@ fn construct_runtime_final_expansion(
+ 	let all_pallets = decl_all_pallets(&name, pallets.iter(), &features);
+ 	let pallet_to_index = decl_pallet_runtime_setup(&name, &pallets, &scrate);
+ 
+-	let metadata = expand::expand_runtime_metadata(
+-		&name,
+-		&pallets,
+-		&scrate,
+-		&unchecked_extrinsic,
+-		&system_pallet.path,
+-	);
+ 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
+ 	let inherent =
+ 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
+@@ -307,8 +300,6 @@ fn construct_runtime_final_expansion(
+ 
+ 		#query
+ 
+-		#metadata
+-
+ 		#outer_config
+ 
+ 		#inherent
 diff --git a/substrate/client/rpc-api/src/state/mod.rs b/substrate/client/rpc-api/src/state/mod.rs
 index ee62387..ef3b05a 100644
 --- a/substrate/client/rpc-api/src/state/mod.rs
@@ -160,102 +214,11 @@ index acc1915..4aeb42b 100644
  	pub use sp_runtime::{
  		generic::ExtensionVersion,
  		impl_tx_ext_default,
-diff --git a/substrate/frame/support/procedural/src/construct_runtime/expand/call.rs b/substrate/frame/support/procedural/src/construct_runtime/expand/call.rs
-index da29e07..b8ec871 100644
---- a/substrate/frame/support/procedural/src/construct_runtime/expand/call.rs
-+++ b/substrate/frame/support/procedural/src/construct_runtime/expand/call.rs
-@@ -128,41 +128,6 @@ pub fn expand_outer_dispatch(
- 			}
- 		}
- 
--		impl #scrate::traits::GetCallMetadata for RuntimeCall {
--			fn get_call_metadata(&self) -> #scrate::traits::CallMetadata {
--				use #scrate::traits::GetCallName;
--				match self {
--					#(
--						#pallet_attrs
--						#variant_patterns => {
--							let function_name = call.get_call_name();
--							let pallet_name = stringify!(#pallet_names);
--							#scrate::traits::CallMetadata { function_name, pallet_name }
--						}
--					)*
--				}
--			}
--
--			fn get_module_names() -> &'static [&'static str] {
--				&[#(
--					#pallet_attrs
--					stringify!(#pallet_names),
--				)*]
--			}
--
--			fn get_call_names(module: &str) -> &'static [&'static str] {
--				use #scrate::{dispatch::Callable, traits::GetCallName};
--				match module {
--					#(
--						#pallet_attrs
--						stringify!(#pallet_names) =>
--							<<#pallet_names as Callable<#runtime>>::RuntimeCall
--								as GetCallName>::get_call_names(),
--					)*
--					_ => unreachable!(),
--				}
--			}
--		}
- 		impl #scrate::__private::Dispatchable for RuntimeCall {
- 			type RuntimeOrigin = RuntimeOrigin;
- 			type Config = RuntimeCall;
-diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-index e433b42..1a33431 100644
---- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-+++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-@@ -446,32 +446,6 @@ fn construct_runtime_final_expansion(
- 			type RuntimeBlock = #block;
- 		}
- 
--		// Each runtime must expose the `runtime_metadata()` to fetch the runtime API metadata.
--		// The function is implemented by calling `impl_runtime_apis!`.
--		//
--		// However, the `construct_runtime!` may be called without calling `impl_runtime_apis!`.
--		// Rely on the `Deref` trait to differentiate between a runtime that implements
--		// APIs (by macro impl_runtime_apis!) and a runtime that is simply created (by macro construct_runtime!).
--		//
--		// Both `InternalConstructRuntime` and `InternalImplRuntimeApis` expose a `runtime_metadata()` function.
--		// `InternalConstructRuntime` is implemented by the `construct_runtime!` for Runtime references (`& Runtime`),
--		// while `InternalImplRuntimeApis` is implemented by the `impl_runtime_apis!` for Runtime (`Runtime`).
--		//
--		// Therefore, the `Deref` trait will resolve the `runtime_metadata` from `impl_runtime_apis!`
--		// when both macros are called; and will resolve an empty `runtime_metadata` when only the `construct_runtime!`
--		// is called.
--		#[doc(hidden)]
--		trait InternalConstructRuntime {
--			#[inline(always)]
--			fn runtime_metadata(&self) -> #scrate::__private::Vec<#scrate::__private::metadata_ir::RuntimeApiMetadataIR> {
--				Default::default()
--			}
--		}
--		#[doc(hidden)]
--		impl InternalConstructRuntime for &#name {}
--
--		use #scrate::__private::metadata_ir::InternalImplRuntimeApis;
--
- 		#outer_event
- 
- 		#outer_error
 diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
 index 76dc936..9fe7ac4 100644
 --- a/substrate/frame/support/procedural/src/lib.rs
 +++ b/substrate/frame/support/procedural/src/lib.rs
-@@ -23,7 +23,6 @@
- mod benchmark;
- mod construct_runtime;
- mod crate_version;
--mod deprecation;
- mod derive_impl;
- mod dummy_part_checker;
- mod dynamic_params;
-@@ -941,15 +940,6 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -941,15 +941,6 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
  }
  
@@ -271,7 +234,7 @@ index 76dc936..9fe7ac4 100644
  ///
  /// ---
  ///
-@@ -968,15 +958,6 @@ pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -968,15 +959,6 @@ pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
  }
  
@@ -287,52 +250,6 @@ index 76dc936..9fe7ac4 100644
  ///
  /// ---
  ///
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/call.rs b/substrate/frame/support/procedural/src/pallet/expand/call.rs
-index 96e68f0..c3f64b0 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/call.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/call.rs
-@@ -194,8 +194,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
- 	let count = COUNTER.with(|counter| counter.borrow_mut().inc());
- 	let macro_ident = syn::Ident::new(&format!("__is_call_part_defined_{}", count), span);
- 
--	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
--
- 	// Wrap all calls inside of storage layers
- 	if let Some(call) = def.call.as_ref() {
- 		let item_impl =
-@@ -263,15 +261,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
- 			}
- 		});
- 
--	let deprecation = match crate::deprecation::get_deprecation_enum(
--		&quote::quote! {#frame_support},
--		def.call.as_ref().map(|call| call.attrs.as_ref()).unwrap_or(&[]),
--		methods.iter().map(|item| (item.call_index as u8, item.attrs.as_ref())),
--	) {
--		Ok(deprecation) => deprecation,
--		Err(e) => return e.into_compile_error(),
--	};
--
- 	quote::quote_spanned!(span =>
- 		#[doc(hidden)]
- 		mod warnings {
-@@ -468,16 +457,5 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
- 		{
- 			type RuntimeCall = #call_ident<#type_use_gen>;
- 		}
--
--		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
--			#[allow(dead_code)]
--			#[doc(hidden)]
--			pub fn call_functions() -> #frame_support::__private::metadata_ir::PalletCallMetadataIR {
--				#frame_support::__private::metadata_ir::PalletCallMetadataIR  {
--					ty: #frame_support::__private::scale_info::meta_type::<()>(),
--					deprecation_info: #deprecation,
--				}
--			}
--		}
- 	)
- }
 diff --git a/substrate/frame/support/procedural/src/pallet/expand/config.rs b/substrate/frame/support/procedural/src/pallet/expand/config.rs
 index d39f276..5cf4035 100644
 --- a/substrate/frame/support/procedural/src/pallet/expand/config.rs
@@ -508,17 +425,7 @@ diff --git a/substrate/frame/support/procedural/src/pallet/expand/mod.rs b/subst
 index 439ec55..b3c22f0 100644
 --- a/substrate/frame/support/procedural/src/pallet/expand/mod.rs
 +++ b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
-@@ -18,9 +18,6 @@
- mod call;
- mod composite;
- mod config;
--mod constants;
--mod doc_only;
--mod documentation;
- mod error;
- mod event;
- mod genesis_build;
-@@ -57,11 +54,8 @@ pub fn merge_where_clauses(clauses: &[&Option<syn::WhereClause>]) -> Option<syn:
+@@ -57,11 +57,8 @@ pub fn merge_where_clauses(clauses: &[&Option<syn::WhereClause>]) -> Option<syn:
  /// * impl stuff on them.
  pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
  	// Remove the `pallet_doc` attribute first.
@@ -530,7 +437,7 @@ index 439ec55..b3c22f0 100644
  	let call = call::expand_call(&mut def);
  	let tasks = tasks::expand_tasks(&mut def);
  	let error = error::expand_error(&mut def);
-@@ -77,7 +71,6 @@ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
+@@ -77,7 +74,6 @@ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
  	let origins = origin::expand_origins(&mut def);
  	let validate_unsigned = validate_unsigned::expand_validate_unsigned(&mut def);
  	let tt_default_parts = tt_default_parts::expand_tt_default_parts(&mut def);
@@ -538,7 +445,7 @@ index 439ec55..b3c22f0 100644
  	let composites = composite::expand_composites(&mut def);
  
  	def.item.attrs.insert(
-@@ -100,11 +93,8 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
+@@ -100,11 +96,8 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
  	);
  
  	let new_items = quote::quote!(
@@ -550,7 +457,7 @@ index 439ec55..b3c22f0 100644
  		#call
  		#tasks
  		#error
-@@ -120,7 +110,6 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
+@@ -120,7 +113,6 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
  		#origins
  		#validate_unsigned
  		#tt_default_parts
@@ -718,15 +625,7 @@ index d856b8c..4e4d2da 100644
  
  	let view_function_struct_ident = view_fn.view_function_struct_ident();
  	let view_fn_name = &view_fn.name;
-@@ -113,7 +109,6 @@ fn expand_view_function(
- 		)]
- 		#[codec(encode_bound())]
- 		#[codec(decode_bound())]
--		#[scale_info(skip_type_params(#type_use_gen), capture_docs = #capture_docs)]
- 		pub struct #view_function_struct_ident<#type_decl_bounded_gen> #where_clause {
- 			#(
- 				pub #arg_names: #arg_types,
-@@ -192,69 +187,3 @@ fn impl_dispatch_view_function(
+@@ -192,69 +188,3 @@ fn impl_dispatch_view_function(
  		}
  	}
  }
@@ -986,15 +885,7 @@ diff --git a/substrate/frame/support/procedural/src/pallet/parse/mod.rs b/substr
 index 8987597..409f6c6 100644
 --- a/substrate/frame/support/procedural/src/pallet/parse/mod.rs
 +++ b/substrate/frame/support/procedural/src/pallet/parse/mod.rs
-@@ -24,7 +24,6 @@ pub mod composite;
- pub mod config;
- pub mod error;
- pub mod event;
--pub mod extra_constants;
- pub mod genesis_build;
- pub mod genesis_config;
- pub mod helper;
-@@ -65,7 +64,6 @@ pub struct Def {
+@@ -65,7 +65,6 @@ pub struct Def {
  	pub genesis_config: Option<genesis_config::GenesisConfigDef>,
  	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
  	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
@@ -1002,7 +893,7 @@ index 8987597..409f6c6 100644
  	pub composites: Vec<composite::CompositeDef>,
  	pub type_values: Vec<type_value::TypeValueDef>,
  	pub frame_system: syn::Path,
-@@ -101,7 +99,6 @@ impl Def {
+@@ -101,7 +100,6 @@ impl Def {
  		let mut genesis_config = None;
  		let mut genesis_build = None;
  		let mut validate_unsigned = None;
@@ -1010,7 +901,7 @@ index 8987597..409f6c6 100644
  		let mut storages = vec![];
  		let mut type_values = vec![];
  		let mut composites: Vec<CompositeDef> = vec![];
-@@ -111,13 +108,12 @@ impl Def {
+@@ -111,13 +109,12 @@ impl Def {
  			let pallet_attr: Option<PalletAttr> = helper::take_first_item_pallet_attr(item)?;
  
  			match pallet_attr {
@@ -1025,7 +916,7 @@ index 8987597..409f6c6 100644
  					)?),
  				Some(PalletAttr::Pallet(span)) if pallet_struct.is_none() => {
  					let p = pallet_struct::PalletStructDef::try_from(span, index, item)?;
-@@ -179,9 +175,6 @@ impl Def {
+@@ -179,9 +176,6 @@ impl Def {
  				},
  				Some(PalletAttr::TypeValue(span)) =>
  					type_values.push(type_value::TypeValueDef::try_from(span, index, item)?),
@@ -1035,7 +926,7 @@ index 8987597..409f6c6 100644
  				Some(PalletAttr::Composite(span)) => {
  					let composite =
  						composite::CompositeDef::try_from(span, &frame_support, item)?;
-@@ -242,7 +235,6 @@ impl Def {
+@@ -242,7 +236,6 @@ impl Def {
  			call,
  			tasks,
  			task_enum,
@@ -1043,7 +934,7 @@ index 8987597..409f6c6 100644
  			genesis_config,
  			genesis_build,
  			validate_unsigned,
-@@ -408,9 +400,6 @@ impl Def {
+@@ -408,9 +401,6 @@ impl Def {
  		if let Some(genesis_build) = &self.genesis_build {
  			genesis_build.instances.as_ref().map(|i| instances.extend_from_slice(&i));
  		}
@@ -1053,7 +944,7 @@ index 8987597..409f6c6 100644
  		if let Some(task_enum) = &self.task_enum {
  			instances.push(task_enum.instance_usage.clone());
  		}
-@@ -558,7 +547,6 @@ mod keyword {
+@@ -558,7 +548,6 @@ mod keyword {
  	syn::custom_keyword!(event);
  	syn::custom_keyword!(config);
  	syn::custom_keyword!(with_default);
@@ -1061,7 +952,7 @@ index 8987597..409f6c6 100644
  	syn::custom_keyword!(hooks);
  	syn::custom_keyword!(inherent);
  	syn::custom_keyword!(error);
-@@ -568,7 +556,6 @@ mod keyword {
+@@ -568,7 +557,6 @@ mod keyword {
  	syn::custom_keyword!(validate_unsigned);
  	syn::custom_keyword!(type_value);
  	syn::custom_keyword!(pallet);
@@ -1069,7 +960,7 @@ index 8987597..409f6c6 100644
  	syn::custom_keyword!(composite_enum);
  	syn::custom_keyword!(view_functions_experimental);
  }
-@@ -578,8 +565,6 @@ mod keyword {
+@@ -578,8 +566,6 @@ mod keyword {
  enum ConfigValue {
  	/// `#[pallet::config(with_default)]`
  	WithDefault(keyword::with_default),
@@ -1078,7 +969,7 @@ index 8987597..409f6c6 100644
  }
  
  impl syn::parse::Parse for ConfigValue {
-@@ -588,8 +573,6 @@ impl syn::parse::Parse for ConfigValue {
+@@ -588,8 +574,6 @@ impl syn::parse::Parse for ConfigValue {
  
  		if lookahead.peek(keyword::with_default) {
  			input.parse().map(ConfigValue::WithDefault)
@@ -1087,7 +978,7 @@ index 8987597..409f6c6 100644
  		} else {
  			Err(lookahead.error())
  		}
-@@ -602,7 +585,6 @@ enum PalletAttr {
+@@ -602,7 +586,6 @@ enum PalletAttr {
  	Config {
  		span: proc_macro2::Span,
  		with_default: bool,
@@ -1095,7 +986,7 @@ index 8987597..409f6c6 100644
  	},
  	Pallet(proc_macro2::Span),
  	Hooks(proc_macro2::Span),
-@@ -658,7 +640,6 @@ enum PalletAttr {
+@@ -658,7 +641,6 @@ enum PalletAttr {
  	GenesisBuild(proc_macro2::Span),
  	ValidateUnsigned(proc_macro2::Span),
  	TypeValue(proc_macro2::Span),
@@ -1103,7 +994,7 @@ index 8987597..409f6c6 100644
  	Composite(proc_macro2::Span),
  	ViewFunctions(proc_macro2::Span),
  }
-@@ -684,7 +665,6 @@ impl PalletAttr {
+@@ -684,7 +666,6 @@ impl PalletAttr {
  			Self::GenesisBuild(span) => *span,
  			Self::ValidateUnsigned(span) => *span,
  			Self::TypeValue(span) => *span,
@@ -1111,7 +1002,7 @@ index 8987597..409f6c6 100644
  			Self::Composite(span) => *span,
  			Self::ViewFunctions(span) => *span,
  		}
-@@ -713,7 +693,6 @@ impl syn::parse::Parse for PalletAttr {
+@@ -713,7 +694,6 @@ impl syn::parse::Parse for PalletAttr {
  				let config_values = fields.iter().collect::<Vec<_>>();
  
  				let mut with_default = false;
@@ -1119,7 +1010,7 @@ index 8987597..409f6c6 100644
  				for config in config_values {
  					match config {
  						ConfigValue::WithDefault(_) => {
-@@ -725,24 +704,14 @@ impl syn::parse::Parse for PalletAttr {
+@@ -725,24 +705,14 @@ impl syn::parse::Parse for PalletAttr {
  							}
  							with_default = true;
  						},
@@ -1145,7 +1036,7 @@ index 8987597..409f6c6 100644
  				})
  			}
  		} else if lookahead.peek(keyword::pallet) {
-@@ -784,8 +753,6 @@ impl syn::parse::Parse for PalletAttr {
+@@ -784,8 +754,6 @@ impl syn::parse::Parse for PalletAttr {
  			Ok(PalletAttr::ValidateUnsigned(content.parse::<keyword::validate_unsigned>()?.span()))
  		} else if lookahead.peek(keyword::type_value) {
  			Ok(PalletAttr::TypeValue(content.parse::<keyword::type_value>()?.span()))
@@ -1154,27 +1045,6 @@ index 8987597..409f6c6 100644
  		} else if lookahead.peek(keyword::composite_enum) {
  			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span()))
  		} else if lookahead.peek(keyword::view_functions_experimental) {
-diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
-index 5508cda..04057b0 100644
---- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
-+++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
-@@ -274,16 +274,6 @@ fn construct_runtime_final_expansion(
- 		// when both macros are called; and will resolve an empty `runtime_metadata` when only the `runtime`
- 		// is used.
- 
--		#[doc(hidden)]
--		trait InternalConstructRuntime {
--			#[inline(always)]
--			fn runtime_metadata(&self) -> #scrate::__private::Vec<#scrate::__private::metadata_ir::RuntimeApiMetadataIR> {
--				Default::default()
--			}
--		}
--		#[doc(hidden)]
--		impl InternalConstructRuntime for &#name {}
--
- 		#outer_event
- 
- 		#outer_error
 diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
 index 71a4d1c..cdce481 100644
 --- a/substrate/frame/support/src/lib.rs
@@ -1329,23 +1199,6 @@ index 1e46470..effdebc 100644
  /// Gets the function name of the Call.
  pub trait GetCallName {
  	/// Return all function names in the same order as [`GetCallIndex`].
-@@ -120,16 +111,6 @@ pub trait GetCallIndex {
- 	fn get_call_index(&self) -> u8;
- }
- 
--/// Gets the metadata for the Call - function name and pallet name.
--pub trait GetCallMetadata {
--	/// Return all module names.
--	fn get_module_names() -> &'static [&'static str];
--	/// Return all function names for the given `module`.
--	fn get_call_names(module: &str) -> &'static [&'static str];
--	/// Return a [`CallMetadata`], containing function and pallet name of the Call.
--	fn get_call_metadata(&self) -> CallMetadata;
--}
--
- /// The version of a crate.
- #[derive(Debug, Eq, PartialEq, Encode, Decode, Clone, Copy, Default)]
- pub struct CrateVersion {
 diff --git a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
 index ddca109..6b6577e 100644
 --- a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
@@ -1390,18 +1243,6 @@ index 61b0d16..acb52c7 100644
  		pub mod api {
  			use super::*;
  
-diff --git a/substrate/primitives/api/proc-macro/src/lib.rs b/substrate/primitives/api/proc-macro/src/lib.rs
-index d34f4b7..cea9584 100644
---- a/substrate/primitives/api/proc-macro/src/lib.rs
-+++ b/substrate/primitives/api/proc-macro/src/lib.rs
-@@ -25,7 +25,6 @@ mod common;
- mod decl_runtime_apis;
- mod impl_runtime_apis;
- mod mock_impl_runtime_apis;
--mod runtime_metadata;
- mod utils;
- 
- #[proc_macro]
 diff --git a/substrate/primitives/api/proc-macro/src/utils.rs b/substrate/primitives/api/proc-macro/src/utils.rs
 index 4febfde..2d8dec1 100644
 --- a/substrate/primitives/api/proc-macro/src/utils.rs
@@ -1665,3 +1506,173 @@ index 24ec672..adf658c 100644
  
  	for_tuples!( type Val = ( #( Tuple::Val ),* ); );
  	for_tuples!( type Pre = ( #( Tuple::Pre ),* ); );
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/call.rs b/substrate/frame/support/procedural/src/pallet/expand/call.rs
+index a968b5f9..8491cfda 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/call.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/call.rs
+@@ -263,14 +263,14 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
+ 			}
+ 		});
+ 
+-	let deprecation = match crate::deprecation::get_deprecation_enum(
++	/* let deprecation = match crate::deprecation::get_deprecation_enum(
+ 		&quote::quote! {#frame_support},
+ 		def.call.as_ref().map(|call| call.attrs.as_ref()).unwrap_or(&[]),
+ 		methods.iter().map(|item| (item.call_index as u8, item.attrs.as_ref())),
+ 	) {
+ 		Ok(deprecation) => deprecation,
+ 		Err(e) => return e.into_compile_error(),
+-	};
++	}; */
+ 
+ 	quote::quote_spanned!(span =>
+ 		#[doc(hidden)]
+@@ -471,7 +471,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
+ 			type RuntimeCall = #call_ident<#type_use_gen>;
+ 		}
+ 
+-		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
++		/* impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
+ 			#[allow(dead_code)]
+ 			#[doc(hidden)]
+ 			pub fn call_functions() -> #frame_support::__private::metadata_ir::PalletCallMetadataIR {
+@@ -480,6 +480,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
+ 					deprecation_info: #deprecation,
+ 				}
+ 			}
+-		}
++		} */
+ 	)
+ }
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/composite.rs b/substrate/frame/support/procedural/src/pallet/parse/composite.rs
+index b3131d2..0af01eb 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/composite.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/composite.rs
+@@ -163,10 +163,6 @@ impl CompositeDef {
+ 		}
+ 
+ 		if has_instance {
+-			item.attrs.push(syn::parse_quote! {
+-				#[scale_info(skip_type_params(I))]
+-			});
+-
+ 			item.variants.push(syn::parse_quote! {
+ 				#[doc(hidden)]
+ 				#[codec(skip)]
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/config.rs b/substrate/frame/support/procedural/src/pallet/parse/config.rs
+index b354bc3..64b5c79 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/config.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/config.rs
+@@ -269,25 +269,6 @@ pub fn replace_self_by_t(input: proc_macro2::TokenStream) -> proc_macro2::TokenS
+ 		.collect()
+ }
+ 
+-/// Check that the trait item requires the `TypeInfo` bound (or similar).
+-fn contains_type_info_bound(ty: &TraitItemType) -> bool {
+-	const KNOWN_TYPE_INFO_BOUNDS: &[&str] = &[
+-		// Explicit TypeInfo trait.
+-		"TypeInfo",
+-		// Implicit known substrate traits that implement type info.
+-		// Note: Aim to keep this list as small as possible.
+-		"Parameter",
+-	];
+-
+-	ty.bounds.iter().any(|bound| {
+-		let syn::TypeParamBound::Trait(bound) = bound else { return false };
+-
+-		KNOWN_TYPE_INFO_BOUNDS
+-			.iter()
+-			.any(|known| bound.path.segments.last().map_or(false, |last| last.ident == *known))
+-	})
+-}
+-
+ impl ConfigDef {
+ 	pub fn try_from(
+ 		frame_system: &syn::Path,
+@@ -421,17 +402,6 @@ impl ConfigDef {
+ 						Pallet constant already collect the metadata for the type.",
+ 					))
+ 				}
+-
+-				if let syn::TraitItem::Type(ref ty) = trait_item {
+-					if !contains_type_info_bound(ty) {
+-						let msg = format!(
+-						"Invalid #[pallet::include_metadata] in #[pallet::config], collected type `{}` \
+-						does not implement `TypeInfo` or `Parameter`",
+-						ty.ident,
+-					);
+-						return Err(syn::Error::new(span, msg));
+-					}
+-				}
+ 			}
+ 
+ 			if !already_no_default && enable_default {
+diff --git a/substrate/primitives/application-crypto/src/traits.rs b/substrate/primitives/application-crypto/src/traits.rs
+index 1789d9b..58d9bc0 100644
+--- a/substrate/primitives/application-crypto/src/traits.rs
++++ b/substrate/primitives/application-crypto/src/traits.rs
+@@ -141,8 +141,7 @@ impl<T> RuntimeAppPublic for T
+ where
+ 	T: AppPublic + AsRef<<T as AppPublic>::Generic>,
+ 	<T as AppPublic>::Generic: RuntimePublic,
+-	<T as AppCrypto>::Signature: TypeInfo
+-		+ Codec
++	<T as AppCrypto>::Signature: Codec
+ 		+ From<<<T as AppPublic>::Generic as RuntimePublic>::Signature>
+ 		+ AsRef<<<T as AppPublic>::Generic as RuntimePublic>::Signature>,
+ {
+diff --git a/substrate/primitives/runtime/src/generic/digest.rs b/substrate/primitives/runtime/src/generic/digest.rs
+index 593fbdd..751967f 100644
+--- a/substrate/primitives/runtime/src/generic/digest.rs
++++ b/substrate/primitives/runtime/src/generic/digest.rs
+@@ -26,10 +26,6 @@ use serde::{Deserialize, Serialize};
+ 
+ use crate::{
+ 	codec::{Decode, DecodeWithMemTracking, Encode, Error, Input},
+-	scale_info::{
+-		build::{Fields, Variants},
+-		Path, Type, TypeInfo,
+-	},
+ 	ConsensusEngineId,
+ };
+ use sp_core::RuntimeDebug;
+diff --git a/substrate/frame/support/src/traits/misc.rs b/substrate/frame/support/src/traits/misc.rs
+index 9fef4383..e01f5f63 100644
+--- a/substrate/frame/support/src/traits/misc.rs
++++ b/substrate/frame/support/src/traits/misc.rs
+@@ -928,11 +928,6 @@ pub trait ExtrinsicCall: sp_runtime::traits::ExtrinsicLike {
+ 
+ impl<Address, Call, Signature, Extra> ExtrinsicCall
+ 	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
+-where
+-	Address: TypeInfo,
+-	Call: TypeInfo,
+-	Signature: TypeInfo,
+-	Extra: TypeInfo,
+ {
+ 	type Call = Call;
+ 
+@@ -949,11 +944,6 @@ pub trait InherentBuilder: ExtrinsicCall {
+ 
+ impl<Address, Call, Signature, Extra> InherentBuilder
+ 	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
+-where
+-	Address: TypeInfo,
+-	Call: TypeInfo,
+-	Signature: TypeInfo,
+-	Extra: TypeInfo,
+ {
+ 	fn new_inherent(call: Self::Call) -> Self {
+ 		Self::new_bare(call)
+@@ -978,11 +968,6 @@ pub trait SignedTransactionBuilder: ExtrinsicCall {
+ 
+ impl<Address, Call, Signature, Extension> SignedTransactionBuilder
+ 	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension>
+-where
+-	Address: TypeInfo,
+-	Call: TypeInfo,
+-	Signature: TypeInfo,
+-	Extension: TypeInfo,
+ {
+ 	type Address = Address;
+ 	type Signature = Signature;

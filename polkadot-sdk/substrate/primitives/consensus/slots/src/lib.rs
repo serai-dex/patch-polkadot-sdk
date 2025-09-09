@@ -35,6 +35,7 @@ use sp_timestamp::Timestamp;
 	Default,
 	Ord,
 	Hash,
+
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(transparent)]
@@ -152,6 +153,7 @@ impl From<Slot> for u64 {
 	Ord,
 	PartialEq,
 	Eq,
+
 )]
 #[repr(transparent)]
 pub struct SlotDuration(u64);

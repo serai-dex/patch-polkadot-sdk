@@ -202,6 +202,7 @@ use crate::{
 	PartialEqNoBound,
 	Encode,
 	Decode,
+
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
@@ -262,6 +263,7 @@ impl<
 	PartialEqNoBound,
 	Encode,
 	Decode,
+
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
@@ -334,6 +336,7 @@ impl<
 	PartialEqNoBound,
 	Encode,
 	Decode,
+
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]
@@ -377,6 +380,7 @@ impl<
 	PartialEqNoBound,
 	Encode,
 	Decode,
+
 	MaxEncodedLen,
 	RuntimeDebugNoBound,
 )]

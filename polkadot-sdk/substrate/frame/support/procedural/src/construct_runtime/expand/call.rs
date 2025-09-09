@@ -127,7 +127,6 @@ pub fn expand_outer_dispatch(
 				}
 			}
 		}
-
 		impl #scrate::__private::Dispatchable for RuntimeCall {
 			type RuntimeOrigin = RuntimeOrigin;
 			type Config = RuntimeCall;

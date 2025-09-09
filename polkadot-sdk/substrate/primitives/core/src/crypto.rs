@@ -510,6 +510,7 @@ pub trait Signature: CryptoType + ByteArray + PartialEq + Eq + Clone + Send + Sy
 	Decode,
 	DecodeWithMemTracking,
 	MaxEncodedLen,
+
 )]
 #[cfg_attr(feature = "std", derive(Hash))]
 pub struct AccountId32([u8; 32]);
@@ -1051,6 +1052,7 @@ pub trait CryptoType {
 	Decode,
 	PassByInner,
 	crate::RuntimeDebug,
+
 )]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct KeyTypeId(pub [u8; 4]);

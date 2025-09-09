@@ -258,21 +258,6 @@ fn construct_runtime_final_expansion(
 			type RuntimeBlock = #block;
 		}
 
-		// Each runtime must expose the `runtime_metadata()` to fetch the runtime API metadata.
-		// The function is implemented by calling `impl_runtime_apis!`.
-		//
-		// However, the `runtime` may be used without calling `impl_runtime_apis!`.
-		// Rely on the `Deref` trait to differentiate between a runtime that implements
-		// APIs (by macro impl_runtime_apis!) and a runtime that is simply created (by macro runtime).
-		//
-		// Both `InternalConstructRuntime` and `InternalImplRuntimeApis` expose a `runtime_metadata()` function.
-		// `InternalConstructRuntime` is implemented by the `runtime` for Runtime references (`& Runtime`),
-		// while `InternalImplRuntimeApis` is implemented by the `impl_runtime_apis!` for Runtime (`Runtime`).
-		//
-		// Therefore, the `Deref` trait will resolve the `runtime_metadata` from `impl_runtime_apis!`
-		// when both macros are called; and will resolve an empty `runtime_metadata` when only the `runtime`
-		// is used.
-
 		#outer_event
 
 		#outer_error

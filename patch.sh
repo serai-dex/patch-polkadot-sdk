@@ -79,7 +79,7 @@ function remove_matching_lines {
     return
   fi
   ORIGINAL=$(cat $1)
-  STRIPPED=$(echo "$ORIGINAL" | grep -v "$2")
+  STRIPPED=$(echo "$ORIGINAL" | grep -E -v "$2")
   echo "$STRIPPED" > $1
 }
 
@@ -87,8 +87,20 @@ function remove_module {
   silent_rm $1/$2.rs
   silent_rm $1/$2
   remove_matching_lines $1/mod.rs "mod $2"
+  remove_matching_lines $1/mod.rs "use $2::(.)+;"
   remove_matching_lines $1/lib.rs "mod $2"
+  remove_matching_lines $1/lib.rs "use $2::(.)+;"
   remove_matching_lines $1.rs "mod $2"
+  remove_matching_lines $1.rs "use $2::(.)+;"
+}
+
+function remove_matching_phrase {
+  if [ ! -f $1 ]; then
+    return
+  fi
+  ORIGINAL=$(cat $1)
+  STRIPPED=$(echo "$ORIGINAL" | sed "s/$2//g")
+  echo "$STRIPPED" > $1
 }
 
 # Apply the patches which are bug fixes
@@ -380,47 +392,79 @@ apply_patch removals/frame-system-benchmarking
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
 remove_crate_tree substrate/client/executor/runtime-test
-remove_crate_tree substrate/test-utils
+silent_rm substrate/frame/support/procedural/src/pallet/parse/tests
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
 remove_crate_tree substrate/primitives/test-primitives
+remove_crate_tree substrate/test-utils
 
 # Remove metadata
 
-remove_crate_tree substrate/primitives/metadata-ir
-remove_crate_tree substrate/frame/metadata-hash-extension
-
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand/metadata.rs
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/deprecation.rs
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/constants.rs
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/doc_only.rs
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand/documentation.rs
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/extra_constants.rs
-silent_rm ./polkadot-sdk/substrate/primitives/api/proc-macro/src/runtime_metadata.rs
-remove_feature no-metadata-docs
-
-silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
+# Remove the metadata hash and associated extension
 remove_feature metadata-hash
+remove_crate_tree substrate/frame/metadata-hash-extension
+silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
 
-remove_dependency scale-info
+# Remove various features for metadata
+remove_feature frame-metadata
+remove_feature no-metadata-docs
+remove_feature full-metadata-docs
 
-# Add `sp-api` as a direct dependency to `frame-support`, as it sets features on it
-echo '[dependencies.sp-api]' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
-echo 'workspace = true' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
-echo 'default-features = false' >> ./polkadot-sdk/substrate/frame/support/Cargo.toml
+# Apply the patch for what the following automatic code is incapable of
+apply_patch metadata
 
-apply_patch_dir metadata
+# Remove the call metadata trait
+remove_trait substrate/frame/support GetCallMetadata
 
+# Remove the runtime's metadata
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand metadata
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src deprecation
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand constants
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand doc_only
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand documentation
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse extra_constants
+remove_module ./polkadot-sdk/substrate/primitives/api/proc-macro/src runtime_metadata
+
+# Remove `sp-metadata-ir`
+remove_crate_tree substrate/primitives/metadata-ir
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/hash.rs "metadata_ir"
-# remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/storage/types/key.rs "metadata_ir"
 ls ./polkadot-sdk/substrate/frame/support/src/storage/types | while read -r file; do
   file=./polkadot-sdk/substrate/frame/support/src/storage/types/$file
   remove_matching_lines $file "^use sp_metadata_ir"
-  echo "$(cat $file | sed s/"\, StorageEntryMetadataBuilder"// | sed s/"StorageEntryMetadataBuilder\, "//)" > $file
+  remove_matching_phrase $file "\, StorageEntryMetadataBuilder"
+  remove_matching_phrase $file "StorageEntryMetadataBuilder\, "
 done
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/storage/types/mod.rs "/// Metadata for the storage kind."
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/storage/types/mod.rs "const METADATA"
 remove_trait substrate/frame/support/src/storage/types "StorageEntryMetadataBuilder"
+remove_trait substrate/frame/support/procedural/src "InternalConstructRuntime"
+remove_matching_lines ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/mod.rs "use #scrate::__private::metadata_ir::InternalImplRuntimeApis;"
+
+# Remove `scale-info`
+remove_dependency scale-info
+remove_trait substrate TypeInfo
+
+# Remove `use`s of `scale_info`
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -E -v "use scale_info(::(.)+)?;$"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -E -v "^[[:space:]]scale_info::\{(.)*\},$"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'STRIPPED=$(cat {} | grep -E -v "((((__private)|(crate))::scale_info)|pallet_prelude)::TypeInfo"); echo "$STRIPPED" > {}' \;
+
+# Remove `(Static)TypeInfo` derivations/bounds
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\: (scale_info::)?(Static)?TypeInfo,"/,/g); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\: (scale_info::)?(Static)?TypeInfo>"/"\>"/g); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\: (scale_info::)?(Static)?TypeInfo\;"/";"/g); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"([ \t])*\+ (scale_info::)?(Static)?TypeInfo"//g); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\, (scale_info::)?(Static)?TypeInfo"//g); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"^([ \t])*(scale_info::)?(Static)?TypeInfo,$"//g); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\((scale_info::)?(Static)?TypeInfo,([ ])*"/"\("/g); echo "$STRIPPED" > {}' \;
+
+# Remove `#[scale_info(...)]` attributes
+find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "\#\[scale_info"); echo "$STRIPPED" > {}' \;
+
+# Replace a usage of `scale_info::prelude::hash` which is a reference to `core::hash`
+echo "$(cat ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs | sed s/"scale_info::prelude::hash::Hasher"/"core::hash::Hasher"/)" > ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs
+
+# Metadata has now been removed
 
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain

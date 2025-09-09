@@ -39,6 +39,7 @@ pub use codec;
 #[doc(hidden)]
 pub use core::ops::Deref;
 #[doc(hidden)]
+#[doc(hidden)]
 #[cfg(feature = "serde")]
 pub use serde;
 

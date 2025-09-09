@@ -366,6 +366,7 @@ impl frame_system::Config for Runtime {
 	Eq,
 	PartialEq,
 	MaxEncodedLen,
+
 	RuntimeDebug,
 )]
 pub enum FreezeReasonId {

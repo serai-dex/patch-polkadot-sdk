@@ -78,6 +78,7 @@ pub trait CheckIfFeeless {
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
+
 	MaxEncodedLen,
 )]
 pub enum RawOrigin<AccountId> {
@@ -318,6 +319,7 @@ pub fn extract_actual_pays_fee(result: &DispatchResultWithPostInfo, info: &Dispa
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
+
 )]
 pub struct PostDispatchInfo {
 	/// Actual weight consumed by a call or `None` which stands for the worst case static weight.

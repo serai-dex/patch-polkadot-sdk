@@ -43,6 +43,7 @@ pub type Priority = u8;
 	PartialEq,
 	Eq,
 	RuntimeDebug,
+
 	MaxEncodedLen,
 )]
 pub enum DispatchTime<BlockNumber> {

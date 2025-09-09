@@ -177,6 +177,7 @@ impl Deref for OpaqueMetadata {
 	DecodeWithMemTracking,
 	RuntimeDebug,
 	PassByInner,
+
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct OpaquePeerId(pub Vec<u8>);
@@ -328,6 +329,7 @@ pub fn to_substrate_wasm_fn_return_value(value: &impl Encode) -> u64 {
 	Eq,
 	PartialEq,
 	RuntimeDebug,
+
 	MaxEncodedLen,
 )]
 pub enum Void {}

@@ -151,6 +151,5 @@ try-runtime = [
     "sp-runtime/try-runtime",
 ]
 experimental = ["frame-support-procedural/experimental"]
-full-metadata-docs = []
 tuples-96 = ["frame-support-procedural/tuples-96"]
 tuples-128 = ["frame-support-procedural/tuples-128"]

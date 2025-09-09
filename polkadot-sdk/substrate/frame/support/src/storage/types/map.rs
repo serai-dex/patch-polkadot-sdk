@@ -478,7 +478,6 @@ where
 	}
 }
 
-
 impl<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues> crate::traits::StorageInfoTrait
 	for StorageMap<Prefix, Hasher, Key, Value, QueryKind, OnEmpty, MaxValues>
 where

@@ -286,6 +286,7 @@ where
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
+
 )]
 pub struct DispatchEventInfo {
 	/// Weight of this transaction.
@@ -524,7 +525,7 @@ pub mod pallet {
 
 		/// The aggregated `RuntimeCall` type.
 		#[pallet::no_default_bounds]
-		type RuntimeCall: codec::Codec + DecodeWithMemTracking + EncodeLike + Clone + Eq + core::fmt::Debug
+		type RuntimeCall: Parameter
 			+ Dispatchable<RuntimeOrigin = Self::RuntimeOrigin>
 			+ Debug
 			+ GetDispatchInfo

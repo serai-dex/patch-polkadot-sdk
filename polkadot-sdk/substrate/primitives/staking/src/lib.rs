@@ -170,6 +170,7 @@ pub trait StakingInterface {
 		+ Copy
 		+ MaxEncodedLen
 		+ FullCodec
+
 		+ Saturating;
 
 	/// AccountId type used by the staking system.
@@ -354,6 +355,7 @@ pub trait StakingUnchecked: StakingInterface {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
+
 	Copy,
 )]
 pub struct IndividualExposure<AccountId, Balance: HasCompact> {
@@ -375,6 +377,7 @@ pub struct IndividualExposure<AccountId, Balance: HasCompact> {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
+
 )]
 pub struct Exposure<AccountId, Balance: HasCompact> {
 	/// The total balance backing this validator.
@@ -465,6 +468,7 @@ impl<A, B: Default + HasCompact> Default for ExposurePage<A, B> {
 	Encode,
 	Decode,
 	RuntimeDebug,
+
 	Default,
 	MaxEncodedLen,
 )]
@@ -532,6 +536,7 @@ pub trait DelegationInterface {
 		+ Copy
 		+ MaxEncodedLen
 		+ FullCodec
+
 		+ Saturating;
 
 	/// AccountId type used by the staking system.
@@ -607,6 +612,7 @@ pub trait DelegationMigrator {
 		+ Copy
 		+ MaxEncodedLen
 		+ FullCodec
+
 		+ Saturating;
 
 	/// AccountId type used by the staking system.

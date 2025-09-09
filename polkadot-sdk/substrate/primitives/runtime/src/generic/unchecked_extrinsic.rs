@@ -538,7 +538,7 @@ where
 mod legacy {
 	use codec::{Compact, Decode, Encode, EncodeLike, Error, Input};
 	use scale_info::{
-		build::Fields, meta_type, Path, StaticTypeInfo, Type, TypeInfo, TypeParameter,
+		build::Fields, meta_type, Path, Type, TypeParameter,
 	};
 
 	pub type UncheckedSignaturePayloadV4<Address, Signature, Extra> = (Address, Signature, Extra);
@@ -547,37 +547,6 @@ mod legacy {
 	pub struct UncheckedExtrinsicV4<Address, Call, Signature, Extra> {
 		pub signature: Option<UncheckedSignaturePayloadV4<Address, Signature, Extra>>,
 		pub function: Call,
-	}
-
-	impl<Address, Call, Signature, Extra> TypeInfo
-		for UncheckedExtrinsicV4<Address, Call, Signature, Extra>
-	where
-		Address: StaticTypeInfo,
-		Call: StaticTypeInfo,
-		Signature: StaticTypeInfo,
-		Extra: StaticTypeInfo,
-	{
-		type Identity = UncheckedExtrinsicV4<Address, Call, Signature, Extra>;
-
-		fn type_info() -> Type {
-			Type::builder()
-				.path(Path::new("UncheckedExtrinsic", module_path!()))
-				// Include the type parameter types, even though they are not used directly in any
-				// of the described fields. These type definitions can be used by downstream
-				// consumers to help construct the custom decoding from the opaque bytes (see
-				// below).
-				.type_params(vec![
-					TypeParameter::new("Address", Some(meta_type::<Address>())),
-					TypeParameter::new("Call", Some(meta_type::<Call>())),
-					TypeParameter::new("Signature", Some(meta_type::<Signature>())),
-					TypeParameter::new("Extra", Some(meta_type::<Extra>())),
-				])
-				.docs(&["OldUncheckedExtrinsic raw bytes, requires custom decoding routine"])
-				// Because of the custom encoding, we can only accurately describe the encoding as
-				// an opaque `Vec<u8>`. Downstream consumers will need to manually implement the
-				// codec to encode/decode the `signature` and `function` fields.
-				.composite(Fields::unnamed().field(|f| f.ty::<Vec<u8>>()))
-		}
 	}
 
 	impl<Address, Call, Signature, Extra> UncheckedExtrinsicV4<Address, Call, Signature, Extra> {
@@ -709,7 +678,7 @@ mod tests {
 		PartialEq,
 		Ord,
 		PartialOrd,
-		TypeInfo,
+
 	)]
 	struct DummyExtension;
 	impl TransactionExtension<TestCall> for DummyExtension {

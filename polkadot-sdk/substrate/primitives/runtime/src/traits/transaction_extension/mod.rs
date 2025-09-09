@@ -678,10 +678,9 @@ mod test {
 
 	#[test]
 	fn test_implications_on_nested_structure() {
-		use scale_info::TypeInfo;
 		use std::cell::RefCell;
 
-		#[derive(Clone, Debug, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, TypeInfo)]
+		#[derive(Clone, Debug, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking)]
 		struct MockExtension {
 			also_implicit: u8,
 			explicit: u8,

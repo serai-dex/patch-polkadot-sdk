@@ -268,7 +268,6 @@ where
 	}
 }
 
-
 impl<Prefix, Value, QueryKind, OnEmpty> crate::traits::StorageInfoTrait
 	for StorageValue<Prefix, Value, QueryKind, OnEmpty>
 where

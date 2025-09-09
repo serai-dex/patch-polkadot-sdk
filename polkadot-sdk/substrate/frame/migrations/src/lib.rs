@@ -181,6 +181,7 @@ use sp_runtime::Saturating;
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
+
 	MaxEncodedLen,
 )]
 pub enum MigrationCursor<Cursor, BlockNumber> {
@@ -218,6 +219,7 @@ impl<Cursor, BlockNumber> From<ActiveCursor<Cursor, BlockNumber>>
 	Encode,
 	Decode,
 	DecodeWithMemTracking,
+
 	MaxEncodedLen,
 )]
 pub struct ActiveCursor<Cursor, BlockNumber> {

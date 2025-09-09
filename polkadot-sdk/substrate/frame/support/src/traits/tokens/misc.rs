@@ -17,7 +17,7 @@
 
 //! Miscellaneous types.
 
-use crate::traits::Contains;
+use crate::{traits::Contains};
 use codec::{Decode, DecodeWithMemTracking, Encode, FullCodec, HasCompact, MaxEncodedLen};
 use core::fmt::Debug;
 use sp_arithmetic::traits::{AtLeast32BitUnsigned, Zero};
@@ -186,6 +186,7 @@ pub enum ExistenceRequirement {
 	Decode,
 	DecodeWithMemTracking,
 	RuntimeDebug,
+
 	MaxEncodedLen,
 )]
 pub enum BalanceStatus {
@@ -239,6 +240,7 @@ pub trait AssetId:
 	+ Eq
 	+ PartialEq
 	+ Debug
+
 	+ MaxEncodedLen
 {
 }
@@ -249,6 +251,7 @@ impl<
 			+ Eq
 			+ PartialEq
 			+ Debug
+
 			+ MaxEncodedLen,
 	> AssetId for T
 {
@@ -263,6 +266,7 @@ pub trait Balance:
 	+ Copy
 	+ Default
 	+ Debug
+
 	+ MaxEncodedLen
 	+ Send
 	+ Sync
@@ -278,6 +282,7 @@ impl<
 			+ Copy
 			+ Default
 			+ Debug
+
 			+ MaxEncodedLen
 			+ Send
 			+ Sync

@@ -70,6 +70,7 @@ use serde::{Deserialize, Serialize};
 	Decode,
 	DecodeWithMemTracking,
 	Debug,
+
 	MaxEncodedLen,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
