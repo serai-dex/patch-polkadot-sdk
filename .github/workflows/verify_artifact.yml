@@ -51,3 +51,14 @@ jobs:
           rm -rf polkadot-sdk/.git
           find polkadot-sdk/ -type f -exec sha256sum {} \; > SHA256SUMS
           cmp SHA256SUMS.committed SHA256SUMS
+
+          cd polkadot-sdk
+
+          # Verify `sc-network` builds without `litep2p`
+          cargo check -p sc-network
+
+          # Verify `sc-executor` builds without `polkavm`
+          cargo check -p sc-executor
+
+          # Verify `substrate-wasm-builder` builds without `polkavm-linker`
+          cargo check -p substrate-wasm-builder
