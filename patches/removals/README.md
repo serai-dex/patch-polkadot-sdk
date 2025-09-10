@@ -41,3 +41,6 @@
   they may not be. As Serai doesn't plan to use Substrate's provided seed
   management, and maintained it solely as it's simpler than removal, this is
   irrelevant to Serai yet should be watched out for.
+
+- `sysinfo`: Removes `sysinfo` which was only included to print a warning in
+  certain conditions.

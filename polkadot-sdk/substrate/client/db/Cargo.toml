@@ -102,9 +102,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sysinfo]
-workspace = true
-
 [features]
 default = []
 test-helpers = []

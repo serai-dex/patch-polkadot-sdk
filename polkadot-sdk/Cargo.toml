@@ -1033,9 +1033,6 @@ default-features = false
 [workspace.dependencies.syn]
 version = "2.0.87"
 
-[workspace.dependencies.sysinfo]
-version = "0.33.0"
-
 [workspace.dependencies.tempfile]
 version = "3.8.1"
 

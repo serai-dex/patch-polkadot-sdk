@@ -1240,7 +1240,7 @@ impl<Block: BlockT> Backend<Block> {
 		let offchain_storage = offchain::LocalStorage::new(db.clone());
 
 		let shared_trie_cache = config.trie_cache_maximum_size.map(|maximum_size| {
-			let system_memory = sysinfo::System::new_all();
+			/*let system_memory = sysinfo::System::new_all();
 			let used_memory = system_memory.used_memory();
 			let total_memory = system_memory.total_memory();
 
@@ -1250,7 +1250,7 @@ impl<Block: BlockT> Backend<Block> {
 					"Not enough memory to initialize shared trie cache. Cache size: {} bytes. System memory: used {} bytes, total {} bytes",
 					maximum_size, used_memory, total_memory,
 				);
-			}
+			}*/
 
 			SharedTrieCache::new(sp_trie::cache::CacheSize::new(maximum_size), config.metrics_registry.as_ref())
 		});

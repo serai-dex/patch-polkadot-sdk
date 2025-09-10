@@ -144,6 +144,8 @@ find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGIN
 # Remove memmap2 and the associated unsafe calling code
 apply_patch removals/memmap2
 
+# Remove `sysinfo` from `sc-db`, which is detected as in-use because it's also the name of a `mod`
+remove_matching_lines ./polkadot-sdk/substrate/client/db/Cargo.toml "sysinfo"
 # Remove `prost-build` from `sc-network`, which is unused yet `machete` doesn't realize
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost-build"
 # Remove `ed25519_dalek`, `libsecp256k1`, `secp256k1` from `sp-io`
@@ -470,6 +472,9 @@ remove_crate_tree substrate/client/offchain
 # Remove the deprecated native executor
 apply_patch removals/NativeExecutor
 
+# Remove `sysinfo`, which is only used to log a warning if the computer has insufficient memory
+apply_patch removals/sysinfo
+
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree
 apply_patch removals/docify
@@ -518,7 +523,6 @@ cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
 cargo_upgrade rustix 1.0.0
 cargo_upgrade strum 0.27.0
-cargo_upgrade sysinfo 0.33.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
