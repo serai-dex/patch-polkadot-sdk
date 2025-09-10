@@ -43,8 +43,8 @@ if [ $? -ne 0 ]; then
   git checkout -f $POLKADOT_SDK_COMMIT --quiet
   if [ $? -ne 0 ]; then
     echo "Failed to checkout $POLKADOT_SDK_COMMIT"
+    exit 2
   fi
-  exit 2
 fi
 # Remove the existing `.patched` marker
 silent_rm .patched
