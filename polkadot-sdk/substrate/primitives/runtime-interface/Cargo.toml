@@ -49,6 +49,7 @@ workspace = true
 
 [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies.polkavm-derive]
 workspace = true
+optional = true
 
 [features]
 default = ["std"]
