@@ -19,7 +19,7 @@
 //! that use staking.
 
 use alloc::vec::Vec;
-use codec::{Decode, Encode};
+use codec::{Decode, Encode, MaxEncodedLen};
 use sp_core::Get;
 use sp_runtime::{transaction_validity::TransactionValidityError, DispatchError, Perbill};
 
@@ -252,7 +252,15 @@ impl<Reporter, Evidence> OffenceReportSystem<Reporter, Evidence> for () {
 /// For instance used for the purposes of distinguishing who should be
 /// prioritized for disablement.
 #[derive(
-	Clone, Copy, PartialEq, Eq, Encode, Decode, sp_runtime::RuntimeDebug,
+	Clone,
+	Copy,
+	PartialEq,
+	Eq,
+	Encode,
+	Decode,
+	MaxEncodedLen,
+	sp_runtime::RuntimeDebug,
+
 )]
 pub struct OffenceSeverity(pub Perbill);
 

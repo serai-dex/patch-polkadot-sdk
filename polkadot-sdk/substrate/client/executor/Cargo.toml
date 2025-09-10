@@ -1,6 +1,6 @@
 [package]
 name = "sc-executor"
-version = "0.42.0"
+version = "0.43.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "A crate that provides means of executing/dispatching calls into the runtime."
 documentation = "https://docs.rs/sc-executor"

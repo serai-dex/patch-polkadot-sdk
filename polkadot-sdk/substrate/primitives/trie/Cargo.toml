@@ -1,6 +1,6 @@
 [package]
 name = "sp-trie"
-version = "39.1.0"
+version = "40.0.0"
 description = "Patricia trie stuff using a parity-scale-codec node format"
 license = "Apache-2.0"
 documentation = "https://docs.rs/sp-trie"
@@ -31,7 +31,13 @@ workspace = true
 [dependencies.codec]
 workspace = true
 
+[dependencies.foldhash]
+workspace = true
+
 [dependencies.hash-db]
+workspace = true
+
+[dependencies.hashbrown]
 workspace = true
 
 [dependencies.memory-db]
@@ -42,6 +48,11 @@ optional = true
 workspace = true
 
 [dependencies.parking_lot]
+optional = true
+workspace = true
+default-features = true
+
+[dependencies.prometheus-endpoint]
 optional = true
 workspace = true
 default-features = true
@@ -81,10 +92,12 @@ default = ["std"]
 std = [
     "ahash",
     "codec/std",
+    "foldhash/std",
     "hash-db/std",
     "memory-db/std",
     "nohash-hasher",
     "parking_lot",
+    "prometheus-endpoint",
     "rand",
     "schnellru",
     "sp-core/std",

@@ -57,7 +57,7 @@ use std::str::FromStr;
 pub mod transaction_extension;
 pub use transaction_extension::{
 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
-	TxBaseImplication, ValidateResult,
+	/* TransactionExtensionMetadata,*/ TxBaseImplication, ValidateResult,
 };
 
 /// A lazy value.
@@ -1409,6 +1409,15 @@ where
 	}
 }
 
+/// An extrinsic on which we can get access to call.
+pub trait ExtrinsicCall: ExtrinsicLike {
+	/// The type of the call.
+	type Call;
+
+	/// Get the call of the extrinsic.
+	fn call(&self) -> &Self::Call;
+}
+
 /// Something that acts like a [`SignaturePayload`](Extrinsic::SignaturePayload) of an
 /// [`Extrinsic`].
 pub trait SignaturePayload {
@@ -1435,7 +1444,7 @@ impl SignaturePayload for () {
 }
 
 /// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
-pub trait ExtrinsicMetadata {
+/* pub trait ExtrinsicMetadata {
 	/// The format versions of the `Extrinsic`.
 	///
 	/// By format we mean the encoded representation of the `Extrinsic`.
@@ -1443,7 +1452,7 @@ pub trait ExtrinsicMetadata {
 
 	/// Transaction extensions attached to this `Extrinsic`.
 	type TransactionExtensions;
-}
+} */
 
 /// Extract the hashing type for a block.
 pub type HashingFor<B> = <<B as Block>::Header as Header>::Hashing;
@@ -1576,7 +1585,7 @@ impl Dispatchable for () {
 }
 
 /// Dispatchable impl containing an arbitrary value which panics if it actually is dispatched.
-#[derive(Clone, Eq, PartialEq, Encode, Decode, RuntimeDebug)]
+#[derive(Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, RuntimeDebug)]
 pub struct FakeDispatchable<Inner>(pub Inner);
 impl<Inner> From<Inner> for FakeDispatchable<Inner> {
 	fn from(inner: Inner) -> Self {
@@ -1725,6 +1734,22 @@ pub trait SignedExtension:
 	) -> Result<(), TransactionValidityError> {
 		Ok(())
 	}
+
+	/* /// Returns the metadata for this signed extension.
+	///
+	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
+	/// that holds the metadata of each one. Each individual `SignedExtension` must return
+	/// *exactly* one [`TransactionExtensionMetadata`].
+	///
+	/// This method provides a default implementation that returns a vec containing a single
+	/// [`TransactionExtensionMetadata`].
+	fn metadata() -> Vec<TransactionExtensionMetadata> {
+		alloc::vec![TransactionExtensionMetadata {
+			identifier: Self::IDENTIFIER,
+			ty: scale_info::meta_type::<Self>(),
+			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
+		}]
+	} */
 
 	/// Validate an unsigned transaction for the transaction queue.
 	///

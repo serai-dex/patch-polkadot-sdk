@@ -1,7 +1,7 @@
 [package]
 description = "Substrate network protocol"
 name = "sc-network"
-version = "0.50.1"
+version = "0.51.1"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-network"
 readme = "README.md"
@@ -23,8 +23,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [lints]
 workspace = true
-
-[build-dependencies]
 
 [dependencies]
 prometheus-client = "0.23"
@@ -194,6 +192,8 @@ default-features = true
 version = "0.4"
 default-features = false
 features = ["tokio"]
+
+[build-dependencies]
 
 [features]
 default = []

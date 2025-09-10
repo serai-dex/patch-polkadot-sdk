@@ -22,6 +22,7 @@ use crate::{
 	RuntimeDebug,
 };
 use alloc::{vec, vec::Vec};
+use sp_weights::Weight;
 
 /// Priority for a transaction. Additive. Higher is better.
 pub type TransactionPriority = u64;
@@ -215,6 +216,11 @@ impl std::fmt::Display for TransactionValidityError {
 
 /// Information on a transaction's validity and, if valid, on how it relates to other transactions.
 pub type TransactionValidity = Result<ValidTransaction, TransactionValidityError>;
+
+/// Information on a transaction's validity and, if valid, on how it relates to other transactions
+/// and some refund for the operation.
+pub type TransactionValidityWithRefund =
+	Result<(ValidTransaction, Weight), TransactionValidityError>;
 
 impl From<InvalidTransaction> for TransactionValidity {
 	fn from(invalid_transaction: InvalidTransaction) -> Self {

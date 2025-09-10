@@ -282,8 +282,8 @@ index 56f006f..f8c08b9 100644
  	WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY,
  };
  use sc_keystore::LocalKeystore;
-@@ -269,17 +269,6 @@ where
- 	Ok((client, backend, keystore_container, task_manager))
+@@ -347,17 +347,6 @@ where
+ 	Ok(())
  }
  
 -/// Creates a [`NativeElseWasmExecutor`](sc_executor::NativeElseWasmExecutor) according to

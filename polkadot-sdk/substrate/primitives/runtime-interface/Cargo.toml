@@ -1,6 +1,6 @@
 [package]
 name = "sp-runtime-interface"
-version = "29.0.1"
+version = "30.0.0"
 license = "Apache-2.0"
 description = "Substrate runtime interface"
 documentation = "https://docs.rs/sp-runtime-interface/"
@@ -31,12 +31,6 @@ workspace = true
 features = ["bytes"]
 workspace = true
 
-[dependencies.impl-trait-for-tuples]
-workspace = true
-
-[dependencies.primitive-types]
-workspace = true
-
 [dependencies.sp-externalities]
 workspace = true
 
@@ -47,18 +41,11 @@ workspace = true
 [dependencies.sp-std]
 workspace = true
 
-[dependencies.sp-storage]
-workspace = true
-
 [dependencies.sp-tracing]
 workspace = true
 
 [dependencies.sp-wasm-interface]
 workspace = true
-
-[dependencies.static_assertions]
-workspace = true
-default-features = true
 
 [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies.polkavm-derive]
 workspace = true
@@ -68,10 +55,8 @@ default = ["std"]
 std = [
     "bytes/std",
     "codec/std",
-    "primitive-types/std",
     "sp-externalities/std",
     "sp-std/std",
-    "sp-storage/std",
     "sp-tracing/std",
     "sp-wasm-interface/std",
 ]

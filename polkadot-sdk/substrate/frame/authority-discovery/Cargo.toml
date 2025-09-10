@@ -1,6 +1,6 @@
 [package]
 name = "pallet-authority-discovery"
-version = "40.0.0"
+version = "41.0.0"
 license = "Apache-2.0"
 description = "FRAME pallet for authority discovery"
 readme = "README.md"

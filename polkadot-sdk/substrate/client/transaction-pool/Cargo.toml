@@ -1,6 +1,6 @@
 [package]
 name = "sc-transaction-pool"
-version = "39.0.0"
+version = "40.1.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate transaction pool implementation."
 readme = "README.md"
@@ -44,10 +44,6 @@ workspace = true
 
 [dependencies.linked-hash-map]
 workspace = true
-
-[dependencies.log]
-workspace = true
-default-features = true
 
 [dependencies.parking_lot]
 workspace = true

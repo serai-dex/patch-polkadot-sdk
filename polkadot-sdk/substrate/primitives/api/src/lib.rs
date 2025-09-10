@@ -98,6 +98,8 @@ pub mod __private {
 	pub use sp_core::offchain;
 	#[cfg(not(feature = "std"))]
 	pub use sp_core::to_substrate_wasm_fn_return_value;
+	#[cfg(feature = "frame-metadata")]
+	pub use sp_metadata_ir::{self as metadata_ir, frame_metadata as metadata};
 	pub use sp_runtime::{
 		generic::BlockId,
 		traits::{Block as BlockT, Hash as HashT, HashingFor, Header as HeaderT, NumberFor},
@@ -112,7 +114,7 @@ pub mod __private {
 
 #[cfg(feature = "std")]
 pub use sp_core::traits::CallContext;
-use sp_core::OpaqueMetadata;
+// use sp_core::OpaqueMetadata;
 #[cfg(feature = "std")]
 use sp_externalities::{Extension, Extensions};
 #[cfg(feature = "std")]
@@ -127,9 +129,6 @@ use sp_state_machine::{backend::AsTrieBackend, Backend as StateBackend, Overlaye
 use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
 use std::cell::RefCell;
-
-/// Maximum nesting level for extrinsics.
-pub const MAX_EXTRINSIC_DEPTH: u32 = 256;
 
 /// Declares given traits as runtime apis.
 ///
@@ -821,7 +820,26 @@ decl_runtime_apis! {
 		/// Initialize a block with the given header and return the runtime executive mode.
 		fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode;
 	}
+
+	/* /// The `Metadata` api trait that returns metadata for the runtime.
+	#[api_version(2)]
+	pub trait Metadata {
+		/// Returns the metadata of a runtime.
+		fn metadata() -> OpaqueMetadata;
+
+		/// Returns the metadata at a given version.
+		///
+		/// If the given `version` isn't supported, this will return `None`.
+		/// Use [`Self::metadata_versions`] to find out about supported metadata version of the runtime.
+		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata>;
+
+		/// Returns the supported metadata versions.
+		///
+		/// This can be used to call `metadata_at_version`.
+		fn metadata_versions() -> alloc::vec::Vec<u32>;
+	} */
 }
 
 sp_core::generate_feature_enabled_macro!(std_enabled, feature = "std", $);
 sp_core::generate_feature_enabled_macro!(std_disabled, not(feature = "std"), $);
+// sp_core::generate_feature_enabled_macro!(frame_metadata_enabled, feature = "frame-metadata", $);

@@ -1,10 +1,10 @@
 [package]
 name = "polkadot-sdk-frame"
-version = "0.9.1"
+version = "0.10.0"
 authors = ["Parity Technologies <admin@parity.io>"]
 license = "Apache-2.0"
 homepage = "https://paritytech.github.io"
-description = "Experimental: The single package to get you started with building frame pallets and runtimes"
+description = "The single package to get you started with building frame pallets and runtimes"
 
 [package.edition]
 workspace = true
@@ -13,7 +13,6 @@ workspace = true
 workspace = true
 
 [package.metadata.docs.rs]
-features = ["experimental"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lints]
@@ -112,22 +111,6 @@ default = [
     "runtime",
     "std",
 ]
-experimental = ["frame-support/experimental"]
-runtime = [
-    "frame-executive",
-    "frame-system-rpc-runtime-api",
-    "sp-api",
-    "sp-block-builder",
-    "sp-consensus-grandpa",
-    "sp-genesis-builder",
-    "sp-inherents",
-    "sp-keyring",
-    "sp-offchain",
-    "sp-session",
-    "sp-storage",
-    "sp-transaction-pool",
-    "sp-version",
-]
 std = [
     "codec/std",
     "frame-benchmarking?/std",
@@ -166,4 +149,20 @@ try-runtime = [
     "frame-system/try-runtime",
     "frame-try-runtime/try-runtime",
     "sp-runtime/try-runtime",
+]
+experimental = ["frame-support/experimental"]
+runtime = [
+    "frame-executive",
+    "frame-system-rpc-runtime-api",
+    "sp-api",
+    "sp-block-builder",
+    "sp-consensus-grandpa",
+    "sp-genesis-builder",
+    "sp-inherents",
+    "sp-keyring",
+    "sp-offchain",
+    "sp-session",
+    "sp-storage",
+    "sp-transaction-pool",
+    "sp-version",
 ]

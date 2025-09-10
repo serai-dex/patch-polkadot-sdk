@@ -1,6 +1,6 @@
 [package]
 name = "sc-sync-state-rpc"
-version = "0.50.0"
+version = "0.51.0"
 description = "A RPC handler to create sync states for light clients."
 license = "Apache-2.0"
 

@@ -5,7 +5,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=52f4a08f26f226de93c0dbea5e8d066cbbd5bbd0
+POLKADOT_SDK_COMMIT=2caeef482a437414c6bed2395a16abe08fccbfbb
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -138,10 +138,6 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/un
 # Remove `build-helper`
 apply_patch removals/build-helper
 
-# Remove `dyn-clonable` for `dyn-clone`, where both are already in-use within this tree
-echo "$(cat ./polkadot-sdk/substrate/primitives/core/Cargo.toml | sed s/"dyn-clonable"/"dyn-clone"/)" > ./polkadot-sdk/substrate/primitives/core/Cargo.toml
-apply_patch removals/dyn-clonable
-
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
 
@@ -150,9 +146,10 @@ apply_patch removals/memmap2
 
 # Remove `prost-build` from `sc-network`, which is unused yet `machete` doesn't realize
 remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "prost-build"
-# Remove `ed25519_dalek`, `libsecp256k1` from `sp-io`
+# Remove `ed25519_dalek`, `libsecp256k1`, `secp256k1` from `sp-io`
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519-dalek"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256k1"
 
 # Remove schemars
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/src/weight_v2.rs "schemars"
@@ -349,7 +346,7 @@ silent_rm ./polkadot-sdk/substrate/client/cli/src/commands/vanity.rs
 silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa.rs
 silent_rm ./polkadot-sdk/substrate/primitives/core/src/ecdsa.rs
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ecdsa.rs
-silent_rm ./polkadot-sdk/substrate/frame/support/src/crypto/ecdsa.rs
+remove_module ./polkadot-sdk/substrate/frame/support/src/crypto ecdsa
 silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ed25519.rs
 silent_rm ./polkadot-sdk/substrate/primitives/core/src/ed25519.rs
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
@@ -366,6 +363,7 @@ ls ./polkadot-sdk/substrate/frame | while read -r folder; do
 done
 
 # Remove unused primitives
+remove_crate_tree substrate/primitives/ethereum-standards
 remove_crate_tree substrate/primitives/npos-elections
 
 # Remove the scripts used for testing
@@ -418,7 +416,6 @@ remove_trait substrate/frame/support GetCallMetadata
 
 # Remove the runtime's metadata
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand metadata
-remove_module ./polkadot-sdk/substrate/frame/support/procedural/src deprecation
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand constants
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand doc_only
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand documentation

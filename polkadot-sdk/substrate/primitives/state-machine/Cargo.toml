@@ -1,6 +1,6 @@
 [package]
 name = "sp-state-machine"
-version = "0.45.0"
+version = "0.46.0"
 description = "Substrate State Machine"
 license = "Apache-2.0"
 documentation = "https://docs.rs/sp-state-machine"

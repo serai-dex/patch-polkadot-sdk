@@ -13,11 +13,11 @@ index 7d5c07d..edd1c0a 100644
 @@ -32,8 +31,6 @@ use sp_core::{
  	OpaquePeerId,
  };
- 
+
 -mod http;
 -
  mod timestamp;
- 
+
  /// Asynchronous offchain API.
 @@ -45,8 +42,6 @@ pub(crate) struct Api {
  	network_provider: Arc<dyn NetworkProvider + Send + Sync>,
@@ -26,12 +26,12 @@ index 7d5c07d..edd1c0a 100644
 -	/// Everything HTTP-related is handled by a different struct.
 -	http: http::HttpApi,
  }
- 
+
  impl offchain::Externalities for Api {
 @@ -73,54 +68,6 @@ impl offchain::Externalities for Api {
  		rand::random()
  	}
- 
+
 -	fn http_request_start(
 -		&mut self,
 -		method: &str,
@@ -92,7 +92,7 @@ index 7d5c07d..edd1c0a 100644
 -	http: Option<http::HttpWorker>,
 -}
 +pub(crate) struct AsyncApi {}
- 
+
  impl AsyncApi {
  	/// Creates new Offchain extensions API implementation and the asynchronous processing part.
  	pub fn new(
@@ -104,30 +104,30 @@ index 7d5c07d..edd1c0a 100644
 -
 -		let api = Api { network_provider, is_validator, http: http_api };
 +		let api = Api { network_provider, is_validator };
- 
+
 -		let async_api = Self { http: Some(http_worker) };
 +		let async_api = Self {};
- 
+
  		(api, async_api)
  	}
- 
+
  	/// Run a processing task for the API
  	pub fn process(self) -> impl Future<Output = ()> {
 -		self.http.expect("`process` is only called once; qed")
 +		async {}
  	}
  }
- 
+
 @@ -326,9 +267,8 @@ mod tests {
  	fn offchain_api() -> (Api, AsyncApi) {
  		sp_tracing::try_init_simple();
  		let mock = Arc::new(TestNetwork());
 -		let shared_client = SharedClient::new().unwrap();
- 
+
 -		AsyncApi::new(mock, false, shared_client)
 +		AsyncApi::new(mock, false)
  	}
- 
+
  	fn offchain_db() -> OffchainDb<LocalStorage> {
 diff --git a/substrate/client/offchain/src/lib.rs b/substrate/client/offchain/src/lib.rs
 index b0a7a66..c6e874c 100644
@@ -179,10 +179,10 @@ index b0a7a66..c6e874c 100644
  			tracing::debug!(target: LOG_TARGET, "Spawning offchain workers at {hash:?}");
  			let header = header.clone();
  			let client = self.runtime_api_provider.clone();
- 
+
  			let mut capabilities = offchain::Capabilities::all();
 -			capabilities.set(offchain::Capabilities::HTTP, self.enable_http_requests);
- 
+
  			let keystore = self.keystore.clone();
  			let db = self.offchain_db.clone();
 @@ -464,7 +453,6 @@ mod tests {
@@ -193,108 +193,6 @@ index b0a7a66..c6e874c 100644
  			custom_extensions: |_| Vec::new(),
  		})
  		.unwrap();
-diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
-index bea79ec..c02555a 100644
---- a/substrate/primitives/io/src/lib.rs
-+++ b/substrate/primitives/io/src/lib.rs
-@@ -1460,97 +1460,6 @@ pub trait Offchain {
- 			.local_storage_get(kind, key)
- 	}
- 
--	/// Initiates a http request given HTTP verb and the URL.
--	///
--	/// Meta is a future-reserved field containing additional, parity-scale-codec encoded
--	/// parameters. Returns the id of newly started request.
--	fn http_request_start(
--		&mut self,
--		method: &str,
--		uri: &str,
--		meta: &[u8],
--	) -> Result<HttpRequestId, ()> {
--		self.extension::<OffchainWorkerExt>()
--			.expect("http_request_start can be called only in the offchain worker context")
--			.http_request_start(method, uri, meta)
--	}
--
--	/// Append header to the request.
--	fn http_request_add_header(
--		&mut self,
--		request_id: HttpRequestId,
--		name: &str,
--		value: &str,
--	) -> Result<(), ()> {
--		self.extension::<OffchainWorkerExt>()
--			.expect("http_request_add_header can be called only in the offchain worker context")
--			.http_request_add_header(request_id, name, value)
--	}
--
--	/// Write a chunk of request body.
--	///
--	/// Writing an empty chunks finalizes the request.
--	/// Passing `None` as deadline blocks forever.
--	///
--	/// Returns an error in case deadline is reached or the chunk couldn't be written.
--	fn http_request_write_body(
--		&mut self,
--		request_id: HttpRequestId,
--		chunk: &[u8],
--		deadline: Option<Timestamp>,
--	) -> Result<(), HttpError> {
--		self.extension::<OffchainWorkerExt>()
--			.expect("http_request_write_body can be called only in the offchain worker context")
--			.http_request_write_body(request_id, chunk, deadline)
--	}
--
--	/// Block and wait for the responses for given requests.
--	///
--	/// Returns a vector of request statuses (the len is the same as ids).
--	/// Note that if deadline is not provided the method will block indefinitely,
--	/// otherwise unready responses will produce `DeadlineReached` status.
--	///
--	/// Passing `None` as deadline blocks forever.
--	fn http_response_wait(
--		&mut self,
--		ids: &[HttpRequestId],
--		deadline: Option<Timestamp>,
--	) -> Vec<HttpRequestStatus> {
--		self.extension::<OffchainWorkerExt>()
--			.expect("http_response_wait can be called only in the offchain worker context")
--			.http_response_wait(ids, deadline)
--	}
--
--	/// Read all response headers.
--	///
--	/// Returns a vector of pairs `(HeaderKey, HeaderValue)`.
--	/// NOTE: response headers have to be read before response body.
--	fn http_response_headers(&mut self, request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
--		self.extension::<OffchainWorkerExt>()
--			.expect("http_response_headers can be called only in the offchain worker context")
--			.http_response_headers(request_id)
--	}
--
--	/// Read a chunk of body response to given buffer.
--	///
--	/// Returns the number of bytes written or an error in case a deadline
--	/// is reached or server closed the connection.
--	/// If `0` is returned it means that the response has been fully consumed
--	/// and the `request_id` is now invalid.
--	/// NOTE: this implies that response headers must be read before draining the body.
--	/// Passing `None` as a deadline blocks forever.
--	fn http_response_read_body(
--		&mut self,
--		request_id: HttpRequestId,
--		buffer: &mut [u8],
--		deadline: Option<Timestamp>,
--	) -> Result<u32, HttpError> {
--		self.extension::<OffchainWorkerExt>()
--			.expect("http_response_read_body can be called only in the offchain worker context")
--			.http_response_read_body(request_id, buffer, deadline)
--			.map(|r| r as u32)
--	}
--
- 	/// Set the authorized nodes and authorized_only flag.
- 	fn set_authorized_nodes(&mut self, nodes: Vec<OpaquePeerId>, authorized_only: bool) {
- 		self.extension::<OffchainWorkerExt>()
 diff --git a/substrate/primitives/core/src/offchain/mod.rs b/substrate/primitives/core/src/offchain/mod.rs
 index 9be86e8..3112bc6 100644
 --- a/substrate/primitives/core/src/offchain/mod.rs
@@ -302,7 +200,7 @@ index 9be86e8..3112bc6 100644
 @@ -302,113 +302,6 @@ pub trait Externalities: Send {
  	/// Obviously fine in the off-chain worker context.
  	fn random_seed(&mut self) -> [u8; 32];
- 
+
 -	/// Initiates a http request given HTTP verb and the URL.
 -	///
 -	/// Meta is a future-reserved field containing additional, parity-scale-codec encoded
@@ -416,7 +314,7 @@ index 9be86e8..3112bc6 100644
 @@ -443,54 +336,6 @@ impl<T: Externalities + ?Sized> Externalities for Box<T> {
  		(&mut **self).random_seed()
  	}
- 
+
 -	fn http_request_start(
 -		&mut self,
 -		method: &str,
@@ -471,7 +369,7 @@ index 9be86e8..3112bc6 100644
 @@ -544,60 +389,6 @@ impl<T: Externalities> Externalities for LimitedExternalities<T> {
  		self.externalities.random_seed()
  	}
- 
+
 -	fn http_request_start(
 -		&mut self,
 -		method: &str,
@@ -536,7 +434,7 @@ index ee3620e..2034b45 100644
 @@ -232,124 +232,6 @@ impl offchain::Externalities for TestOffchainExt {
  		self.0.read().seed
  	}
- 
+
 -	fn http_request_start(
 -		&mut self,
 -		method: &str,
@@ -658,3 +556,24 @@ index ee3620e..2034b45 100644
  	fn set_authorized_nodes(&mut self, _nodes: Vec<OpaquePeerId>, _authorized_only: bool) {
  		unimplemented!()
  	}
+diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
+index e9f0dae5..94f4082d 100644
+--- a/substrate/primitives/io/src/lib.rs
++++ b/substrate/primitives/io/src/lib.rs
+@@ -1661,6 +1661,7 @@ pub trait Offchain {
+ 			.local_storage_get(kind, key)
+ 	}
+ 
++	/*
+ 	/// Initiates a http request given HTTP verb and the URL.
+ 	///
+ 	/// Meta is a future-reserved field containing additional, parity-scale-codec encoded
+@@ -1754,6 +1755,7 @@ pub trait Offchain {
+ 			.http_response_read_body(request_id, buffer, deadline)
+ 			.map(|r| r as u32)
+ 	}
++	*/
+ 
+ 	/// Set the authorized nodes and authorized_only flag.
+ 	fn set_authorized_nodes(
+

@@ -23,6 +23,9 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
+[lib]
+bench = false
+
 [dependencies.blake2b_simd]
 workspace = true
 
@@ -41,9 +44,6 @@ workspace = true
 [dependencies.twox-hash]
 features = ["xxhash64"]
 workspace = true
-
-[lib]
-bench = false
 
 [features]
 default = ["std"]

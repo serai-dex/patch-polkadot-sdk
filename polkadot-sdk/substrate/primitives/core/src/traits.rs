@@ -17,10 +17,8 @@
 
 //! Shareable Substrate traits.
 
-use std::{
-	borrow::Cow,
-	fmt::{Debug, Display},
-};
+use alloc::{borrow::Cow, boxed::Box, string::String, vec::Vec};
+use core::fmt::{Debug, Display};
 
 pub use sp_externalities::{Externalities, ExternalitiesExt};
 
@@ -64,7 +62,7 @@ pub trait FetchRuntimeCode {
 }
 
 /// Wrapper to use a `u8` slice or `Vec` as [`FetchRuntimeCode`].
-pub struct WrappedRuntimeCode<'a>(pub std::borrow::Cow<'a, [u8]>);
+pub struct WrappedRuntimeCode<'a>(pub Cow<'a, [u8]>);
 
 impl<'a> FetchRuntimeCode for WrappedRuntimeCode<'a> {
 	fn fetch_runtime_code(&self) -> Option<Cow<[u8]>> {
@@ -122,8 +120,8 @@ impl<'a> FetchRuntimeCode for RuntimeCode<'a> {
 #[derive(Debug)]
 pub struct CodeNotFound;
 
-impl std::fmt::Display for CodeNotFound {
-	fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+impl core::fmt::Display for CodeNotFound {
+	fn fmt(&self, f: &mut core::fmt::Formatter) -> Result<(), core::fmt::Error> {
 		write!(f, "the storage entry `:code` doesn't have any code")
 	}
 }
@@ -156,7 +154,7 @@ pub trait ReadRuntimeVersion: Send + Sync {
 	) -> Result<Vec<u8>, String>;
 }
 
-impl ReadRuntimeVersion for std::sync::Arc<dyn ReadRuntimeVersion> {
+impl ReadRuntimeVersion for alloc::sync::Arc<dyn ReadRuntimeVersion> {
 	fn read_runtime_version(
 		&self,
 		wasm_code: &[u8],
@@ -200,6 +198,7 @@ pub trait SpawnNamed: dyn_clone::DynClone + Send + Sync {
 		future: futures::future::BoxFuture<'static, ()>,
 	);
 }
+
 dyn_clone::clone_trait_object!(SpawnNamed);
 
 impl SpawnNamed for Box<dyn SpawnNamed> {
@@ -245,6 +244,7 @@ pub trait SpawnEssentialNamed: dyn_clone::DynClone + Send + Sync {
 		future: futures::future::BoxFuture<'static, ()>,
 	);
 }
+
 dyn_clone::clone_trait_object!(SpawnEssentialNamed);
 
 impl SpawnEssentialNamed for Box<dyn SpawnEssentialNamed> {

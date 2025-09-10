@@ -36,6 +36,9 @@ extern crate self as frame_support;
 #[doc(hidden)]
 extern crate alloc;
 
+/// Maximum nesting level for extrinsics.
+pub const MAX_EXTRINSIC_DEPTH: u32 = 256;
+
 /// Private exports that are being used by macros.
 ///
 /// The exports are not stable and should not be relied on.
@@ -50,16 +53,18 @@ pub mod __private {
 		vec::{IntoIter, Vec},
 	};
 	pub use codec;
+	// pub use frame_metadata as metadata;
 	pub use log;
 	pub use paste;
 	pub use serde;
 	pub use serde_json;
-	pub use sp_core::{Get, OpaqueMetadata, Void};
+	pub use sp_core::{Get, /* OpaqueMetadata,*/ Void};
 	pub use sp_crypto_hashing_proc_macro;
 	pub use sp_inherents;
 	#[cfg(feature = "std")]
 	pub use sp_io::TestExternalities;
 	pub use sp_io::{self, hashing, storage::root as storage_root};
+	// pub use sp_metadata_ir as metadata_ir;
 	#[cfg(feature = "std")]
 	pub use sp_runtime::{bounded_btree_map, bounded_vec};
 	pub use sp_runtime::{
@@ -438,6 +443,12 @@ macro_rules! parameter_types_impl_thread_local {
 						let current = Self::get();
 						Self::set($value);
 						current
+					}
+
+					/// Kill/reset the value to whatever was set at first.
+					#[allow(unused)]
+					pub fn reset() {
+						Self::set($value);
 					}
 				}
 			)*
@@ -823,6 +834,7 @@ macro_rules! assert_error_encoded_size {
 		assert_message = [{ $assert_message:literal }]
 		error = [{ $error:ident }]
 	} => {
+		#[allow(deprecated)]
 		const _: () = assert!(
 			<
 				$($path::)+$error<$runtime> as $crate::traits::PalletError
@@ -841,11 +853,10 @@ macro_rules! assert_error_encoded_size {
 ///
 /// Returns the original result of the closure.
 #[macro_export]
-#[cfg(feature = "experimental")]
 macro_rules! hypothetically {
 	( $e:expr ) => {
-		$crate::storage::transactional::with_transaction(|| -> $crate::__private::TransactionOutcome<Result<_, $crate::__private::DispatchError>> {
-			$crate::__private::TransactionOutcome::Rollback(Ok($e))
+		$crate::storage::transactional::with_transaction(|| -> $crate::__private::TransactionOutcome<::core::result::Result<_, $crate::__private::DispatchError>> {
+			$crate::__private::TransactionOutcome::Rollback(::core::result::Result::Ok($e))
 		},
 		).expect("Always returning Ok")
 	};
@@ -855,7 +866,6 @@ macro_rules! hypothetically {
 ///
 /// Reverts any storage changes made by the closure.
 #[macro_export]
-#[cfg(feature = "experimental")]
 macro_rules! hypothetically_ok {
 	($e:expr $(, $args:expr)* $(,)?) => {
 		$crate::assert_ok!($crate::hypothetically!($e) $(, $args)*);
@@ -899,7 +909,7 @@ pub mod pallet_prelude {
 			StorageList,
 		},
 		traits::{
-			BuildGenesisConfig, ConstU32, ConstUint, EnsureOrigin, Get, GetDefault,
+			Authorize, BuildGenesisConfig, ConstU32, ConstUint, EnsureOrigin, Get, GetDefault,
 			GetStorageVersion, Hooks, IsType, OriginTrait, PalletInfoAccess, StorageInfoTrait,
 			StorageVersion, Task, TypedGet,
 		},
@@ -914,12 +924,13 @@ pub mod pallet_prelude {
 	pub use sp_runtime::{
 		traits::{
 			CheckedAdd, CheckedConversion, CheckedDiv, CheckedMul, CheckedShl, CheckedShr,
-			CheckedSub, MaybeSerializeDeserialize, Member, One, ValidateUnsigned, Zero,
+			CheckedSub, MaybeSerializeDeserialize, Member, One, ValidateResult, ValidateUnsigned,
+			Zero,
 		},
 		transaction_validity::{
 			InvalidTransaction, TransactionLongevity, TransactionPriority, TransactionSource,
-			TransactionTag, TransactionValidity, TransactionValidityError, UnknownTransaction,
-			ValidTransaction,
+			TransactionTag, TransactionValidity, TransactionValidityError,
+			TransactionValidityWithRefund, UnknownTransaction, ValidTransaction,
 		},
 		DispatchError, RuntimeDebug, MAX_MODULE_ERROR_ENCODED_SIZE,
 	};
@@ -1057,6 +1068,10 @@ pub mod pallet_prelude {
 /// - Usage of `deprecated` attribute will propagate deprecation information to the pallet
 ///   metadata.
 /// - For general usage examples of `deprecated` attribute please refer to <https://doc.rust-lang.org/nightly/reference/attributes/diagnostics.html#the-deprecated-attribute>
+/// - Usage of `allow(deprecated)` on the item will propagate this attribute to the generated
+///   code.
+/// - If the item is annotated with `deprecated` attribute then the generated code will be
+///   automatically annotated with `allow(deprecated)`
 pub use frame_support_procedural::pallet;
 
 /// Contains macro stubs for all of the `pallet::` macros
@@ -1363,8 +1378,7 @@ pub mod pallet_macros {
 	/// 	pub struct Pallet<T>(_);
 	/// #
 	/// # 	#[pallet::config]
-	/// # 	pub trait Config: frame_system::Config {
-	/// # 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+	/// # 	pub trait Config: frame_system::Config<RuntimeEvent: From<Event<Self>>> {
 	/// # 	}
 	/// }
 	/// ```
@@ -1407,6 +1421,38 @@ pub mod pallet_macros {
 	///
 	/// See [`pallet::storage`](`frame_support::pallet_macros::storage`) for more info.
 	pub use frame_support_procedural::getter;
+
+	/* /// Defines constants that are added to the constant field of
+	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
+	///
+	/// Must be defined like:
+	///
+	/// ```
+	/// #[frame_support::pallet]
+	/// mod pallet {
+	/// # 	use frame_support::pallet_prelude::*;
+	/// #
+	/// 	#[pallet::pallet]
+	/// 	pub struct Pallet<T>(_);
+	///
+	/// # 	#[pallet::config]
+	/// # 	pub trait Config: frame_system::Config {}
+	/// #
+	/// 	#[pallet::extra_constants]
+	/// 	impl<T: Config> Pallet<T> // $optional_where_clause
+	/// 	{
+	/// 	#[pallet::constant_name(SomeU32ConstantName)]
+	/// 		/// Some doc
+	/// 		fn some_u32_constant() -> u32 {
+	/// 			100u32
+	/// 		}
+	/// 	}
+	/// }
+	/// ```
+	///
+	/// I.e. a regular rust `impl` block with some optional where clause and functions with 0
+	/// args, 0 generics, and some return type.
+	pub use frame_support_procedural::extra_constants; */
 
 	#[rustfmt::skip]
 	/// Allows bypassing the `frame_system::Config` supertrait check.
@@ -1469,12 +1515,6 @@ pub mod pallet_macros {
 	/// optionally other supertraits and a where clause. (Specifying other supertraits here is
 	/// known as [tight coupling](https://docs.substrate.io/reference/how-to-guides/pallet-design/use-tight-coupling/))
 	///
-	/// The associated type `RuntimeEvent` is reserved. If defined, it must have the bounds
-	/// `From<Event>` and `IsType<<Self as frame_system::Config>::RuntimeEvent>`.
-	///
-	/// [`#[pallet::event]`](`event`) must be present if `RuntimeEvent`
-	/// exists as a config item in your `#[pallet::config]`.
-	///
 	/// ## Optional: `with_default`
 	///
 	/// An optional `with_default` argument may also be specified. Doing so will automatically
@@ -1497,10 +1537,6 @@ pub mod pallet_macros {
 	///
 	/// 	#[pallet::config(with_default)] // <- with_default is optional
 	/// 	pub trait Config: frame_system::Config {
-	/// 		/// The overarching event type.
-	/// 		#[pallet::no_default_bounds] // Default with bounds is not supported for RuntimeEvent
-	/// 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-	///
 	/// 		/// A more complex type.
 	/// 		#[pallet::no_default] // Example of type where no default should be provided
 	/// 		type MoreComplexType: SomeMoreComplexBound;
@@ -1569,14 +1605,13 @@ pub mod pallet_macros {
 	/// Furthermore, the `without_automatic_metadata` argument can be used in combination with
 	/// the [`#[pallet::include_metadata]`](`include_metadata`) attribute to selectively
 	/// include only certain associated types in the metadata collection.
-	///
 	/// ```
 	/// #[frame_support::pallet]
 	/// mod pallet {
 	/// # 	use frame_support::pallet_prelude::*;
 	/// # 	use frame_system::pallet_prelude::*;
 	/// # 	use core::fmt::Debug;
-	/// # 	use frame_support::traits::Contains;
+	/// # 	use frame_support::traits::{Contains, VariantCount};
 	/// #
 	/// # 	pub trait SomeMoreComplexBound {}
 	/// #
@@ -1585,10 +1620,9 @@ pub mod pallet_macros {
 	///
 	/// 	#[pallet::config(with_default, without_automatic_metadata)] // <- with_default and without_automatic_metadata are optional
 	/// 	pub trait Config: frame_system::Config {
-	/// 		/// The overarching event type.
-	/// 		#[pallet::no_default_bounds] // Default with bounds is not supported for RuntimeEvent
-	/// 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-	///
+	/// 		/// The overarching freeze reason.
+	/// 		#[pallet::no_default_bounds] // Default with bounds is not supported for RuntimeFreezeReason
+	/// 		type RuntimeFreezeReason: Parameter + Member + MaxEncodedLen + Copy + VariantCount;
 	/// 		/// A simple type.
 	/// 		// Type that would have been included in metadata, but is now excluded.
 	/// 		type SimpleType: From<u32>;
@@ -1705,7 +1739,7 @@ pub mod pallet_macros {
 	///
 	/// ## Syntax
 	/// View functions methods must be read-only and always return some output. A
-	/// `view_functions_experimental` impl block only allows methods to be defined inside of
+	/// `view_functions` impl block only allows methods to be defined inside of
 	/// it.
 	///
 	/// ## Example
@@ -1723,7 +1757,7 @@ pub mod pallet_macros {
 	///     #[pallet::storage]
 	/// 	pub type SomeMap<T: Config> = StorageMap<_, Twox64Concat, u32, u32, OptionQuery>;
 	///
-	///     #[pallet::view_functions_experimental]
+	///     #[pallet::view_functions]
 	///     impl<T: Config> Pallet<T> {
 	/// 		/// Retrieve a map storage value by key.
 	///         pub fn get_value_with_arg(key: u32) -> Option<u32> {
@@ -1749,7 +1783,7 @@ pub mod pallet_macros {
 	/// functions should expose a _stable_ interface and changes to the method signature are
 	/// strongly discouraged. For more details on the dispatching mechanism, see the
 	/// [`DispatchViewFunction`](frame_support::view_functions::DispatchViewFunction) trait.
-	pub use frame_support_procedural::view_functions_experimental;
+	pub use frame_support_procedural::view_functions;
 
 	/// Allows defining a struct implementing the [`Get`](frame_support::traits::Get) trait to
 	/// ease the use of storage types.
@@ -2009,6 +2043,10 @@ pub mod pallet_macros {
 	/// - It's possible to deprecated either certain variants inside the `Error` or the whole
 	///   `Error` itself. If both the `Error` and its variants are deprecated a compile error
 	///   will be returned.
+	/// - Usage of `allow(deprecated)` on the item will propagate this attribute to the
+	///   generated code.
+	/// - If the item is annotated with `deprecated` attribute then the generated code will be
+	///   automatically annotated with `allow(deprecated)`
 	pub use frame_support_procedural::error;
 
 	/// Allows defining pallet events.
@@ -2026,18 +2064,14 @@ pub mod pallet_macros {
 	/// 	#[pallet::pallet]
 	/// 	pub struct Pallet<T>(_);
 	///
+	/// 	#[pallet::config]
+	/// 	pub trait Config: frame_system::Config {}
+	///
 	/// 	#[pallet::event]
 	/// 	#[pallet::generate_deposit(fn deposit_event)] // Optional
 	/// 	pub enum Event<T> {
 	/// 		/// SomeEvent doc
 	/// 		SomeEvent(u16, u32), // SomeEvent with two fields
-	/// 	}
-	///
-	/// 	#[pallet::config]
-	/// 	pub trait Config: frame_system::Config {
-	/// 		/// The overarching runtime event type.
-	/// 		type RuntimeEvent: From<Event<Self>>
-	/// 			+ IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	/// 	}
 	/// }
 	/// ```
@@ -2045,7 +2079,13 @@ pub mod pallet_macros {
 	/// I.e. an enum (with named or unnamed fields variant), named `Event`, with generic: none
 	/// or `T` or `T: Config`, and optional w here clause.
 	///
-	/// `RuntimeEvent` must be defined in the `Config`, as shown in the example.
+	/// Macro expansion automatically appends `From<Event<Self>>` bound to
+	/// system supertrait's `RuntimeEvent `associated type, i.e:
+	///
+	/// ```rs
+	/// 	#[pallet::config]
+	/// 	pub trait Config: frame_system::Config<RuntimeEvent: From<Event<Self>>> {}
+	/// ```
 	///
 	/// Each field must implement [`Clone`], [`Eq`], [`PartialEq`], [`codec::Encode`],
 	/// [`codec::Decode`], and [`Debug`] (on std only). For ease of use, bound by the trait
@@ -2059,7 +2099,22 @@ pub mod pallet_macros {
 	/// - It's possible to deprecated either certain variants inside the `Event` or the whole
 	///   `Event` itself. If both the `Event` and its variants are deprecated a compile error
 	///   will be returned.
+	/// - Usage of `allow(deprecated)` on the item will propagate this attribute to the
+	///   generated code.
+	/// - If the item is annotated with `deprecated` attribute then the generated code will be
+	///   automatically annotated with `allow(deprecated)`
 	pub use frame_support_procedural::event;
+
+	/* /// Selectively includes associated types in the metadata.
+	///
+	/// The optional attribute allows you to selectively include associated types in the
+	/// metadata. This can be attached to trait items that implement `TypeInfo`.
+	///
+	/// By default all collectable associated types are included in the metadata.
+	///
+	/// This attribute can be used in combination with the
+	/// [`#[pallet::config(without_automatic_metadata)]`](`config`).
+	pub use frame_support_procedural::include_metadata; */
 
 	/// Allows a pallet to declare a set of functions as a *dispatchable extrinsic*.
 	///
@@ -2080,6 +2135,11 @@ pub mod pallet_macros {
 	/// generation of a `enum Call`. This enum contains only the encoding of the function
 	/// arguments of the dispatchable, alongside the information needed to route it to the
 	/// correct function.
+	///
+	/// The macro also ensures that the extrinsic when invoked will be wrapped via
+	/// [`frame_support::storage::with_storage_layer`] to make it transactional. Thus if the
+	/// extrinsic returns with an error any state changes that had already occurred will be
+	/// rolled back.
 	///
 	/// ```
 	/// #[frame_support::pallet(dev_mode)]
@@ -2245,6 +2305,10 @@ pub mod pallet_macros {
 	/// - Usage of `deprecated` attribute will propagate deprecation information to the pallet
 	///   metadata where the item was declared.
 	/// - For general usage examples of `deprecated` attribute please refer to <https://doc.rust-lang.org/nightly/reference/attributes/diagnostics.html#the-deprecated-attribute>
+	/// - Usage of `allow(deprecated)` on the item will propagate this attribute to the
+	///   generated code.
+	/// - If the item is annotated with `deprecated` attribute then the generated code will be
+	///   automatically annotated with `allow(deprecated)`
 	pub use frame_support_procedural::call;
 
 	/// Enforce the index of a variant in the generated `enum Call`.
@@ -2357,7 +2421,7 @@ pub mod pallet_macros {
 	/// ```
 	pub use frame_support_procedural::genesis_build;
 
-	/// Allows adding an associated type trait bounded by
+	/* /// Allows adding an associated type trait bounded by
 	/// [`Get`](frame_support::pallet_prelude::Get) from [`pallet::config`](`macro@config`)
 	/// into metadata.
 	///
@@ -2383,7 +2447,11 @@ pub mod pallet_macros {
 	/// - Usage of `deprecated` attribute will propagate deprecation information to the pallet
 	///   metadata where the item was declared.
 	/// - For general usage examples of `deprecated` attribute please refer to <https://doc.rust-lang.org/nightly/reference/attributes/diagnostics.html#the-deprecated-attribute>
-	pub use frame_support_procedural::constant;
+	/// - Usage of `allow(deprecated)` on the item will propagate this attribute to the
+	///   generated code.
+	/// - If the item is annotated with `deprecated` attribute then the generated code will be
+	///   automatically annotated with `allow(deprecated)`
+	pub use frame_support_procedural::constant; */
 
 	/// Declares a type alias as a storage item.
 	///
@@ -2603,10 +2671,15 @@ pub mod pallet_macros {
 	/// - Usage of `deprecated` attribute will propagate deprecation information to the pallet
 	///   metadata where the storage item was declared.
 	/// - For general usage examples of `deprecated` attribute please refer to <https://doc.rust-lang.org/nightly/reference/attributes/diagnostics.html#the-deprecated-attribute>
+	/// - Usage of `allow(deprecated)` on the item will propagate this attribute to the
+	///   generated code.
+	/// - If the item is annotated with `deprecated` attribute then the generated code will be
+	///   automatically annotated with `allow(deprecated)`
 	pub use frame_support_procedural::storage;
 
 	pub use frame_support_procedural::{
-		task_condition, task_index, task_list, task_weight, tasks_experimental,
+		authorize, task_condition, task_index, task_list, task_weight, tasks_experimental,
+		weight_of_authorize,
 	};
 
 	/// Allows a pallet to declare a type as an origin.

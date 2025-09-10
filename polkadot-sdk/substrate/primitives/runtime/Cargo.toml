@@ -1,6 +1,6 @@
 [package]
 name = "sp-runtime"
-version = "41.1.0"
+version = "42.0.0"
 license = "Apache-2.0"
 description = "Runtime Modules shared primitive types."
 documentation = "https://docs.rs/sp-runtime"
@@ -85,7 +85,7 @@ workspace = true
 workspace = true
 
 [dependencies.tuplex]
-version = "0.1.2"
+workspace = true
 default-features = false
 
 [features]

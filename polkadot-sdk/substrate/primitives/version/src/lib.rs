@@ -573,7 +573,7 @@ impl<'de> serde::Deserialize<'de> for RuntimeVersion {
 								system_version = Some(map.next_value()?);
 							},
 						_ => {
-							let _ = map.next_value::<serde::de::IgnoredAny>()?;
+							map.next_value::<serde::de::IgnoredAny>()?;
 						},
 					}
 				}

@@ -1,6 +1,6 @@
 [package]
 name = "frame-system-rpc-runtime-api"
-version = "36.0.0"
+version = "37.0.0"
 license = "Apache-2.0"
 description = "Runtime API definition required by System RPC extensions."
 readme = "README.md"

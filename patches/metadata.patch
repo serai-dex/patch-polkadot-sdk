@@ -1,57 +1,3 @@
-diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-index c6018e0..e433b42 100644
---- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-+++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-@@ -401,13 +401,6 @@ fn construct_runtime_final_expansion(
- 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
- 	let tasks = expand::expand_outer_task(&name, &pallets, &scrate);
- 	let query = expand::expand_outer_query(&name, &pallets, &scrate);
--	let metadata = expand::expand_runtime_metadata(
--		&name,
--		&pallets,
--		&scrate,
--		&unchecked_extrinsic,
--		&system_pallet.path,
--	);
- 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
- 	let inherent =
- 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
-@@ -495,8 +488,6 @@ fn construct_runtime_final_expansion(
- 
- 		#query
- 
--		#metadata
--
- 		#outer_config
- 
- 		#inherent
-diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
-index 005b109..5508cda 100644
---- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
-+++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
-@@ -234,13 +234,6 @@ fn construct_runtime_final_expansion(
- 	let all_pallets = decl_all_pallets(&name, pallets.iter(), &features);
- 	let pallet_to_index = decl_pallet_runtime_setup(&name, &pallets, &scrate);
- 
--	let metadata = expand::expand_runtime_metadata(
--		&name,
--		&pallets,
--		&scrate,
--		&unchecked_extrinsic,
--		&system_pallet.path,
--	);
- 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
- 	let inherent =
- 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
-@@ -307,8 +300,6 @@ fn construct_runtime_final_expansion(
- 
- 		#query
- 
--		#metadata
--
- 		#outer_config
- 
- 		#inherent
 diff --git a/substrate/client/rpc-api/src/state/mod.rs b/substrate/client/rpc-api/src/state/mod.rs
 index ee62387..ef3b05a 100644
 --- a/substrate/client/rpc-api/src/state/mod.rs
@@ -202,1425 +148,6 @@ index 3ebbc3d..9fd4681 100644
  {
  	/// Create a new `BlockExecutor`
  	pub fn new(
-diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
-index acc1915..4aeb42b 100644
---- a/substrate/frame/src/lib.rs
-+++ b/substrate/frame/src/lib.rs
-@@ -591,7 +591,6 @@ pub mod hashing {
- ///
- /// This is already part of the [`prelude`].
- pub mod transaction {
--	pub use frame_support::traits::{CallMetadata, GetCallMetadata};
- 	pub use sp_runtime::{
- 		generic::ExtensionVersion,
- 		impl_tx_ext_default,
-diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
-index 76dc936..9fe7ac4 100644
---- a/substrate/frame/support/procedural/src/lib.rs
-+++ b/substrate/frame/support/procedural/src/lib.rs
-@@ -941,15 +941,6 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
- 	pallet_macro_stub()
- }
- 
--///
--/// ---
--///
--/// Documentation for this macro can be found at `frame_support::pallet_macros::extra_constants`.
--#[proc_macro_attribute]
--pub fn extra_constants(_: TokenStream, _: TokenStream) -> TokenStream {
--	pallet_macro_stub()
--}
--
- ///
- /// ---
- ///
-@@ -968,15 +959,6 @@ pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
- 	pallet_macro_stub()
- }
- 
--///
--/// ---
--///
--/// Documentation for this macro can be found at `frame_support::pallet_macros::include_metadata`.
--#[proc_macro_attribute]
--pub fn include_metadata(_: TokenStream, _: TokenStream) -> TokenStream {
--	pallet_macro_stub()
--}
--
- ///
- /// ---
- ///
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/config.rs b/substrate/frame/support/procedural/src/pallet/expand/config.rs
-index d39f276..5cf4035 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/config.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/config.rs
-@@ -95,51 +95,3 @@ Consequently, a runtime that wants to include this pallet must implement this tr
- 		_ => Default::default(),
- 	}
- }
--
--/// Generate the metadata for the associated types of the config trait.
--///
--/// Implements the `pallet_associated_types_metadata` function for the pallet.
--pub fn expand_config_metadata(def: &Def) -> proc_macro2::TokenStream {
--	let frame_support = &def.frame_support;
--	let type_impl_gen = &def.type_impl_generics(proc_macro2::Span::call_site());
--	let type_use_gen = &def.type_use_generics(proc_macro2::Span::call_site());
--	let pallet_ident = &def.pallet_struct.pallet;
--	let trait_use_gen = &def.trait_use_generics(proc_macro2::Span::call_site());
--
--	let mut where_clauses = vec![&def.config.where_clause];
--	where_clauses.extend(def.extra_constants.iter().map(|d| &d.where_clause));
--	let completed_where_clause = super::merge_where_clauses(&where_clauses);
--
--	let types = def.config.associated_types_metadata.iter().map(|metadata| {
--		let ident = &metadata.ident;
--		let span = ident.span();
--		let ident_str = ident.to_string();
--		let cfgs = &metadata.cfg;
--
--		let no_docs = vec![];
--		let doc = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &metadata.doc };
--
--		quote::quote_spanned!(span => {
--			#( #cfgs ) *
--			#frame_support::__private::metadata_ir::PalletAssociatedTypeMetadataIR {
--				name: #ident_str,
--				ty: #frame_support::__private::scale_info::meta_type::<
--						<T as Config #trait_use_gen>::#ident
--					>(),
--				docs: #frame_support::__private::vec![ #( #doc ),* ],
--			}
--		})
--	});
--
--	quote::quote!(
--		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #completed_where_clause {
--
--			#[doc(hidden)]
--			pub fn pallet_associated_types_metadata()
--				-> #frame_support::__private::vec::Vec<#frame_support::__private::metadata_ir::PalletAssociatedTypeMetadataIR>
--			{
--				#frame_support::__private::vec![ #( #types ),* ]
--			}
--		}
--	)
--}
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/error.rs b/substrate/frame/support/procedural/src/pallet/expand/error.rs
-index 5df82d4..4113050 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/error.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/error.rs
-@@ -102,34 +102,15 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
- 
- 	error_item.variants.insert(0, phantom_variant);
- 
--	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
--
--	let deprecation = match crate::deprecation::get_deprecation_enum(
--		&quote::quote! {#frame_support},
--		&error.attrs,
--		error_item.variants.iter().enumerate().map(|(index, item)| {
--			let index = crate::deprecation::variant_index_for_deprecation(index as u8, item);
--
--			(index, item.attrs.as_ref())
--		}),
--	) {
--		Ok(deprecation) => deprecation,
--		Err(e) => return e.into_compile_error(),
--	};
--
- 	// derive TypeInfo for error metadata
- 	error_item.attrs.push(syn::parse_quote! {
- 		#[derive(
- 			#frame_support::__private::codec::Encode,
- 			#frame_support::__private::codec::Decode,
- 			#frame_support::__private::codec::DecodeWithMemTracking,
--			#frame_support::__private::scale_info::TypeInfo,
- 			#frame_support::PalletError,
- 		)]
- 	});
--	error_item.attrs.push(syn::parse_quote!(
--		#[scale_info(skip_type_params(#type_use_gen), capture_docs = #capture_docs)]
--	));
- 
- 	if get_doc_literals(&error_item.attrs).is_empty() {
- 		error_item.attrs.push(syn::parse_quote!(
-@@ -203,16 +184,5 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
- 		}
- 
- 		pub use #error_token_unique_id as tt_error_token;
--
--		impl<#type_impl_gen> #error_ident<#type_use_gen> #config_where_clause {
--			#[allow(dead_code)]
--			#[doc(hidden)]
--			pub fn error_metadata() -> #frame_support::__private::metadata_ir::PalletErrorMetadataIR {
--				#frame_support::__private::metadata_ir::PalletErrorMetadataIR {
--					ty: #frame_support::__private::scale_info::meta_type::<#error_ident<#type_use_gen>>(),
--					deprecation_info: #deprecation,
--				}
--			}
--		}
- 	)
- }
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/event.rs b/substrate/frame/support/procedural/src/pallet/expand/event.rs
-index 8ebf077..465fd60 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/event.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/event.rs
-@@ -95,19 +95,6 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
- 		event_item.variants.push(variant);
- 	}
- 
--	let deprecation = match crate::deprecation::get_deprecation_enum(
--		&quote::quote! {#frame_support},
--		&event.attrs,
--		event_item.variants.iter().enumerate().map(|(index, item)| {
--			let index = crate::deprecation::variant_index_for_deprecation(index as u8, item);
--
--			(index, item.attrs.as_ref())
--		}),
--	) {
--		Ok(deprecation) => deprecation,
--		Err(e) => return e.into_compile_error(),
--	};
--
- 	if get_doc_literals(&event_item.attrs).is_empty() {
- 		event_item
- 			.attrs
-@@ -124,17 +111,9 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
- 			#frame_support::__private::codec::Encode,
- 			#frame_support::__private::codec::Decode,
- 			#frame_support::__private::codec::DecodeWithMemTracking,
--			#frame_support::__private::scale_info::TypeInfo,
- 		)]
- 	));
- 
--	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
--
--	// skip requirement for type params to implement `TypeInfo`, and set docs capture
--	event_item.attrs.push(syn::parse_quote!(
--		#[scale_info(skip_type_params(#event_use_gen), capture_docs = #capture_docs)]
--	));
--
- 	let deposit_event = if let Some(deposit_event) = &event.deposit_event {
- 		let event_use_gen = &event.gen_kind.type_use_gen(event.attr_span);
- 		let trait_use_gen = &def.trait_use_generics(event.attr_span);
-@@ -183,16 +162,5 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
- 		impl<#event_impl_gen> From<#event_ident<#event_use_gen>> for () #event_where_clause {
- 			fn from(_: #event_ident<#event_use_gen>) {}
- 		}
--
--		impl<#event_impl_gen> #event_ident<#event_use_gen> #event_where_clause {
--			#[allow(dead_code)]
--			#[doc(hidden)]
--			pub fn event_metadata<W: #frame_support::__private::scale_info::TypeInfo + 'static>() -> #frame_support::__private::metadata_ir::PalletEventMetadataIR {
--				#frame_support::__private::metadata_ir::PalletEventMetadataIR {
--					ty: #frame_support::__private::scale_info::meta_type::<W>(),
--					deprecation_info: #deprecation,
--				}
--			}
--		}
- 	)
- }
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/mod.rs b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
-index 439ec55..b3c22f0 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/mod.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
-@@ -57,11 +57,8 @@ pub fn merge_where_clauses(clauses: &[&Option<syn::WhereClause>]) -> Option<syn:
- /// * impl stuff on them.
- pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
- 	// Remove the `pallet_doc` attribute first.
--	let metadata_docs = documentation::expand_documentation(&mut def);
--	let constants = constants::expand_constants(&mut def);
- 	let pallet_struct = pallet_struct::expand_pallet_struct(&mut def);
- 	let config = config::expand_config(&mut def);
--	let associated_types = config::expand_config_metadata(&def);
- 	let call = call::expand_call(&mut def);
- 	let tasks = tasks::expand_tasks(&mut def);
- 	let error = error::expand_error(&mut def);
-@@ -77,7 +74,6 @@ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
- 	let origins = origin::expand_origins(&mut def);
- 	let validate_unsigned = validate_unsigned::expand_validate_unsigned(&mut def);
- 	let tt_default_parts = tt_default_parts::expand_tt_default_parts(&mut def);
--	let doc_only = doc_only::expand_doc_only(&mut def);
- 	let composites = composite::expand_composites(&mut def);
- 
- 	def.item.attrs.insert(
-@@ -100,11 +96,8 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
- 	);
- 
- 	let new_items = quote::quote!(
--		#metadata_docs
--		#constants
- 		#pallet_struct
- 		#config
--		#associated_types
- 		#call
- 		#tasks
- 		#error
-@@ -120,7 +113,6 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
- 		#origins
- 		#validate_unsigned
- 		#tt_default_parts
--		#doc_only
- 		#composites
- 	);
- 
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs b/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
-index 79bf33a..01c4545 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
-@@ -77,27 +77,6 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
- 		)]
- 	));
- 
--	let pallet_error_metadata = if let Some(error_def) = &def.error {
--		let error_ident = &error_def.error;
--		quote::quote_spanned!(def.pallet_struct.attr_span =>
--			impl<#type_impl_gen> #pallet_ident<#type_use_gen> #config_where_clause {
--				#[doc(hidden)]
--				pub fn error_metadata() -> Option<#frame_support::__private::metadata_ir::PalletErrorMetadataIR> {
--					Some(<#error_ident<#type_use_gen>>::error_metadata())
--				}
--			}
--		)
--	} else {
--		quote::quote_spanned!(def.pallet_struct.attr_span =>
--			impl<#type_impl_gen> #pallet_ident<#type_use_gen> #config_where_clause {
--				#[doc(hidden)]
--				pub fn error_metadata() -> Option<#frame_support::__private::metadata_ir::PalletErrorMetadataIR> {
--					None
--				}
--			}
--		)
--	};
--
- 	let storage_info_span =
- 		def.pallet_struct.without_storage_info.unwrap_or(def.pallet_struct.attr_span);
- 
-@@ -185,15 +164,7 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
- 			}
- 		}
- 	];
--	let deprecation_status =
--		match crate::deprecation::get_deprecation(&quote::quote! {#frame_support}, &def.item.attrs)
--		{
--			Ok(deprecation) => deprecation,
--			Err(e) => return e.into_compile_error(),
--		};
- 	quote::quote_spanned!(def.pallet_struct.attr_span =>
--		#pallet_error_metadata
--
- 		/// Type alias to `Pallet`, to be used by `construct_runtime`.
- 		///
- 		/// Generated by `pallet` attribute macro.
-@@ -289,13 +260,5 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
- 
- 		#storage_info
- 		#whitelisted_storage_keys_impl
--
--		impl<#type_use_gen> #pallet_ident<#type_use_gen> {
--			#[allow(dead_code)]
--			#[doc(hidden)]
--			pub fn deprecation_info() -> #frame_support::__private::metadata_ir::DeprecationStatusIR {
--				#deprecation_status
--			}
--		}
- 	)
- }
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/storage.rs b/substrate/frame/support/procedural/src/pallet/expand/storage.rs
-index 10e674c..eb6da7c 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/storage.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/storage.rs
-@@ -408,38 +408,6 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
- 	let frame_support = &def.frame_support;
- 	let frame_system = &def.frame_system;
- 	let pallet_ident = &def.pallet_struct.pallet;
--	let mut entries_builder = vec![];
--	for storage in def.storages.iter() {
--		let no_docs = vec![];
--		let docs = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &storage.docs };
--
--		let ident = &storage.ident;
--		let gen = &def.type_use_generics(storage.attr_span);
--		let full_ident = quote::quote_spanned!(storage.attr_span => #ident<#gen> );
--
--		let cfg_attrs = &storage.cfg_attrs;
--		let deprecation = match crate::deprecation::get_deprecation(
--			&quote::quote! { #frame_support },
--			&storage.attrs,
--		) {
--			Ok(deprecation) => deprecation,
--			Err(e) => return e.into_compile_error(),
--		};
--		entries_builder.push(quote::quote_spanned!(storage.attr_span =>
--			#(#cfg_attrs)*
--			(|entries: &mut #frame_support::__private::Vec<_>| {
--				{
--					<#full_ident as #frame_support::storage::StorageEntryMetadataBuilder>::build_metadata(
--						#deprecation,
--						#frame_support::__private::vec![
--							#( #docs, )*
--						],
--						entries,
--					);
--				}
--			})
--		))
--	}
- 
- 	let getters = def.storages.iter().map(|storage| {
- 		if let Some(getter) = &storage.getter {
-@@ -899,27 +867,6 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
- 	};
- 
- 	quote::quote!(
--		impl<#type_impl_gen> #pallet_ident<#type_use_gen>
--			#completed_where_clause
--		{
--			#[doc(hidden)]
--			pub fn storage_metadata() -> #frame_support::__private::metadata_ir::PalletStorageMetadataIR {
--				#frame_support::__private::metadata_ir::PalletStorageMetadataIR {
--					prefix: <
--						<T as #frame_system::Config>::PalletInfo as
--						#frame_support::traits::PalletInfo
--					>::name::<#pallet_ident<#type_use_gen>>()
--						.expect("No name found for the pallet in the runtime! This usually means that the pallet wasn't added to `construct_runtime!`."),
--					entries: {
--						#[allow(unused_mut)]
--						let mut entries = #frame_support::__private::vec![];
--						#( #entries_builder(&mut entries); )*
--						entries
--					},
--				}
--			}
--		}
--
- 		#( #getters )*
- 		#( #prefix_structs )*
- 		#( #on_empty_structs )*
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
-index d856b8c..4e4d2da 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
-@@ -34,14 +34,11 @@ pub fn expand_view_functions(def: &Def) -> TokenStream {
- 		.map(|view_fn| expand_view_function(def, span, where_clause.as_ref(), view_fn));
- 	let impl_dispatch_view_function =
- 		impl_dispatch_view_function(def, span, where_clause.as_ref(), &view_fns);
--	let impl_view_function_metadata =
--		impl_view_function_metadata(def, span, where_clause.as_ref(), &view_fns);
- 
- 	quote::quote! {
- 		#view_function_prefix_impl
- 		#( #view_fn_impls )*
- 		#impl_dispatch_view_function
--		#impl_view_function_metadata
- 	}
- }
- 
-@@ -80,7 +77,6 @@ fn expand_view_function(
- 	let type_impl_gen = &def.type_impl_generics(span);
- 	let type_decl_bounded_gen = &def.type_decl_bounded_generics(span);
- 	let type_use_gen = &def.type_use_generics(span);
--	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
- 
- 	let view_function_struct_ident = view_fn.view_function_struct_ident();
- 	let view_fn_name = &view_fn.name;
-@@ -192,69 +188,3 @@ fn impl_dispatch_view_function(
- 		}
- 	}
- }
--
--fn impl_view_function_metadata(
--	def: &Def,
--	span: Span,
--	where_clause: Option<&syn::WhereClause>,
--	view_fns: &[ViewFunctionDef],
--) -> TokenStream {
--	let frame_support = &def.frame_support;
--	let pallet_ident = &def.pallet_struct.pallet;
--	let type_impl_gen = &def.type_impl_generics(span);
--	let type_use_gen = &def.type_use_generics(span);
--
--	let view_functions = view_fns.iter().map(|view_fn| {
--		let view_function_struct_ident = view_fn.view_function_struct_ident();
--		let name = &view_fn.name;
--		let inputs = view_fn.args.iter().filter_map(|fn_arg| {
--			match fn_arg {
--				syn::FnArg::Receiver(_) => None,
--				syn::FnArg::Typed(typed) => {
--					let pat = &typed.pat;
--					let ty = &typed.ty;
--					Some(quote::quote! {
--						#frame_support::__private::metadata_ir::PalletViewFunctionParamMetadataIR {
--							name: ::core::stringify!(#pat),
--							ty: #frame_support::__private::scale_info::meta_type::<#ty>(),
--						}
--					})
--				}
--			}
--		});
--
--		let no_docs = vec![];
--		let doc = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &view_fn.docs };
--
--		let deprecation = match crate::deprecation::get_deprecation(
--			&quote::quote! { #frame_support },
--			&def.item.attrs,
--		) {
--			Ok(deprecation) => deprecation,
--			Err(e) => return e.into_compile_error(),
--		};
--
--		quote::quote! {
--			#frame_support::__private::metadata_ir::PalletViewFunctionMetadataIR {
--				name: ::core::stringify!(#name),
--				id: <#view_function_struct_ident<#type_use_gen> as #frame_support::view_functions::ViewFunction>::id().into(),
--				inputs: #frame_support::__private::sp_std::vec![ #( #inputs ),* ],
--				output: #frame_support::__private::scale_info::meta_type::<
--					<#view_function_struct_ident<#type_use_gen> as #frame_support::view_functions::ViewFunction>::ReturnType
--				>(),
--				docs: #frame_support::__private::sp_std::vec![ #( #doc ),* ],
--				deprecation_info: #deprecation,
--			}
--		}
--	});
--
--	quote::quote! {
--		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
--			#[doc(hidden)]
--			pub fn pallet_view_functions_metadata()
--				-> #frame_support::__private::Vec<#frame_support::__private::metadata_ir::PalletViewFunctionMetadataIR> {
--				#frame_support::__private::vec![ #( #view_functions ),* ]
--			}
--		}
--	}
--}
-diff --git a/substrate/frame/support/procedural/src/pallet/parse/config.rs b/substrate/frame/support/procedural/src/pallet/parse/config.rs
-index 6b6dcc8..b354bc3 100644
---- a/substrate/frame/support/procedural/src/pallet/parse/config.rs
-+++ b/substrate/frame/support/procedural/src/pallet/parse/config.rs
-@@ -36,7 +36,6 @@ mod keyword {
- 	syn::custom_keyword!(no_default);
- 	syn::custom_keyword!(no_default_bounds);
- 	syn::custom_keyword!(constant);
--	syn::custom_keyword!(include_metadata);
- }
- 
- #[derive(Default)]
-@@ -54,10 +53,6 @@ pub struct ConfigDef {
- 	pub index: usize,
- 	/// Whether the trait has instance (i.e. define with `Config<I = ()>`)
- 	pub has_instance: bool,
--	/// Const associated type.
--	pub consts_metadata: Vec<ConstMetadataDef>,
--	/// Associated types metadata.
--	pub associated_types_metadata: Vec<AssociatedTypeMetadataDef>,
- 	/// Whether the trait has the associated type `Event`, note that those bounds are
- 	/// checked:
- 	/// * `IsType<Self as frame_system::Config>::RuntimeEvent`
-@@ -73,77 +68,6 @@ pub struct ConfigDef {
- 	pub default_sub_trait: Option<DefaultTrait>,
- }
- 
--/// Input definition for an associated type in pallet config.
--pub struct AssociatedTypeMetadataDef {
--	/// Name of the associated type.
--	pub ident: syn::Ident,
--	/// The doc associated.
--	pub doc: Vec<syn::Expr>,
--	/// The cfg associated.
--	pub cfg: Vec<syn::Attribute>,
--}
--
--impl From<&syn::TraitItemType> for AssociatedTypeMetadataDef {
--	fn from(trait_ty: &syn::TraitItemType) -> Self {
--		let ident = trait_ty.ident.clone();
--		let doc = get_doc_literals(&trait_ty.attrs);
--		let cfg = get_cfg_attributes(&trait_ty.attrs);
--
--		Self { ident, doc, cfg }
--	}
--}
--
--/// Input definition for a constant in pallet config.
--pub struct ConstMetadataDef {
--	/// Name of the associated type.
--	pub ident: syn::Ident,
--	/// The type in Get, e.g. `u32` in `type Foo: Get<u32>;`, but `Self` is replaced by `T`
--	pub type_: syn::Type,
--	/// The doc associated
--	pub doc: Vec<syn::Expr>,
--	/// attributes
--	pub attrs: Vec<syn::Attribute>,
--}
--
--impl TryFrom<&syn::TraitItemType> for ConstMetadataDef {
--	type Error = syn::Error;
--
--	fn try_from(trait_ty: &syn::TraitItemType) -> Result<Self, Self::Error> {
--		let err = |span, msg| {
--			syn::Error::new(span, format!("Invalid usage of `#[pallet::constant]`: {}", msg))
--		};
--		let doc = get_doc_literals(&trait_ty.attrs);
--		let ident = trait_ty.ident.clone();
--		let bound = trait_ty
--			.bounds
--			.iter()
--			.find_map(|param_bound| {
--				let syn::TypeParamBound::Trait(trait_bound) = param_bound else { return None };
--
--				trait_bound.path.segments.last().and_then(|s| (s.ident == "Get").then(|| s))
--			})
--			.ok_or_else(|| err(trait_ty.span(), "`Get<T>` trait bound not found"))?;
--
--		let syn::PathArguments::AngleBracketed(ref ab) = bound.arguments else {
--			return Err(err(bound.span(), "Expected trait generic args"));
--		};
--
--		// Only one type argument is expected.
--		if ab.args.len() != 1 {
--			return Err(err(bound.span(), "Expected a single type argument"));
--		}
--
--		let syn::GenericArgument::Type(ref type_arg) = ab.args[0] else {
--			return Err(err(ab.args[0].span(), "Expected a type argument"));
--		};
--
--		let type_ = syn::parse2::<syn::Type>(replace_self_by_t(type_arg.to_token_stream()))
--			.expect("Internal error: replacing `Self` by `T` should result in valid type");
--
--		Ok(Self { ident, type_, doc, attrs: trait_ty.attrs.clone() })
--	}
--}
--
- /// Parse for `#[pallet::disable_frame_system_supertrait_check]`
- pub struct DisableFrameSystemSupertraitCheck;
- 
-@@ -169,8 +93,6 @@ pub enum PalletAttrType {
- 	NoBounds(keyword::no_default_bounds),
- 	#[peek(keyword::constant, name = "constant")]
- 	Constant(keyword::constant),
--	#[peek(keyword::include_metadata, name = "include_metadata")]
--	IncludeMetadata(keyword::include_metadata),
- }
- 
- /// Parsing for `#[pallet::X]`
-@@ -372,7 +294,6 @@ impl ConfigDef {
- 		index: usize,
- 		item: &mut syn::Item,
- 		enable_default: bool,
--		disable_associated_metadata: bool,
- 	) -> syn::Result<Self> {
- 		let syn::Item::Trait(item) = item else {
- 			let msg = "Invalid pallet::config, expected trait definition";
-@@ -412,8 +333,6 @@ impl ConfigDef {
- 		});
- 
- 		let mut has_event_type = false;
--		let mut consts_metadata = vec![];
--		let mut associated_types_metadata = vec![];
- 		let mut default_sub_trait = if enable_default {
- 			Some(DefaultTrait {
- 				items: Default::default(),
-@@ -443,31 +362,12 @@ impl ConfigDef {
- 							));
- 						}
- 						already_constant = true;
--						consts_metadata.push(ConstMetadataDef::try_from(typ)?);
- 					},
- 					(PalletAttrType::Constant(_), _) =>
- 						return Err(syn::Error::new(
- 							trait_item.span(),
- 							"Invalid #[pallet::constant] in #[pallet::config], expected type item",
- 						)),
--					// Pallet developer has explicitly requested to include metadata for this associated type.
--					//
--					// They must provide a type item that implements `TypeInfo`.
--					(PalletAttrType::IncludeMetadata(_), syn::TraitItem::Type(ref typ)) => {
--						if already_collected_associated_type.is_some() {
--							return Err(syn::Error::new(
--								pallet_attr._bracket.span.join(),
--								"Duplicate #[pallet::include_metadata] attribute not allowed.",
--							));
--						}
--						already_collected_associated_type = Some(pallet_attr._bracket.span.join());
--						associated_types_metadata.push(AssociatedTypeMetadataDef::from(AssociatedTypeMetadataDef::from(typ)));
--					}
--					(PalletAttrType::IncludeMetadata(_), _) =>
--						return Err(syn::Error::new(
--							pallet_attr._bracket.span.join(),
--							"Invalid #[pallet::include_metadata] in #[pallet::config], expected type item",
--						)),
- 					(PalletAttrType::NoDefault(_), _) => {
- 						if !enable_default {
- 							return Err(syn::Error::new(
-@@ -532,17 +432,6 @@ impl ConfigDef {
- 						return Err(syn::Error::new(span, msg));
- 					}
- 				}
--			} else {
--				// Metadata of associated types is collected by default, if the associated type
--				// implements `TypeInfo`, or a similar trait that requires the `TypeInfo` bound.
--				if !disable_associated_metadata && !is_event && !already_constant {
--					if let syn::TraitItem::Type(ref ty) = trait_item {
--						// Collect the metadata of the associated type if it implements `TypeInfo`.
--						if contains_type_info_bound(ty) {
--							associated_types_metadata.push(AssociatedTypeMetadataDef::from(ty));
--						}
--					}
--				}
- 			}
- 
- 			if !already_no_default && enable_default {
-@@ -586,8 +475,6 @@ impl ConfigDef {
- 		Ok(Self {
- 			index,
- 			has_instance,
--			consts_metadata,
--			associated_types_metadata,
- 			has_event_type,
- 			where_clause,
- 			default_sub_trait,
-diff --git a/substrate/frame/support/procedural/src/pallet/parse/mod.rs b/substrate/frame/support/procedural/src/pallet/parse/mod.rs
-index 8987597..409f6c6 100644
---- a/substrate/frame/support/procedural/src/pallet/parse/mod.rs
-+++ b/substrate/frame/support/procedural/src/pallet/parse/mod.rs
-@@ -65,7 +65,6 @@ pub struct Def {
- 	pub genesis_config: Option<genesis_config::GenesisConfigDef>,
- 	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
- 	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
--	pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
- 	pub composites: Vec<composite::CompositeDef>,
- 	pub type_values: Vec<type_value::TypeValueDef>,
- 	pub frame_system: syn::Path,
-@@ -101,7 +100,6 @@ impl Def {
- 		let mut genesis_config = None;
- 		let mut genesis_build = None;
- 		let mut validate_unsigned = None;
--		let mut extra_constants = None;
- 		let mut storages = vec![];
- 		let mut type_values = vec![];
- 		let mut composites: Vec<CompositeDef> = vec![];
-@@ -111,13 +109,12 @@ impl Def {
- 			let pallet_attr: Option<PalletAttr> = helper::take_first_item_pallet_attr(item)?;
- 
- 			match pallet_attr {
--				Some(PalletAttr::Config{ with_default, without_automatic_metadata, ..}) if config.is_none() =>
-+				Some(PalletAttr::Config{ with_default, ..}) if config.is_none() =>
- 					config = Some(config::ConfigDef::try_from(
- 						&frame_system,
- 						index,
- 						item,
- 						with_default,
--						without_automatic_metadata,
- 					)?),
- 				Some(PalletAttr::Pallet(span)) if pallet_struct.is_none() => {
- 					let p = pallet_struct::PalletStructDef::try_from(span, index, item)?;
-@@ -179,9 +176,6 @@ impl Def {
- 				},
- 				Some(PalletAttr::TypeValue(span)) =>
- 					type_values.push(type_value::TypeValueDef::try_from(span, index, item)?),
--				Some(PalletAttr::ExtraConstants(_)) =>
--					extra_constants =
--						Some(extra_constants::ExtraConstantsDef::try_from(item)?),
- 				Some(PalletAttr::Composite(span)) => {
- 					let composite =
- 						composite::CompositeDef::try_from(span, &frame_support, item)?;
-@@ -242,7 +236,6 @@ impl Def {
- 			call,
- 			tasks,
- 			task_enum,
--			extra_constants,
- 			genesis_config,
- 			genesis_build,
- 			validate_unsigned,
-@@ -408,9 +401,6 @@ impl Def {
- 		if let Some(genesis_build) = &self.genesis_build {
- 			genesis_build.instances.as_ref().map(|i| instances.extend_from_slice(&i));
- 		}
--		if let Some(extra_constants) = &self.extra_constants {
--			instances.extend_from_slice(&extra_constants.instances[..]);
--		}
- 		if let Some(task_enum) = &self.task_enum {
- 			instances.push(task_enum.instance_usage.clone());
- 		}
-@@ -558,7 +548,6 @@ mod keyword {
- 	syn::custom_keyword!(event);
- 	syn::custom_keyword!(config);
- 	syn::custom_keyword!(with_default);
--	syn::custom_keyword!(without_automatic_metadata);
- 	syn::custom_keyword!(hooks);
- 	syn::custom_keyword!(inherent);
- 	syn::custom_keyword!(error);
-@@ -568,7 +557,6 @@ mod keyword {
- 	syn::custom_keyword!(validate_unsigned);
- 	syn::custom_keyword!(type_value);
- 	syn::custom_keyword!(pallet);
--	syn::custom_keyword!(extra_constants);
- 	syn::custom_keyword!(composite_enum);
- 	syn::custom_keyword!(view_functions_experimental);
- }
-@@ -578,8 +566,6 @@ mod keyword {
- enum ConfigValue {
- 	/// `#[pallet::config(with_default)]`
- 	WithDefault(keyword::with_default),
--	/// `#[pallet::config(without_automatic_metadata)]`
--	WithoutAutomaticMetadata(keyword::without_automatic_metadata),
- }
- 
- impl syn::parse::Parse for ConfigValue {
-@@ -588,8 +574,6 @@ impl syn::parse::Parse for ConfigValue {
- 
- 		if lookahead.peek(keyword::with_default) {
- 			input.parse().map(ConfigValue::WithDefault)
--		} else if lookahead.peek(keyword::without_automatic_metadata) {
--			input.parse().map(ConfigValue::WithoutAutomaticMetadata)
- 		} else {
- 			Err(lookahead.error())
- 		}
-@@ -602,7 +586,6 @@ enum PalletAttr {
- 	Config {
- 		span: proc_macro2::Span,
- 		with_default: bool,
--		without_automatic_metadata: bool,
- 	},
- 	Pallet(proc_macro2::Span),
- 	Hooks(proc_macro2::Span),
-@@ -658,7 +641,6 @@ enum PalletAttr {
- 	GenesisBuild(proc_macro2::Span),
- 	ValidateUnsigned(proc_macro2::Span),
- 	TypeValue(proc_macro2::Span),
--	ExtraConstants(proc_macro2::Span),
- 	Composite(proc_macro2::Span),
- 	ViewFunctions(proc_macro2::Span),
- }
-@@ -684,7 +666,6 @@ impl PalletAttr {
- 			Self::GenesisBuild(span) => *span,
- 			Self::ValidateUnsigned(span) => *span,
- 			Self::TypeValue(span) => *span,
--			Self::ExtraConstants(span) => *span,
- 			Self::Composite(span) => *span,
- 			Self::ViewFunctions(span) => *span,
- 		}
-@@ -713,7 +694,6 @@ impl syn::parse::Parse for PalletAttr {
- 				let config_values = fields.iter().collect::<Vec<_>>();
- 
- 				let mut with_default = false;
--				let mut without_automatic_metadata = false;
- 				for config in config_values {
- 					match config {
- 						ConfigValue::WithDefault(_) => {
-@@ -725,24 +705,14 @@ impl syn::parse::Parse for PalletAttr {
- 							}
- 							with_default = true;
- 						},
--						ConfigValue::WithoutAutomaticMetadata(_) => {
--							if without_automatic_metadata {
--								return Err(syn::Error::new(
--									span,
--									"Invalid duplicated attribute for `#[pallet::config]`. Please remove duplicates: without_automatic_metadata.",
--								));
--							}
--							without_automatic_metadata = true;
--						},
- 					}
- 				}
- 
--				Ok(PalletAttr::Config { span, with_default, without_automatic_metadata })
-+				Ok(PalletAttr::Config { span, with_default })
- 			} else {
- 				Ok(PalletAttr::Config {
- 					span,
- 					with_default: false,
--					without_automatic_metadata: false,
- 				})
- 			}
- 		} else if lookahead.peek(keyword::pallet) {
-@@ -784,8 +754,6 @@ impl syn::parse::Parse for PalletAttr {
- 			Ok(PalletAttr::ValidateUnsigned(content.parse::<keyword::validate_unsigned>()?.span()))
- 		} else if lookahead.peek(keyword::type_value) {
- 			Ok(PalletAttr::TypeValue(content.parse::<keyword::type_value>()?.span()))
--		} else if lookahead.peek(keyword::extra_constants) {
--			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span()))
- 		} else if lookahead.peek(keyword::composite_enum) {
- 			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span()))
- 		} else if lookahead.peek(keyword::view_functions_experimental) {
-diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
-index 71a4d1c..cdce481 100644
---- a/substrate/frame/support/src/lib.rs
-+++ b/substrate/frame/support/src/lib.rs
-@@ -50,7 +50,6 @@ pub mod __private {
- 		vec::{IntoIter, Vec},
- 	};
- 	pub use codec;
--	pub use frame_metadata as metadata;
- 	pub use log;
- 	pub use paste;
- 	pub use scale_info;
-@@ -62,7 +61,6 @@ pub mod __private {
- 	#[cfg(feature = "std")]
- 	pub use sp_io::TestExternalities;
- 	pub use sp_io::{self, hashing, storage::root as storage_root};
--	pub use sp_metadata_ir as metadata_ir;
- 	#[cfg(feature = "std")]
- 	pub use sp_runtime::{bounded_btree_map, bounded_vec};
- 	pub use sp_runtime::{
-@@ -1413,38 +1411,6 @@ pub mod pallet_macros {
- 	/// See [`pallet::storage`](`frame_support::pallet_macros::storage`) for more info.
- 	pub use frame_support_procedural::getter;
- 
--	/// Defines constants that are added to the constant field of
--	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
--	///
--	/// Must be defined like:
--	///
--	/// ```
--	/// #[frame_support::pallet]
--	/// mod pallet {
--	/// # 	use frame_support::pallet_prelude::*;
--	/// #
--	/// 	#[pallet::pallet]
--	/// 	pub struct Pallet<T>(_);
--	///
--	/// # 	#[pallet::config]
--	/// # 	pub trait Config: frame_system::Config {}
--	/// #
--	/// 	#[pallet::extra_constants]
--	/// 	impl<T: Config> Pallet<T> // $optional_where_clause
--	/// 	{
--	/// 	#[pallet::constant_name(SomeU32ConstantName)]
--	/// 		/// Some doc
--	/// 		fn some_u32_constant() -> u32 {
--	/// 			100u32
--	/// 		}
--	/// 	}
--	/// }
--	/// ```
--	///
--	/// I.e. a regular rust `impl` block with some optional where clause and functions with 0
--	/// args, 0 generics, and some return type.
--	pub use frame_support_procedural::extra_constants;
--
- 	#[rustfmt::skip]
- 	/// Allows bypassing the `frame_system::Config` supertrait check.
- 	///
-@@ -2098,17 +2064,6 @@ pub mod pallet_macros {
- 	///   will be returned.
- 	pub use frame_support_procedural::event;
- 
--	/// Selectively includes associated types in the metadata.
--	///
--	/// The optional attribute allows you to selectively include associated types in the
--	/// metadata. This can be attached to trait items that implement `TypeInfo`.
--	///
--	/// By default all collectable associated types are included in the metadata.
--	///
--	/// This attribute can be used in combination with the
--	/// [`#[pallet::config(without_automatic_metadata)]`](`config`).
--	pub use frame_support_procedural::include_metadata;
--
- 	/// Allows a pallet to declare a set of functions as a *dispatchable extrinsic*.
- 	///
- 	/// In slightly simplified terms, this macro declares the set of "transactions" of a
-diff --git a/substrate/frame/support/src/storage/mod.rs b/substrate/frame/support/src/storage/mod.rs
-index bf07a1a..0b98282 100644
---- a/substrate/frame/support/src/storage/mod.rs
-+++ b/substrate/frame/support/src/storage/mod.rs
-@@ -35,7 +35,6 @@ pub use self::{
- 	transactional::{
- 		in_storage_layer, with_storage_layer, with_transaction, with_transaction_unchecked,
- 	},
--	types::StorageEntryMetadataBuilder,
- };
- pub use sp_runtime::TransactionOutcome;
- pub use types::Key;
-diff --git a/substrate/frame/support/src/storage/types/key.rs b/substrate/frame/support/src/storage/types/key.rs
-index c96e55a..12a2e2e 100755
---- a/substrate/frame/support/src/storage/types/key.rs
-+++ b/substrate/frame/support/src/storage/types/key.rs
-@@ -40,8 +40,6 @@ pub trait KeyGenerator {
- 	type HashFn: FnOnce(&[u8]) -> Vec<u8>;
- 	type HArg;
- 
--	const HASHER_METADATA: &'static [sp_metadata_ir::StorageHasherIR];
--
- 	/// Given a `key` tuple, calculate the final key by encoding each element individually and
- 	/// hashing them using the corresponding hasher in the `KeyGenerator`.
- 	fn final_key<KArg: EncodeLikeTuple<Self::KArg> + TupleToEncodedIter>(key: KArg) -> Vec<u8>;
-@@ -73,8 +71,6 @@ impl<H: StorageHasher, K: FullCodec> KeyGenerator for Key<H, K> {
- 	type HashFn = Box<dyn FnOnce(&[u8]) -> Vec<u8>>;
- 	type HArg = (Self::HashFn,);
- 
--	const HASHER_METADATA: &'static [sp_metadata_ir::StorageHasherIR] = &[H::METADATA];
--
- 	fn final_key<KArg: EncodeLikeTuple<Self::KArg> + TupleToEncodedIter>(key: KArg) -> Vec<u8> {
- 		H::hash(&key.to_encoded_iter().next().expect("should have at least one element!"))
- 			.as_ref()
-@@ -113,9 +109,6 @@ impl KeyGenerator for Tuple {
- 	for_tuples!( type HArg = ( #(Tuple::HashFn),* ); );
- 	type HashFn = Box<dyn FnOnce(&[u8]) -> Vec<u8>>;
- 
--	const HASHER_METADATA: &'static [sp_metadata_ir::StorageHasherIR] =
--		&[for_tuples!( #(Tuple::Hasher::METADATA),* )];
--
- 	fn final_key<KArg: EncodeLikeTuple<Self::KArg> + TupleToEncodedIter>(key: KArg) -> Vec<u8> {
- 		let mut final_key = Vec::new();
- 		let mut iter = key.to_encoded_iter();
-diff --git a/substrate/frame/support/src/traits.rs b/substrate/frame/support/src/traits.rs
-index f95f73c..3f99c1a 100644
---- a/substrate/frame/support/src/traits.rs
-+++ b/substrate/frame/support/src/traits.rs
-@@ -77,7 +77,7 @@ pub use randomness::Randomness;
- 
- mod metadata;
- pub use metadata::{
--	CallMetadata, CrateVersion, GetCallIndex, GetCallMetadata, GetCallName, GetStorageVersion,
-+	CrateVersion, GetCallIndex, GetCallName, GetStorageVersion,
- 	NoStorageVersionSet, PalletInfo, PalletInfoAccess, PalletInfoData, PalletsInfoAccess,
- 	StorageVersion, STORAGE_VERSION_STORAGE_KEY_POSTFIX,
- };
-diff --git a/substrate/frame/support/src/traits/metadata.rs b/substrate/frame/support/src/traits/metadata.rs
-index 1e46470..effdebc 100644
---- a/substrate/frame/support/src/traits/metadata.rs
-+++ b/substrate/frame/support/src/traits/metadata.rs
-@@ -95,15 +95,6 @@ impl PalletsInfoAccess for Tuple {
- 	}
- }
- 
--/// The function and pallet name of the Call.
--#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug)]
--pub struct CallMetadata {
--	/// Name of the function.
--	pub function_name: &'static str,
--	/// Name of the pallet to which the function belongs.
--	pub pallet_name: &'static str,
--}
--
- /// Gets the function name of the Call.
- pub trait GetCallName {
- 	/// Return all function names in the same order as [`GetCallIndex`].
-diff --git a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
-index ddca109..6b6577e 100644
---- a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
-+++ b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
-@@ -254,8 +254,6 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
- 		let versioned_methods_iter = methods_by_version
- 			.iter()
- 			.flat_map(|(&version, methods)| methods.iter().map(move |method| (method, version)));
--		let metadata =
--			crate::runtime_metadata::generate_decl_runtime_metadata(&decl, versioned_methods_iter);
- 
- 		let versioned_api_traits = generate_versioned_api_traits(decl.clone(), methods_by_version);
- 
-@@ -276,8 +274,6 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
- 
- 				pub use #versioned_ident as #main_api_ident;
- 
--				#metadata
--
- 				pub #api_version
- 
- 				pub #id
-diff --git a/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
-index 61b0d16..acb52c7 100644
---- a/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
-+++ b/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
-@@ -834,8 +834,6 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
- 	let wasm_interface = generate_wasm_interface(api_impls)?;
- 	let api_impls_for_runtime_api = generate_api_impl_for_runtime_api(api_impls)?;
- 
--	let runtime_metadata = crate::runtime_metadata::generate_impl_runtime_metadata(api_impls)?;
--
- 	let impl_ = quote!(
- 		#base_runtime_api
- 
-@@ -845,8 +843,6 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
- 
- 		#runtime_api_versions
- 
--		#runtime_metadata
--
- 		pub mod api {
- 			use super::*;
- 
-diff --git a/substrate/primitives/api/proc-macro/src/utils.rs b/substrate/primitives/api/proc-macro/src/utils.rs
-index 4febfde..2d8dec1 100644
---- a/substrate/primitives/api/proc-macro/src/utils.rs
-+++ b/substrate/primitives/api/proc-macro/src/utils.rs
-@@ -259,85 +259,6 @@ pub fn filter_cfg_attributes(attrs: &[syn::Attribute]) -> Vec<syn::Attribute> {
- 	attrs.iter().filter(|a| a.path().is_ident("cfg")).cloned().collect()
- }
- 
--fn deprecation_msg_formatter(msg: &str) -> String {
--	format!(
--		r#"{msg}
--		help: the following are the possible correct uses
--|
--|     #[deprecated = "reason"]
--|
--|     #[deprecated(/*opt*/ since = "version", /*opt*/ note = "reason")]
--|
--|     #[deprecated]
--|"#
--	)
--}
--
--fn parse_deprecated_meta(crate_: &TokenStream, attr: &syn::Attribute) -> Result<TokenStream> {
--	match &attr.meta {
--		Meta::List(meta_list) => {
--			let parsed = meta_list
--				.parse_args_with(Punctuated::<MetaNameValue, Token![,]>::parse_terminated)
--				.map_err(|e| Error::new(attr.span(), e.to_string()))?;
--			let (note, since) = parsed.iter().try_fold((None, None), |mut acc, item| {
--				let value = match &item.value {
--					Expr::Lit(ExprLit { lit: lit @ Lit::Str(_), .. }) => Ok(lit),
--					_ => Err(Error::new(
--						attr.span(),
--						deprecation_msg_formatter(
--							"Invalid deprecation attribute: expected string literal",
--						),
--					)),
--				}?;
--				if item.path.is_ident("note") {
--					acc.0.replace(value);
--				} else if item.path.is_ident("since") {
--					acc.1.replace(value);
--				}
--				Ok::<(Option<&syn::Lit>, Option<&syn::Lit>), Error>(acc)
--			})?;
--			note.map_or_else(
--				|| Err(Error::new(attr.span(), 						deprecation_msg_formatter(
--					"Invalid deprecation attribute: missing `note`"))),
--				|note| {
--					let since = if let Some(str) = since {
--						quote! { Some(#str) }
--					} else {
--						quote! { None }
--					};
--					let doc = quote! { #crate_::metadata_ir::DeprecationStatusIR::Deprecated { note: #note, since: #since }};
--					Ok(doc)
--				},
--			)
--		},
--		Meta::NameValue(MetaNameValue {
--			value: Expr::Lit(ExprLit { lit: lit @ Lit::Str(_), .. }),
--			..
--		}) => {
--			// #[deprecated = "lit"]
--			let doc = quote! { #crate_::metadata_ir::DeprecationStatusIR::Deprecated { note: #lit, since: None } };
--			Ok(doc)
--		},
--		Meta::Path(_) => {
--			// #[deprecated]
--			Ok(quote! { #crate_::metadata_ir::DeprecationStatusIR::DeprecatedWithoutNote })
--		},
--		_ => Err(Error::new(
--			attr.span(),
--			deprecation_msg_formatter("Invalid deprecation attribute: expected string literal"),
--		)),
--	}
--}
--
--/// collects deprecation attribute if its present.
--pub fn get_deprecation(crate_: &TokenStream, attrs: &[syn::Attribute]) -> Result<TokenStream> {
--	attrs
--		.iter()
--		.find(|a| a.path().is_ident("deprecated"))
--		.map(|a| parse_deprecated_meta(&crate_, a))
--		.unwrap_or_else(|| Ok(quote! {#crate_::metadata_ir::DeprecationStatusIR::NotDeprecated}))
--}
--
- /// Represents an API version.
- pub struct ApiVersion {
- 	/// Corresponds to `#[api_version(X)]` attribute.
-diff --git a/substrate/primitives/api/src/lib.rs b/substrate/primitives/api/src/lib.rs
-index ca6af58..caa7db1 100644
---- a/substrate/primitives/api/src/lib.rs
-+++ b/substrate/primitives/api/src/lib.rs
-@@ -99,8 +99,6 @@ pub mod __private {
- 	pub use sp_core::offchain;
- 	#[cfg(not(feature = "std"))]
- 	pub use sp_core::to_substrate_wasm_fn_return_value;
--	#[cfg(feature = "frame-metadata")]
--	pub use sp_metadata_ir::{self as metadata_ir, frame_metadata as metadata};
- 	pub use sp_runtime::{
- 		generic::BlockId,
- 		traits::{Block as BlockT, Hash as HashT, HashingFor, Header as HeaderT, NumberFor},
-@@ -824,26 +822,7 @@ decl_runtime_apis! {
- 		/// Initialize a block with the given header and return the runtime executive mode.
- 		fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode;
- 	}
--
--	/// The `Metadata` api trait that returns metadata for the runtime.
--	#[api_version(2)]
--	pub trait Metadata {
--		/// Returns the metadata of a runtime.
--		fn metadata() -> OpaqueMetadata;
--
--		/// Returns the metadata at a given version.
--		///
--		/// If the given `version` isn't supported, this will return `None`.
--		/// Use [`Self::metadata_versions`] to find out about supported metadata version of the runtime.
--		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata>;
--
--		/// Returns the supported metadata versions.
--		///
--		/// This can be used to call `metadata_at_version`.
--		fn metadata_versions() -> alloc::vec::Vec<u32>;
--	}
- }
- 
- sp_core::generate_feature_enabled_macro!(std_enabled, feature = "std", $);
- sp_core::generate_feature_enabled_macro!(std_disabled, not(feature = "std"), $);
--sp_core::generate_feature_enabled_macro!(frame_metadata_enabled, feature = "frame-metadata", $);
-diff --git a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
-index d2f9217..de68b8d 100644
---- a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
-+++ b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
-@@ -21,7 +21,7 @@ use crate::{
- 	generic::{CheckedExtrinsic, ExtrinsicFormat},
- 	traits::{
- 		self, transaction_extension::TransactionExtension, Checkable, Dispatchable, ExtrinsicLike,
--		ExtrinsicMetadata, IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
-+		IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
- 	},
- 	transaction_validity::{InvalidTransaction, TransactionValidityError},
- 	OpaqueExtrinsic,
-@@ -391,13 +391,6 @@ where
- 	}
- }
- 
--impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
--	ExtrinsicMetadata for UncheckedExtrinsic<Address, Call, Signature, Extension>
--{
--	const VERSIONS: &'static [u8] = &[LEGACY_EXTRINSIC_FORMAT_VERSION, EXTRINSIC_FORMAT_VERSION];
--	type TransactionExtensions = Extension;
--}
--
- impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
- 	UncheckedExtrinsic<Address, Call, Signature, Extension>
- {
-diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
-index af9978b..9ec5b23 100644
---- a/substrate/primitives/runtime/src/traits/mod.rs
-+++ b/substrate/primitives/runtime/src/traits/mod.rs
-@@ -58,7 +58,7 @@ use std::str::FromStr;
- pub mod transaction_extension;
- pub use transaction_extension::{
- 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
--	TransactionExtensionMetadata, TxBaseImplication, ValidateResult,
-+	TxBaseImplication, ValidateResult,
- };
- 
- /// A lazy value.
-@@ -1727,22 +1727,6 @@ pub trait SignedExtension:
- 		Ok(())
- 	}
- 
--	/// Returns the metadata for this signed extension.
--	///
--	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
--	/// that holds the metadata of each one. Each individual `SignedExtension` must return
--	/// *exactly* one [`TransactionExtensionMetadata`].
--	///
--	/// This method provides a default implementation that returns a vec containing a single
--	/// [`TransactionExtensionMetadata`].
--	fn metadata() -> Vec<TransactionExtensionMetadata> {
--		alloc::vec![TransactionExtensionMetadata {
--			identifier: Self::IDENTIFIER,
--			ty: scale_info::meta_type::<Self>(),
--			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
--		}]
--	}
--
- 	/// Validate an unsigned transaction for the transaction queue.
- 	///
- 	/// This function can be called frequently by the transaction queue
-diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
-index 1153926..8819ddc 100644
---- a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
-+++ b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
-@@ -57,9 +57,6 @@ where
- 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
- 		self.0.additional_signed()
- 	}
--	fn metadata() -> Vec<TransactionExtensionMetadata> {
--		SE::metadata()
--	}
- 	fn weight(&self, _call: &SE::Call) -> Weight {
- 		Weight::zero()
- 	}
-diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
-index 24ec672..adf658c 100644
---- a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
-+++ b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
-@@ -250,22 +250,6 @@ pub trait TransactionExtension<Call: Dispatchable>:
- 		Ok(Self::Implicit::decode(&mut &[][..]).map_err(|_| IndeterminateImplicit)?)
- 	}
- 
--	/// Returns the metadata for this extension.
--	///
--	/// As a [`TransactionExtension`] can be a tuple of [`TransactionExtension`]s we need to return
--	/// a `Vec` that holds the metadata of each one. Each individual `TransactionExtension` must
--	/// return *exactly* one [`TransactionExtensionMetadata`].
--	///
--	/// This method provides a default implementation that returns a vec containing a single
--	/// [`TransactionExtensionMetadata`].
--	fn metadata() -> Vec<TransactionExtensionMetadata> {
--		alloc::vec![TransactionExtensionMetadata {
--			identifier: Self::IDENTIFIER,
--			ty: scale_info::meta_type::<Self>(),
--			implicit: scale_info::meta_type::<Self::Implicit>()
--		}]
--	}
--
- 	/// The type that encodes information that can be passed from `validate` to `prepare`.
- 	type Val;
- 
-@@ -527,16 +511,6 @@ macro_rules! impl_tx_ext_default {
- 	($call:ty ;) => {};
- }
- 
--/// Information about a [`TransactionExtension`] for the runtime metadata.
--pub struct TransactionExtensionMetadata {
--	/// The unique identifier of the [`TransactionExtension`].
--	pub identifier: &'static str,
--	/// The type of the [`TransactionExtension`].
--	pub ty: MetaType,
--	/// The type of the [`TransactionExtension`] additional signed data for the payload.
--	pub implicit: MetaType,
--}
--
- #[impl_for_tuples(1, 12)]
- impl<Call: Dispatchable> TransactionExtension<Call> for Tuple {
- 	const IDENTIFIER: &'static str = "Use `metadata()`!";
-@@ -544,11 +518,6 @@ impl<Call: Dispatchable> TransactionExtension<Call> for Tuple {
- 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
- 		Ok(for_tuples!( ( #( Tuple.implicit()? ),* ) ))
- 	}
--	fn metadata() -> Vec<TransactionExtensionMetadata> {
--		let mut ids = Vec::new();
--		for_tuples!( #( ids.extend(Tuple::metadata()); )* );
--		ids
--	}
- 
- 	for_tuples!( type Val = ( #( Tuple::Val ),* ); );
- 	for_tuples!( type Pre = ( #( Tuple::Pre ),* ); );
-diff --git a/substrate/frame/support/procedural/src/pallet/expand/call.rs b/substrate/frame/support/procedural/src/pallet/expand/call.rs
-index a968b5f9..8491cfda 100644
---- a/substrate/frame/support/procedural/src/pallet/expand/call.rs
-+++ b/substrate/frame/support/procedural/src/pallet/expand/call.rs
-@@ -263,14 +263,14 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
- 			}
- 		});
- 
--	let deprecation = match crate::deprecation::get_deprecation_enum(
-+	/* let deprecation = match crate::deprecation::get_deprecation_enum(
- 		&quote::quote! {#frame_support},
- 		def.call.as_ref().map(|call| call.attrs.as_ref()).unwrap_or(&[]),
- 		methods.iter().map(|item| (item.call_index as u8, item.attrs.as_ref())),
- 	) {
- 		Ok(deprecation) => deprecation,
- 		Err(e) => return e.into_compile_error(),
--	};
-+	}; */
- 
- 	quote::quote_spanned!(span =>
- 		#[doc(hidden)]
-@@ -471,7 +471,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
- 			type RuntimeCall = #call_ident<#type_use_gen>;
- 		}
- 
--		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
-+		/* impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
- 			#[allow(dead_code)]
- 			#[doc(hidden)]
- 			pub fn call_functions() -> #frame_support::__private::metadata_ir::PalletCallMetadataIR {
-@@ -480,6 +480,6 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
- 					deprecation_info: #deprecation,
- 				}
- 			}
--		}
-+		} */
- 	)
- }
-diff --git a/substrate/frame/support/procedural/src/pallet/parse/composite.rs b/substrate/frame/support/procedural/src/pallet/parse/composite.rs
-index b3131d2..0af01eb 100644
---- a/substrate/frame/support/procedural/src/pallet/parse/composite.rs
-+++ b/substrate/frame/support/procedural/src/pallet/parse/composite.rs
-@@ -163,10 +163,6 @@ impl CompositeDef {
- 		}
- 
- 		if has_instance {
--			item.attrs.push(syn::parse_quote! {
--				#[scale_info(skip_type_params(I))]
--			});
--
- 			item.variants.push(syn::parse_quote! {
- 				#[doc(hidden)]
- 				#[codec(skip)]
-diff --git a/substrate/frame/support/procedural/src/pallet/parse/config.rs b/substrate/frame/support/procedural/src/pallet/parse/config.rs
-index b354bc3..64b5c79 100644
---- a/substrate/frame/support/procedural/src/pallet/parse/config.rs
-+++ b/substrate/frame/support/procedural/src/pallet/parse/config.rs
-@@ -269,25 +269,6 @@ pub fn replace_self_by_t(input: proc_macro2::TokenStream) -> proc_macro2::TokenS
- 		.collect()
- }
- 
--/// Check that the trait item requires the `TypeInfo` bound (or similar).
--fn contains_type_info_bound(ty: &TraitItemType) -> bool {
--	const KNOWN_TYPE_INFO_BOUNDS: &[&str] = &[
--		// Explicit TypeInfo trait.
--		"TypeInfo",
--		// Implicit known substrate traits that implement type info.
--		// Note: Aim to keep this list as small as possible.
--		"Parameter",
--	];
--
--	ty.bounds.iter().any(|bound| {
--		let syn::TypeParamBound::Trait(bound) = bound else { return false };
--
--		KNOWN_TYPE_INFO_BOUNDS
--			.iter()
--			.any(|known| bound.path.segments.last().map_or(false, |last| last.ident == *known))
--	})
--}
--
- impl ConfigDef {
- 	pub fn try_from(
- 		frame_system: &syn::Path,
-@@ -421,17 +402,6 @@ impl ConfigDef {
- 						Pallet constant already collect the metadata for the type.",
- 					))
- 				}
--
--				if let syn::TraitItem::Type(ref ty) = trait_item {
--					if !contains_type_info_bound(ty) {
--						let msg = format!(
--						"Invalid #[pallet::include_metadata] in #[pallet::config], collected type `{}` \
--						does not implement `TypeInfo` or `Parameter`",
--						ty.ident,
--					);
--						return Err(syn::Error::new(span, msg));
--					}
--				}
- 			}
- 
- 			if !already_no_default && enable_default {
-diff --git a/substrate/primitives/application-crypto/src/traits.rs b/substrate/primitives/application-crypto/src/traits.rs
-index 1789d9b..58d9bc0 100644
---- a/substrate/primitives/application-crypto/src/traits.rs
-+++ b/substrate/primitives/application-crypto/src/traits.rs
-@@ -141,8 +141,7 @@ impl<T> RuntimeAppPublic for T
- where
- 	T: AppPublic + AsRef<<T as AppPublic>::Generic>,
- 	<T as AppPublic>::Generic: RuntimePublic,
--	<T as AppCrypto>::Signature: TypeInfo
--		+ Codec
-+	<T as AppCrypto>::Signature: Codec
- 		+ From<<<T as AppPublic>::Generic as RuntimePublic>::Signature>
- 		+ AsRef<<<T as AppPublic>::Generic as RuntimePublic>::Signature>,
- {
 diff --git a/substrate/primitives/runtime/src/generic/digest.rs b/substrate/primitives/runtime/src/generic/digest.rs
 index 593fbdd..751967f 100644
 --- a/substrate/primitives/runtime/src/generic/digest.rs
@@ -1636,43 +163,1366 @@ index 593fbdd..751967f 100644
  	ConsensusEngineId,
  };
  use sp_core::RuntimeDebug;
+diff --git a/substrate/frame/support/src/traits.rs b/substrate/frame/support/src/traits.rs
+index 481ac09a..c93c6113 100644
+--- a/substrate/frame/support/src/traits.rs
++++ b/substrate/frame/support/src/traits.rs
+@@ -76,9 +76,9 @@ mod randomness;
+ pub use randomness::Randomness;
+ pub mod reality;
+ 
+ mod metadata;
+ pub use metadata::{
+-	CallMetadata, CrateVersion, GetCallIndex, GetCallMetadata, GetCallName, GetStorageVersion,
++	/* CallMetadata,*/ CrateVersion, GetCallIndex, /* GetCallMetadata,*/ GetCallName, GetStorageVersion,
+ 	NoStorageVersionSet, PalletInfo, PalletInfoAccess, PalletInfoData, PalletsInfoAccess,
+ 	StorageVersion, STORAGE_VERSION_STORAGE_KEY_POSTFIX,
+ };
+diff --git a/substrate/frame/support/src/traits/metadata.rs b/substrate/frame/support/src/traits/metadata.rs
+index 1e46470a..af9dd770 100644
+--- a/substrate/frame/support/src/traits/metadata.rs
++++ b/substrate/frame/support/src/traits/metadata.rs
+@@ -95,14 +95,14 @@ impl PalletsInfoAccess for Tuple {
+ 	}
+ }
+ 
+-/// The function and pallet name of the Call.
++/* /// The function and pallet name of the Call.
+ #[derive(Clone, Eq, PartialEq, Default, RuntimeDebug)]
+ pub struct CallMetadata {
+ 	/// Name of the function.
+ 	pub function_name: &'static str,
+ 	/// Name of the pallet to which the function belongs.
+ 	pub pallet_name: &'static str,
+-}
++} */
+ 
+ /// Gets the function name of the Call.
+ pub trait GetCallName {
+diff --git a/substrate/primitives/api/proc-macro/src/utils.rs b/substrate/primitives/api/proc-macro/src/utils.rs
+index 43c8d772..cbeb5da6 100644
+--- a/substrate/primitives/api/proc-macro/src/utils.rs
++++ b/substrate/primitives/api/proc-macro/src/utils.rs
+@@ -259,7 +259,7 @@ pub fn filter_cfg_attributes(attrs: &[syn::Attribute]) -> Vec<syn::Attribute> {
+ 	attrs.iter().filter(|a| a.path().is_ident("cfg")).cloned().collect()
+ }
+ 
+-fn deprecation_msg_formatter(msg: &str) -> String {
++/* fn deprecation_msg_formatter(msg: &str) -> String {
+ 	format!(
+ 		r#"{msg}
+ 		help: the following are the possible correct uses
+@@ -336,7 +336,7 @@ pub fn get_deprecation(crate_: &TokenStream, attrs: &[syn::Attribute]) -> Result
+ 		.find(|a| a.path().is_ident("deprecated"))
+ 		.map(|a| parse_deprecated_meta(&crate_, a))
+ 		.unwrap_or_else(|| Ok(quote! {#crate_::metadata_ir::ItemDeprecationInfoIR::NotDeprecated}))
+-}
++} */
+ 
+ /// Represents an API version.
+ pub struct ApiVersion {
+diff --git a/substrate/primitives/api/src/lib.rs b/substrate/primitives/api/src/lib.rs
+index 2fbf5f86..da0e5389 100644
+--- a/substrate/primitives/api/src/lib.rs
++++ b/substrate/primitives/api/src/lib.rs
+@@ -115,7 +115,7 @@ pub mod __private {
+ 
+ #[cfg(feature = "std")]
+ pub use sp_core::traits::CallContext;
+-use sp_core::OpaqueMetadata;
++// use sp_core::OpaqueMetadata;
+ #[cfg(feature = "std")]
+ use sp_externalities::{Extension, Extensions};
+ #[cfg(feature = "std")]
+@@ -823,7 +823,7 @@ decl_runtime_apis! {
+ 		fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode;
+ 	}
+ 
+-	/// The `Metadata` api trait that returns metadata for the runtime.
++	/* /// The `Metadata` api trait that returns metadata for the runtime.
+ 	#[api_version(2)]
+ 	pub trait Metadata {
+ 		/// Returns the metadata of a runtime.
+@@ -839,9 +839,9 @@ decl_runtime_apis! {
+ 		///
+ 		/// This can be used to call `metadata_at_version`.
+ 		fn metadata_versions() -> alloc::vec::Vec<u32>;
+-	}
++	} */
+ }
+ 
+ sp_core::generate_feature_enabled_macro!(std_enabled, feature = "std", $);
+ sp_core::generate_feature_enabled_macro!(std_disabled, not(feature = "std"), $);
+-sp_core::generate_feature_enabled_macro!(frame_metadata_enabled, feature = "frame-metadata", $);
++// sp_core::generate_feature_enabled_macro!(frame_metadata_enabled, feature = "frame-metadata", $);
+diff --git a/substrate/primitives/core/src/lib.rs b/substrate/primitives/core/src/lib.rs
+index fc5faa6a..7e159497 100644
+--- a/substrate/primitives/core/src/lib.rs
++++ b/substrate/primitives/core/src/lib.rs
+@@ -121,11 +121,11 @@ impl From<Vec<u8>> for Bytes {
+ 	}
+ }
+ 
+-impl From<OpaqueMetadata> for Bytes {
++/* impl From<OpaqueMetadata> for Bytes {
+ 	fn from(s: OpaqueMetadata) -> Self {
+ 		Bytes(s.0)
+ 	}
+-}
++} */
+ 
+ impl Deref for Bytes {
+ 	type Target = [u8];
+@@ -149,7 +149,7 @@ impl alloc::str::FromStr for Bytes {
+ 	}
+ }
+ 
+-/// Stores the encoded `RuntimeMetadata` for the native side as opaque type.
++/* /// Stores the encoded `RuntimeMetadata` for the native side as opaque type.
+ #[derive(Encode, Decode, PartialEq, TypeInfo)]
+ pub struct OpaqueMetadata(Vec<u8>);
+ 
+@@ -166,7 +166,7 @@ impl Deref for OpaqueMetadata {
+ 	fn deref(&self) -> &Self::Target {
+ 		&self.0
+ 	}
+-}
++} */
+ 
+ /// Simple blob to hold a `PeerId` without committing to its format.
+ #[derive(
+diff --git a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
+index 48ee1b19..96613555 100644
+--- a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
++++ b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
+@@ -21,7 +21,7 @@ use crate::{
+ 	generic::{CheckedExtrinsic, ExtrinsicFormat},
+ 	traits::{
+ 		self, transaction_extension::TransactionExtension, Checkable, Dispatchable, ExtrinsicCall,
+-		ExtrinsicLike, ExtrinsicMetadata, IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
++		ExtrinsicLike, /* ExtrinsicMetadata,*/ IdentifyAccount, MaybeDisplay, Member, SignaturePayload,
+ 	},
+ 	transaction_validity::{InvalidTransaction, TransactionValidityError},
+ 	OpaqueExtrinsic,
+@@ -414,12 +414,12 @@ where
+ 	}
+ }
+ 
+-impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
++/* impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
+ 	ExtrinsicMetadata for UncheckedExtrinsic<Address, Call, Signature, Extension>
+ {
+ 	const VERSIONS: &'static [u8] = &[LEGACY_EXTRINSIC_FORMAT_VERSION, EXTRINSIC_FORMAT_VERSION];
+ 	type TransactionExtensions = Extension;
+-}
++} */
+ 
+ impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
+ 	UncheckedExtrinsic<Address, Call, Signature, Extension>
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index b049e54a..e56000f3 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -58,7 +58,7 @@ use std::str::FromStr;
+ pub mod transaction_extension;
+ pub use transaction_extension::{
+ 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
+-	TransactionExtensionMetadata, TxBaseImplication, ValidateResult,
++	/* TransactionExtensionMetadata,*/ TxBaseImplication, ValidateResult,
+ };
+ 
+ /// A lazy value.
+@@ -1437,7 +1437,7 @@ impl SignaturePayload for () {
+ }
+ 
+ /// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
+-pub trait ExtrinsicMetadata {
++/* pub trait ExtrinsicMetadata {
+ 	/// The format versions of the `Extrinsic`.
+ 	///
+ 	/// By format we mean the encoded representation of the `Extrinsic`.
+@@ -1445,7 +1445,7 @@ pub trait ExtrinsicMetadata {
+ 
+ 	/// Transaction extensions attached to this `Extrinsic`.
+ 	type TransactionExtensions;
+-}
++} */
+ 
+ /// Extract the hashing type for a block.
+ pub type HashingFor<B> = <<B as Block>::Header as Header>::Hashing;
+@@ -1728,7 +1728,7 @@ pub trait SignedExtension:
+ 		Ok(())
+ 	}
+ 
+-	/// Returns the metadata for this signed extension.
++	/* /// Returns the metadata for this signed extension.
+ 	///
+ 	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
+ 	/// that holds the metadata of each one. Each individual `SignedExtension` must return
+@@ -1742,7 +1742,7 @@ pub trait SignedExtension:
+ 			ty: scale_info::meta_type::<Self>(),
+ 			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
+ 		}]
+-	}
++	} */
+ 
+ 	/// Validate an unsigned transaction for the transaction queue.
+ 	///
+diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
+index 1153926d..e3d088c5 100644
+--- a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
++++ b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
+@@ -57,9 +57,9 @@ where
+ 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
+ 		self.0.additional_signed()
+ 	}
+-	fn metadata() -> Vec<TransactionExtensionMetadata> {
++	/* fn metadata() -> Vec<TransactionExtensionMetadata> {
+ 		SE::metadata()
+-	}
++	} */
+ 	fn weight(&self, _call: &SE::Call) -> Weight {
+ 		Weight::zero()
+ 	}
+diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
+index 24ec6721..9717ca08 100644
+--- a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
++++ b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
+@@ -250,7 +250,7 @@ pub trait TransactionExtension<Call: Dispatchable>:
+ 		Ok(Self::Implicit::decode(&mut &[][..]).map_err(|_| IndeterminateImplicit)?)
+ 	}
+ 
+-	/// Returns the metadata for this extension.
++	/* /// Returns the metadata for this extension.
+ 	///
+ 	/// As a [`TransactionExtension`] can be a tuple of [`TransactionExtension`]s we need to return
+ 	/// a `Vec` that holds the metadata of each one. Each individual `TransactionExtension` must
+@@ -264,7 +264,7 @@ pub trait TransactionExtension<Call: Dispatchable>:
+ 			ty: scale_info::meta_type::<Self>(),
+ 			implicit: scale_info::meta_type::<Self::Implicit>()
+ 		}]
+-	}
++	} */
+ 
+ 	/// The type that encodes information that can be passed from `validate` to `prepare`.
+ 	type Val;
+@@ -527,7 +527,7 @@ macro_rules! impl_tx_ext_default {
+ 	($call:ty ;) => {};
+ }
+ 
+-/// Information about a [`TransactionExtension`] for the runtime metadata.
++/* /// Information about a [`TransactionExtension`] for the runtime metadata.
+ pub struct TransactionExtensionMetadata {
+ 	/// The unique identifier of the [`TransactionExtension`].
+ 	pub identifier: &'static str,
+@@ -535,20 +535,20 @@ pub struct TransactionExtensionMetadata {
+ 	pub ty: MetaType,
+ 	/// The type of the [`TransactionExtension`] additional signed data for the payload.
+ 	pub implicit: MetaType,
+-}
++} */
+ 
+ #[impl_for_tuples(1, 12)]
+ impl<Call: Dispatchable> TransactionExtension<Call> for Tuple {
+ 	const IDENTIFIER: &'static str = "Use `metadata()`!";
+ 	for_tuples!( type Implicit = ( #( Tuple::Implicit ),* ); );
+ 	fn implicit(&self) -> Result<Self::Implicit, TransactionValidityError> {
+ 		Ok(for_tuples!( ( #( Tuple.implicit()? ),* ) ))
+ 	}
+-	fn metadata() -> Vec<TransactionExtensionMetadata> {
++	/* fn metadata() -> Vec<TransactionExtensionMetadata> {
+ 		let mut ids = Vec::new();
+ 		for_tuples!( #( ids.extend(Tuple::metadata()); )* );
+ 		ids
+-	}
++	} */
+ 
+ 	for_tuples!( type Val = ( #( Tuple::Val ),* ); );
+ 	for_tuples!( type Pre = ( #( Tuple::Pre ),* ); );
+diff --git a/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
+index f517eebf..b1b2ea9b 100644
+--- a/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
++++ b/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
+@@ -834,7 +834,7 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
+ 	let wasm_interface = generate_wasm_interface(api_impls)?;
+ 	let api_impls_for_runtime_api = generate_api_impl_for_runtime_api(api_impls)?;
+ 
+-	let runtime_metadata = crate::runtime_metadata::generate_impl_runtime_metadata(api_impls)?;
++	// let runtime_metadata = crate::runtime_metadata::generate_impl_runtime_metadata(api_impls)?;
+ 
+ 	let impl_ = quote!(
+ 		#base_runtime_api
+@@ -845,7 +845,7 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
+ 
+ 		#runtime_api_versions
+ 
+-		#runtime_metadata
++		// #runtime_metadata
+ 
+ 		pub mod api {
+ 			use super::*;
+diff --git a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
+index fb055d94..4c32cec6 100644
+--- a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
++++ b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
+@@ -258,8 +258,8 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
+ 		let versioned_methods_iter = methods_by_version
+ 			.iter()
+ 			.flat_map(|(&version, methods)| methods.iter().map(move |method| (method, version)));
+-		let metadata =
+-			crate::runtime_metadata::generate_decl_runtime_metadata(&decl, versioned_methods_iter);
++		/* let metadata =
++			crate::runtime_metadata::generate_decl_runtime_metadata(&decl, versioned_methods_iter); */
+ 
+ 		let versioned_api_traits = generate_versioned_api_traits(decl.clone(), methods_by_version);
+ 
+@@ -280,7 +280,7 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
+ 
+ 				pub use #versioned_ident as #main_api_ident;
+ 
+-				#metadata
++				// #metadata
+ 
+ 				pub #api_version
+ 
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+index 8e326972..fe037937 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+@@ -401,13 +401,13 @@ fn construct_runtime_final_expansion(
+ 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
+ 	let tasks = expand::expand_outer_task(&name, &pallets, &scrate);
+ 	let query = expand::expand_outer_query(&name, &pallets, &scrate);
+-	let metadata = expand::expand_runtime_metadata(
++	/* let metadata = expand::expand_runtime_metadata(
+ 		&name,
+ 		&pallets,
+ 		&scrate,
+ 		&unchecked_extrinsic,
+ 		&system_pallet.path,
+-	);
++	); */
+ 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
+ 	let inherent =
+ 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
+@@ -495,7 +495,7 @@ fn construct_runtime_final_expansion(
+ 
+ 		#query
+ 
+-		#metadata
++		// #metadata
+ 
+ 		#outer_config
+ 
+diff --git a/substrate/frame/support/procedural/src/deprecation.rs b/substrate/frame/support/procedural/src/deprecation.rs
+index b9f50508..72b42019 100644
+--- a/substrate/frame/support/procedural/src/deprecation.rs
++++ b/substrate/frame/support/procedural/src/deprecation.rs
+@@ -22,7 +22,7 @@ use syn::{
+ 	Result, Token, Variant,
+ };
+ 
+-fn deprecation_msg_formatter(msg: &str) -> String {
++/* fn deprecation_msg_formatter(msg: &str) -> String {
+ 	format!(
+ 		r#"{msg}
+ 		help: the following are the possible correct uses
+@@ -212,7 +212,7 @@ pub fn variant_index_for_deprecation(index: u8, item: &Variant) -> u8 {
+ 			})
+ 		})
+ 		.unwrap_or(index)
+-}
++} */
+ 
+ /// Filters all of the `allow` and `deprecated` attributes.
+ ///
+diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
+index 4c24e186..2525853f 100644
+--- a/substrate/frame/support/procedural/src/lib.rs
++++ b/substrate/frame/support/procedural/src/lib.rs
+@@ -854,7 +854,7 @@ pub fn config(_: TokenStream, _: TokenStream) -> TokenStream {
+ 	pallet_macro_stub()
+ }
+ 
+-///
++/* ///
+ /// ---
+ ///
+ /// Documentation for this macro can be found at `frame_support::pallet_macros::constant`.
+@@ -870,7 +870,7 @@ pub fn constant(_: TokenStream, _: TokenStream) -> TokenStream {
+ #[proc_macro_attribute]
+ pub fn constant_name(_: TokenStream, _: TokenStream) -> TokenStream {
+ 	pallet_macro_stub()
+-}
++} */
+ 
+ ///
+ /// ---
+@@ -947,14 +947,14 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
+ 	pallet_macro_stub()
+ }
+ 
+-///
++/* ///
+ /// ---
+ ///
+ /// Documentation for this macro can be found at `frame_support::pallet_macros::extra_constants`.
+ #[proc_macro_attribute]
+ pub fn extra_constants(_: TokenStream, _: TokenStream) -> TokenStream {
+ 	pallet_macro_stub()
+-}
++} */
+ 
+ ///
+ /// ---
+@@ -974,14 +974,14 @@ pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
+ 	pallet_macro_stub()
+ }
+ 
+-///
++/* ///
+ /// ---
+ ///
+ /// Documentation for this macro can be found at `frame_support::pallet_macros::include_metadata`.
+ #[proc_macro_attribute]
+ pub fn include_metadata(_: TokenStream, _: TokenStream) -> TokenStream {
+ 	pallet_macro_stub()
+-}
++} */
+ 
+ ///
+ /// ---
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/call.rs b/substrate/frame/support/procedural/src/pallet/expand/call.rs
+index af19e5e0..5ae68409 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/call.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/call.rs
+@@ -279,13 +279,13 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
+ 			}
+ 		});
+ 
+-	let deprecation = match crate::deprecation::get_deprecation_enum(
++	/* let deprecation = match crate::deprecation::get_deprecation_enum(
+ 		&quote::quote! {#frame_support},
+ 		methods.iter().map(|item| (item.call_index as u8, item.attrs.as_ref())),
+ 	) {
+ 		Ok(deprecation) => deprecation,
+ 		Err(e) => return e.into_compile_error(),
+-	};
++	}; */
+ 
+ 	// Implementation of the authorize function for each call
+ 	// `authorize_fn_pallet_impl` writes the user-defined authorize function as a function
+@@ -559,7 +559,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
+ 			type RuntimeCall = #call_ident<#type_use_gen>;
+ 		}
+ 
+-		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
++		/* impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
+ 			#[allow(dead_code)]
+ 			#[doc(hidden)]
+ 			pub fn call_functions() -> #frame_support::__private::metadata_ir::PalletCallMetadataIR {
+@@ -568,7 +568,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
+ 					deprecation_info: #deprecation,
+ 				}
+ 			}
+-		}
++		} */
+ 
+ 		#( #authorize_fn_pallet_impl )*
+ 
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/config.rs b/substrate/frame/support/procedural/src/pallet/expand/config.rs
+index f9f1eefd..b9a4df7c 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/config.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/config.rs
+@@ -120,7 +120,7 @@ Consequently, a runtime that wants to include this pallet must implement this tr
+ 	}
+ }
+ 
+-/// Generate the metadata for the associated types of the config trait.
++/* /// Generate the metadata for the associated types of the config trait.
+ ///
+ /// Implements the `pallet_associated_types_metadata` function for the pallet.
+ pub fn expand_config_metadata(def: &Def) -> proc_macro2::TokenStream {
+@@ -166,4 +166,4 @@ pub fn expand_config_metadata(def: &Def) -> proc_macro2::TokenStream {
+ 			}
+ 		}
+ 	)
+-}
++} */
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/mod.rs b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
+index c8bf5cad..067929ce 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/mod.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
+@@ -57,11 +57,11 @@ pub fn merge_where_clauses(clauses: &[&Option<syn::WhereClause>]) -> Option<syn:
+ /// * impl stuff on them.
+ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
+ 	// Remove the `pallet_doc` attribute first.
+-	let metadata_docs = documentation::expand_documentation(&mut def);
+-	let constants = constants::expand_constants(&mut def);
++	// let metadata_docs = documentation::expand_documentation(&mut def);
++	// let constants = constants::expand_constants(&mut def);
+ 	let pallet_struct = pallet_struct::expand_pallet_struct(&mut def);
+ 	let config = config::expand_config(&mut def);
+-	let associated_types = config::expand_config_metadata(&def);
++	// let associated_types = config::expand_config_metadata(&def);
+ 	let call = call::expand_call(&mut def);
+ 	let tasks = tasks::expand_tasks(&mut def);
+ 	let error = error::expand_error(&mut def);
+@@ -77,7 +77,7 @@ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
+ 	let origin = origin::expand_origin(&mut def);
+ 	let validate_unsigned = validate_unsigned::expand_validate_unsigned(&mut def);
+ 	let tt_default_parts = tt_default_parts::expand_tt_default_parts(&mut def);
+-	let doc_only = doc_only::expand_doc_only(&mut def);
++	// let doc_only = doc_only::expand_doc_only(&mut def);
+ 	let composites = composite::expand_composites(&mut def);
+ 
+ 	let warnings = def.config.warnings;
+@@ -105,11 +105,11 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
+ 		#(
+ 			#warnings
+ 		)*
+-		#metadata_docs
+-		#constants
++		// #metadata_docs
++		// #constants
+ 		#pallet_struct
+ 		#config
+-		#associated_types
++		// #associated_types
+ 		#call
+ 		#tasks
+ 		#error
+@@ -125,7 +125,7 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
+ 		#origin
+ 		#validate_unsigned
+ 		#tt_default_parts
+-		#doc_only
++		// #doc_only
+ 		#composites
+ 	);
+ 
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
+index d856b8c0..9dd0359c 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
+@@ -34,14 +34,14 @@ pub fn expand_view_functions(def: &Def) -> TokenStream {
+ 		.map(|view_fn| expand_view_function(def, span, where_clause.as_ref(), view_fn));
+ 	let impl_dispatch_view_function =
+ 		impl_dispatch_view_function(def, span, where_clause.as_ref(), &view_fns);
+-	let impl_view_function_metadata =
+-		impl_view_function_metadata(def, span, where_clause.as_ref(), &view_fns);
++	/* let impl_view_function_metadata =
++		impl_view_function_metadata(def, span, where_clause.as_ref(), &view_fns); */
+ 
+ 	quote::quote! {
+ 		#view_function_prefix_impl
+ 		#( #view_fn_impls )*
+ 		#impl_dispatch_view_function
+-		#impl_view_function_metadata
++		// #impl_view_function_metadata
+ 	}
+ }
+ 
+@@ -193,7 +193,7 @@ fn impl_dispatch_view_function(
+ 	}
+ }
+ 
+-fn impl_view_function_metadata(
++/* fn impl_view_function_metadata(
+ 	def: &Def,
+ 	span: Span,
+ 	where_clause: Option<&syn::WhereClause>,
+@@ -257,4 +257,4 @@ fn impl_view_function_metadata(
+ 			}
+ 		}
+ 	}
+-}
++} */
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/call.rs b/substrate/frame/support/procedural/src/pallet/parse/call.rs
+index 851b75e3..f1b78205 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/call.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/call.rs
+@@ -262,7 +262,7 @@ impl CallDef {
+ 			return Err(syn::Error::new(item.span(), "Invalid pallet::call, expected item impl"));
+ 		};
+ 
+-		crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item_impl.attrs)?;
++		// crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item_impl.attrs)?;
+ 
+ 		let instances = vec![
+ 			helper::check_impl_gen(&item_impl.generics, item_impl.impl_token.span())?,
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/error.rs b/substrate/frame/support/procedural/src/pallet/parse/error.rs
+index e725ac1e..63383150 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/error.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/error.rs
+@@ -74,7 +74,7 @@ impl ErrorDef {
+ 			return Err(syn::Error::new(item.span(), msg))
+ 		}
+ 
+-		crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item.attrs)?;
++		// crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item.attrs)?;
+ 
+ 		let instances =
+ 			vec![helper::check_type_def_gen_no_bounds(&item.generics, item.ident.span())?];
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/event.rs b/substrate/frame/support/procedural/src/pallet/parse/event.rs
+index 673adbf3..60509815 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/event.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/event.rs
+@@ -107,7 +107,7 @@ impl EventDef {
+ 			return Err(syn::Error::new(item.span(), "Invalid pallet::event, expected enum item"))
+ 		};
+ 
+-		crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item.attrs)?;
++		// crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item.attrs)?;
+ 
+ 		let event_attrs: Vec<PalletEventDepositAttr> =
+ 			helper::take_item_pallet_attrs(&mut item.attrs)?;
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/mod.rs b/substrate/frame/support/procedural/src/pallet/parse/mod.rs
+index 8d94c490..078b553f 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/mod.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/mod.rs
+@@ -24,7 +24,7 @@ pub mod composite;
+ pub mod config;
+ pub mod error;
+ pub mod event;
+-pub mod extra_constants;
++// pub mod extra_constants;
+ pub mod genesis_build;
+ pub mod genesis_config;
+ pub mod helper;
+@@ -65,7 +65,7 @@ pub struct Def {
+ 	pub genesis_config: Option<genesis_config::GenesisConfigDef>,
+ 	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
+ 	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
+-	pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
++	// pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
+ 	pub composites: Vec<composite::CompositeDef>,
+ 	pub type_values: Vec<type_value::TypeValueDef>,
+ 	pub frame_system: syn::Path,
+@@ -102,7 +102,7 @@ impl Def {
+ 		let mut genesis_config = None;
+ 		let mut genesis_build = None;
+ 		let mut validate_unsigned = None;
+-		let mut extra_constants = None;
++		// let mut extra_constants = None;
+ 		let mut storages = vec![];
+ 		let mut type_values = vec![];
+ 		let mut composites: Vec<CompositeDef> = vec![];
+@@ -113,14 +113,14 @@ impl Def {
+ 			let pallet_attr: Option<PalletAttr> = helper::take_first_item_pallet_attr(item)?;
+ 
+ 			match pallet_attr {
+-				Some(PalletAttr::Config{ with_default, frame_system_config: is_frame_system_val, without_automatic_metadata, ..}) if config.is_none() => {
++				Some(PalletAttr::Config{ with_default, frame_system_config: is_frame_system_val, /* without_automatic_metadata,*/ ..}) if config.is_none() => {
+ 					is_frame_system = is_frame_system_val;
+ 					config = Some(config::ConfigDef::try_from(
+ 						&frame_system,
+ 						index,
+ 						item,
+ 						with_default,
+-						without_automatic_metadata,
++						// without_automatic_metadata,
+ 						is_frame_system,
+ 					)?);
+ 				},
+@@ -184,9 +184,9 @@ impl Def {
+ 				},
+ 				Some(PalletAttr::TypeValue(span)) =>
+ 					type_values.push(type_value::TypeValueDef::try_from(span, index, item)?),
+-				Some(PalletAttr::ExtraConstants(_)) =>
++				/* Some(PalletAttr::ExtraConstants(_)) =>
+ 					extra_constants =
+-						Some(extra_constants::ExtraConstantsDef::try_from(item)?),
++						Some(extra_constants::ExtraConstantsDef::try_from(item)?), */
+ 				Some(PalletAttr::Composite(span)) => {
+ 					let composite =
+ 						composite::CompositeDef::try_from(span, &frame_support, item)?;
+@@ -247,7 +247,7 @@ impl Def {
+ 			call,
+ 			tasks,
+ 			task_enum,
+-			extra_constants,
++			// extra_constants,
+ 			genesis_config,
+ 			genesis_build,
+ 			validate_unsigned,
+@@ -393,9 +393,9 @@ impl Def {
+ 		if let Some(genesis_build) = &self.genesis_build {
+ 			genesis_build.instances.as_ref().map(|i| instances.extend_from_slice(&i));
+ 		}
+-		if let Some(extra_constants) = &self.extra_constants {
++		/* if let Some(extra_constants) = &self.extra_constants {
+ 			instances.extend_from_slice(&extra_constants.instances[..]);
+-		}
++		} */
+ 		if let Some(task_enum) = &self.task_enum {
+ 			instances.push(task_enum.instance_usage.clone());
+ 		}
+@@ -543,7 +543,7 @@ mod keyword {
+ 	syn::custom_keyword!(event);
+ 	syn::custom_keyword!(config);
+ 	syn::custom_keyword!(with_default);
+-	syn::custom_keyword!(without_automatic_metadata);
++	// syn::custom_keyword!(without_automatic_metadata);
+ 	syn::custom_keyword!(frame_system_config);
+ 	syn::custom_keyword!(hooks);
+ 	syn::custom_keyword!(inherent);
+@@ -554,7 +554,7 @@ mod keyword {
+ 	syn::custom_keyword!(validate_unsigned);
+ 	syn::custom_keyword!(type_value);
+ 	syn::custom_keyword!(pallet);
+-	syn::custom_keyword!(extra_constants);
++	// syn::custom_keyword!(extra_constants);
+ 	syn::custom_keyword!(composite_enum);
+ 	syn::custom_keyword!(view_functions);
+ }
+@@ -564,8 +564,8 @@ mod keyword {
+ enum ConfigValue {
+ 	/// `#[pallet::config(with_default)]`
+ 	WithDefault(keyword::with_default),
+-	/// `#[pallet::config(without_automatic_metadata)]`
+-	WithoutAutomaticMetadata(keyword::without_automatic_metadata),
++	/* /// `#[pallet::config(without_automatic_metadata)]`
++	WithoutAutomaticMetadata(keyword::without_automatic_metadata), */
+ 	/// `#[pallet::config(frame_system_config)]`
+ 	FrameSystemConfig(keyword::frame_system_config),
+ }
+@@ -576,8 +576,8 @@ impl syn::parse::Parse for ConfigValue {
+ 
+ 		if lookahead.peek(keyword::with_default) {
+ 			input.parse().map(ConfigValue::WithDefault)
+-		} else if lookahead.peek(keyword::without_automatic_metadata) {
+-			input.parse().map(ConfigValue::WithoutAutomaticMetadata)
++		/* } else if lookahead.peek(keyword::without_automatic_metadata) {
++			input.parse().map(ConfigValue::WithoutAutomaticMetadata) */
+ 		} else if lookahead.peek(keyword::frame_system_config) {
+ 			input.parse().map(ConfigValue::FrameSystemConfig)
+ 		} else {
+@@ -592,7 +592,7 @@ enum PalletAttr {
+ 	Config {
+ 		span: proc_macro2::Span,
+ 		with_default: bool,
+-		without_automatic_metadata: bool,
++		// without_automatic_metadata: bool,
+ 		frame_system_config: bool,
+ 	},
+ 	Pallet(proc_macro2::Span),
+@@ -717,7 +717,7 @@ impl syn::parse::Parse for PalletAttr {
+ 							}
+ 							with_default = true;
+ 						},
+-						ConfigValue::WithoutAutomaticMetadata(_) => {
++						/* ConfigValue::WithoutAutomaticMetadata(_) => {
+ 							if without_automatic_metadata {
+ 								return Err(syn::Error::new(
+ 									span,
+@@ -725,7 +725,7 @@ impl syn::parse::Parse for PalletAttr {
+ 								));
+ 							}
+ 							without_automatic_metadata = true;
+-						},
++						}, */
+ 						ConfigValue::FrameSystemConfig(_) => {
+ 							if frame_system_config {
+ 								return Err(syn::Error::new(
+@@ -741,14 +741,14 @@ impl syn::parse::Parse for PalletAttr {
+ 				Ok(PalletAttr::Config {
+ 					span,
+ 					with_default,
+-					without_automatic_metadata,
++					// without_automatic_metadata,
+ 					frame_system_config,
+ 				})
+ 			} else {
+ 				Ok(PalletAttr::Config {
+ 					span,
+ 					with_default: false,
+-					without_automatic_metadata: false,
++					// without_automatic_metadata: false,
+ 					frame_system_config: false,
+ 				})
+ 			}
+@@ -791,8 +791,8 @@ impl syn::parse::Parse for PalletAttr {
+ 			Ok(PalletAttr::ValidateUnsigned(content.parse::<keyword::validate_unsigned>()?.span()))
+ 		} else if lookahead.peek(keyword::type_value) {
+ 			Ok(PalletAttr::TypeValue(content.parse::<keyword::type_value>()?.span()))
+-		} else if lookahead.peek(keyword::extra_constants) {
+-			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span()))
++		/* } else if lookahead.peek(keyword::extra_constants) {
++			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span())) */
+ 		} else if lookahead.peek(keyword::composite_enum) {
+ 			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span()))
+ 		} else if lookahead.peek(keyword::view_functions) {
+diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+index ae466db5..f0fb0746 100644
+--- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
++++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+@@ -234,13 +234,13 @@ fn construct_runtime_final_expansion(
+ 	let all_pallets = decl_all_pallets(&name, pallets.iter(), &features);
+ 	let pallet_to_index = decl_pallet_runtime_setup(&name, &pallets, &scrate);
+ 
+-	let metadata = expand::expand_runtime_metadata(
++	/* let metadata = expand::expand_runtime_metadata(
+ 		&name,
+ 		&pallets,
+ 		&scrate,
+ 		&unchecked_extrinsic,
+ 		&system_pallet.path,
+-	);
++	); */
+ 	let outer_config: TokenStream2 = expand::expand_outer_config(&name, &pallets, &scrate);
+ 	let inherent =
+ 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
+@@ -307,7 +307,7 @@ fn construct_runtime_final_expansion(
+ 
+ 		#query
+ 
+-		#metadata
++		// #metadata
+ 
+ 		#outer_config
+ 
+diff --git a/substrate/frame/support/procedural/src/pallet/parse/config.rs b/substrate/frame/support/procedural/src/pallet/parse/config.rs
+index 1871cfbf..9a9ad06b 100644
+--- a/substrate/frame/support/procedural/src/pallet/parse/config.rs
++++ b/substrate/frame/support/procedural/src/pallet/parse/config.rs
+@@ -37,7 +37,7 @@ mod keyword {
+ 	syn::custom_keyword!(no_default);
+ 	syn::custom_keyword!(no_default_bounds);
+ 	syn::custom_keyword!(constant);
+-	syn::custom_keyword!(include_metadata);
++	// syn::custom_keyword!(include_metadata);
+ }
+ 
+ #[derive(Default)]
+@@ -55,10 +55,10 @@ pub struct ConfigDef {
+ 	pub index: usize,
+ 	/// Whether the trait has instance (i.e. define with `Config<I = ()>`)
+ 	pub has_instance: bool,
+-	/// Const associated type.
++	/* /// Const associated type.
+ 	pub consts_metadata: Vec<ConstMetadataDef>,
+ 	/// Associated types metadata.
+-	pub associated_types_metadata: Vec<AssociatedTypeMetadataDef>,
++	pub associated_types_metadata: Vec<AssociatedTypeMetadataDef>, */
+ 	/// The where clause on trait definition but modified so `Self` is `T`.
+ 	pub where_clause: Option<syn::WhereClause>,
+ 	/// Whether a default sub-trait should be generated.
+@@ -71,7 +71,7 @@ pub struct ConfigDef {
+ 	pub warnings: Vec<Warning>,
+ }
+ 
+-/// Input definition for an associated type in pallet config.
++/* /// Input definition for an associated type in pallet config.
+ pub struct AssociatedTypeMetadataDef {
+ 	/// Name of the associated type.
+ 	pub ident: syn::Ident,
+@@ -140,7 +140,7 @@ impl TryFrom<&syn::TraitItemType> for ConstMetadataDef {
+ 
+ 		Ok(Self { ident, type_, doc, attrs: trait_ty.attrs.clone() })
+ 	}
+-}
++}*/
+ 
+ /// Parse for `#[pallet::disable_frame_system_supertrait_check]`
+ pub struct DisableFrameSystemSupertraitCheck;
+@@ -167,8 +167,8 @@ pub enum PalletAttrType {
+ 	NoBounds(keyword::no_default_bounds),
+ 	#[peek(keyword::constant, name = "constant")]
+ 	Constant(keyword::constant),
+-	#[peek(keyword::include_metadata, name = "include_metadata")]
+-	IncludeMetadata(keyword::include_metadata),
++	/* #[peek(keyword::include_metadata, name = "include_metadata")]
++	IncludeMetadata(keyword::include_metadata), */
+ }
+ 
+ /// Parsing for `#[pallet::X]`
+@@ -370,7 +370,7 @@ impl ConfigDef {
+ 		index: usize,
+ 		item: &mut syn::Item,
+ 		enable_default: bool,
+-		disable_associated_metadata: bool,
++		// disable_associated_metadata: bool,
+ 		is_frame_system: bool,
+ 	) -> syn::Result<Self> {
+ 		let syn::Item::Trait(item) = item else {
+@@ -405,8 +405,8 @@ impl ConfigDef {
+ 			false
+ 		};
+ 
+-		let mut consts_metadata = vec![];
+-		let mut associated_types_metadata = vec![];
++		// let mut consts_metadata = vec![];
++		// let mut associated_types_metadata = vec![];
+ 		let mut warnings = vec![];
+ 		let mut default_sub_trait = if enable_default {
+ 			Some(DefaultTrait { items: Default::default(), has_system: !is_frame_system })
+@@ -419,7 +419,7 @@ impl ConfigDef {
+ 			let mut already_no_default = false;
+ 			let mut already_constant = false;
+ 			let mut already_no_default_bounds = false;
+-			let mut already_collected_associated_type = None;
++			//let mut already_collected_associated_type = None;
+ 
+ 			// add deprecation notice for `RuntimeEvent`, iff pallet is not `frame_system`
+ 			if is_event && !is_frame_system {
+@@ -453,7 +453,7 @@ impl ConfigDef {
+ 							));
+ 						}
+ 						already_constant = true;
+-						consts_metadata.push(ConstMetadataDef::try_from(typ)?);
++						// consts_metadata.push(ConstMetadataDef::try_from(typ)?);
+ 					},
+ 					(PalletAttrType::Constant(_), _) =>
+ 						return Err(syn::Error::new(
+@@ -463,7 +463,7 @@ impl ConfigDef {
+ 					// Pallet developer has explicitly requested to include metadata for this associated type.
+ 					//
+ 					// They must provide a type item that implements `TypeInfo`.
+-					(PalletAttrType::IncludeMetadata(_), syn::TraitItem::Type(ref typ)) => {
++					/* (PalletAttrType::IncludeMetadata(_), syn::TraitItem::Type(ref typ)) => {
+ 						if already_collected_associated_type.is_some() {
+ 							return Err(syn::Error::new(
+ 								pallet_attr._bracket.span.join(),
+@@ -477,7 +477,7 @@ impl ConfigDef {
+ 						return Err(syn::Error::new(
+ 							pallet_attr._bracket.span.join(),
+ 							"Invalid #[pallet::include_metadata] in #[pallet::config], expected type item",
+-						)),
++						)), */
+ 					(PalletAttrType::NoDefault(_), _) => {
+ 						if !enable_default {
+ 							return Err(syn::Error::new(
+@@ -514,7 +514,7 @@ impl ConfigDef {
+ 				}
+ 			}
+ 
+-			if let Some(span) = already_collected_associated_type {
++			/* if let Some(span) = already_collected_associated_type {
+ 				// Events and constants are already propagated to the metadata
+ 				if is_event {
+ 					return Err(syn::Error::new(
+@@ -553,7 +553,7 @@ impl ConfigDef {
+ 						}
+ 					}
+ 				}
+-			}
++			} */
+ 
+ 			if !already_no_default && enable_default {
+ 				default_sub_trait
+@@ -601,8 +601,8 @@ impl ConfigDef {
+ 		Ok(Self {
+ 			index,
+ 			has_instance,
+-			consts_metadata,
+-			associated_types_metadata,
++			// consts_metadata,
++			// associated_types_metadata,
+ 			where_clause,
+ 			default_sub_trait,
+ 			warnings,
+diff --git a/substrate/primitives/application-crypto/src/traits.rs b/substrate/primitives/application-crypto/src/traits.rs
+index 816cfe3e..15a4e32d 100644
+--- a/substrate/primitives/application-crypto/src/traits.rs
++++ b/substrate/primitives/application-crypto/src/traits.rs
+@@ -163,8 +163,7 @@ impl<T> RuntimeAppPublic for T
+ where
+ 	T: AppPublic + AsRef<<T as AppPublic>::Generic> + AsMut<<T as AppPublic>::Generic>,
+ 	<T as AppPublic>::Generic: RuntimePublic,
+-	<T as AppCrypto>::Signature: TypeInfo
+-		+ Codec
++	<T as AppCrypto>::Signature: Codec
+ 		+ From<<<T as AppPublic>::Generic as RuntimePublic>::Signature>
+ 		+ AsRef<<<T as AppPublic>::Generic as RuntimePublic>::Signature>,
+ {
 diff --git a/substrate/frame/support/src/traits/misc.rs b/substrate/frame/support/src/traits/misc.rs
-index 9fef4383..e01f5f63 100644
+index 3dc57656..5cce814e 100644
 --- a/substrate/frame/support/src/traits/misc.rs
 +++ b/substrate/frame/support/src/traits/misc.rs
-@@ -928,11 +928,6 @@ pub trait ExtrinsicCall: sp_runtime::traits::ExtrinsicLike {
- 
- impl<Address, Call, Signature, Extra> ExtrinsicCall
- 	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
--where
--	Address: TypeInfo,
--	Call: TypeInfo,
--	Signature: TypeInfo,
--	Extra: TypeInfo,
- {
- 	type Call = Call;
- 
-@@ -949,11 +944,6 @@ pub trait InherentBuilder: ExtrinsicCall {
+@@ -926,11 +926,11 @@ pub trait InherentBuilder: ExtrinsicCall {
  
  impl<Address, Call, Signature, Extra> InherentBuilder
  	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
 -where
--	Address: TypeInfo,
--	Call: TypeInfo,
--	Signature: TypeInfo,
++/* where
+ 	Address: TypeInfo,
+ 	Call: TypeInfo,
+ 	Signature: TypeInfo,
 -	Extra: TypeInfo,
++	Extra: TypeInfo, */
  {
  	fn new_inherent(call: Self::Call) -> Self {
  		Self::new_bare(call)
-@@ -978,11 +968,6 @@ pub trait SignedTransactionBuilder: ExtrinsicCall {
+@@ -955,11 +955,11 @@ pub trait SignedTransactionBuilder: ExtrinsicCall {
  
  impl<Address, Call, Signature, Extension> SignedTransactionBuilder
  	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension>
 -where
--	Address: TypeInfo,
--	Call: TypeInfo,
--	Signature: TypeInfo,
++/* where
+ 	Address: TypeInfo,
+ 	Call: TypeInfo,
+ 	Signature: TypeInfo,
 -	Extension: TypeInfo,
++	Extension: TypeInfo, */
  {
  	type Address = Address;
  	type Signature = Signature;
+diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
+index 7e79f7a2..0f173f80 100644
+--- a/substrate/frame/support/src/lib.rs
++++ b/substrate/frame/support/src/lib.rs
+@@ -53,19 +53,19 @@ pub mod __private {
+ 		vec::{IntoIter, Vec},
+ 	};
+ 	pub use codec;
+-	pub use frame_metadata as metadata;
++	// pub use frame_metadata as metadata;
+ 	pub use log;
+ 	pub use paste;
+ 	pub use scale_info;
+ 	pub use serde;
+ 	pub use serde_json;
+-	pub use sp_core::{Get, OpaqueMetadata, Void};
++	pub use sp_core::{Get, /* OpaqueMetadata,*/ Void};
+ 	pub use sp_crypto_hashing_proc_macro;
+ 	pub use sp_inherents;
+ 	#[cfg(feature = "std")]
+ 	pub use sp_io::TestExternalities;
+ 	pub use sp_io::{self, hashing, storage::root as storage_root};
+-	pub use sp_metadata_ir as metadata_ir;
++	// pub use sp_metadata_ir as metadata_ir;
+ 	#[cfg(feature = "std")]
+ 	pub use sp_runtime::{bounded_btree_map, bounded_vec};
+ 	pub use sp_runtime::{
+@@ -1429,7 +1429,7 @@ pub mod pallet_macros {
+ 	/// See [`pallet::storage`](`frame_support::pallet_macros::storage`) for more info.
+ 	pub use frame_support_procedural::getter;
+ 
+-	/// Defines constants that are added to the constant field of
++	/* /// Defines constants that are added to the constant field of
+ 	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
+ 	///
+ 	/// Must be defined like:
+@@ -1459,7 +1459,7 @@ pub mod pallet_macros {
+ 	///
+ 	/// I.e. a regular rust `impl` block with some optional where clause and functions with 0
+ 	/// args, 0 generics, and some return type.
+-	pub use frame_support_procedural::extra_constants;
++	pub use frame_support_procedural::extra_constants; */
+ 
+ 	#[rustfmt::skip]
+ 	/// Allows bypassing the `frame_system::Config` supertrait check.
+@@ -2112,7 +2112,7 @@ pub mod pallet_macros {
+ 	///   automatically annotated with `allow(deprecated)`
+ 	pub use frame_support_procedural::event;
+ 
+-	/// Selectively includes associated types in the metadata.
++	/* /// Selectively includes associated types in the metadata.
+ 	///
+ 	/// The optional attribute allows you to selectively include associated types in the
+ 	/// metadata. This can be attached to trait items that implement `TypeInfo`.
+@@ -2121,7 +2121,7 @@ pub mod pallet_macros {
+ 	///
+ 	/// This attribute can be used in combination with the
+ 	/// [`#[pallet::config(without_automatic_metadata)]`](`config`).
+-	pub use frame_support_procedural::include_metadata;
++	pub use frame_support_procedural::include_metadata; */
+ 
+ 	/// Allows a pallet to declare a set of functions as a *dispatchable extrinsic*.
+ 	///
+@@ -2428,7 +2428,7 @@ pub mod pallet_macros {
+ 	/// ```
+ 	pub use frame_support_procedural::genesis_build;
+ 
+-	/// Allows adding an associated type trait bounded by
++	/* /// Allows adding an associated type trait bounded by
+ 	/// [`Get`](frame_support::pallet_prelude::Get) from [`pallet::config`](`macro@config`)
+ 	/// into metadata.
+ 	///
+@@ -2458,7 +2458,7 @@ pub mod pallet_macros {
+ 	///   generated code.
+ 	/// - If the item is annotated with `deprecated` attribute then the generated code will be
+ 	///   automatically annotated with `allow(deprecated)`
+-	pub use frame_support_procedural::constant;
++	pub use frame_support_procedural::constant; */
+ 
+ 	/// Declares a type alias as a storage item.
+ 	///
+diff --git a/substrate/frame/support/src/storage/mod.rs b/substrate/frame/support/src/storage/mod.rs
+index 61939256..f28a16e7 100644
+--- a/substrate/frame/support/src/storage/mod.rs
++++ b/substrate/frame/support/src/storage/mod.rs
+@@ -35,7 +35,7 @@ pub use self::{
+ 	transactional::{
+ 		in_storage_layer, with_storage_layer, with_transaction, with_transaction_unchecked,
+ 	},
+-	types::StorageEntryMetadataBuilder,
++	// types::StorageEntryMetadataBuilder,
+ };
+ pub use sp_runtime::TransactionOutcome;
+ pub use types::Key;
+diff --git a/substrate/frame/support/src/storage/types/key.rs b/substrate/frame/support/src/storage/types/key.rs
+index b9b497b6..d0393aed 100755
+--- a/substrate/frame/support/src/storage/types/key.rs
++++ b/substrate/frame/support/src/storage/types/key.rs
+@@ -41,8 +41,6 @@ pub trait KeyGenerator {
+ 	type HashFn: FnOnce(&[u8]) -> Vec<u8>;
+ 	type HArg;
+ 
+-	const HASHER_METADATA: &'static [sp_metadata_ir::StorageHasherIR];
+-
+ 	/// Given a `key` tuple, calculate the final key by encoding each element individually and
+ 	/// hashing them using the corresponding hasher in the `KeyGenerator`.
+ 	fn final_key<KArg: EncodeLikeTuple<Self::KArg> + TupleToEncodedIter>(key: KArg) -> Vec<u8>;
+@@ -74,8 +72,6 @@ impl<H: StorageHasher, K: FullCodec + StaticTypeInfo> KeyGenerator for Key<H, K>
+ 	type HashFn = Box<dyn FnOnce(&[u8]) -> Vec<u8>>;
+ 	type HArg = (Self::HashFn,);
+ 
+-	const HASHER_METADATA: &'static [sp_metadata_ir::StorageHasherIR] = &[H::METADATA];
+-
+ 	fn final_key<KArg: EncodeLikeTuple<Self::KArg> + TupleToEncodedIter>(key: KArg) -> Vec<u8> {
+ 		H::hash(&key.to_encoded_iter().next().expect("should have at least one element!"))
+ 			.as_ref()
+@@ -114,9 +110,6 @@ impl KeyGenerator for Tuple {
+ 	for_tuples!( type HArg = ( #(Tuple::HashFn),* ); );
+ 	type HashFn = Box<dyn FnOnce(&[u8]) -> Vec<u8>>;
+ 
+-	const HASHER_METADATA: &'static [sp_metadata_ir::StorageHasherIR] =
+-		&[for_tuples!( #(Tuple::Hasher::METADATA),* )];
+-
+ 	fn final_key<KArg: EncodeLikeTuple<Self::KArg> + TupleToEncodedIter>(key: KArg) -> Vec<u8> {
+ 		let mut final_key = Vec::new();
+ 		let mut iter = key.to_encoded_iter();
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/error.rs b/substrate/frame/support/procedural/src/pallet/expand/error.rs
+index a1c06a6a..7624fbb4 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/error.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/error.rs
+@@ -104,7 +104,7 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
+ 
+ 	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
+ 
+-	let deprecation = match crate::deprecation::get_deprecation_enum(
++	/* let deprecation = match crate::deprecation::get_deprecation_enum(
+ 		&quote::quote! {#frame_support},
+ 		error_item.variants.iter().enumerate().map(|(index, item)| {
+ 			let index = crate::deprecation::variant_index_for_deprecation(index as u8, item);
+@@ -114,7 +114,7 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
+ 	) {
+ 		Ok(deprecation) => deprecation,
+ 		Err(e) => return e.into_compile_error(),
+-	};
++	}; */
+ 
+ 	// derive TypeInfo for error metadata
+ 	error_item.attrs.push(syn::parse_quote! {
+@@ -126,9 +126,9 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
+ 			#frame_support::PalletError,
+ 		)]
+ 	});
+-	error_item.attrs.push(syn::parse_quote!(
++	/* error_item.attrs.push(syn::parse_quote!(
+ 		#[scale_info(skip_type_params(#type_use_gen), capture_docs = #capture_docs)]
+-	));
++	)); */
+ 
+ 	if get_doc_literals(&error_item.attrs).is_empty() {
+ 		error_item.attrs.push(syn::parse_quote!(
+@@ -211,7 +211,7 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
+ 
+ 		pub use #error_token_unique_id as tt_error_token;
+ 
+-		#(#maybe_allow_attrs)*
++		/* #(#maybe_allow_attrs)*
+ 		impl<#type_impl_gen> #error_ident<#type_use_gen> #config_where_clause {
+ 			#[allow(dead_code)]
+ 			#[doc(hidden)]
+@@ -223,5 +223,6 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
+ 				}
+ 			}
+ 		}
++		*/
+ 	)
+ }
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/event.rs b/substrate/frame/support/procedural/src/pallet/expand/event.rs
+index 1e573d52..7a60bd8d 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/event.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/event.rs
+@@ -96,7 +96,7 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
+ 		event_item.variants.push(variant);
+ 	}
+ 
+-	let deprecation = match crate::deprecation::get_deprecation_enum(
++	/* let deprecation = match crate::deprecation::get_deprecation_enum(
+ 		&quote::quote! {#frame_support},
+ 		event_item.variants.iter().enumerate().map(|(index, item)| {
+ 			let index = crate::deprecation::variant_index_for_deprecation(index as u8, item);
+@@ -106,7 +106,7 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
+ 	) {
+ 		Ok(deprecation) => deprecation,
+ 		Err(e) => return e.into_compile_error(),
+-	};
++	}; */
+ 
+ 	if get_doc_literals(&event_item.attrs).is_empty() {
+ 		event_item
+@@ -130,10 +130,10 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
+ 
+ 	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
+ 
+-	// skip requirement for type params to implement `TypeInfo`, and set docs capture
++	/* // skip requirement for type params to implement `TypeInfo`, and set docs capture
+ 	event_item.attrs.push(syn::parse_quote!(
+ 		#[scale_info(skip_type_params(#event_use_gen), capture_docs = #capture_docs)]
+-	));
++	));*/
+ 
+ 	// Extracts #[allow] attributes, necessary so that we don't run into compiler warnings
+ 	let maybe_allow_attrs: Vec<syn::Attribute> =
+@@ -189,7 +189,7 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
+ 			fn from(_: #event_ident<#event_use_gen>) {}
+ 		}
+ 
+-		#(#maybe_allow_attrs)*
++		/* #(#maybe_allow_attrs)*
+ 		impl<#event_impl_gen> #event_ident<#event_use_gen> #event_where_clause {
+ 			#[allow(dead_code)]
+ 			#[doc(hidden)]
+@@ -199,6 +199,6 @@ pub fn expand_event(def: &mut Def) -> proc_macro2::TokenStream {
+ 					deprecation_info: #deprecation,
+ 				}
+ 			}
+-		}
++		} */
+ 	)
+ }
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/storage.rs b/substrate/frame/support/procedural/src/pallet/expand/storage.rs
+index a0951a25..e47b24c2 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/storage.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/storage.rs
+@@ -409,7 +409,7 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
+ 	let frame_support = &def.frame_support;
+ 	let frame_system = &def.frame_system;
+ 	let pallet_ident = &def.pallet_struct.pallet;
+-	let mut entries_builder = vec![];
++	// let mut entries_builder = vec![];
+ 	for storage in def.storages.iter() {
+ 		let no_docs = vec![];
+ 		let docs = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &storage.docs };
+@@ -419,7 +419,7 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
+ 		let full_ident = quote::quote_spanned!(storage.attr_span => #ident<#gen> );
+ 
+ 		let cfg_attrs = &storage.cfg_attrs;
+-		let deprecation = match crate::deprecation::get_deprecation(
++		/* let deprecation = match crate::deprecation::get_deprecation(
+ 			&quote::quote! { #frame_support },
+ 			&storage.attrs,
+ 		) {
+@@ -445,7 +445,7 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
+ 					);
+ 				}
+ 			})
+-		))
++		)) */
+ 	}
+ 
+ 	let getters = def.storages.iter().map(|storage| {
+@@ -916,7 +916,7 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
+ 	};
+ 
+ 	quote::quote!(
+-		impl<#type_impl_gen> #pallet_ident<#type_use_gen>
++		/* impl<#type_impl_gen> #pallet_ident<#type_use_gen>
+ 			#completed_where_clause
+ 		{
+ 			#[doc(hidden)]
+@@ -935,7 +935,7 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
+ 					},
+ 				}
+ 			}
+-		}
++		} */
+ 
+ 		#( #getters )*
+ 		#( #prefix_structs )*
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs b/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
+index 747d9832..636a2c7a 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
+@@ -35,12 +35,12 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 	let type_decl_gen = &def.type_decl_generics(def.pallet_struct.attr_span);
+ 	let pallet_ident = &def.pallet_struct.pallet;
+ 	let config_where_clause = &def.config.where_clause;
+-	let deprecation_status =
++	/* let deprecation_status =
+ 		match crate::deprecation::get_deprecation(&quote::quote! {#frame_support}, &def.item.attrs)
+ 		{
+ 			Ok(deprecation) => deprecation,
+ 			Err(e) => return e.into_compile_error(),
+-		};
++		}; */
+ 
+ 	let mut storages_where_clauses = vec![&def.config.where_clause];
+ 	storages_where_clauses.extend(def.storages.iter().map(|storage| &storage.where_clause));
+@@ -83,7 +83,7 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 		)]
+ 	));
+ 
+-	let pallet_error_metadata = if let Some(error_def) = &def.error {
++	/* let pallet_error_metadata = if let Some(error_def) = &def.error {
+ 		let error_ident = &error_def.error;
+ 		quote::quote_spanned!(def.pallet_struct.attr_span =>
+ 			impl<#type_impl_gen> #pallet_ident<#type_use_gen> #config_where_clause {
+@@ -103,7 +103,7 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 				}
+ 			}
+ 		)
+-	};
++	}; */
+ 
+ 	let storage_info_span =
+ 		def.pallet_struct.without_storage_info.unwrap_or(def.pallet_struct.attr_span);
+@@ -199,7 +199,7 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 	];
+ 
+ 	quote::quote_spanned!(def.pallet_struct.attr_span =>
+-		#pallet_error_metadata
++		// #pallet_error_metadata
+ 
+ 		/// Type alias to `Pallet`, to be used by `construct_runtime`.
+ 		///
+@@ -297,12 +297,12 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 		#storage_info
+ 		#whitelisted_storage_keys_impl
+ 
+-		impl<#type_use_gen> #pallet_ident<#type_use_gen> {
++		/* impl<#type_use_gen> #pallet_ident<#type_use_gen> {
+ 			#[allow(dead_code)]
+ 			#[doc(hidden)]
+ 			pub fn deprecation_info() -> #frame_support::__private::metadata_ir::ItemDeprecationInfoIR {
+ 				#deprecation_status
+ 			}
+-		}
++		} */
+ 	)
+ }
+diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
+index bfcc8fe4..e20aa27f 100644
+--- a/substrate/frame/src/lib.rs
++++ b/substrate/frame/src/lib.rs
+@@ -409,7 +409,6 @@ pub mod runtime {
+ 		pub use sp_api::impl_runtime_apis;
+ 
+ 		// Types often used in the runtime APIs.
+-		pub use sp_core::OpaqueMetadata;
+ 		pub use sp_genesis_builder::{
+ 			PresetId, Result as GenesisBuilderResult, DEV_RUNTIME_PRESET,
+ 			LOCAL_TESTNET_RUNTIME_PRESET,
+@@ -588,7 +587,6 @@ pub mod hashing {
+ ///
+ /// This is already part of the [`prelude`].
+ pub mod transaction {
+-	pub use frame_support::traits::{CallMetadata, GetCallMetadata};
+ 	pub use sp_runtime::{
+ 		generic::ExtensionVersion,
+ 		impl_tx_ext_default,

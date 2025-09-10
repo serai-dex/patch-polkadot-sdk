@@ -1,6 +1,6 @@
 [package]
 name = "sc-service"
-version = "0.51.0"
+version = "0.52.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate service. Starts a thread that spins up the network, client, and extrinsic pool. Manages communication between them."
 readme = "README.md"
@@ -22,14 +22,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [lints]
 workspace = true
-
-[features]
-default = ["rocksdb"]
-rocksdb = ["sc-client-db/rocksdb"]
-runtime-benchmarks = [
-    "sc-client-db/runtime-benchmarks",
-    "sp-runtime/runtime-benchmarks",
-]
 
 [dependencies.async-trait]
 workspace = true
@@ -244,3 +236,11 @@ default-features = true
 
 [dependencies.tracing-futures]
 workspace = true
+
+[features]
+default = ["rocksdb"]
+rocksdb = ["sc-client-db/rocksdb"]
+runtime-benchmarks = [
+    "sc-client-db/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+]

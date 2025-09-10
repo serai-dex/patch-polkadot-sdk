@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-babe-rpc"
-version = "0.50.0"
+version = "0.51.0"
 description = "RPC extensions for the BABE consensus algorithm"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 readme = "README.md"

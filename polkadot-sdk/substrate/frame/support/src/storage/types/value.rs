@@ -392,12 +392,12 @@ mod test {
 
 			let mut entries = vec![];
 			A::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
+				sp_metadata_ir::ItemDeprecationInfoIR::NotDeprecated,
 				vec![],
 				&mut entries,
 			);
 			AValueQueryWithAnOnEmpty::build_metadata(
-				sp_metadata_ir::DeprecationStatusIR::NotDeprecated,
+				sp_metadata_ir::ItemDeprecationInfoIR::NotDeprecated,
 				vec![],
 				&mut entries,
 			);
@@ -410,7 +410,7 @@ mod test {
 						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
 						default: Option::<u32>::None.encode(),
 						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated
+						deprecation_info: sp_metadata_ir::ItemDeprecationInfoIR::NotDeprecated
 					},
 					StorageEntryMetadataIR {
 						name: "foo",
@@ -418,7 +418,7 @@ mod test {
 						ty: StorageEntryTypeIR::Plain(scale_info::meta_type::<u32>()),
 						default: 97u32.encode(),
 						docs: vec![],
-						deprecation_info: sp_metadata_ir::DeprecationStatusIR::NotDeprecated
+						deprecation_info: sp_metadata_ir::ItemDeprecationInfoIR::NotDeprecated
 					}
 				]
 			);

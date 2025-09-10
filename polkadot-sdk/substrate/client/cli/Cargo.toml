@@ -1,6 +1,6 @@
 [package]
 name = "sc-cli"
-version = "0.52.0"
+version = "0.53.1"
 description = "Substrate CLI interface."
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 readme = "README.md"

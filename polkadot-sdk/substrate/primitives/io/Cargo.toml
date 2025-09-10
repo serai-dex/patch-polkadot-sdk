@@ -1,6 +1,6 @@
 [package]
 name = "sp-io"
-version = "40.0.1"
+version = "41.0.1"
 license = "Apache-2.0"
 description = "I/O for Substrate runtimes"
 documentation = "https://docs.rs/sp-io"
@@ -31,11 +31,6 @@ workspace = true
 [dependencies.codec]
 features = ["bytes"]
 workspace = true
-
-[dependencies.log]
-optional = true
-workspace = true
-default-features = true
 
 [dependencies.sp-core]
 workspace = true
@@ -70,6 +65,22 @@ workspace = true
 [dependencies.tracing-core]
 workspace = true
 
+[target."cfg(not(substrate_runtime))".dependencies.sp-keystore]
+workspace = true
+default-features = false
+
+[target."cfg(not(substrate_runtime))".dependencies.sp-trie]
+workspace = true
+default-features = false
+
+[target."cfg(not(substrate_runtime))".dependencies.sp-state-machine]
+workspace = true
+default-features = false
+
+[target."cfg(not(substrate_runtime))".dependencies.log]
+workspace = true
+default-features = true
+
 [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies.polkavm-derive]
 workspace = true
 
@@ -81,7 +92,6 @@ default = ["std"]
 std = [
     "bytes/std",
     "codec/std",
-    "log/std",
     "sp-core/std",
     "sp-crypto-hashing/std",
     "sp-externalities/std",

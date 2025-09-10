@@ -401,6 +401,13 @@ fn construct_runtime_final_expansion(
 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
 	let tasks = expand::expand_outer_task(&name, &pallets, &scrate);
 	let query = expand::expand_outer_query(&name, &pallets, &scrate);
+	/* let metadata = expand::expand_runtime_metadata(
+		&name,
+		&pallets,
+		&scrate,
+		&unchecked_extrinsic,
+		&system_pallet.path,
+	); */
 	let outer_config = expand::expand_outer_config(&name, &pallets, &scrate);
 	let inherent =
 		expand::expand_outer_inherent(&name, &block, &unchecked_extrinsic, &pallets, &scrate);
@@ -461,6 +468,8 @@ fn construct_runtime_final_expansion(
 		#tasks
 
 		#query
+
+		// #metadata
 
 		#outer_config
 
@@ -722,6 +731,7 @@ pub(crate) fn decl_static_assertions(
 		);
 
 		quote! {
+			#[allow(deprecated)]
 			#scrate::__private::tt_call! {
 				macro = [{ #path::tt_error_token }]
 				your_tt_return = [{ #scrate::__private::tt_return }]

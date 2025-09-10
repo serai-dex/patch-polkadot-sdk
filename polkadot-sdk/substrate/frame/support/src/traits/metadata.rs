@@ -95,6 +95,15 @@ impl PalletsInfoAccess for Tuple {
 	}
 }
 
+/* /// The function and pallet name of the Call.
+#[derive(Clone, Eq, PartialEq, Default, RuntimeDebug)]
+pub struct CallMetadata {
+	/// Name of the function.
+	pub function_name: &'static str,
+	/// Name of the pallet to which the function belongs.
+	pub pallet_name: &'static str,
+} */
+
 /// Gets the function name of the Call.
 pub trait GetCallName {
 	/// Return all function names in the same order as [`GetCallIndex`].

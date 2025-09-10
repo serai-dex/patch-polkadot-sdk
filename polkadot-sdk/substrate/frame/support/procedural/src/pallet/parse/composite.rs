@@ -162,6 +162,9 @@ impl CompositeDef {
 		}
 
 		if has_instance {
+			item.attrs.push(syn::parse_quote! {
+			});
+
 			item.variants.push(syn::parse_quote! {
 				#[doc(hidden)]
 				#[codec(skip)]

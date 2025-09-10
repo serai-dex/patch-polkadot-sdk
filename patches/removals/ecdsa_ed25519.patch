@@ -472,16 +472,6 @@ index e0d5d7e..acc1915 100644
  			<T as SysConfig>::RuntimeCall,
  			Signature,
  			Extra,
-diff --git a/substrate/frame/support/src/crypto.rs b/substrate/frame/support/src/crypto.rs
-index 1957a7b..c0dd035 100644
---- a/substrate/frame/support/src/crypto.rs
-+++ b/substrate/frame/support/src/crypto.rs
-@@ -17,5 +17,3 @@
- 
- //! Utilities for dealing with crypto primitives. Sometimes we need to use these from inside WASM
- //! contracts, where crypto calculations have weak performance.
--
--pub mod ecdsa;
 diff --git a/substrate/primitives/application-crypto/src/lib.rs b/substrate/primitives/application-crypto/src/lib.rs
 index 8180627..5e90c49 100644
 --- a/substrate/primitives/application-crypto/src/lib.rs
@@ -553,15 +543,13 @@ diff --git a/substrate/primitives/core/src/crypto.rs b/substrate/primitives/core
 index 03be04c..04b3920 100644
 --- a/substrate/primitives/core/src/crypto.rs
 +++ b/substrate/primitives/core/src/crypto.rs
-@@ -17,7 +17,7 @@
+@@ -17,5 +17,5 @@
  
  //! Cryptographic utilities.
  
 -use crate::{ed25519, sr25519, U256};
 +use crate::{sr25519, U256};
  use alloc::{format, str, vec::Vec};
- #[cfg(all(not(feature = "std"), feature = "serde"))]
- use alloc::{string::String, vec};
 @@ -594,11 +594,13 @@ impl From<sr25519::Public> for AccountId32 {
  	}
  }
@@ -589,77 +577,6 @@ index cb8a9a7..793b514 100644
  pub mod sr25519;
  
  #[cfg(feature = "bls-experimental")]
-diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
-index 0184822..8d283d0 100644
---- a/substrate/primitives/io/src/lib.rs
-+++ b/substrate/primitives/io/src/lib.rs
-@@ -98,7 +98,6 @@ use sp_keystore::KeystoreExt;
- use sp_core::bandersnatch;
- use sp_core::{
- 	crypto::KeyTypeId,
--	ecdsa, ed25519,
- 	offchain::{
- 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
- 	},
-@@ -120,12 +119,6 @@ use sp_runtime_interface::{
- 
- use codec::{Decode, Encode};
- 
--#[cfg(feature = "std")]
--use secp256k1::{
--	ecdsa::{RecoverableSignature, RecoveryId},
--	Message, SECP256K1,
--};
--
- #[cfg(feature = "std")]
- use sp_externalities::{Externalities, ExternalitiesExt};
- 
-@@ -756,6 +749,7 @@ pub trait Misc {
- 	}
- }
- 
-+/*
- #[cfg(feature = "std")]
- sp_externalities::decl_extension! {
- 	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
-@@ -783,10 +777,12 @@ impl Default for UseDalekExt {
- 		Self
- 	}
- }
-+*/
- 
- /// Interfaces for working with crypto related types from within the runtime.
- #[runtime_interface]
- pub trait Crypto {
-+	/*
- 	/// Returns all `ed25519` public keys for the given key id from the keystore.
- 	fn ed25519_public_keys(&mut self, id: KeyTypeId) -> Vec<ed25519::Public> {
- 		self.extension::<KeystoreExt>()
-@@ -877,6 +873,7 @@ pub trait Crypto {
- 
- 		res
- 	}
-+	*/
- 
- 	/// Verify `sr25519` signature.
- 	///
-@@ -997,6 +994,7 @@ pub trait Crypto {
- 		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
- 	}
- 
-+	/*
- 	/// Returns all `ecdsa` public keys for the given key id from the keystore.
- 	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
- 		self.extension::<KeystoreExt>()
-@@ -1203,6 +1201,7 @@ pub trait Crypto {
- 			.map_err(|_| EcdsaVerifyError::BadSignature)?;
- 		Ok(pubkey.serialize())
- 	}
-+	*/
- 
- 	/// Generate an `bls12-381` key for the given key type using an optional `seed` and
- 	/// store it in the keystore.
-diff --git a/substrate/primitives/keyring/src/lib.rs b/substrate/primitives/keyring/src/lib.rs
 index 36e77da..6f421c1 100644
 --- a/substrate/primitives/keyring/src/lib.rs
 +++ b/substrate/primitives/keyring/src/lib.rs
@@ -762,31 +679,24 @@ diff --git a/substrate/primitives/keystore/src/testing.rs b/substrate/primitives
 index 7939ee8..379a17b 100644
 --- a/substrate/primitives/keystore/src/testing.rs
 +++ b/substrate/primitives/keystore/src/testing.rs
-@@ -25,7 +25,7 @@ use sp_core::bandersnatch;
- use sp_core::{bls381, ecdsa_bls381, KeccakHasher};
+@@ -27,4 +27,4 @@ use sp_core::bandersnatch;
  use sp_core::{
  	crypto::{ByteArray, KeyTypeId, Pair, VrfSecret},
 -	ecdsa, ed25519, sr25519,
 +	sr25519,
  };
- 
- use parking_lot::RwLock;
-@@ -164,6 +164,7 @@ impl Keystore for MemoryKeystore {
- 		self.vrf_pre_output::<sr25519::Pair>(key_type, public, input)
+@@ -181,5 +181,6 @@ impl Keystore for MemoryKeystore {
  	}
  
 +	/*
  	fn ed25519_public_keys(&self, key_type: KeyTypeId) -> Vec<ed25519::Public> {
  		self.public_keys::<ed25519::Pair>(key_type)
  	}
-@@ -215,6 +216,7 @@ impl Keystore for MemoryKeystore {
- 		let sig = self.pair::<ecdsa::Pair>(key_type, public).map(|pair| pair.sign_prehashed(msg));
- 		Ok(sig)
+@@ -378,3 +378,4 @@ impl Keystore for MemoryKeystore {
  	}
 +	*/
  
- 	#[cfg(feature = "bandersnatch-experimental")]
- 	fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {
+ 	fn insert(&self, key_type: KeyTypeId, suri: &str, public: &[u8]) -> Result<(), ()> {
 diff --git a/substrate/primitives/runtime/src/lib.rs b/substrate/primitives/runtime/src/lib.rs
 index b9f69b6..2f4c483 100644
 --- a/substrate/primitives/runtime/src/lib.rs
@@ -913,3 +823,105 @@ index 0cda70e..af9978b 100644
  /// pub struct KeyModule2;
  /// impl BoundToRuntimeAppPublic for KeyModule2 { type Public = sr25519::AppPublic; }
  ///
+diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
+index e9f0dae5..455e99a1 100644
+--- a/substrate/primitives/io/src/lib.rs
++++ b/substrate/primitives/io/src/lib.rs
+@@ -94,11 +94,8 @@ use sp_core::{
+ #[cfg(not(substrate_runtime))]
+ use sp_keystore::KeystoreExt;
+ 
+-#[cfg(feature = "bandersnatch-experimental")]
+-use sp_core::bandersnatch;
+ use sp_core::{
+ 	crypto::KeyTypeId,
+-	ecdsa, ed25519,
+ 	offchain::{
+ 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
+ 	},
+@@ -107,9 +104,6 @@ use sp_core::{
+ 	LogLevelFilter, OpaquePeerId, RuntimeInterfaceLogLevel, H256,
+ };
+ 
+-#[cfg(feature = "bls-experimental")]
+-use sp_core::{bls381, ecdsa_bls381};
+-
+ #[cfg(not(substrate_runtime))]
+ use sp_trie::{LayoutV0, LayoutV1, TrieConfiguration};
+ 
+@@ -124,12 +118,6 @@ use sp_runtime_interface::{
+ 
+ use codec::{Decode, Encode};
+ 
+-#[cfg(not(substrate_runtime))]
+-use secp256k1::{
+-	ecdsa::{RecoverableSignature, RecoveryId},
+-	Message,
+-};
+-
+ #[cfg(not(substrate_runtime))]
+ use sp_externalities::{Externalities, ExternalitiesExt};
+ 
+@@ -148,17 +136,6 @@ mod global_alloc_riscv;
+ #[cfg(not(substrate_runtime))]
+ const LOG_TARGET: &str = "runtime::io";
+ 
+-/// Error verifying ECDSA signature
+-#[derive(Encode, Decode)]
+-pub enum EcdsaVerifyError {
+-	/// Incorrect value of R or S
+-	BadRS,
+-	/// Incorrect value of V
+-	BadV,
+-	/// Invalid signature
+-	BadSignature,
+-}
+-
+ /// The outcome of calling `storage_kill`. Returned value is the number of storage items
+ /// removed from the backend from making the `storage_kill` call.
+ #[derive(Encode, Decode)]
+@@ -852,6 +829,7 @@ pub trait Misc {
+ 	}
+ }
+ 
++/*
+ #[cfg(not(substrate_runtime))]
+ sp_externalities::decl_extension! {
+ 	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
+@@ -879,10 +857,12 @@ impl Default for UseDalekExt {
+ 		Self
+ 	}
+ }
++*/
+ 
+ /// Interfaces for working with crypto related types from within the runtime.
+ #[runtime_interface]
+ pub trait Crypto {
++        /*
+ 	/// Returns all `ed25519` public keys for the given key id from the keystore.
+ 	fn ed25519_public_keys(
+ 		&mut self,
+@@ -984,6 +964,7 @@ pub trait Crypto {
+ 
+ 		res
+ 	}
++        */
+ 
+ 	/// Verify `sr25519` signature.
+ 	///
+@@ -1119,6 +1100,7 @@ pub trait Crypto {
+ 		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
+ 	}
+ 
++        /*
+ 	/// Returns all `ecdsa` public keys for the given key id from the keystore.
+ 	fn ecdsa_public_keys(
+ 		&mut self,
+@@ -1436,6 +1418,7 @@ pub trait Crypto {
+ 			.ok()
+ 			.flatten()
+ 	}
++        */
+ }
+ 
+ /// Interface that provides functions for hashing with different algorithms.

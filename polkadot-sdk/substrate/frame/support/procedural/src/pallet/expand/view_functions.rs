@@ -34,11 +34,14 @@ pub fn expand_view_functions(def: &Def) -> TokenStream {
 		.map(|view_fn| expand_view_function(def, span, where_clause.as_ref(), view_fn));
 	let impl_dispatch_view_function =
 		impl_dispatch_view_function(def, span, where_clause.as_ref(), &view_fns);
+	/* let impl_view_function_metadata =
+		impl_view_function_metadata(def, span, where_clause.as_ref(), &view_fns); */
 
 	quote::quote! {
 		#view_function_prefix_impl
 		#( #view_fn_impls )*
 		#impl_dispatch_view_function
+		// #impl_view_function_metadata
 	}
 }
 
@@ -77,6 +80,7 @@ fn expand_view_function(
 	let type_impl_gen = &def.type_impl_generics(span);
 	let type_decl_bounded_gen = &def.type_decl_bounded_generics(span);
 	let type_use_gen = &def.type_use_generics(span);
+	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
 
 	let view_function_struct_ident = view_fn.view_function_struct_ident();
 	let view_fn_name = &view_fn.name;
@@ -186,3 +190,69 @@ fn impl_dispatch_view_function(
 		}
 	}
 }
+
+/* fn impl_view_function_metadata(
+	def: &Def,
+	span: Span,
+	where_clause: Option<&syn::WhereClause>,
+	view_fns: &[ViewFunctionDef],
+) -> TokenStream {
+	let frame_support = &def.frame_support;
+	let pallet_ident = &def.pallet_struct.pallet;
+	let type_impl_gen = &def.type_impl_generics(span);
+	let type_use_gen = &def.type_use_generics(span);
+
+	let view_functions = view_fns.iter().map(|view_fn| {
+		let view_function_struct_ident = view_fn.view_function_struct_ident();
+		let name = &view_fn.name;
+		let inputs = view_fn.args.iter().filter_map(|fn_arg| {
+			match fn_arg {
+				syn::FnArg::Receiver(_) => None,
+				syn::FnArg::Typed(typed) => {
+					let pat = &typed.pat;
+					let ty = &typed.ty;
+					Some(quote::quote! {
+						#frame_support::__private::metadata_ir::PalletViewFunctionParamMetadataIR {
+							name: ::core::stringify!(#pat),
+							ty: #frame_support::__private::scale_info::meta_type::<#ty>(),
+						}
+					})
+				}
+			}
+		});
+
+		let no_docs = vec![];
+		let doc = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &view_fn.docs };
+
+		let deprecation = match crate::deprecation::get_deprecation(
+			&quote::quote! { #frame_support },
+			&def.item.attrs,
+		) {
+			Ok(deprecation) => deprecation,
+			Err(e) => return e.into_compile_error(),
+		};
+
+		quote::quote! {
+			#frame_support::__private::metadata_ir::PalletViewFunctionMetadataIR {
+				name: ::core::stringify!(#name),
+				id: <#view_function_struct_ident<#type_use_gen> as #frame_support::view_functions::ViewFunction>::id().into(),
+				inputs: #frame_support::__private::sp_std::vec![ #( #inputs ),* ],
+				output: #frame_support::__private::scale_info::meta_type::<
+					<#view_function_struct_ident<#type_use_gen> as #frame_support::view_functions::ViewFunction>::ReturnType
+				>(),
+				docs: #frame_support::__private::sp_std::vec![ #( #doc ),* ],
+				deprecation_info: #deprecation,
+			}
+		}
+	});
+
+	quote::quote! {
+		impl<#type_impl_gen> #pallet_ident<#type_use_gen> #where_clause {
+			#[doc(hidden)]
+			pub fn pallet_view_functions_metadata()
+				-> #frame_support::__private::Vec<#frame_support::__private::metadata_ir::PalletViewFunctionMetadataIR> {
+				#frame_support::__private::vec![ #( #view_functions ),* ]
+			}
+		}
+	}
+} */

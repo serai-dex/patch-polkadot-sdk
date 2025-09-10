@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-grandpa-rpc"
-version = "0.35.0"
+version = "0.36.0"
 description = "RPC extensions for the GRANDPA finality gadget"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 readme = "README.md"
