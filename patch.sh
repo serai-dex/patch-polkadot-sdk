@@ -390,7 +390,8 @@ apply_patch removals/frame-system-benchmarking
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
 remove_crate_tree substrate/client/executor/runtime-test
-silent_rm substrate/frame/support/procedural/src/pallet/parse/tests
+silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/tests
+silent_rm ./polkadot-sdk/substrate/primitives/runtime-interface/tests
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
 remove_crate_tree substrate/primitives/test-primitives
