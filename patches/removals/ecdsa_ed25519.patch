@@ -564,19 +564,7 @@ index 03be04c..04b3920 100644
  
  #[cfg(feature = "std")]
  impl std::fmt::Display for AccountId32 {
-diff --git a/substrate/primitives/core/src/lib.rs b/substrate/primitives/core/src/lib.rs
-index cb8a9a7..793b514 100644
---- a/substrate/primitives/core/src/lib.rs
-+++ b/substrate/primitives/core/src/lib.rs
-@@ -75,8 +75,6 @@ pub mod bandersnatch;
- #[cfg(feature = "bls-experimental")]
- pub mod bls;
- pub mod crypto_bytes;
--pub mod ecdsa;
--pub mod ed25519;
- pub mod sr25519;
- 
- #[cfg(feature = "bls-experimental")]
+diff --git a/substrate/primitives/keyring/src/lib.rs b/substrate/primitives/keyring/src/lib.rs
 index 36e77da..6f421c1 100644
 --- a/substrate/primitives/keyring/src/lib.rs
 +++ b/substrate/primitives/keyring/src/lib.rs

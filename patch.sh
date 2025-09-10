@@ -126,7 +126,6 @@ echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/network/Cargo.tom
 # Remove unused HTTP module and associated dependencies
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
 silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
-apply_patch removals/offchain_http
 
 # Remove `aquamarine` from the dependencies
 find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
@@ -135,14 +134,8 @@ find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {});
 # Remove `simple-mermaid`
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
 
-# Remove `build-helper`
-apply_patch removals/build-helper
-
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
-
-# Remove memmap2 and the associated unsafe calling code
-apply_patch removals/memmap2
 
 # Remove `sysinfo` from `sc-db`, which is detected as in-use because it's also the name of a `mod`
 remove_matching_lines ./polkadot-sdk/substrate/client/db/Cargo.toml "sysinfo"
@@ -159,6 +152,8 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.oml "sch
 
 # Apply the patches which are explicitly opinions
 apply_patch_dir opinions
+# Apply the patches which perform various removals
+apply_patch_dir removals
 
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
@@ -273,7 +268,6 @@ silent_rm ./polkadot-sdk/substrate/client/network/src/bitswap
 silent_rm ./polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 silent_rm ./polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
 remove_matching_lines ./polkadot-sdk/substrate/client/network/src/lib.rs "mod bitswap;$"
-apply_patch removals/bitswap
 
 # Remove the BEEFY consensus crates
 remove_crate_tree substrate/client/consensus/beefy
@@ -299,7 +293,6 @@ remove_crate_tree substrate/client/consensus/manual-seal
 remove_crate_tree substrate/client/consensus/aura
 remove_crate_tree substrate/frame/aura
 remove_crate_tree substrate/primitives/consensus/aura
-apply_patch removals/aura
 
 remove_crate_tree substrate/frame/contracts
 remove_crate_tree substrate/frame/revive
@@ -324,12 +317,10 @@ remove_module ./polkadot-sdk/substrate/client/rpc/src statement
 # Remove the binary Merkle tree code, as we only use the standard base-16 trie
 remove_crate_tree substrate/utils/binary-merkle-tree
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base2
-apply_patch removals/BinaryMerkleTreeProver
 
 # Remove the transaction storage code
 remove_crate_tree substrate/frame/transaction-storage
 remove_crate_tree substrate/primitives/transaction-storage-proof
-apply_patch removals/sp-transaction-storage-proof
 
 # Remove non-Ristretto cryptography
 remove_crate_tree substrate/primitives/crypto/ec-utils
@@ -346,13 +337,12 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/core/src/lib.rs "mod p
 
 silent_rm ./polkadot-sdk/substrate/client/cli/src/commands/vanity.rs
 silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa.rs
-silent_rm ./polkadot-sdk/substrate/primitives/core/src/ecdsa.rs
+remove_module ./polkadot-sdk/substrate/primitives/core/src ecdsa
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ecdsa.rs
 remove_module ./polkadot-sdk/substrate/frame/support/src/crypto ecdsa
 silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ed25519.rs
-silent_rm ./polkadot-sdk/substrate/primitives/core/src/ed25519.rs
+remove_module ./polkadot-sdk/substrate/primitives/core/src ed25519
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
-apply_patch removals/ecdsa_ed25519
 
 # Remove unused pallets
 used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa migrations session support system timestamp try-runtime"
@@ -376,7 +366,6 @@ remove_crate_tree substrate/client/runtime-utilities
 remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
 remove_crate_tree substrate/utils/substrate-bip39
-apply_patch removals/substrate-bip39
 
 # Remove fuzzers
 remove_crate_tree substrate/primitives/arithmetic/fuzzer
@@ -387,7 +376,6 @@ remove_crate_tree substrate/primitives/state-machine/fuzz
 remove_crate_tree substrate/frame/benchmarking/pov
 remove_crate_tree substrate/frame/session/benchmarking
 remove_crate_tree substrate/frame/system/benchmarking
-apply_patch removals/frame-system-benchmarking
 
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
@@ -469,20 +457,12 @@ echo "$(cat ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs | sed s
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
-# Remove the deprecated native executor
-apply_patch removals/NativeExecutor
-
-# Remove `sysinfo`, which is only used to log a warning if the computer has insufficient memory
-apply_patch removals/sysinfo
-
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree
-apply_patch removals/docify
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
 
 # Remove the `SS58prefix` constant
-apply_patch removals/SS58Prefix
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
 
 # Remove non-ASCII characters
