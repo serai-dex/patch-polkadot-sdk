@@ -100,33 +100,6 @@ fn main() {
       remove_folder_of_crates(&args.next().unwrap());
     }
 
-    "remove_workspace_dependency" => {
-      let member = args.next().unwrap();
-
-      let (workspace_toml_path, mut workspace_toml) = workspace_toml();
-      {
-        let dependencies = workspace_toml["workspace"]["dependencies"].as_table_mut().unwrap();
-
-        // Remove it as a workspace dependency
-        dependencies.remove(&member);
-
-        // Check if it was aliased, and if so, remove anything which aliased it
-        let remaining = dependencies.keys().map(|key| key.as_str().to_string()).collect::<Vec<_>>();
-        for remaining in remaining {
-          if let Some(table) = dependencies[&remaining].as_table() {
-            if let Some(package) = table.get("package") {
-              let package = package.as_str().unwrap();
-              if package == member {
-                dependencies.remove(&remaining);
-              }
-            }
-          }
-        }
-      }
-      fs::write(workspace_toml_path, toml::to_string_pretty(&workspace_toml).unwrap().as_bytes())
-        .unwrap();
-    }
-
     "remove_dependency" => {
       let dep = HashSet::from([args.next().unwrap()]);
       let remaining_crates = discover_all_crates_in_folder(".");

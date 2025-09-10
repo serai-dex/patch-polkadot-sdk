@@ -27,19 +27,20 @@ fi
 if [ ! -d "polkadot-sdk" ]; then
   mkdir ./polkadot-sdk
   cd ./polkadot-sdk
-  git init
+  git init --quiet
   git remote add origin https://github.com/paritytech/polkadot-sdk
   cd ..
 fi
 
 cd ./polkadot-sdk
 # Ensure we're starting from the intended commit
-git checkout -f $POLKADOT_SDK_COMMIT
+git checkout -f $POLKADOT_SDK_COMMIT &> /dev/null
 if [ $? -ne 0 ]; then
   # Try to fetch the commit
-  git fetch --depth 1 origin $POLKADOT_SDK_COMMIT
+  echo "Fetching $POLKADOT_SDK_COMMIT"
+  git fetch --depth 1 origin $POLKADOT_SDK_COMMIT --quiet
   # Try again to check it out
-  git checkout -f $POLKADOT_SDK_COMMIT
+  git checkout -f $POLKADOT_SDK_COMMIT --quiet
   if [ $? -ne 0 ]; then
     echo "Failed to checkout $POLKADOT_SDK_COMMIT"
   fi
@@ -49,25 +50,24 @@ fi
 silent_rm .patched
 cd ..
 
+echo "Starting to patch..."
+
 # Our binary, when it makes its modifications, will overwrite all existing
 # `Cargo.toml` files until they're unrecognizable. We start by making changes
 # _to_ the `Cargo.toml` files accordingly
 
-function apply_patch {
-  echo "Applying patch $1"
-  cd ./polkadot-sdk
-  git apply ../patches/$1.patch
-  PATCH_SUCCEEDED=$?
-  cd ..
-  if [ $PATCH_SUCCEEDED -ne 0 ]; then
-    exit 3
-  fi
-}
-
-function apply_patch_dir {
-  ls patches/$1 | grep -v "README\.md" | while read -r patch; do
-    apply_patch $1/$(echo $patch | sed s/".patch"//)
+function apply_patches {
+  find ./patches -iname "*.patch" | while read -r patch; do
+    echo "Applying patch $patch"
+    cd ./polkadot-sdk
+    git apply .$patch
+    PATCH_SUCCEEDED=$?
+    cd ..
+    if [ $PATCH_SUCCEEDED -ne 0 ]; then
+      exit 3
+    fi
   done
+
   PATCHES_SUCCEEDED=$?
   if [ $PATCHES_SUCCEEDED -ne 0 ]; then
     exit $PATCHES_SUCCEEDED
@@ -103,15 +103,8 @@ function remove_matching_phrase {
   echo "$STRIPPED" > $1
 }
 
-# Apply the patches which are bug fixes
-apply_patch_dir fixes
-# Apply the patches which replace dependencies in favor of `std`
-apply_patch_dir std
-# Apply the patches which perform dependency updates
-apply_patch_dir updates
-# Make `litep2p`, `polkavm` optional
-apply_patch optional_litep2p
-apply_patch_dir optional_polkavm
+# Apply `patches/`
+apply_patches
 
 # Replace the `wasm-timer` dependency with `wasmtimer`
 echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
@@ -150,26 +143,17 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/src/weight_v2.rs "schemars"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.oml "schemars"
 
-# Apply the patches which are explicitly opinions
-apply_patch_dir opinions
-# Apply the patches which perform various removals
-apply_patch_dir removals
-
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
-cargo build --release
+cargo build --release &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Failed to build \`serai-polkadot-sdk\`"
+  exit 4
+fi
 
 function remove_crate_tree {
   echo "Removing crates $1"
   ./target/release/serai-polkadot-sdk remove_crate_tree $1
-  if [ $? -ne 0 ]; then
-    exit 4
-  fi
-}
-
-function remove_workspace_dependency {
-  echo "Removing workspace dependency $1"
-  ./target/release/serai-polkadot-sdk remove_workspace_dependency $1
   if [ $? -ne 0 ]; then
     exit 5
   fi
@@ -202,7 +186,7 @@ function remove_trait {
 function remove_dev_dependencies {
   ./target/release/serai-polkadot-sdk remove_dev_dependencies
   if [ $? -ne 0 ]; then
-    exit 9
+    exit 8
   fi
 }
 
@@ -232,8 +216,6 @@ function machete {
 
 # Remove the `bridges/` tree, as we won't use it
 remove_crate_tree bridges
-# Cleanup "snowbridge" dependency not removed with `bridges/`
-remove_workspace_dependency milagro-bls
 
 # Remove the `cumulus/` tree, intended for parachains
 remove_crate_tree cumulus
@@ -398,9 +380,6 @@ silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
 remove_feature frame-metadata
 remove_feature no-metadata-docs
 remove_feature full-metadata-docs
-
-# Apply the patch for what the following automatic code is incapable of
-apply_patch metadata
 
 # Remove the call metadata trait
 remove_trait substrate/frame/support GetCallMetadata

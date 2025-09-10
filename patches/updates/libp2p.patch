@@ -157,7 +157,7 @@ diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Carg
 index 1f40ea9..5087611 100644
 --- a/substrate/client/network/Cargo.toml
 +++ b/substrate/client/network/Cargo.toml
-@@ -32,7 +32,8 @@ fnv = { workspace = true }
+@@ -32,5 +32,6 @@ fnv = { workspace = true }
  futures = { workspace = true }
  futures-timer = { workspace = true }
  ip_network = { workspace = true }
@@ -165,5 +165,3 @@ index 1f40ea9..5087611 100644
 +libp2p = { features = ["dns", "identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "websocket", "yamux", "metrics"], workspace = true }
 +prometheus-client = "0.23"
  linked_hash_set = { workspace = true }
- litep2p = { workspace = true }
- log = { workspace = true, default-features = true }
