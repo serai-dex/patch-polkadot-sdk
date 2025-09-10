@@ -503,11 +503,11 @@ cargo_upgrade derive_more 1.0.0
 cargo_upgrade directories 6.0.0
 cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
-cargo_upgrade hex-literal 1.0.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade kvdb-rocksdb 0.20.0
 cargo_upgrade libp2p 0.56.0
 cargo_upgrade libp2p-kad 0.48.0
+cargo_upgrade litep2p 0.10.0
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0
@@ -517,6 +517,7 @@ cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
 cargo_upgrade rustix 1.0.0
 cargo_upgrade strum 0.27.0
+cargo_upgrade sysinfo 0.33.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0

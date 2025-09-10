@@ -247,13 +247,32 @@ fn main() {
     "upgrade" => {
       let dep = args.next().unwrap();
       let version = args.next().unwrap();
+      let upgrade_to = semver::Version::parse(&version).unwrap();
 
       let (workspace_toml_path, mut workspace_toml) = workspace_toml();
       let dependencies = workspace_toml["workspace"]["dependencies"].as_table_mut().unwrap();
       let dep = &mut dependencies[&dep];
       if let Some(dep) = dep.as_table_mut() {
+        let spec = semver::VersionReq::parse(dep["version"].as_str().unwrap()).unwrap();
+        assert_eq!(spec.comparators.len(), 1);
+        assert!(matches!(spec.comparators[0].op, semver::Op::Caret));
+        if (spec.comparators[0].major > upgrade_to.major) ||
+          ((spec.comparators[0].major == upgrade_to.major) &&
+            (spec.comparators[0].minor.unwrap_or(0) > upgrade_to.minor))
+        {
+          panic!("upgrading {} to a lesser version", dep);
+        }
         dep["version"] = version.to_string().into();
       } else {
+        let spec = semver::VersionReq::parse(dep.as_str().unwrap()).unwrap();
+        assert_eq!(spec.comparators.len(), 1);
+        assert!(matches!(spec.comparators[0].op, semver::Op::Caret));
+        if (spec.comparators[0].major > upgrade_to.major) ||
+          ((spec.comparators[0].major == upgrade_to.major) &&
+            (spec.comparators[0].minor.unwrap_or(0) > upgrade_to.minor))
+        {
+          panic!("upgrading {} to a lesser version", dep);
+        }
         *dep = version.to_string().into();
       }
       fs::write(workspace_toml_path, toml::to_string_pretty(&workspace_toml).unwrap().as_bytes())

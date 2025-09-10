@@ -515,7 +515,7 @@ version = "0.1.4"
 version = "0.5.1"
 
 [workspace.dependencies.litep2p]
-version = "0.9.5"
+version = "0.10.0"
 features = ["websocket"]
 
 [workspace.dependencies.log]
@@ -1034,7 +1034,7 @@ default-features = false
 version = "2.0.87"
 
 [workspace.dependencies.sysinfo]
-version = "0.30"
+version = "0.33.0"
 
 [workspace.dependencies.tempfile]
 version = "3.8.1"

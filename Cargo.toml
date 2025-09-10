@@ -10,3 +10,4 @@ edition = "2021"
 
 [dependencies]
 toml = { version = "0.9", default-features = false, features = ["std", "preserve_order", "serde", "parse", "display"] }
+semver = { version = "1", default-features = false, features = ["std"] }
