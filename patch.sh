@@ -328,7 +328,7 @@ silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
 
 # Remove unused pallets
 used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa migrations session support system timestamp try-runtime"
-ls -d ./polkadot-sdk/substrate/frame/* | while read -r folder; do
+ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
   if [ -d ./polkadot-sdk/substrate/frame/$folder ]; then
     if [ $(echo "$used_pallets src" | grep $folder | wc -l) -eq 0 ]; then
       remove_crate_tree substrate/frame/$folder
@@ -395,7 +395,7 @@ remove_module ./polkadot-sdk/substrate/primitives/api/proc-macro/src runtime_met
 # Remove `sp-metadata-ir`
 remove_crate_tree substrate/primitives/metadata-ir
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/hash.rs "metadata_ir"
-ls -d ./polkadot-sdk/substrate/frame/support/src/storage/types/* | while read -r file; do
+ls ./polkadot-sdk/substrate/frame/support/src/storage/types | sort | while read -r file; do
   file=./polkadot-sdk/substrate/frame/support/src/storage/types/$file
   remove_matching_lines $file "^use sp_metadata_ir"
   remove_matching_phrase $file "\, StorageEntryMetadataBuilder"
