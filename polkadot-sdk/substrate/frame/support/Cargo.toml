@@ -83,9 +83,6 @@ workspace = true
 [dependencies.sp-debug-derive]
 workspace = true
 
-[dependencies.sp-genesis-builder]
-workspace = true
-
 [dependencies.sp-inherents]
 workspace = true
 
@@ -131,7 +128,6 @@ std = [
     "sp-arithmetic/std",
     "sp-core/std",
     "sp-debug-derive/std",
-    "sp-genesis-builder/std",
     "sp-inherents/std",
     "sp-io/std",
     "sp-runtime/std",

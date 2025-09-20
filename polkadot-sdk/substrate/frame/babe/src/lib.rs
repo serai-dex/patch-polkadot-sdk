@@ -316,7 +316,7 @@ pub mod pallet {
 	pub struct GenesisConfig<T: Config> {
 		pub authorities: Vec<(AuthorityId, BabeAuthorityWeight)>,
 		pub epoch_config: BabeEpochConfiguration,
-		#[serde(skip)]
+		// #[serde(skip)]
 		pub _config: core::marker::PhantomData<T>,
 	}
 

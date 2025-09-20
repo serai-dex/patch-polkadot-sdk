@@ -346,7 +346,7 @@ pub mod pallet {
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
 		pub authorities: AuthorityList,
-		#[serde(skip)]
+		// #[serde(skip)]
 		pub _config: core::marker::PhantomData<T>,
 	}
 

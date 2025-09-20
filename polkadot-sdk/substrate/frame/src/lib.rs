@@ -379,7 +379,6 @@ pub mod runtime {
 		pub use frame_support::{ord_parameter_types, parameter_types};
 
 		/// For building genesis config.
-		pub use frame_support::genesis_builder_helper::{build_state, get_preset};
 
 		/// Const types that can easily be used in conjuncture with `Get`.
 		pub use frame_support::traits::{

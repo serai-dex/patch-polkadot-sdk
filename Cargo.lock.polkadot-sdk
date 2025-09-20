@@ -1711,7 +1711,6 @@ dependencies = [
  "sp-core",
  "sp-crypto-hashing-proc-macro",
  "sp-debug-derive",
- "sp-genesis-builder",
  "sp-inherents",
  "sp-io",
  "sp-runtime",

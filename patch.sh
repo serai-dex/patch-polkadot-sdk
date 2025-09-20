@@ -304,6 +304,10 @@ remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base2
 remove_crate_tree substrate/frame/transaction-storage
 remove_crate_tree substrate/primitives/transaction-storage-proof
 
+# Remove the `serde_json`-premised genesis handling
+remove_module ./polkadot-sdk/substrate/frame/support/src genesis_builder_helper
+remove_matching_lines ./polkadot-sdk/substrate/frame/src/lib.rs "genesis_builder_helper"
+
 # Remove non-Ristretto cryptography
 remove_crate_tree substrate/primitives/crypto/ec-utils
 remove_feature bls-experimental

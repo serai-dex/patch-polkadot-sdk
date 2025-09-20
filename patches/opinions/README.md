@@ -9,3 +9,6 @@
 
 - `zero_genesis_hash`: Updates `frame-system` to use `[0; _]` for the current
   block hash when building the genesis block itself.
+
+- `serde_genesis_config`: Removes `serde::{Serialize, Deserialize}` from the
+  genesis config.

@@ -163,7 +163,7 @@ pub mod pallet {
 		pub trash_data_count: u32,
 		/// The block length limit.
 		pub block_length: FixedU64,
-		#[serde(skip)]
+		// #[serde(skip)]
 		/// The required configuration field.
 		pub _config: core::marker::PhantomData<T>,
 	}

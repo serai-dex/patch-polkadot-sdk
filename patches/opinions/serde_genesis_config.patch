@@ -1,0 +1,99 @@
+diff --git a/substrate/frame/authority-discovery/src/lib.rs b/substrate/frame/authority-discovery/src/lib.rs
+index 1914ae4..a5e1d2b 100644
+--- a/substrate/frame/authority-discovery/src/lib.rs
++++ b/substrate/frame/authority-discovery/src/lib.rs
+@@ -63,7 +63,7 @@ pub mod pallet {
+ 	#[pallet::genesis_config]
+ 	pub struct GenesisConfig<T: Config> {
+ 		pub keys: Vec<AuthorityId>,
+-		#[serde(skip)]
++		// #[serde(skip)]
+ 		pub _config: core::marker::PhantomData<T>,
+ 	}
+ 
+diff --git a/substrate/frame/babe/src/lib.rs b/substrate/frame/babe/src/lib.rs
+index 981e010..42a00cb 100644
+--- a/substrate/frame/babe/src/lib.rs
++++ b/substrate/frame/babe/src/lib.rs
+@@ -316,7 +316,7 @@ pub mod pallet {
+ 	pub struct GenesisConfig<T: Config> {
+ 		pub authorities: Vec<(AuthorityId, BabeAuthorityWeight)>,
+ 		pub epoch_config: BabeEpochConfiguration,
+-		#[serde(skip)]
++		// #[serde(skip)]
+ 		pub _config: core::marker::PhantomData<T>,
+ 	}
+ 
+diff --git a/substrate/frame/glutton/src/lib.rs b/substrate/frame/glutton/src/lib.rs
+index 85608ad..cf13f6c 100644
+--- a/substrate/frame/glutton/src/lib.rs
++++ b/substrate/frame/glutton/src/lib.rs
+@@ -163,7 +163,7 @@ pub mod pallet {
+ 		pub trash_data_count: u32,
+ 		/// The block length limit.
+ 		pub block_length: FixedU64,
+-		#[serde(skip)]
++		// #[serde(skip)]
+ 		/// The required configuration field.
+ 		pub _config: core::marker::PhantomData<T>,
+ 	}
+diff --git a/substrate/frame/grandpa/src/lib.rs b/substrate/frame/grandpa/src/lib.rs
+index 3045001..0a365bc 100644
+--- a/substrate/frame/grandpa/src/lib.rs
++++ b/substrate/frame/grandpa/src/lib.rs
+@@ -346,7 +346,7 @@ pub mod pallet {
+ 	#[pallet::genesis_config]
+ 	pub struct GenesisConfig<T: Config> {
+ 		pub authorities: AuthorityList,
+-		#[serde(skip)]
++		// #[serde(skip)]
+ 		pub _config: core::marker::PhantomData<T>,
+ 	}
+ 
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/genesis_config.rs b/substrate/frame/support/procedural/src/pallet/expand/genesis_config.rs
+index 31d519e..f12114b 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/genesis_config.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/genesis_config.rs
+@@ -95,14 +95,14 @@ pub fn expand_genesis_config(def: &mut Def) -> proc_macro2::TokenStream {
+ 					"]
+ 				));
+ 			}
+-			attrs.push(syn::parse_quote!(
++			/* attrs.push(syn::parse_quote!(
+ 				#[derive(#frame_support::Serialize, #frame_support::Deserialize)]
+ 			));
+ 			attrs.push(syn::parse_quote!( #[serde(rename_all = "camelCase")] ));
+ 			attrs.push(syn::parse_quote!( #[serde(deny_unknown_fields)] ));
+ 			attrs.push(syn::parse_quote!( #[serde(bound(serialize = ""))] ));
+ 			attrs.push(syn::parse_quote!( #[serde(bound(deserialize = ""))] ));
+-			attrs.push(syn::parse_quote!( #[serde(crate = #serde_crate)] ));
++			attrs.push(syn::parse_quote!( #[serde(crate = #serde_crate)] )); */
+ 		},
+ 		_ => unreachable!("Checked by genesis_config parser"),
+ 	}
+diff --git a/substrate/frame/support/src/traits/hooks.rs b/substrate/frame/support/src/traits/hooks.rs
+index 7f5e506..af81939 100644
+--- a/substrate/frame/support/src/traits/hooks.rs
++++ b/substrate/frame/support/src/traits/hooks.rs
+@@ -578,7 +578,7 @@ pub trait Hooks<BlockNumber> {
+ /// A trait to define the build function of a genesis config for both runtime and pallets.
+ ///
+ /// Replaces deprecated [`GenesisBuild<T,I>`].
+-pub trait BuildGenesisConfig: sp_runtime::traits::MaybeSerializeDeserialize {
++pub trait BuildGenesisConfig {
+ 	/// The build function puts initial `GenesisConfig` keys/values pairs into the storage.
+ 	fn build(&self);
+ }
+diff --git a/substrate/frame/system/src/lib.rs b/substrate/frame/system/src/lib.rs
+index 4f6db6f..e637cba 100644
+--- a/substrate/frame/system/src/lib.rs
++++ b/substrate/frame/system/src/lib.rs
+@@ -1101,7 +1101,7 @@ pub mod pallet {
+ 	#[derive(frame_support::DefaultNoBound)]
+ 	#[pallet::genesis_config]
+ 	pub struct GenesisConfig<T: Config> {
+-		#[serde(skip)]
++		// #[serde(skip)]
+ 		pub _config: core::marker::PhantomData<T>,
+ 	}
+ 
