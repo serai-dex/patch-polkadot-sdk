@@ -60,10 +60,10 @@ pub fn expand_outer_config(
 		#types
 
 		use #scrate::__private::serde as __genesis_config_serde_import__;
-		#[derive(#scrate::__private::serde::Serialize, #scrate::__private::serde::Deserialize, Default)]
+		/* #[derive(#scrate::__private::serde::Serialize, #scrate::__private::serde::Deserialize, Default)]
 		#[serde(rename_all = "camelCase")]
 		#[serde(deny_unknown_fields)]
-		#[serde(crate = "__genesis_config_serde_import__")]
+		#[serde(crate = "__genesis_config_serde_import__")] */
 		pub struct RuntimeGenesisConfig {
 			#fields
 		}
