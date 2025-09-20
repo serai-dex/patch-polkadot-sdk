@@ -12,3 +12,6 @@
 
 - `serde_genesis_config`: Removes `serde::{Serialize, Deserialize}` from the
   genesis config.
+
+- `session`: Replaces `pallet-session` with a much more minimal variant,
+  sufficient for `pallet-babe` and `pallet-grandpa`.

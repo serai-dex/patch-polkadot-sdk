@@ -34,6 +34,7 @@ fi
 
 cd ./polkadot-sdk
 # Ensure we're starting from the intended commit
+rm -rf ./substrate
 git checkout -f $POLKADOT_SDK_COMMIT &> /dev/null
 if [ $? -ne 0 ]; then
   # Try to fetch the commit
@@ -458,6 +459,12 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 # Remove "; qed"
 echo "Removing extraneous \"qed\" claims"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
+
+# Remove the original sessions module
+mv ./polkadot-sdk/substrate/frame/session ./polkadot-sdk/substrate/frame/session-original
+cp -r ./patches/opinions/session ./polkadot-sdk/substrate/frame/session
+mv ./polkadot-sdk/substrate/frame/session-original ./polkadot-sdk/substrate/frame/session/session
+sed -e s/"name = \"pallet-session\""/"name = \"pallet-session-original\""/ -i ./polkadot-sdk/substrate/frame/session/session/Cargo.toml
 
 # Remove unused dependencies
 machete

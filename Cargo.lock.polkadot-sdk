@@ -4097,6 +4097,16 @@ version = "41.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
+ "pallet-session-original",
+ "parity-scale-codec",
+]
+
+[[package]]
+name = "pallet-session-original"
+version = "41.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
  "impl-trait-for-tuples",
  "log",
  "pallet-timestamp",
