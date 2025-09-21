@@ -114,3 +114,15 @@ index 7a51ba6..847e387 100644
  		pub struct RuntimeGenesisConfig {
  			#fields
  		}
+diff --git a/substrate/frame/transaction-payment/src/lib.rs b/substrate/frame/transaction-payment/src/lib.rs
+index 4424cbac..6d986983 100644
+--- a/substrate/frame/transaction-payment/src/lib.rs
++++ b/substrate/frame/transaction-payment/src/lib.rs
+@@ -414,7 +414,6 @@ pub mod pallet {
+ 	#[pallet::genesis_config]
+ 	pub struct GenesisConfig<T: Config> {
+ 		pub multiplier: Multiplier,
+-		#[serde(skip)]
+ 		pub _config: core::marker::PhantomData<T>,
+ 	}
+ 

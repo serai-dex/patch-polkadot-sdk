@@ -1,52 +1,95 @@
 [package]
 name = "pallet-session"
 version = "41.0.0"
-description = "Session pallet"
-license = "AGPL-3.0-only"
-repository = "https://github.com/serai-dex/patch-polkadot-sdk/tree/develop/patches/opinions/session"
-authors = ["Luke Parker <lukeparker5132@gmail.com>"]
-edition = "2021"
-rust-version = "1.85"
+license = "Apache-2.0"
+description = "FRAME sessions pallet"
+readme = "README.md"
+
+[package.authors]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.repository]
+workspace = true
 
 [package.metadata.docs.rs]
-all-features = true
-rustdoc-args = [
-    "--cfg",
-    "docsrs",
-]
+targets = ["x86_64-unknown-linux-gnu"]
 
 [lints]
 workspace = true
 
 [dependencies.codec]
-package = "parity-scale-codec"
-version = "3"
-default-features = false
 features = ["derive"]
-
-[dependencies.frame-system]
-path = "../system"
-default-features = false
+workspace = true
 
 [dependencies.frame-support]
-path = "../support"
-default-features = false
+workspace = true
 
-[dependencies.pallet-session-original]
-path = "./session"
-default-features = false
+[dependencies.frame-system]
+workspace = true
+
+[dependencies.impl-trait-for-tuples]
+workspace = true
+
+[dependencies.log]
+workspace = true
+
+[dependencies.pallet-timestamp]
+workspace = true
+
+[dependencies.sp-core]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-io]
+workspace = true
+
+[dependencies.sp-runtime]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-session]
+workspace = true
+
+[dependencies.sp-staking]
+features = ["serde"]
+workspace = true
+
+[dependencies.sp-state-machine]
+workspace = true
+
+[dependencies.sp-trie]
+optional = true
+workspace = true
 
 [features]
+default = [
+    "historical",
+    "std",
+]
+historical = ["sp-trie"]
 std = [
     "codec/std",
-    "frame-system/std",
     "frame-support/std",
-    "pallet-session-original/std",
+    "frame-system/std",
+    "log/std",
+    "pallet-timestamp/std",
+    "sp-core/std",
+    "sp-io/std",
+    "sp-runtime/std",
+    "sp-session/std",
+    "sp-staking/std",
+    "sp-state-machine/std",
+    "sp-trie/std",
 ]
-runtime-benchmarks = [
-    "frame-system/runtime-benchmarks",
-    "frame-support/runtime-benchmarks",
+try-runtime = [
+    "frame-support/try-runtime",
+    "frame-system/try-runtime",
+    "pallet-timestamp/try-runtime",
+    "sp-runtime/try-runtime",
 ]
-try-runtime = []
-default = ["std"]
-historical = ["pallet-session-original/historical"]

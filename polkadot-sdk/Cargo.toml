@@ -63,6 +63,9 @@ members = [
     "substrate/frame/system",
     "substrate/frame/system/rpc/runtime-api",
     "substrate/frame/timestamp",
+    "substrate/frame/transaction-payment",
+    "substrate/frame/transaction-payment/rpc",
+    "substrate/frame/transaction-payment/rpc/runtime-api",
     "substrate/frame/try-runtime",
     "substrate/primitives/api",
     "substrate/primitives/api/proc-macro",
@@ -106,6 +109,7 @@ members = [
     "substrate/primitives/version/proc-macro",
     "substrate/primitives/wasm-interface",
     "substrate/primitives/weights",
+    "substrate/utils/build-script-utils",
     "substrate/utils/fork-tree",
     "substrate/utils/prometheus",
     "substrate/utils/wasm-builder",
@@ -571,6 +575,14 @@ default-features = false
 
 [workspace.dependencies.pallet-timestamp]
 path = "substrate/frame/timestamp"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment]
+path = "substrate/frame/transaction-payment"
+default-features = false
+
+[workspace.dependencies.pallet-transaction-payment-rpc-runtime-api]
+path = "substrate/frame/transaction-payment/rpc/runtime-api"
 default-features = false
 
 [workspace.dependencies.parity-db]

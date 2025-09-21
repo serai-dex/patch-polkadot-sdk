@@ -4148,16 +4148,6 @@ version = "41.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
- "pallet-session-original",
- "parity-scale-codec",
-]
-
-[[package]]
-name = "pallet-session-original"
-version = "41.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
  "impl-trait-for-tuples",
  "log",
  "pallet-timestamp",
@@ -4183,6 +4173,45 @@ dependencies = [
  "sp-runtime",
  "sp-storage",
  "sp-timestamp",
+]
+
+[[package]]
+name = "pallet-transaction-payment"
+version = "41.0.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "pallet-transaction-payment-rpc"
+version = "44.0.0"
+dependencies = [
+ "jsonrpsee",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "parity-scale-codec",
+ "sp-api",
+ "sp-blockchain",
+ "sp-core",
+ "sp-rpc",
+ "sp-runtime",
+ "sp-weights",
+]
+
+[[package]]
+name = "pallet-transaction-payment-rpc-runtime-api"
+version = "41.0.0"
+dependencies = [
+ "pallet-transaction-payment",
+ "parity-scale-codec",
+ "sp-api",
+ "sp-runtime",
+ "sp-weights",
 ]
 
 [[package]]
@@ -7354,6 +7383,10 @@ dependencies = [
  "quote",
  "syn 2.0.106",
 ]
+
+[[package]]
+name = "substrate-build-script-utils"
+version = "11.0.0"
 
 [[package]]
 name = "substrate-prometheus-endpoint"

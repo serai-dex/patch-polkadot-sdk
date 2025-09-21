@@ -332,7 +332,7 @@ remove_module ./polkadot-sdk/substrate/primitives/core/src ed25519
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
 
 # Remove unused pallets
-used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa migrations session support system timestamp try-runtime"
+used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa migrations session support system timestamp transaction-payment try-runtime"
 ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
   if [ -d ./polkadot-sdk/substrate/frame/$folder ]; then
     if [ $(echo "$used_pallets src" | grep $folder | wc -l) -eq 0 ]; then
@@ -340,6 +340,11 @@ ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
     fi
   fi
 done
+
+# serai-develop needs transaction-payment yet not these extensions
+remove_crate_tree substrate/frame/transaction-payment/asset-conversion-tx-payment
+remove_crate_tree substrate/frame/transaction-payment/asset-tx-payment
+remove_crate_tree substrate/frame/transaction-payment/skip-feeless-payment
 
 # Remove unused primitives
 remove_crate_tree substrate/primitives/ethereum-standards
@@ -350,7 +355,7 @@ remove_crate_tree substrate/scripts
 
 # Remove unused utilities
 remove_crate_tree substrate/client/runtime-utilities
-remove_crate_tree substrate/utils/build-script-utils
+# serai-develop remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
 remove_crate_tree substrate/utils/substrate-bip39
 
@@ -461,10 +466,10 @@ echo "Removing extraneous \"qed\" claims"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
 
 # Remove the original sessions module
-mv ./polkadot-sdk/substrate/frame/session ./polkadot-sdk/substrate/frame/session-original
-cp -r ./patches/opinions/session ./polkadot-sdk/substrate/frame/session
-mv ./polkadot-sdk/substrate/frame/session-original ./polkadot-sdk/substrate/frame/session/session
-sed -e s/"name = \"pallet-session\""/"name = \"pallet-session-original\""/ -i ./polkadot-sdk/substrate/frame/session/session/Cargo.toml
+# mv ./polkadot-sdk/substrate/frame/session ./polkadot-sdk/substrate/frame/session-original
+# cp -r ./patches/opinions/session ./polkadot-sdk/substrate/frame/session
+# mv ./polkadot-sdk/substrate/frame/session-original ./polkadot-sdk/substrate/frame/session/session
+# sed -e s/"name = \"pallet-session\""/"name = \"pallet-session-original\""/ -i ./polkadot-sdk/substrate/frame/session/session/Cargo.toml
 
 # Remove unused dependencies
 machete
