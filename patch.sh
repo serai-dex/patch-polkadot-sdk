@@ -466,10 +466,10 @@ echo "Removing extraneous \"qed\" claims"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
 
 # Remove the original sessions module
-# mv ./polkadot-sdk/substrate/frame/session ./polkadot-sdk/substrate/frame/session-original
-# cp -r ./patches/opinions/session ./polkadot-sdk/substrate/frame/session
-# mv ./polkadot-sdk/substrate/frame/session-original ./polkadot-sdk/substrate/frame/session/session
-# sed -e s/"name = \"pallet-session\""/"name = \"pallet-session-original\""/ -i ./polkadot-sdk/substrate/frame/session/session/Cargo.toml
+mv ./polkadot-sdk/substrate/frame/session ./polkadot-sdk/substrate/frame/session-original
+cp -r ./patches/opinions/session ./polkadot-sdk/substrate/frame/session
+mv ./polkadot-sdk/substrate/frame/session-original ./polkadot-sdk/substrate/frame/session/session
+sed -e s/"name = \"pallet-session\""/"name = \"pallet-session-original\""/ -i ./polkadot-sdk/substrate/frame/session/session/Cargo.toml
 
 # Remove unused dependencies
 machete
