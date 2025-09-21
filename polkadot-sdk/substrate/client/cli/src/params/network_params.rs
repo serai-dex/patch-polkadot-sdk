@@ -178,7 +178,7 @@ pub struct NetworkParams {
 		long,
 		value_enum,
 		value_name = "NETWORK_BACKEND",
-		default_value_t = NetworkBackendType::Litep2p,
+		default_value_t = NetworkBackendType::default(),
 		ignore_case = true,
 		verbatim_doc_comment
 	)]
