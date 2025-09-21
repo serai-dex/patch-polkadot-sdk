@@ -286,10 +286,11 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 	// config.wasm_shared_everything_threads(false);
 
 	// Requires the `gc` feature
+	config.gc_support(false);
 	// config.wasm_gc(false);
 	// config.wasm_function_references(false);
 	// config.wasm_reference_types(false);
-	// config.wasm_bulk_memory(false);
+	// config.wasm_exceptions(false);
 
 	// Requires the `component-model` feature
 	// config.wasm_component_model(false);

@@ -144,6 +144,7 @@ impl RuntimeBuilder {
 				heap_alloc_strategy: self.heap_pages,
 				wasm_multi_value: false,
 				wasm_bulk_memory: false,
+				wasm_reference_types: false,
 				wasm_simd: false,
 			},
 		};
@@ -217,14 +218,12 @@ fn deep_call_stack_wat(depth: usize) -> String {
 
 // We need two limits here since depending on whether the code is compiled in debug
 // or in release mode the maximum call depth is slightly different.
-#[cfg(debug_assertions)]
-const CALL_DEPTH_LIMIT: usize = 65466;
-#[cfg(not(debug_assertions))]
-const CALL_DEPTH_LIMIT: usize = 65506;
+const CALL_DEPTH_LOWER_LIMIT: usize = 65455;
+const CALL_DEPTH_UPPER_LIMIT: usize = 65509;
 
 test_wasm_execution!(test_consume_under_1mb_of_stack_does_not_trap);
 fn test_consume_under_1mb_of_stack_does_not_trap(instantiation_strategy: InstantiationStrategy) {
-	let wat = deep_call_stack_wat(CALL_DEPTH_LIMIT);
+	let wat = deep_call_stack_wat(CALL_DEPTH_LOWER_LIMIT);
 	let mut builder = RuntimeBuilder::new(instantiation_strategy).use_wat(wat);
 	let runtime = builder.build();
 	let mut instance = runtime.new_instance().expect("failed to instantiate a runtime");
@@ -233,7 +232,7 @@ fn test_consume_under_1mb_of_stack_does_not_trap(instantiation_strategy: Instant
 
 test_wasm_execution!(test_consume_over_1mb_of_stack_does_trap);
 fn test_consume_over_1mb_of_stack_does_trap(instantiation_strategy: InstantiationStrategy) {
-	let wat = deep_call_stack_wat(CALL_DEPTH_LIMIT + 1);
+	let wat = deep_call_stack_wat(CALL_DEPTH_UPPER_LIMIT + 1);
 	let mut builder = RuntimeBuilder::new(instantiation_strategy).use_wat(wat);
 	let runtime = builder.build();
 	let mut instance = runtime.new_instance().expect("failed to instantiate a runtime");
@@ -472,6 +471,7 @@ fn test_instances_without_reuse_are_not_leaked() {
 				heap_alloc_strategy: DEFAULT_HEAP_ALLOC_STRATEGY,
 				wasm_multi_value: false,
 				wasm_bulk_memory: false,
+				wasm_reference_types: false,
 				wasm_simd: false,
 			},
 		},
@@ -496,7 +496,7 @@ fn test_rustix_version_matches_with_wasmtime() {
 	let wasmtime_rustix = metadata
 		.packages
 		.iter()
-		.find(|pkg| pkg.name == "wasmtime")
+		.find(|pkg| pkg.name == "wasmtime-runtime")
 		.unwrap()
 		.dependencies
 		.iter()

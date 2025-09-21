@@ -496,7 +496,7 @@ cargo_upgrade strum 0.27.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 36.0.0
+cargo_upgrade wasmtime 37.0.0
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk
