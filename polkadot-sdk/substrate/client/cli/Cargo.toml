@@ -167,3 +167,4 @@ default-features = true
 [features]
 default = ["rocksdb"]
 rocksdb = ["sc-client-db/rocksdb"]
+litep2p = ["sc-network/litep2p"]

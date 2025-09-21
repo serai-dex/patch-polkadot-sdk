@@ -372,3 +372,53 @@ index 4a6a807..9fb176a 100644
  impl From<litep2p::protocol::notification::Direction> for Direction {
  	fn from(direction: litep2p::protocol::notification::Direction) -> Self {
  		match direction {
+diff --git a/substrate/client/cli/Cargo.toml b/substrate/client/cli/Cargo.toml
+index 1a3c24aa..bb726f49 100644
+--- a/substrate/client/cli/Cargo.toml
++++ b/substrate/client/cli/Cargo.toml
+@@ -77,3 +77,4 @@ tempfile = { workspace = true }
+ [features]
+ default = ["rocksdb"]
+ rocksdb = ["sc-client-db/rocksdb"]
++litep2p = ["sc-network/litep2p"]
+diff --git a/substrate/client/cli/src/arg_enums.rs b/substrate/client/cli/src/arg_enums.rs
+index cd245dc0..6950a111 100644
+--- a/substrate/client/cli/src/arg_enums.rs
++++ b/substrate/client/cli/src/arg_enums.rs
+@@ -318,13 +318,23 @@ pub enum NetworkBackendType {
+ 	Libp2p,
+ 
+ 	/// Use litep2p for P2P networking.
++	#[cfg(feature = "litep2p")]
+ 	Litep2p,
+ }
+ 
++impl Default for NetworkBackendType {
++  fn default() -> Self {
++    #[cfg(feature = "litep2p")]
++    return Self::Litep2p;
++    Self::Libp2p
++  }
++}
++
+ impl Into<sc_network::config::NetworkBackendType> for NetworkBackendType {
+ 	fn into(self) -> sc_network::config::NetworkBackendType {
+ 		match self {
+ 			Self::Libp2p => sc_network::config::NetworkBackendType::Libp2p,
++			#[cfg(feature = "litep2p")]
+ 			Self::Litep2p => sc_network::config::NetworkBackendType::Litep2p,
+ 		}
+ 	}
+diff --git a/substrate/client/cli/src/params/network_params.rs b/substrate/client/cli/src/params/network_params.rs
+index cc6c5ca1..1476fe76 100644
+--- a/substrate/client/cli/src/params/network_params.rs
++++ b/substrate/client/cli/src/params/network_params.rs
+@@ -182,7 +182,7 @@ pub struct NetworkParams {
+ 		long,
+ 		value_enum,
+ 		value_name = "NETWORK_BACKEND",
+-		default_value_t = NetworkBackendType::Litep2p,
++		default_value_t = NetworkBackendType::default(),
+ 		ignore_case = true,
+ 		verbatim_doc_comment
+ 	)]
