@@ -1101,7 +1101,7 @@ pub mod pallet {
 	#[derive(frame_support::DefaultNoBound)]
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
-		// #[serde(skip)]
+		#[codec(skip)]
 		pub _config: core::marker::PhantomData<T>,
 	}
 

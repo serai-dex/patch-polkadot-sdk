@@ -7,7 +7,7 @@ index 1914ae4..a5e1d2b 100644
  	pub struct GenesisConfig<T: Config> {
  		pub keys: Vec<AuthorityId>,
 -		#[serde(skip)]
-+		// #[serde(skip)]
++		#[codec(skip)]
  		pub _config: core::marker::PhantomData<T>,
  	}
  
@@ -20,7 +20,7 @@ index 981e010..42a00cb 100644
  		pub authorities: Vec<(AuthorityId, BabeAuthorityWeight)>,
  		pub epoch_config: BabeEpochConfiguration,
 -		#[serde(skip)]
-+		// #[serde(skip)]
++		#[codec(skip)]
  		pub _config: core::marker::PhantomData<T>,
  	}
  
@@ -33,7 +33,7 @@ index 85608ad..cf13f6c 100644
  		/// The block length limit.
  		pub block_length: FixedU64,
 -		#[serde(skip)]
-+		// #[serde(skip)]
++		#[codec(skip)]
  		/// The required configuration field.
  		pub _config: core::marker::PhantomData<T>,
  	}
@@ -46,7 +46,7 @@ index 3045001..0a365bc 100644
  	pub struct GenesisConfig<T: Config> {
  		pub authorities: AuthorityList,
 -		#[serde(skip)]
-+		// #[serde(skip)]
++		#[codec(skip)]
  		pub _config: core::marker::PhantomData<T>,
  	}
  
@@ -58,10 +58,11 @@ index 31d519e..f12114b 100644
  					"]
  				));
  			}
--			attrs.push(syn::parse_quote!(
-+			/* attrs.push(syn::parse_quote!(
- 				#[derive(#frame_support::Serialize, #frame_support::Deserialize)]
- 			));
+ 			attrs.push(syn::parse_quote!(
+-				#[derive(#frame_support::Serialize, #frame_support::Deserialize)]
+-			));
++				#[derive(#frame_support::__private::codec::Encode, #frame_support::__private::codec::Decode)]
++			)); /*
  			attrs.push(syn::parse_quote!( #[serde(rename_all = "camelCase")] ));
  			attrs.push(syn::parse_quote!( #[serde(deny_unknown_fields)] ));
  			attrs.push(syn::parse_quote!( #[serde(bound(serialize = ""))] ));
@@ -93,7 +94,7 @@ index 4f6db6f..e637cba 100644
  	#[pallet::genesis_config]
  	pub struct GenesisConfig<T: Config> {
 -		#[serde(skip)]
-+		// #[serde(skip)]
++		#[codec(skip)]
  		pub _config: core::marker::PhantomData<T>,
  	}
  
@@ -106,7 +107,7 @@ index 7a51ba6..847e387 100644
  
  		use #scrate::__private::serde as __genesis_config_serde_import__;
 -		#[derive(#scrate::__private::serde::Serialize, #scrate::__private::serde::Deserialize, Default)]
-+		#[derive(Default)] /*
++		#[derive(Default, #scrate::__private::codec::Encode, #scrate::__private::codec::Decode)] /*
  		#[serde(rename_all = "camelCase")]
  		#[serde(deny_unknown_fields)]
 -		#[serde(crate = "__genesis_config_serde_import__")]
@@ -118,11 +119,12 @@ diff --git a/substrate/frame/transaction-payment/src/lib.rs b/substrate/frame/tr
 index 4424cbac..6d986983 100644
 --- a/substrate/frame/transaction-payment/src/lib.rs
 +++ b/substrate/frame/transaction-payment/src/lib.rs
-@@ -414,7 +414,6 @@ pub mod pallet {
+@@ -414,7 +414,7 @@ pub mod pallet {
  	#[pallet::genesis_config]
  	pub struct GenesisConfig<T: Config> {
  		pub multiplier: Multiplier,
 -		#[serde(skip)]
++		#[codec(skip)]
  		pub _config: core::marker::PhantomData<T>,
  	}
  
