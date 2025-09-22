@@ -60,7 +60,7 @@ pub fn expand_outer_config(
 		#types
 
 		use #scrate::__private::serde as __genesis_config_serde_import__;
-		#[derive(Default)] /*
+		#[derive(Default, #scrate::__private::codec::Encode, #scrate::__private::codec::Decode)] /*
 		#[serde(rename_all = "camelCase")]
 		#[serde(deny_unknown_fields)]
 		#[serde(crate = "__genesis_config_serde_import__")] */

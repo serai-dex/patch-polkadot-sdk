@@ -95,9 +95,9 @@ pub fn expand_genesis_config(def: &mut Def) -> proc_macro2::TokenStream {
 					"]
 				));
 			}
-			/* attrs.push(syn::parse_quote!(
-				#[derive(#frame_support::Serialize, #frame_support::Deserialize)]
-			));
+			attrs.push(syn::parse_quote!(
+				#[derive(#frame_support::__private::codec::Encode, #frame_support::__private::codec::Decode)]
+			)); /*
 			attrs.push(syn::parse_quote!( #[serde(rename_all = "camelCase")] ));
 			attrs.push(syn::parse_quote!( #[serde(deny_unknown_fields)] ));
 			attrs.push(syn::parse_quote!( #[serde(bound(serialize = ""))] ));

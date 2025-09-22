@@ -63,7 +63,7 @@ pub mod pallet {
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config> {
 		pub keys: Vec<AuthorityId>,
-		// #[serde(skip)]
+		#[codec(skip)]
 		pub _config: core::marker::PhantomData<T>,
 	}
 

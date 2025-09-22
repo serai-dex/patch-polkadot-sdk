@@ -10,8 +10,9 @@
 - `zero_genesis_hash`: Updates `frame-system` to use `[0; _]` for the current
   block hash when building the genesis block itself.
 
-- `serde_genesis_config`: Removes `serde::{Serialize, Deserialize}` from the
-  genesis config.
+- `scale_genesis_config`: Removes `serde::{Serialize, Deserialize}` from the
+  genesis config in favor of `scale::{Encode, Decode}`, allowing non-JSON
+  `GenesisConfig`s.
 
 - `session`: Replaces `pallet-session` with a much more minimal variant,
   sufficient for `pallet-babe` and `pallet-grandpa`.
