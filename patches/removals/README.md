@@ -23,6 +23,8 @@
   `sc-offchain`, etc. This allows removing a variety of crates for HTTP from
   the tree.
 
+- `sp-maybe-compressed-blob`: Remove compression of the on-chain code.
+
 - `sp-transaction-storage-proof`: Removes references to
   `sp-transaction-storage`.
 

@@ -5796,7 +5796,6 @@ version = "0.39.0"
 dependencies = [
  "polkavm",
  "sc-allocator",
- "sp-maybe-compressed-blob",
  "sp-wasm-interface",
  "thiserror 2.0.16",
  "wasm-instrument",
@@ -7017,14 +7016,6 @@ dependencies = [
  "parking_lot",
  "sp-core",
  "sp-externalities",
-]
-
-[[package]]
-name = "sp-maybe-compressed-blob"
-version = "11.0.0"
-dependencies = [
- "thiserror 2.0.16",
- "zstd",
 ]
 
 [[package]]

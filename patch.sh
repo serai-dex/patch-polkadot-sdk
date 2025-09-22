@@ -434,6 +434,9 @@ echo "$(cat ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs | sed s
 
 # Metadata has now been removed
 
+# Remove `sp-maybe-compressed-blob`
+remove_crate_tree substrate/primitives/maybe-compressed-blob
+
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
