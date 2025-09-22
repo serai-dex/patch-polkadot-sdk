@@ -38,10 +38,6 @@ workspace = true
 workspace = true
 optional = true
 
-[dependencies.sp-maybe-compressed-blob]
-default-features = true
-workspace = true
-
 [dependencies.strum]
 features = ["derive"]
 workspace = true
