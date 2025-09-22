@@ -7379,7 +7379,6 @@ dependencies = [
  "parity-wasm",
  "polkavm-linker",
  "shlex",
- "sp-maybe-compressed-blob",
  "sp-version",
  "strum 0.27.2",
  "tempfile",
