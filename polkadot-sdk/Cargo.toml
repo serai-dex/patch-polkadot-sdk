@@ -89,7 +89,6 @@ members = [
     "substrate/primitives/io",
     "substrate/primitives/keyring",
     "substrate/primitives/keystore",
-    "substrate/primitives/maybe-compressed-blob",
     "substrate/primitives/offchain",
     "substrate/primitives/panic-handler",
     "substrate/primitives/rpc",
@@ -951,10 +950,6 @@ default-features = false
 path = "substrate/primitives/keystore"
 default-features = false
 
-[workspace.dependencies.sp-maybe-compressed-blob]
-path = "substrate/primitives/maybe-compressed-blob"
-default-features = false
-
 [workspace.dependencies.sp-offchain]
 path = "substrate/primitives/offchain"
 default-features = false
@@ -1123,10 +1118,6 @@ default-features = false
 
 [workspace.dependencies.zeroize]
 version = "1.7.0"
-default-features = false
-
-[workspace.dependencies.zstd]
-version = "0.13.0"
 default-features = false
 
 [profile.release]

@@ -32,10 +32,6 @@ optional = true
 default-features = true
 workspace = true
 
-[dependencies.sp-maybe-compressed-blob]
-default-features = true
-workspace = true
-
 [dependencies.sp-wasm-interface]
 default-features = true
 workspace = true

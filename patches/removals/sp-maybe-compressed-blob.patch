@@ -1,0 +1,18 @@
+diff --git a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
+index 74cfae5..3c7866d 100644
+--- a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
++++ b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
+@@ -40,10 +40,10 @@ impl RuntimeBlob {
+ 	///
+ 	/// See [`sp_maybe_compressed_blob`] for details about decompression.
+ 	pub fn uncompress_if_needed(wasm_code: &[u8]) -> Result<Self, WasmError> {
+-		use sp_maybe_compressed_blob::CODE_BLOB_BOMB_LIMIT;
++		/* use sp_maybe_compressed_blob::CODE_BLOB_BOMB_LIMIT;
+ 		let wasm_code = sp_maybe_compressed_blob::decompress(wasm_code, CODE_BLOB_BOMB_LIMIT)
+-			.map_err(|e| WasmError::Other(format!("Decompression error: {:?}", e)))?;
+-		Self::new(&wasm_code)
++			.map_err(|e| WasmError::Other(format!("Decompression error: {:?}", e)))?; */
++		Self::new(wasm_code)
+ 	}
+ 
+ 	/// Create `RuntimeBlob` from the given WASM or PolkaVM program blob.
