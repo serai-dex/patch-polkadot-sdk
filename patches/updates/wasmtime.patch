@@ -67,8 +67,11 @@ index 286d134..939852a 100644
  
  	Ok(())
  }
-@@ -234,11 +235,6 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
- 	config.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize);
+@@ -233,12 +234,8 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+ 	let mut config = wasmtime::Config::new();
+-	config.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize);
++	config.cranelift_opt_level(wasmtime::OptLevel::Speed);
++	config.cranelift_pcc();
  	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
  
 -	// Since wasmtime 6.0.0 the default for this is `true`, but that heavily regresses
@@ -79,7 +82,7 @@ index 286d134..939852a 100644
  	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
  		Some(os_string) if os_string == "jitdump" => wasmtime::ProfilingStrategy::JitDump,
  		None => wasmtime::ProfilingStrategy::None,
-@@ -270,13 +266,41 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+@@ -270,13 +267,41 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
  
  	// Be clear and specific about the extensions we support. If an update brings new features
  	// they should be introduced here as well.
@@ -123,7 +126,7 @@ index 286d134..939852a 100644
  
  	let (use_pooling, use_cow) = match semantics.instantiation_strategy {
  		InstantiationStrategy::PoolingCopyOnWrite => (true, true),
-@@ -313,15 +337,17 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+@@ -313,15 +338,17 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
  			//   size: 32384
  			//   table_elements: 1249
  			//   memory_pages: 2070
@@ -147,7 +150,7 @@ index 286d134..939852a 100644
  
  		config.allocation_strategy(wasmtime::InstanceAllocationStrategy::Pooling(pooling_config));
  	}
-@@ -451,9 +477,6 @@ pub struct Semantics {
+@@ -451,9 +478,6 @@ pub struct Semantics {
  	/// Enables WASM Bulk Memory Operations proposal
  	pub wasm_bulk_memory: bool,
  

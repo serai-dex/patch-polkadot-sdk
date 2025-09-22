@@ -45,4 +45,7 @@
 - `sysinfo`: Removes `sysinfo` which was only included to print a warning in
   certain conditions.
 
+- `wasm-opt`: Removes `wasm-opt` whose requirement has been largely superseded
+  by the introduction of `wasm32v1-none` and `-Zbuild-std`.
+
 - `wasm-timer`: Removes support for WASM from `sc-network`, `sc-telemtry`.
