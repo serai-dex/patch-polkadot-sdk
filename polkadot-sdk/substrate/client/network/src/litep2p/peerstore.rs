@@ -355,7 +355,7 @@ impl Peerstore {
 			};
 
 			self.peerstore_handle.progress_time(seconds_passed);
-			let _ = wasmtimer::tokio::sleep(Duration::from_secs(1)).await;
+			let _ = tokio::time::sleep(Duration::from_secs(1)).await;
 		}
 	}
 }

@@ -5936,7 +5936,6 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "unsigned-varint 0.8.0",
- "wasmtimer",
  "zeroize",
 ]
 
@@ -6304,7 +6303,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.16",
- "wasmtimer",
+ "tokio",
 ]
 
 [[package]]
@@ -8544,19 +8543,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.106",
-]
-
-[[package]]
-name = "wasmtimer"
-version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c598d6b99ea013e35844697fc4670d08339d5cda15588f193c6beedd12f644b"
-dependencies = [
- "futures",
- "js-sys",
- "parking_lot",
- "pin-utils",
- "wasm-bindgen",
 ]
 
 [[package]]

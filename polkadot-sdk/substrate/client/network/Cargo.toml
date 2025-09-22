@@ -188,11 +188,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.wasmtimer]
-version = "0.4"
-default-features = false
-features = ["tokio"]
-
 [build-dependencies]
 
 [features]

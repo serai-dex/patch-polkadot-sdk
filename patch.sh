@@ -107,15 +107,11 @@ function remove_matching_phrase {
 # Apply `patches/`
 apply_patches
 
-# Replace the `wasm-timer` dependency with `wasmtimer`
-echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
-echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+# Add `tokio` as a dependency of `sc-telemetry` due to using it in place of `wasm-timer`
+echo '[dependencies.tokio]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+echo 'version = "1"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
-echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
-echo '[dependencies.wasmtimer]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
-echo 'version = "0.4"' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
-echo 'default-features = false' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
-echo 'features = ["tokio"]' >> ./polkadot-sdk/substrate/client/network/Cargo.toml
+echo 'features = ["time"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 
 # Remove unused HTTP module and associated dependencies
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
