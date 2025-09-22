@@ -356,7 +356,15 @@ remove_crate_tree substrate/scripts
 # Remove unused utilities
 remove_crate_tree substrate/client/runtime-utilities
 # serai-develop remove_crate_tree substrate/utils/build-script-utils
-remove_crate_tree substrate/utils/frame
+# serai-develop remove_crate_tree substrate/utils/frame
+remove_crate_tree substrate/utils/frame/benchmarking-cli
+remove_crate_tree substrate/utils/frame/generate-bags
+remove_crate_tree substrate/utils/frame/omni-bencher
+remove_crate_tree substrate/utils/frame/remote-externalities
+remove_crate_tree substrate/utils/frame/rpc/client
+remove_crate_tree substrate/utils/frame/rpc/state-trie-migration-rpc
+remove_crate_tree substrate/utils/frame/rpc/support
+remove_crate_tree substrate/utils/frame/storage-access-test-runtime
 remove_crate_tree substrate/utils/substrate-bip39
 
 # Remove fuzzers

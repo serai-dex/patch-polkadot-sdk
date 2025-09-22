@@ -111,6 +111,7 @@ members = [
     "substrate/primitives/weights",
     "substrate/utils/build-script-utils",
     "substrate/utils/fork-tree",
+    "substrate/utils/frame/rpc/system",
     "substrate/utils/prometheus",
     "substrate/utils/wasm-builder",
 ]

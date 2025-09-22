@@ -4148,6 +4148,16 @@ version = "41.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
+ "pallet-session-original",
+ "parity-scale-codec",
+]
+
+[[package]]
+name = "pallet-session-original"
+version = "41.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
  "impl-trait-for-tuples",
  "log",
  "pallet-timestamp",
@@ -7387,6 +7397,24 @@ dependencies = [
 [[package]]
 name = "substrate-build-script-utils"
 version = "11.0.0"
+
+[[package]]
+name = "substrate-frame-rpc-system"
+version = "45.0.0"
+dependencies = [
+ "frame-system-rpc-runtime-api",
+ "futures",
+ "jsonrpsee",
+ "log",
+ "parity-scale-codec",
+ "sc-rpc-api",
+ "sc-transaction-pool-api",
+ "sp-api",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-core",
+ "sp-runtime",
+]
 
 [[package]]
 name = "substrate-prometheus-endpoint"
