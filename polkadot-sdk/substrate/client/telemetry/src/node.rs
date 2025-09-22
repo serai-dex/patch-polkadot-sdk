@@ -74,7 +74,7 @@ enum NodeSocket<TTrans: Transport> {
 	/// A new connection should be started as soon as possible.
 	ReconnectNow,
 	/// Waiting before attempting to dial again.
-	WaitingReconnect(wasmtimer::tokio::Sleep),
+	WaitingReconnect(Pin<Box<tokio::time::Sleep>>),
 	/// Temporary transition state.
 	Poisoned,
 }
@@ -82,7 +82,7 @@ enum NodeSocket<TTrans: Transport> {
 impl<TTrans: Transport> NodeSocket<TTrans> {
 	fn wait_reconnect() -> NodeSocket<TTrans> {
 		let random_delay = rand::thread_rng().gen_range(10..20);
-		let delay = wasmtimer::tokio::sleep(Duration::from_secs(random_delay));
+		let delay = Box::pin(tokio::time::sleep(Duration::from_secs(random_delay)));
 		log::trace!(target: "telemetry", "Pausing for {} secs before reconnecting", random_delay);
 		NodeSocket::WaitingReconnect(delay)
 	}

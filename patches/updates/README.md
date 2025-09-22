@@ -13,9 +13,4 @@
 
 - `twox-hash`: Updates from `twox-hash 1` to `twox-hash 2`.
 
-- `wasm-timer`: Updates `wasm-timer` to the fork `wasmtimer`. This was done as
-  Serai had both in tree (as `alloy` depends on `wasmtimer`) and could
-  reconcile `wasm-timer` here (yet not vice versa). `wasmtimer` is also a
-  slightly slimmer package.
-
 - `wasmtime`: Updates from `wasmtime 8` to `wasmtime 36`, bringing `rustix 1` alone.

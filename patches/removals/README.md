@@ -44,3 +44,5 @@
 
 - `sysinfo`: Removes `sysinfo` which was only included to print a warning in
   certain conditions.
+
+- `wasm-timer`: Removes support for WASM from `sc-network`, `sc-telemtry`.

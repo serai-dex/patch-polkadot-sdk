@@ -290,7 +290,7 @@ pub struct ProtocolController {
 	/// Connect only to reserved nodes.
 	reserved_only: bool,
 	/// Next time to allocate slots. This is done once per second.
-	next_periodic_alloc_slots: wasmtimer::std::Instant,
+	next_periodic_alloc_slots: std::time::Instant,
 	/// Outgoing channel for messages to `Notifications`.
 	to_notifications: TracingUnboundedSender<Message>,
 	/// `PeerStore` handle for checking peer reputation values and getting connection candidates
@@ -323,7 +323,7 @@ impl ProtocolController {
 			nodes: HashMap::new(),
 			reserved_nodes,
 			reserved_only: config.reserved_only,
-			next_periodic_alloc_slots: wasmtimer::std::Instant::now(),
+			next_periodic_alloc_slots: std::time::Instant::now(),
 			to_notifications,
 			peer_store,
 		};
@@ -341,7 +341,7 @@ impl ProtocolController {
 	/// Intended for tests only. Use `run` for driving [`ProtocolController`].
 	pub async fn next_action(&mut self) -> bool {
 		let either = loop {
-			let mut next_alloc_slots = wasmtimer::tokio::sleep_until(self.next_periodic_alloc_slots).fuse();
+			let mut next_alloc_slots = Box::pin(tokio::time::sleep_until(self.next_periodic_alloc_slots.into()).fuse());
 
 			// See the module doc for why we use `select_biased!`.
 			futures::select_biased! {
@@ -355,7 +355,7 @@ impl ProtocolController {
 				},
 				_ = next_alloc_slots => {
 					self.alloc_slots();
-					self.next_periodic_alloc_slots = wasmtimer::std::Instant::now() + Duration::new(1, 0);
+					self.next_periodic_alloc_slots = std::time::Instant::now() + Duration::new(1, 0);
 				},
 			}
 		};
