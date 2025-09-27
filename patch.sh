@@ -127,6 +127,9 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/un
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
 
+# Remove `wasm-opt` from `substrate-wasm-builder`
+remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "wasm-opt"
+
 # Remove `sysinfo` from `sc-db`, which is detected as in-use because it's also the name of a `mod`
 remove_matching_lines ./polkadot-sdk/substrate/client/db/Cargo.toml "sysinfo"
 # Remove `prost-build` from `sc-network`, which is unused yet `machete` doesn't realize
@@ -138,7 +141,7 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256
 
 # Remove schemars
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/src/weight_v2.rs "schemars"
-remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.oml "schemars"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
 
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
