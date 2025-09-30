@@ -1034,7 +1034,7 @@ fn compact_wasm(
 	bloaty_binary: &WasmBinaryBloaty,
 ) -> Option<WasmBinary> {
 	let wasm_compact_path = project.join(format!("{blob_name}.compact.wasm"));
-	/* let start = std::time::Instant::now();
+	std::fs::copy(bloaty_binary.bloaty_path(), &wasm_compact_path).unwrap(); /* let start = std::time::Instant::now();
 	wasm_opt::OptimizationOptions::new_opt_level_0()
 		.mvp_features_only()
 		.debug_info(true)
