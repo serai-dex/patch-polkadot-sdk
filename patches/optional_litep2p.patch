@@ -51,7 +51,7 @@ index acaa017..429904f 100644
  	/// Convert public key to `PeerId`.
  	pub fn to_peer_id(&self) -> PeerId {
 -		litep2p::PeerId::from(litep2p::crypto::PublicKey::Ed25519(self.clone().into())).into()
-+		libp2p_identity::PeerId::from_multihash(crate::multihash::Code::Identity.digest(&self.to_bytes()).into()).unwrap().into()
++		libp2p_identity::PeerId::from_public_key(&libp2p_ed25519::PublicKey::from(self.clone()).into()).into()
  	}
  }
 

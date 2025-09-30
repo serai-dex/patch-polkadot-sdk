@@ -188,7 +188,7 @@ impl PublicKey {
 
 	/// Convert public key to `PeerId`.
 	pub fn to_peer_id(&self) -> PeerId {
-		libp2p_identity::PeerId::from_multihash(crate::multihash::Code::Identity.digest(&self.to_bytes()).into()).unwrap().into()
+		libp2p_identity::PeerId::from_public_key(&libp2p_ed25519::PublicKey::from(self.clone()).into()).into()
 	}
 }
 
