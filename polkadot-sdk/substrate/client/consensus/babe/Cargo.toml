@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-babe"
-version = "0.51.0"
+version = "0.53.0"
 description = "BABE consensus algorithm for substrate"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-consensus-babe"
@@ -65,15 +65,15 @@ workspace = true
 default-features = true
 workspace = true
 
+[dependencies.sc-consensus]
+default-features = true
+workspace = true
+
 [dependencies.sc-consensus-epochs]
 default-features = true
 workspace = true
 
 [dependencies.sc-consensus-slots]
-default-features = true
-workspace = true
-
-[dependencies.sc-consensus]
 default-features = true
 workspace = true
 
@@ -101,15 +101,15 @@ workspace = true
 default-features = true
 workspace = true
 
+[dependencies.sp-consensus]
+default-features = true
+workspace = true
+
 [dependencies.sp-consensus-babe]
 default-features = true
 workspace = true
 
 [dependencies.sp-consensus-slots]
-default-features = true
-workspace = true
-
-[dependencies.sp-consensus]
 default-features = true
 workspace = true
 
@@ -130,6 +130,10 @@ default-features = true
 workspace = true
 
 [dependencies.sp-runtime]
+default-features = true
+workspace = true
+
+[dependencies.sp-timestamp]
 default-features = true
 workspace = true
 

@@ -1,6 +1,6 @@
 [package]
 name = "frame-benchmarking"
-version = "41.0.1"
+version = "43.0.0"
 license = "Apache-2.0"
 description = "Macro for benchmarking a FRAME runtime."
 readme = "README.md"
@@ -26,10 +26,10 @@ workspace = true
 [dependencies.codec]
 workspace = true
 
-[dependencies.frame-support-procedural]
+[dependencies.frame-support]
 workspace = true
 
-[dependencies.frame-support]
+[dependencies.frame-support-procedural]
 workspace = true
 
 [dependencies.frame-system]
@@ -63,10 +63,10 @@ workspace = true
 [dependencies.sp-io]
 workspace = true
 
-[dependencies.sp-runtime-interface]
+[dependencies.sp-runtime]
 workspace = true
 
-[dependencies.sp-runtime]
+[dependencies.sp-runtime-interface]
 workspace = true
 
 [dependencies.sp-storage]

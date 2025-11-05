@@ -1,15 +1,17 @@
 diff --git a/substrate/utils/wasm-builder/src/wasm_project.rs b/substrate/utils/wasm-builder/src/wasm_project.rs
-index d2c7399..7c7408d 100644
+index b6709682..7110e2e3 100644
 --- a/substrate/utils/wasm-builder/src/wasm_project.rs
 +++ b/substrate/utils/wasm-builder/src/wasm_project.rs
-@@ -250,15 +250,15 @@ fn maybe_compact_and_compress_wasm(
+@@ -249,18 +249,18 @@ fn maybe_compact_and_compress_wasm(
+ 	// profile is `Debug`, because the blob built in `Debug` profile is too slow for normal
+ 	// development activities.
  	let (compact_blob_path, compact_compressed_blob_path) =
  		if build_config.outer_build_profile.wants_compact() {
  			let compact_blob_path = compact_wasm(&project, blob_name, &bloaty_blob_binary);
 -			let compact_compressed_blob_path =
++			/* let compact_compressed_blob_path =
 -				compact_blob_path.as_ref().and_then(|p| try_compress_blob(&p.0, blob_name));
 -			(compact_blob_path, compact_compressed_blob_path)
-+			/* let compact_compressed_blob_path =
 +				compact_blob_path.as_ref().and_then(|p| try_compress_blob(&p.0, blob_name)); */
 +			(compact_blob_path, None)
  		} else {
@@ -17,13 +19,14 @@ index d2c7399..7c7408d 100644
 +			/* // We at least want to lower the `sign-ext` code to `mvp`.
  			wasm_opt::OptimizationOptions::new_opt_level_0()
  				.add_pass(wasm_opt::Pass::SignextLowering)
+ 				.debug_info(true)
  				.run(bloaty_blob_binary.bloaty_path(), bloaty_blob_binary.bloaty_path())
 -				.expect("Failed to lower sign-ext in WASM binary.");
 +				.expect("Failed to lower sign-ext in WASM binary."); */
  
  			(None, None)
  		};
-@@ -1034,7 +1034,7 @@ fn compact_wasm(
+@@ -1031,7 +1031,7 @@ fn compact_wasm(
  	bloaty_binary: &WasmBinaryBloaty,
  ) -> Option<WasmBinary> {
  	let wasm_compact_path = project.join(format!("{blob_name}.compact.wasm"));
@@ -32,7 +35,7 @@ index d2c7399..7c7408d 100644
  	wasm_opt::OptimizationOptions::new_opt_level_0()
  		.mvp_features_only()
  		.debug_info(true)
-@@ -1047,12 +1047,12 @@ fn compact_wasm(
+@@ -1044,12 +1044,12 @@ fn compact_wasm(
  		"{} {}",
  		colorize_info_message("Compacted wasm in"),
  		colorize_info_message(format!("{:?}", start.elapsed()).as_str())
@@ -47,7 +50,7 @@ index d2c7399..7c7408d 100644
  	use sp_maybe_compressed_blob::CODE_BLOB_BOMB_LIMIT;
  
  	let project = compact_blob_path.parent().expect("blob path should have a parent directory");
-@@ -1079,7 +1079,7 @@ fn try_compress_blob(compact_blob_path: &Path, out_name: &str) -> Option<WasmBin
+@@ -1076,7 +1076,7 @@ fn try_compress_blob(compact_blob_path: &Path, out_name: &str) -> Option<WasmBin
  		println!("{}", colorize_info_message("Skipping blob compression"));
  		None
  	}

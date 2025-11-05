@@ -1,6 +1,6 @@
 [package]
 name = "pallet-grandpa"
-version = "41.0.0"
+version = "43.0.0"
 license = "Apache-2.0"
 description = "FRAME pallet for GRANDPA finality gadget"
 readme = "README.md"
@@ -89,6 +89,7 @@ runtime-benchmarks = [
     "frame-benchmarking/runtime-benchmarks",
     "frame-support/runtime-benchmarks",
     "frame-system/runtime-benchmarks",
+    "pallet-session/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
     "sp-staking/runtime-benchmarks",
 ]

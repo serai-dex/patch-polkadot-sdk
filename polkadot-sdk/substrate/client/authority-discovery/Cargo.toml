@@ -1,6 +1,6 @@
 [package]
 name = "sc-authority-discovery"
-version = "0.51.0"
+version = "0.53.0"
 build = "build.rs"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate authority discovery."
@@ -61,11 +61,11 @@ default-features = true
 default-features = true
 workspace = true
 
-[dependencies.sc-network-types]
+[dependencies.sc-network]
 default-features = true
 workspace = true
 
-[dependencies.sc-network]
+[dependencies.sc-network-types]
 default-features = true
 workspace = true
 

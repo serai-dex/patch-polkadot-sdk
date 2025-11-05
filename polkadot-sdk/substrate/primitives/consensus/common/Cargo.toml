@@ -1,6 +1,6 @@
 [package]
 name = "sp-consensus"
-version = "0.43.0"
+version = "0.45.0"
 license = "Apache-2.0"
 description = "Common utilities for building and using consensus engines in substrate."
 documentation = "https://docs.rs/sp-consensus/"

@@ -1,6 +1,6 @@
 [package]
 name = "sc-executor-common"
-version = "0.39.0"
+version = "0.41.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "A set of common definitions that are needed for defining execution engines."
 documentation = "https://docs.rs/sc-executor-common/"

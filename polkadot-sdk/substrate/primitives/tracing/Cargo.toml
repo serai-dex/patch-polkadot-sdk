@@ -1,6 +1,6 @@
 [package]
 name = "sp-tracing"
-version = "17.1.0"
+version = "19.0.0"
 license = "Apache-2.0"
 description = "Instrumentation primitives and macros for Substrate."
 readme = "README.md"
@@ -59,13 +59,9 @@ with-tracing = [
 ]
 std = [
     "codec/std",
+    "regex",
     "tracing-core/std",
     "tracing-subscriber",
     "tracing/std",
     "with-tracing",
-]
-test-utils = [
-    "regex",
-    "regex/std",
-    "std",
 ]

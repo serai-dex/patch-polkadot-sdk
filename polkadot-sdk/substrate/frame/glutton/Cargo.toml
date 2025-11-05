@@ -1,6 +1,6 @@
 [package]
 name = "pallet-glutton"
-version = "27.0.0"
+version = "29.0.0"
 license = "Apache-2.0"
 description = "FRAME pallet for pushing a chain to its weight limits"
 readme = "README.md"

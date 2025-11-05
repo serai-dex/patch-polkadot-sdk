@@ -41,7 +41,7 @@ use std::{
 		Arc,
 	},
 };
-use wasmtime::{AsContext, Cache, Engine, Memory};
+use wasmtime::{AsContext, Cache, CacheConfig, Engine, Memory};
 
 const MAX_INSTANCE_COUNT: u32 = 64;
 
@@ -204,36 +204,20 @@ fn setup_wasmtime_caching(
 	fs::create_dir_all(&wasmtime_cache_root)
 		.map_err(|err| format!("cannot create the dirs to cache: {}", err))?;
 
-	// Canonicalize the path after creating the directories.
-	let wasmtime_cache_root = wasmtime_cache_root
-		.canonicalize()
-		.map_err(|err| format!("failed to canonicalize the path: {}", err))?;
+	let mut cache_config = CacheConfig::new();
+	cache_config.with_directory(cache_path);
 
-	// Write the cache config file
-	let cache_config_path = wasmtime_cache_root.join("cache-config.toml");
-	let config_content = format!(
-		"\
-[cache]
-enabled = true
-directory = \"{cache_dir}\"
-",
-		cache_dir = wasmtime_cache_root.display()
-	);
-	fs::write(&cache_config_path, config_content)
-		.map_err(|err| format!("cannot write the cache config: {}", err))?;
+	let cache =
+		Cache::new(cache_config).map_err(|err| format!("failed to initiate Cache: {err:?}"))?;
 
-	config.cache(Some(
-		Cache::from_file(Some(&cache_config_path))
-			.map_err(|err| format!("failed to parse the config: {:#}", err))?,
-	));
+	config.cache(Some(cache));
 
 	Ok(())
 }
 
 fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config, WasmError> {
 	let mut config = wasmtime::Config::new();
-	config.cranelift_opt_level(wasmtime::OptLevel::Speed);
-	config.cranelift_pcc(true);
+	config.cranelift_opt_level(wasmtime::OptLevel::Speed); config.cranelift_pcc(true);
 	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
 
 	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
@@ -267,11 +251,15 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 
 	// Be clear and specific about the extensions we support. If an update brings new features
 	// they should be introduced here as well.
+	// config.wasm_reference_types(semantics.wasm_reference_types);
 	config.wasm_simd(semantics.wasm_simd);
+	config.wasm_relaxed_simd(semantics.wasm_simd);
 	config.wasm_bulk_memory(semantics.wasm_bulk_memory);
 	config.wasm_multi_value(semantics.wasm_multi_value);
 	config.wasm_multi_memory(false);
+	// config.wasm_threads(false);
 	config.wasm_memory64(false);
+
 	config.wasm_tail_call(false);
 	config.wasm_custom_page_sizes(false);
 	config.wasm_wide_arithmetic(false);
@@ -338,14 +326,11 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 			//   size: 32384
 			//   table_elements: 1249
 			//   memory_pages: 2070
-			.max_core_instance_size(128 * 1024)
+			.max_core_instance_size(512 * 1024)
 			.table_elements(8192)
-			.max_memory_size(usize::try_from(memory_pages * WASM_PAGE_SIZE).unwrap())
-			// We can only have a single of those.
-			.total_memories(MAX_INSTANCE_COUNT)
-			.max_memories_per_module(1)
+			.max_memory_size(memory_pages as usize * WASM_PAGE_SIZE as usize)
 			.total_tables(MAX_INSTANCE_COUNT)
-			.max_tables_per_module(1)
+			.total_memories(MAX_INSTANCE_COUNT)
 			// This determines how many instances of the module can be
 			// instantiated in parallel from the same `Module`.
 			.total_core_instances(MAX_INSTANCE_COUNT);
@@ -477,6 +462,9 @@ pub struct Semantics {
 
 	/// Enables WASM Bulk Memory Operations proposal
 	pub wasm_bulk_memory: bool,
+
+	// /// Enables WASM Reference Types proposal
+	// pub wasm_reference_types: bool,
 
 	/// Enables WASM Fixed-Width SIMD proposal
 	pub wasm_simd: bool,

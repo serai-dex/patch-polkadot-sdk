@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-grandpa"
-version = "0.36.0"
+version = "0.38.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Integration of the GRANDPA finality gadget into substrate."
 documentation = "https://docs.rs/sc-consensus-grandpa"
@@ -89,6 +89,10 @@ workspace = true
 default-features = true
 workspace = true
 
+[dependencies.sc-network]
+default-features = true
+workspace = true
+
 [dependencies.sc-network-common]
 default-features = true
 workspace = true
@@ -102,10 +106,6 @@ default-features = true
 workspace = true
 
 [dependencies.sc-network-types]
-default-features = true
-workspace = true
-
-[dependencies.sc-network]
 default-features = true
 workspace = true
 
@@ -141,11 +141,11 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-consensus-grandpa]
+[dependencies.sp-consensus]
 default-features = true
 workspace = true
 
-[dependencies.sp-consensus]
+[dependencies.sp-consensus-grandpa]
 default-features = true
 workspace = true
 

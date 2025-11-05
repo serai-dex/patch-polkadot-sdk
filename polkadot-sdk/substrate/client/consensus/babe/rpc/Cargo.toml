@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-babe-rpc"
-version = "0.51.0"
+version = "0.53.0"
 description = "RPC extensions for the BABE consensus algorithm"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 readme = "README.md"
@@ -63,11 +63,11 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-consensus-babe]
+[dependencies.sp-consensus]
 default-features = true
 workspace = true
 
-[dependencies.sp-consensus]
+[dependencies.sp-consensus-babe]
 default-features = true
 workspace = true
 

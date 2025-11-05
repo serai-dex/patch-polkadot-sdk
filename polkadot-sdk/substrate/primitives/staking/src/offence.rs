@@ -259,7 +259,7 @@ impl<Reporter, Evidence> OffenceReportSystem<Reporter, Evidence> for () {
 	Encode,
 	Decode,
 	MaxEncodedLen,
-	sp_runtime::RuntimeDebug,
+	core::fmt::Debug,
 
 )]
 pub struct OffenceSeverity(pub Perbill);

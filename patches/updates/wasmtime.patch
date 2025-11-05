@@ -11,21 +11,28 @@ index 8f189ca..980c6c3 100644
  					},
  				},
 diff --git a/substrate/client/executor/wasmtime/Cargo.toml b/substrate/client/executor/wasmtime/Cargo.toml
-index 7a85a8d..368ef3b 100644
+index d6ab3e13..cc080d8b 100644
 --- a/substrate/client/executor/wasmtime/Cargo.toml
 +++ b/substrate/client/executor/wasmtime/Cargo.toml
-@@ -29,21 +29,17 @@ sc-executor-common.workspace = true
+@@ -31,25 +31,21 @@ sc-executor-common.workspace = true
  sp-runtime-interface.default-features = true
  sp-runtime-interface.workspace = true
  sp-wasm-interface = { features = ["wasmtime"], workspace = true, default-features = true }
 -wasmtime = { features = [
 +wasmtime = { default-features = false, features = [
+ 	"addr2line",
  	"cache",
  	"cranelift",
--	"jitdump",
-+	"profiling",
+-	"demangle",
++	# "demangle",
+-	"gc",
+-	"gc-null",
++	# "gc",
++	# "gc-null",
  	"parallel-compilation",
  	"pooling-allocator",
+-	"threads",
++	# "threads",
  ], workspace = true }
  
  # Here we include the rustix crate in the exactly same semver-compatible version as used by
@@ -41,62 +48,37 @@ index 7a85a8d..368ef3b 100644
  [dev-dependencies]
  cargo_metadata = { workspace = true }
 diff --git a/substrate/client/executor/wasmtime/src/runtime.rs b/substrate/client/executor/wasmtime/src/runtime.rs
-index 286d134..939852a 100644
+index fd2b2f9e..682a6171 100644
 --- a/substrate/client/executor/wasmtime/src/runtime.rs
 +++ b/substrate/client/executor/wasmtime/src/runtime.rs
-@@ -41,7 +41,7 @@ use std::{
- 		Arc,
- 	},
- };
--use wasmtime::{AsContext, Engine, Memory};
-+use wasmtime::{AsContext, Cache, Engine, Memory};
+@@ -217,7 +217,7 @@ fn setup_wasmtime_caching(
  
- const MAX_INSTANCE_COUNT: u32 = 64;
- 
-@@ -222,9 +222,10 @@ directory = \"{cache_dir}\"
- 	fs::write(&cache_config_path, config_content)
- 		.map_err(|err| format!("cannot write the cache config: {}", err))?;
- 
--	config
--		.cache_config_load(cache_config_path)
--		.map_err(|err| format!("failed to parse the config: {:#}", err))?;
-+	config.cache(Some(
-+		Cache::from_file(Some(&cache_config_path))
-+			.map_err(|err| format!("failed to parse the config: {:#}", err))?,
-+	));
- 
- 	Ok(())
- }
-@@ -233,12 +234,8 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config, WasmError> {
  	let mut config = wasmtime::Config::new();
 -	config.cranelift_opt_level(wasmtime::OptLevel::SpeedAndSize);
-+	config.cranelift_opt_level(wasmtime::OptLevel::Speed);
-+	config.cranelift_pcc(true);
++	config.cranelift_opt_level(wasmtime::OptLevel::Speed); config.cranelift_pcc(true);
  	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
  
--	// Since wasmtime 6.0.0 the default for this is `true`, but that heavily regresses
--	// the contracts pallet's performance, so disable it for now.
--	#[allow(deprecated)]
--	config.cranelift_use_egraphs(false);
--
  	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
- 		Some(os_string) if os_string == "jitdump" => wasmtime::ProfilingStrategy::JitDump,
- 		None => wasmtime::ProfilingStrategy::None,
-@@ -270,13 +267,41 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
+@@ -251,16 +251,45 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
  
  	// Be clear and specific about the extensions we support. If an update brings new features
  	// they should be introduced here as well.
 -	config.wasm_reference_types(semantics.wasm_reference_types);
++	// config.wasm_reference_types(semantics.wasm_reference_types);
  	config.wasm_simd(semantics.wasm_simd);
+ 	config.wasm_relaxed_simd(semantics.wasm_simd);
  	config.wasm_bulk_memory(semantics.wasm_bulk_memory);
  	config.wasm_multi_value(semantics.wasm_multi_value);
  	config.wasm_multi_memory(false);
 -	config.wasm_threads(false);
++	// config.wasm_threads(false);
  	config.wasm_memory64(false);
-+	config.wasm_tail_call(false);
++
+ 	config.wasm_tail_call(false);
 +	config.wasm_custom_page_sizes(false);
 +	config.wasm_wide_arithmetic(false);
-+	config.wasm_extended_const(false);
+ 	config.wasm_extended_const(false);
 +	config.wasm_stack_switching(false);
 +
 +	config.wasm_relaxed_simd(false);
@@ -126,50 +108,14 @@ index 286d134..939852a 100644
  
  	let (use_pooling, use_cow) = match semantics.instantiation_strategy {
  		InstantiationStrategy::PoolingCopyOnWrite => (true, true),
-@@ -313,15 +338,17 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
- 			//   size: 32384
- 			//   table_elements: 1249
- 			//   memory_pages: 2070
--			.instance_size(128 * 1024)
--			.instance_table_elements(8192)
--			.instance_memory_pages(memory_pages)
-+			.max_core_instance_size(128 * 1024)
-+			.table_elements(8192)
-+			.max_memory_size(usize::try_from(memory_pages * WASM_PAGE_SIZE).unwrap())
- 			// We can only have a single of those.
--			.instance_tables(1)
--			.instance_memories(1)
-+			.total_memories(MAX_INSTANCE_COUNT)
-+			.max_memories_per_module(1)
-+			.total_tables(MAX_INSTANCE_COUNT)
-+			.max_tables_per_module(1)
- 			// This determines how many instances of the module can be
- 			// instantiated in parallel from the same `Module`.
--			.instance_count(MAX_INSTANCE_COUNT);
-+			.total_core_instances(MAX_INSTANCE_COUNT);
- 
- 		config.allocation_strategy(wasmtime::InstanceAllocationStrategy::Pooling(pooling_config));
- 	}
-@@ -451,9 +478,6 @@ pub struct Semantics {
+@@ -434,8 +463,8 @@ pub struct Semantics {
  	/// Enables WASM Bulk Memory Operations proposal
  	pub wasm_bulk_memory: bool,
  
 -	/// Enables WASM Reference Types proposal
 -	pub wasm_reference_types: bool,
--
++	// /// Enables WASM Reference Types proposal
++	// pub wasm_reference_types: bool,
+ 
  	/// Enables WASM Fixed-Width SIMD proposal
  	pub wasm_simd: bool,
- }
-diff --git a/substrate/primitives/wasm-interface/src/lib.rs b/substrate/primitives/wasm-interface/src/lib.rs
-index 4fc78ca..8be785d 100644
---- a/substrate/primitives/wasm-interface/src/lib.rs
-+++ b/substrate/primitives/wasm-interface/src/lib.rs
-@@ -338,7 +338,7 @@ if_wasmtime_is_enabled! {
- 	/// host functions' definitions generated through the runtime interface macro,
- 	/// and is not meant to be used directly.
- 	pub trait HostFunctionRegistry {
--		type State;
-+		type State: 'static;
- 		type Error;
- 		type FunctionContext: FunctionContext;
- 

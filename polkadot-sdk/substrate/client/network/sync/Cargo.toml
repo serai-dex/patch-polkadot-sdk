@@ -1,7 +1,7 @@
 [package]
 description = "Substrate sync network protocol"
 name = "sc-network-sync"
-version = "0.50.0"
+version = "0.52.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-network-sync"
 
@@ -67,15 +67,15 @@ workspace = true
 default-features = true
 workspace = true
 
+[dependencies.sc-network]
+default-features = true
+workspace = true
+
 [dependencies.sc-network-common]
 default-features = true
 workspace = true
 
 [dependencies.sc-network-types]
-default-features = true
-workspace = true
-
-[dependencies.sc-network]
 default-features = true
 workspace = true
 
@@ -98,11 +98,11 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-consensus-grandpa]
+[dependencies.sp-consensus]
 default-features = true
 workspace = true
 
-[dependencies.sp-consensus]
+[dependencies.sp-consensus-grandpa]
 default-features = true
 workspace = true
 

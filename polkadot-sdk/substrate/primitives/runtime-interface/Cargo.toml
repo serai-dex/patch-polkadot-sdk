@@ -1,6 +1,6 @@
 [package]
 name = "sp-runtime-interface"
-version = "30.0.0"
+version = "32.0.0"
 license = "Apache-2.0"
 description = "Substrate runtime interface"
 documentation = "https://docs.rs/sp-runtime-interface/"

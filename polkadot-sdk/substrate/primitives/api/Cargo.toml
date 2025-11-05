@@ -1,6 +1,6 @@
 [package]
 name = "sp-api"
-version = "37.0.0"
+version = "39.0.0"
 license = "Apache-2.0"
 description = "Substrate runtime api primitives"
 readme = "README.md"
@@ -44,10 +44,10 @@ workspace = true
 optional = true
 workspace = true
 
-[dependencies.sp-runtime-interface]
+[dependencies.sp-runtime]
 workspace = true
 
-[dependencies.sp-runtime]
+[dependencies.sp-runtime-interface]
 workspace = true
 
 [dependencies.sp-state-machine]

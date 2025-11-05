@@ -1,6 +1,6 @@
 [package]
 name = "sp-core"
-version = "37.0.0"
+version = "38.1.0"
 license = "Apache-2.0"
 description = "Shareable Substrate types."
 documentation = "https://docs.rs/sp-core"
@@ -36,6 +36,7 @@ workspace = true
 
 [dependencies.bounded-collections]
 workspace = true
+features = ["scale-codec"]
 
 [dependencies.bs58]
 optional = true

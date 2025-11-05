@@ -1,6 +1,6 @@
 [package]
 name = "sp-runtime"
-version = "42.0.0"
+version = "44.0.0"
 license = "Apache-2.0"
 description = "Runtime Modules shared primitive types."
 documentation = "https://docs.rs/sp-runtime"
@@ -94,6 +94,7 @@ try-runtime = []
 default = ["std"]
 std = [
     "codec/std",
+    "either/std",
     "either/use_std",
     "hash256-std-hasher/std",
     "log/std",

@@ -1,6 +1,6 @@
 [package]
 name = "sc-storage-monitor"
-version = "0.25.0"
+version = "0.26.1"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Storage monitor service for substrate"
 

@@ -1169,22 +1169,23 @@ index 3dc57656..5cce814e 100644
  	type Address = Address;
  	type Signature = Signature;
 diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
-index 7e79f7a2..0f173f80 100644
+index 1921383a..59848317 100644
 --- a/substrate/frame/support/src/lib.rs
 +++ b/substrate/frame/support/src/lib.rs
-@@ -53,19 +53,19 @@ pub mod __private {
+@@ -53,20 +53,20 @@ pub mod __private {
  		vec::{IntoIter, Vec},
  	};
  	pub use codec;
 -	pub use frame_metadata as metadata;
 +	// pub use frame_metadata as metadata;
+ 	pub use impl_trait_for_tuples;
  	pub use log;
  	pub use paste;
  	pub use scale_info;
  	pub use serde;
  	pub use serde_json;
 -	pub use sp_core::{Get, OpaqueMetadata, Void};
-+	pub use sp_core::{Get, /* OpaqueMetadata,*/ Void};
++	pub use sp_core::{Get, /* OpaqueMetadata, */ Void};
  	pub use sp_crypto_hashing_proc_macro;
  	pub use sp_inherents;
  	#[cfg(feature = "std")]
@@ -1195,7 +1196,7 @@ index 7e79f7a2..0f173f80 100644
  	#[cfg(feature = "std")]
  	pub use sp_runtime::{bounded_btree_map, bounded_vec};
  	pub use sp_runtime::{
-@@ -1429,7 +1429,7 @@ pub mod pallet_macros {
+@@ -1532,7 +1532,7 @@ pub mod pallet_macros {
  	/// See [`pallet::storage`](`frame_support::pallet_macros::storage`) for more info.
  	pub use frame_support_procedural::getter;
  
@@ -1204,7 +1205,7 @@ index 7e79f7a2..0f173f80 100644
  	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
  	///
  	/// Must be defined like:
-@@ -1459,7 +1459,7 @@ pub mod pallet_macros {
+@@ -1562,7 +1562,7 @@ pub mod pallet_macros {
  	///
  	/// I.e. a regular rust `impl` block with some optional where clause and functions with 0
  	/// args, 0 generics, and some return type.
@@ -1213,7 +1214,7 @@ index 7e79f7a2..0f173f80 100644
  
  	#[rustfmt::skip]
  	/// Allows bypassing the `frame_system::Config` supertrait check.
-@@ -2112,7 +2112,7 @@ pub mod pallet_macros {
+@@ -2215,7 +2215,7 @@ pub mod pallet_macros {
  	///   automatically annotated with `allow(deprecated)`
  	pub use frame_support_procedural::event;
  
@@ -1222,7 +1223,7 @@ index 7e79f7a2..0f173f80 100644
  	///
  	/// The optional attribute allows you to selectively include associated types in the
  	/// metadata. This can be attached to trait items that implement `TypeInfo`.
-@@ -2121,7 +2121,7 @@ pub mod pallet_macros {
+@@ -2224,7 +2224,7 @@ pub mod pallet_macros {
  	///
  	/// This attribute can be used in combination with the
  	/// [`#[pallet::config(without_automatic_metadata)]`](`config`).
@@ -1231,7 +1232,7 @@ index 7e79f7a2..0f173f80 100644
  
  	/// Allows a pallet to declare a set of functions as a *dispatchable extrinsic*.
  	///
-@@ -2428,7 +2428,7 @@ pub mod pallet_macros {
+@@ -2531,7 +2531,7 @@ pub mod pallet_macros {
  	/// ```
  	pub use frame_support_procedural::genesis_build;
  
@@ -1240,7 +1241,7 @@ index 7e79f7a2..0f173f80 100644
  	/// [`Get`](frame_support::pallet_prelude::Get) from [`pallet::config`](`macro@config`)
  	/// into metadata.
  	///
-@@ -2458,7 +2458,7 @@ pub mod pallet_macros {
+@@ -2561,7 +2561,7 @@ pub mod pallet_macros {
  	///   generated code.
  	/// - If the item is annotated with `deprecated` attribute then the generated code will be
  	///   automatically annotated with `allow(deprecated)`

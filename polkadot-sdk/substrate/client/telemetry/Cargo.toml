@@ -1,6 +1,6 @@
 [package]
 name = "sc-telemetry"
-version = "29.0.0"
+version = "30.0.0"
 description = "Telemetry utils"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-telemetry"

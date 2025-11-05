@@ -673,7 +673,7 @@ where
 			select! {
 				ready = ready_at => Some(ready),
 				_ = timeout => {
-					warn!(
+					debug!(
 						target: LOG_TARGET,
 						?at,
 						"Timeout fired waiting for transaction pool at block. Proceeding with production."
@@ -787,13 +787,6 @@ where
 			.into()
 			.as_u64();
 		let view_store = self.view_store.clone();
-		trace!(
-			target: LOG_TARGET,
-			count = xts.len(),
-			active_views_count = self.active_views_count(),
-			"fatp::submit_at"
-		);
-		log_xt_trace!(target: LOG_TARGET, xts.iter().map(|xt| self.tx_hash(xt)), "fatp::submit_at");
 		let xts = xts.into_iter().map(Arc::from).collect::<Vec<_>>();
 		let mempool_results = self.mempool.extend_unwatched(source, at_number, &xts).await;
 
@@ -1041,7 +1034,7 @@ where
 	/// The transaction pool implementation will determine which transactions should be
 	/// removed from the pool. Transactions that depend on invalid transactions will also
 	/// be removed.
-	fn report_invalid(
+	async fn report_invalid(
 		&self,
 		at: Option<<Self::Block as BlockT>::Hash>,
 		invalid_tx_errors: TxInvalidityReportMap<TxHash<Self>>,
@@ -1054,7 +1047,7 @@ where
 		let removed = self.view_store.report_invalid(at, invalid_tx_errors);
 
 		let removed_hashes = removed.iter().map(|tx| tx.hash).collect::<Vec<_>>();
-		self.mempool.clone().remove_transactions_sync(removed_hashes.clone());
+		self.mempool.remove_transactions(&removed_hashes).await;
 		self.import_notification_sink.clean_notified_items(&removed_hashes);
 
 		self.metrics

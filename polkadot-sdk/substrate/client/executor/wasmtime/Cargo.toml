@@ -1,6 +1,6 @@
 [package]
 name = "sc-executor-wasmtime"
-version = "0.39.0"
+version = "0.41.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Defines a `WasmRuntime` that uses the Wasmtime JIT to execute."
 readme = "README.md"
@@ -54,9 +54,9 @@ default-features = true
 [dependencies.wasmtime]
 default-features = false
 features = [
+    "addr2line",
     "cache",
     "cranelift",
-    "profiling",
     "parallel-compilation",
     "pooling-allocator",
 ]

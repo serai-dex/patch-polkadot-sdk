@@ -1,6 +1,6 @@
 [package]
 name = "pallet-authorship"
-version = "41.0.0"
+version = "43.0.0"
 description = "Block and Uncle Author tracking for the FRAME"
 license = "Apache-2.0"
 readme = "README.md"
