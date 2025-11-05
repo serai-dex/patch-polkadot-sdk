@@ -61,7 +61,6 @@ members = [
     "substrate/frame/support/procedural/tools",
     "substrate/frame/support/procedural/tools/derive",
     "substrate/frame/system",
-    "substrate/frame/system/rpc/runtime-api",
     "substrate/frame/timestamp",
     "substrate/frame/try-runtime",
     "substrate/primitives/api",
@@ -404,10 +403,6 @@ default-features = false
 
 [workspace.dependencies.frame-system]
 path = "substrate/frame/system"
-default-features = false
-
-[workspace.dependencies.frame-system-rpc-runtime-api]
-path = "substrate/frame/system/rpc/runtime-api"
 default-features = false
 
 [workspace.dependencies.frame-try-runtime]

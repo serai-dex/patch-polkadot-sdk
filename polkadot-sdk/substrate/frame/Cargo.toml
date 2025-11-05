@@ -33,10 +33,6 @@ workspace = true
 [dependencies.frame-support]
 workspace = true
 
-[dependencies.frame-system-rpc-runtime-api]
-optional = true
-workspace = true
-
 [dependencies.frame-system]
 workspace = true
 
@@ -112,7 +108,6 @@ std = [
     "frame-benchmarking?/std",
     "frame-executive?/std",
     "frame-support/std",
-    "frame-system-rpc-runtime-api?/std",
     "frame-system/std",
     "frame-try-runtime?/std",
     "log/std",
@@ -148,7 +143,6 @@ try-runtime = [
 experimental = ["frame-support/experimental"]
 runtime = [
     "frame-executive",
-    "frame-system-rpc-runtime-api",
     "sp-api",
     "sp-block-builder",
     "sp-consensus-grandpa",

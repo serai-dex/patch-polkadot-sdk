@@ -1,0 +1,13 @@
+diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
+index 2a4b350..d730abb 100644
+--- a/substrate/frame/src/lib.rs
++++ b/substrate/frame/src/lib.rs
+@@ -429,7 +429,7 @@ pub mod runtime {
+ 	// moved to file similarly.
+ 	#[allow(ambiguous_glob_reexports)]
+ 	pub mod apis {
+-		pub use frame_system_rpc_runtime_api::*;
++		// pub use frame_system_rpc_runtime_api::*;
+ 		pub use sp_api::{self, *};
+ 		pub use sp_block_builder::*;
+ 		pub use sp_consensus_grandpa::*;

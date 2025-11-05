@@ -1707,14 +1707,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "frame-system-rpc-runtime-api"
-version = "37.0.0"
-dependencies = [
- "parity-scale-codec",
- "sp-api",
-]
-
-[[package]]
 name = "frame-try-runtime"
 version = "0.47.0"
 dependencies = [
@@ -4282,7 +4274,6 @@ dependencies = [
  "frame-executive",
  "frame-support",
  "frame-system",
- "frame-system-rpc-runtime-api",
  "frame-try-runtime",
  "log",
  "parity-scale-codec",

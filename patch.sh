@@ -343,6 +343,9 @@ ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
   fi
 done
 
+# Remove the unused RPC provided for `frame-system`
+remove_crate_tree substrate/frame/system/rpc
+
 # Remove unused primitives
 remove_crate_tree substrate/primitives/ethereum-standards
 remove_crate_tree substrate/primitives/npos-elections
