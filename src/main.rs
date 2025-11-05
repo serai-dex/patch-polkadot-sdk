@@ -165,6 +165,7 @@ fn main() {
           .unwrap()
           .to_owned();
         remove_folder_of_crates(&relative_path.join("test").display().to_string());
+        remove_folder_of_crates(&relative_path.join("tests").display().to_string());
         remove_folder_of_crates(&relative_path.join("benches").display().to_string());
         remove_folder_of_crates(&relative_path.join("examples").display().to_string());
 
