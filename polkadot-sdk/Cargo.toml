@@ -54,7 +54,6 @@ members = [
     "substrate/frame/executive",
     "substrate/frame/glutton",
     "substrate/frame/grandpa",
-    "substrate/frame/migrations",
     "substrate/frame/session",
     "substrate/frame/support",
     "substrate/frame/support/procedural",
@@ -371,11 +370,6 @@ default-features = false
 
 [workspace.dependencies.forwarded-header-value]
 version = "0.1.1"
-
-[workspace.dependencies.frame]
-path = "substrate/frame"
-default-features = false
-package = "polkadot-sdk-frame"
 
 [workspace.dependencies.frame-benchmarking]
 path = "substrate/frame/benchmarking"

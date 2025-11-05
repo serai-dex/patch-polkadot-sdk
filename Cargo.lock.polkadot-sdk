@@ -4024,22 +4024,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-migrations"
-version = "11.0.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "impl-trait-for-tuples",
- "log",
- "parity-scale-codec",
- "polkadot-sdk-frame",
- "sp-core",
- "sp-io",
- "sp-runtime",
-]
-
-[[package]]
 name = "pallet-session"
 version = "41.0.0"
 dependencies = [

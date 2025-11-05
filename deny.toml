@@ -14,27 +14,30 @@ version = 2
 # Commented licenses would be allowed yet are not currently in use
 allow = [
   # Effective public domain
-  # "CC0-1.0",
+  "CC0-1.0",
   # "Unlicense",
 
   # Attribution required
   "MIT",
   # "MITNFA",
-  # "BSD-2-Clause",
-  # "BSD-3-Clause",
-  # "ISC",
-  # "Zlib",
-  # "Unicode-3.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "Unicode-3.0",
+  "CDLA-Permissive-2.0",
 
   # Non-invasive copyleft
-  # "MPL-2.0",
+  "MPL-2.0",
   "Apache-2.0",
-  # "Apache-2.0 WITH LLVM-exception",
-  # "GPL-3.0 WITH Classpath-exception-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "GPL-3.0 WITH Classpath-exception-2.0",
+  "GPL-3.0-or-later WITH Classpath-exception-2.0",
 ]
 
 exceptions = [
-  { allow = ["AGPL-3.0"], name = "serai-polkadot-sdk" },
+  { allow = ["AGPL-3.0-only"], name = "pallet-session" },
+  { allow = ["AGPL-3.0-only"], name = "serai-polkadot-sdk" },
 ]
 
 [bans]

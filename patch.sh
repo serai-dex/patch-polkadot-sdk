@@ -334,7 +334,7 @@ remove_module ./polkadot-sdk/substrate/primitives/core/src ed25519
 silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
 
 # Remove unused pallets
-used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa migrations session support system timestamp try-runtime"
+used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa session support system timestamp try-runtime"
 ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
   if [ -d ./polkadot-sdk/substrate/frame/$folder ]; then
     if [ $(echo "$used_pallets src" | grep $folder | wc -l) -eq 0 ]; then
