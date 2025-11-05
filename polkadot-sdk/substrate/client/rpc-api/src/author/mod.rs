@@ -37,7 +37,7 @@ pub trait AuthorApi<Hash, BlockHash> {
 	#[method(name = "author_insertKey", with_extensions)]
 	fn insert_key(&self, key_type: String, suri: String, public: Bytes) -> Result<(), Error>;
 
-	/// Generate new session keys and returns the corresponding public keys.
+	/* /// Generate new session keys and returns the corresponding public keys.
 	#[method(name = "author_rotateKeys", with_extensions)]
 	fn rotate_keys(&self) -> Result<Bytes, Error>;
 
@@ -47,7 +47,7 @@ pub trait AuthorApi<Hash, BlockHash> {
 	///
 	/// Returns `true` iff all private keys could be found.
 	#[method(name = "author_hasSessionKeys", with_extensions)]
-	fn has_session_keys(&self, session_keys: Bytes) -> Result<bool, Error>;
+	fn has_session_keys(&self, session_keys: Bytes) -> Result<bool, Error>; */
 
 	/// Checks if the keystore has private keys for the given public key and key type.
 	///

@@ -38,7 +38,7 @@ use sp_blockchain::HeaderBackend;
 use sp_core::Bytes;
 use sp_keystore::{KeystoreExt, KeystorePtr};
 use sp_runtime::traits::Block as BlockT;
-use sp_session::SessionKeys;
+// use sp_session::SessionKeys;
 use std::sync::Arc;
 
 /// Re-export the API for backward compatibility.
@@ -80,7 +80,7 @@ impl<P, Client> AuthorApiServer<TxHash<P>, BlockHash<P>> for Author<P, Client>
 where
 	P: TransactionPool + Sync + Send + 'static,
 	Client: HeaderBackend<P::Block> + ProvideRuntimeApi<P::Block> + Send + Sync + 'static,
-	Client::Api: SessionKeys<P::Block>,
+	// Client::Api: SessionKeys<P::Block>,
 	P::Hash: Unpin,
 	<P::Block as BlockT>::Hash: Unpin,
 {
@@ -114,7 +114,7 @@ where
 		Ok(())
 	}
 
-	fn rotate_keys(&self, ext: &Extensions) -> Result<Bytes> {
+	/* fn rotate_keys(&self, ext: &Extensions) -> Result<Bytes> {
 		check_if_safe(ext)?;
 
 		let best_block_hash = self.client.info().best_hash;
@@ -140,7 +140,7 @@ where
 			.ok_or(Error::InvalidSessionKeys)?;
 
 		Ok(self.keystore.has_keys(&keys))
-	}
+	} */
 
 	fn has_key(&self, ext: &Extensions, public_key: Bytes, key_type: String) -> Result<bool> {
 		check_if_safe(ext)?;

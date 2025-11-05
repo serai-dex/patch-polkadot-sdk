@@ -32,8 +32,6 @@ use alloc::vec::Vec;
 use sp_core::RuntimeDebug;
 use sp_staking::SessionIndex;
 
-pub mod runtime_api;
-pub use runtime_api::*;
 
 /// Number of validators in a given session.
 pub type ValidatorCount = u32;
@@ -101,7 +99,7 @@ impl GetValidatorCount for MembershipProof {
 	}
 }
 
-/// Generate the initial session keys with the given seeds, at the given block and store them in
+/* /// Generate the initial session keys with the given seeds, at the given block and store them in
 /// the client's keystore.
 #[cfg(feature = "std")]
 pub fn generate_initial_session_keys<Block, T>(
@@ -130,4 +128,4 @@ where
 	}
 
 	Ok(())
-}
+} */

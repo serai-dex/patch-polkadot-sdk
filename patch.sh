@@ -143,6 +143,9 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/src/weight_v2.rs "schemars"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
 
+# Remove the `SessionKeys` trait
+remove_module ./polkadot-sdk/substrate/primitives/session/src runtime_api
+
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release &> /dev/null

@@ -4298,7 +4298,6 @@ dependencies = [
  "sp-keyring",
  "sp-offchain",
  "sp-runtime",
- "sp-session",
  "sp-storage",
  "sp-transaction-pool",
  "sp-version",
@@ -5956,7 +5955,6 @@ dependencies = [
  "sp-offchain",
  "sp-rpc",
  "sp-runtime",
- "sp-session",
  "sp-version",
  "tokio",
 ]

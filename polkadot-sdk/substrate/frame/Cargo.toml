@@ -87,10 +87,6 @@ workspace = true
 [dependencies.sp-runtime]
 workspace = true
 
-[dependencies.sp-session]
-optional = true
-workspace = true
-
 [dependencies.sp-storage]
 optional = true
 workspace = true
@@ -132,7 +128,6 @@ std = [
     "sp-keyring?/std",
     "sp-offchain?/std",
     "sp-runtime/std",
-    "sp-session?/std",
     "sp-storage/std",
     "sp-transaction-pool?/std",
     "sp-version?/std",
@@ -161,7 +156,6 @@ runtime = [
     "sp-inherents",
     "sp-keyring",
     "sp-offchain",
-    "sp-session",
     "sp-storage",
     "sp-transaction-pool",
     "sp-version",
