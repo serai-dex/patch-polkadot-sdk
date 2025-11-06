@@ -124,6 +124,10 @@ find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {});
 # Remove `simple-mermaid`
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
 
+# Remove `bounded-collections/std`, as it enables all deps underneath it instead of using `?`
+remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "bounded-collections/std"
+remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "bounded-collections/std"
+
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
 

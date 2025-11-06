@@ -51,7 +51,6 @@ workspace = true
 [features]
 default = ["std"]
 std = [
-    "bounded-collections/std",
     "codec/std",
     "serde/std",
     "sp-arithmetic/std",

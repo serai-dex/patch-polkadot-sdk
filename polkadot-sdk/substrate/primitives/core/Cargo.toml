@@ -168,7 +168,6 @@ std = [
     "bip39/rand",
     "bip39/std",
     "blake2/std",
-    "bounded-collections/std",
     "bs58/std",
     "codec/std",
     "full_crypto",
