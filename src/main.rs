@@ -232,9 +232,9 @@ fn main() {
         assert!(matches!(spec.comparators[0].op, semver::Op::Caret));
         if (spec.comparators[0].major > upgrade_to.major) ||
           ((spec.comparators[0].major == upgrade_to.major) &&
-            (spec.comparators[0].minor.unwrap_or(0) > upgrade_to.minor))
+            (spec.comparators[0].minor.unwrap_or(0) >= upgrade_to.minor))
         {
-          panic!("upgrading {} to a lesser version", dep);
+          panic!("upgrading {} to a lesser or equal version", dep);
         }
         dep["version"] = version.to_string().into();
       } else {

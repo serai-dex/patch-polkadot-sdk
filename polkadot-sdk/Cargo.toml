@@ -638,7 +638,7 @@ version = "7.0.0"
 version = "2.0.0"
 
 [workspace.dependencies.rustix]
-version = "1.0.0"
+version = "1.0.3"
 default-features = false
 
 [workspace.dependencies.rustversion]
@@ -1086,7 +1086,7 @@ version = "0.4"
 default-features = false
 
 [workspace.dependencies.wasmtime]
-version = "37.0.0"
+version = "38.0.0"
 default-features = false
 
 [workspace.dependencies.zeroize]
