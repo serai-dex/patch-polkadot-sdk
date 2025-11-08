@@ -46,6 +46,9 @@
   management, and maintained it solely as it's simpler than removal, this is
   irrelevant to Serai yet should be watched out for.
 
+- `substrate-prometheus-endpoint`: Neuters, but doesn't outright remove,
+  `substrate-prometheus-endpoint`.
+
 - `sysinfo`: Removes `sysinfo` which was only included to print a warning in
   certain conditions.
 

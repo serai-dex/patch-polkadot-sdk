@@ -23,21 +23,10 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies.http-body-util]
-workspace = true
-
 [dependencies.hyper]
 features = [
     "http1",
     "server",
-]
-workspace = true
-
-[dependencies.hyper-util]
-features = [
-    "server-auto",
-    "server-graceful",
-    "tokio",
 ]
 workspace = true
 
@@ -50,11 +39,3 @@ workspace = true
 
 [dependencies.thiserror]
 workspace = true
-
-[dependencies.tokio]
-features = [
-    "net",
-    "parking_lot",
-]
-workspace = true
-default-features = true

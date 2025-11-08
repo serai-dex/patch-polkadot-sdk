@@ -1,0 +1,68 @@
+diff --git a/substrate/utils/prometheus/src/lib.rs b/substrate/utils/prometheus/src/lib.rs
+index ae39cb4a..6602f91d 100644
+--- a/substrate/utils/prometheus/src/lib.rs
++++ b/substrate/utils/prometheus/src/lib.rs
+@@ -17,7 +17,7 @@
+ 
+ mod sourced;
+ 
+-use hyper::{http::StatusCode, Request, Response};
++// use hyper::{http::StatusCode, Request, Response};
+ use prometheus::{core::Collector, Encoder, TextEncoder};
+ use std::net::SocketAddr;
+ 
+@@ -32,7 +32,7 @@ pub use prometheus::{
+ };
+ pub use sourced::{MetricSource, SourcedCounter, SourcedGauge, SourcedMetric};
+ 
+-type Body = http_body_util::Full<hyper::body::Bytes>;
++// type Body = http_body_util::Full<hyper::body::Bytes>;
+ 
+ pub fn register<T: Clone + Collector + 'static>(
+ 	metric: T,
+@@ -60,7 +60,7 @@ pub enum Error {
+ 	PortInUse(SocketAddr),
+ }
+ 
+-async fn request_metrics(
++/* async fn request_metrics(
+ 	req: Request<hyper::body::Incoming>,
+ 	registry: Registry,
+ ) -> Result<Response<Body>, Error> {
+@@ -81,25 +81,25 @@ async fn request_metrics(
+ 			.body(Body::from("Not found."))
+ 			.map_err(Error::Http)
+ 	}
+-}
++} */
+ 
+ /// Initializes the metrics context, and starts an HTTP server
+ /// to serve metrics.
+ pub async fn init_prometheus(prometheus_addr: SocketAddr, registry: Registry) -> Result<(), Error> {
+-	let listener = tokio::net::TcpListener::bind(&prometheus_addr).await.map_err(|e| {
++	/* let listener = tokio::net::TcpListener::bind(&prometheus_addr).await.map_err(|e| {
+ 		log::error!(target: "prometheus", "Error binding to '{prometheus_addr:?}': {e:?}");
+ 		Error::PortInUse(prometheus_addr)
+ 	})?;
+ 
+-	init_prometheus_with_listener(listener, registry).await
++	init_prometheus_with_listener(listener, registry).await */ Ok(())
+ }
+ 
+-/// Init prometheus using the given listener.
++/* /// Init prometheus using the given listener.
+ async fn init_prometheus_with_listener(
+ 	listener: tokio::net::TcpListener,
+ 	registry: Registry,
+ ) -> Result<(), Error> {
+-	log::info!(target: "prometheus", "〽️ Prometheus exporter started at {}", listener.local_addr()?);
++	log::info!(target: "prometheus", "Prometheus exporter started at {}", listener.local_addr()?);
+ 
+ 	let server = hyper_util::server::conn::auto::Builder::new(hyper_util::rt::TokioExecutor::new());
+ 	let graceful = hyper_util::server::graceful::GracefulShutdown::new();
+@@ -170,4 +170,4 @@ mod tests {
+ 
+ 		assert!(body.contains(&format!("{} 0", METRIC_NAME)));
+ 	}
+-}
++} */

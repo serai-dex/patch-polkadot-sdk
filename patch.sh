@@ -150,6 +150,19 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "sc
 # Remove the `SessionKeys` trait
 remove_module ./polkadot-sdk/substrate/primitives/session/src runtime_api
 
+# Remove various unnecessary features
+remove_matching_phrase ./polkadot-sdk/substrate/primitives/consensus/common/Cargo.toml "features = [\"thread-pool\"],"
+remove_matching_phrase ./polkadot-sdk/substrate/primitives/core/Cargo.toml "features = [\"small_rng\"],"
+
+# Remove `polkadot-sdk-frame`, which will end up unused by the end of this
+silent_rm ./polkadot-sdk/substrate/frame/src
+silent_rm ./polkadot-sdk/substrate/frame/Cargo.toml
+remove_matching_lines ./polkadot-sdk/Cargo.toml "substrate/frame\""
+
+# Remove unused dependencies from the patched `substrate-prometheus-endpoint`
+remove_matching_lines ./polkadot-sdk/substrate/utils/prometheus/Cargo.toml "tokio"
+remove_matching_lines ./polkadot-sdk/substrate/utils/prometheus/Cargo.toml "\-util"
+
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release &> /dev/null
@@ -453,6 +466,11 @@ remove_crate_tree substrate/primitives/maybe-compressed-blob
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
+# Remove unused RPCs
+remove_crate_tree substrate/client/consensus/babe/rpc
+remove_crate_tree substrate/client/consensus/grandpa/rpc
+remove_crate_tree substrate/client/sync-state-rpc
+
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
@@ -498,6 +516,8 @@ cargo_upgrade libp2p-kad 0.48.0
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0
+cargo_upgrade primitive-types 0.14.0
+remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "primitive-types/byteorder"
 cargo_upgrade prometheus 0.14.0
 cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0

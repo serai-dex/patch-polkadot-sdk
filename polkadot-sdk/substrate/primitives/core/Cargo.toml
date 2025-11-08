@@ -180,7 +180,6 @@ std = [
     "log/std",
     "merlin/std",
     "parking_lot",
-    "primitive-types/byteorder",
     "primitive-types/rustc-hex",
     "primitive-types/serde",
     "primitive-types/std",
