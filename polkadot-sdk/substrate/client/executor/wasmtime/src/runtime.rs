@@ -217,7 +217,7 @@ fn setup_wasmtime_caching(
 
 fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config, WasmError> {
 	let mut config = wasmtime::Config::new();
-	config.cranelift_opt_level(wasmtime::OptLevel::Speed); config.cranelift_pcc(true);
+	config.cranelift_opt_level(wasmtime::OptLevel::Speed); config.cranelift_pcc(false);
 	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
 
 	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
