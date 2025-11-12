@@ -5619,23 +5619,13 @@ dependencies = [
  "jsonrpsee",
  "log",
  "parity-scale-codec",
- "parking_lot",
- "sc-block-builder",
  "sc-chain-spec",
- "sc-client-api",
  "sc-rpc-api",
  "sc-tracing",
- "sc-transaction-pool-api",
  "sc-utils",
  "serde_json",
- "sp-api",
- "sp-blockchain",
  "sp-core",
- "sp-keystore",
- "sp-offchain",
- "sp-rpc",
  "sp-runtime",
- "sp-version",
  "tokio",
 ]
 
@@ -5646,13 +5636,8 @@ dependencies = [
  "jsonrpsee",
  "parity-scale-codec",
  "sc-chain-spec",
- "sc-transaction-pool-api",
  "serde",
  "serde_json",
- "sp-core",
- "sp-rpc",
- "sp-runtime",
- "sp-version",
  "thiserror 2.0.17",
 ]
 
@@ -5677,38 +5662,6 @@ dependencies = [
  "tokio",
  "tower",
  "tower-http",
-]
-
-[[package]]
-name = "sc-rpc-spec-v2"
-version = "0.53.0"
-dependencies = [
- "array-bytes",
- "futures",
- "futures-util",
- "hex",
- "itertools 0.14.0",
- "jsonrpsee",
- "log",
- "parity-scale-codec",
- "parking_lot",
- "rand 0.8.5",
- "sc-chain-spec",
- "sc-client-api",
- "sc-rpc",
- "sc-transaction-pool-api",
- "schnellru",
- "serde",
- "sp-api",
- "sp-blockchain",
- "sp-core",
- "sp-rpc",
- "sp-runtime",
- "sp-version",
- "substrate-prometheus-endpoint",
- "thiserror 2.0.17",
- "tokio",
- "tokio-stream",
 ]
 
 [[package]]
@@ -5741,7 +5694,6 @@ dependencies = [
  "sc-network-types",
  "sc-rpc",
  "sc-rpc-server",
- "sc-rpc-spec-v2",
  "sc-sysinfo",
  "sc-telemetry",
  "sc-tracing",

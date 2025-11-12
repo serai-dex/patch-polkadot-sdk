@@ -67,19 +67,19 @@ use sc_network_sync::{
 	SyncingService, WarpSyncConfig,
 };
 use sc_rpc::{
-	author::AuthorApiServer,
+	/* author::AuthorApiServer,
 	chain::ChainApiServer,
 	offchain::OffchainApiServer,
 	state::{ChildStateApiServer, StateApiServer},
-	system::SystemApiServer,
+	system::SystemApiServer, */
 	DenyUnsafe, SubscriptionTaskExecutor,
 };
-use sc_rpc_spec_v2::{
+/* use sc_rpc_spec_v2::{
 	archive::ArchiveApiServer,
 	chain_head::ChainHeadApiServer,
 	chain_spec::ChainSpecApiServer,
 	transaction::{TransactionApiServer, TransactionBroadcastApiServer},
-};
+}; */
 use sc_telemetry::{telemetry, ConnectionMessage, Telemetry, TelemetryHandle, SUBSTRATE_INFO};
 use sc_transaction_pool_api::{MaintainedTransactionPool, TransactionPool};
 use sc_utils::mpsc::{tracing_unbounded, TracingUnboundedSender};
@@ -582,7 +582,7 @@ where
 
 	let rpc_id_provider = config.rpc.id_provider.take();
 
-	// jsonrpsee RPC
+	/* // jsonrpsee RPC
 	// RPC-V2 specific metrics need to be registered before the RPC server is started,
 	// since we might have two instances running (one for the in-memory RPC and one for the network
 	// RPC).
@@ -607,7 +607,7 @@ where
 			&*rpc_builder,
 			rpc_v2_metrics.clone(),
 		)
-	};
+	}; */ let gen_rpc_module = || { let mut rpc_api = RpcModule::new(()); rpc_api.merge(rpc_builder(Arc::new(task_manager.spawn_handle()))?).map_err(|e| Error::Application(e.into()))?; Ok(rpc_api) };
 
 	let rpc_server_handle = start_rpc_servers(
 		&config.rpc,
@@ -739,7 +739,7 @@ where
 	Ok(telemetry.handle())
 }
 
-/// Generate RPC module using provided configuration
+/* /// Generate RPC module using provided configuration
 pub fn gen_rpc_module<TBl, TBackend, TCl, TRpc, TExPool>(
 	spawn_handle: SpawnTaskHandle,
 	client: Arc<TCl>,
@@ -883,7 +883,7 @@ where
 	rpc_api.merge(extra_rpcs).map_err(|e| Error::Application(e.into()))?;
 
 	Ok(rpc_api)
-}
+} */
 
 /// Parameters to pass into [`build_network`].
 pub struct BuildNetworkParams<'a, Block, Net, TxPool, IQ, Client>

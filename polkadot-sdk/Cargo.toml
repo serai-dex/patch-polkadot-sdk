@@ -32,7 +32,6 @@ members = [
     "substrate/client/rpc",
     "substrate/client/rpc-api",
     "substrate/client/rpc-servers",
-    "substrate/client/rpc-spec-v2",
     "substrate/client/service",
     "substrate/client/state-db",
     "substrate/client/storage-monitor",
@@ -404,10 +403,6 @@ version = "0.3.31"
 [workspace.dependencies.futures-timer]
 version = "3.0.2"
 
-[workspace.dependencies.futures-util]
-version = "0.3.30"
-default-features = false
-
 [workspace.dependencies.governor]
 version = "0.10.0"
 
@@ -417,10 +412,6 @@ default-features = false
 
 [workspace.dependencies.hash256-std-hasher]
 version = "0.15.2"
-default-features = false
-
-[workspace.dependencies.hex]
-version = "0.4.3"
 default-features = false
 
 [workspace.dependencies.http]
@@ -736,10 +727,6 @@ default-features = false
 path = "substrate/client/rpc-servers"
 default-features = false
 
-[workspace.dependencies.sc-rpc-spec-v2]
-path = "substrate/client/rpc-spec-v2"
-default-features = false
-
 [workspace.dependencies.sc-service]
 path = "substrate/client/service"
 default-features = false
@@ -904,10 +891,6 @@ default-features = false
 
 [workspace.dependencies.sp-keystore]
 path = "substrate/primitives/keystore"
-default-features = false
-
-[workspace.dependencies.sp-offchain]
-path = "substrate/primitives/offchain"
 default-features = false
 
 [workspace.dependencies.sp-panic-handler]

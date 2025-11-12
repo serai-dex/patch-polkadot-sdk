@@ -360,7 +360,26 @@ ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
   fi
 done
 
-# Remove the unused RPC provided for `frame-system`
+# Remove unused RPC code
+remove_module ./polkadot-sdk/substrate/client/rpc/src author
+remove_module ./polkadot-sdk/substrate/client/rpc/src chain
+remove_module ./polkadot-sdk/substrate/client/rpc/src dev
+remove_module ./polkadot-sdk/substrate/client/rpc/src offchain
+remove_module ./polkadot-sdk/substrate/client/rpc/src state
+
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src author
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src chain
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src child_state
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src dev
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src offchain
+remove_module ./polkadot-sdk/substrate/client/rpc-api/src state
+
+remove_crate_tree substrate/client/rpc-spec-v2
+
+remove_crate_tree substrate/client/consensus/babe/rpc
+remove_crate_tree substrate/client/consensus/grandpa/rpc
+remove_crate_tree substrate/client/sync-state-rpc
+
 remove_crate_tree substrate/frame/system/rpc
 
 # Remove unused primitives
@@ -465,11 +484,6 @@ remove_crate_tree substrate/primitives/maybe-compressed-blob
 
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
-
-# Remove unused RPCs
-remove_crate_tree substrate/client/consensus/babe/rpc
-remove_crate_tree substrate/client/consensus/grandpa/rpc
-remove_crate_tree substrate/client/sync-state-rpc
 
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree

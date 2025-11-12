@@ -124,10 +124,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sc-rpc-spec-v2]
-default-features = true
-workspace = true
-
 [dependencies.sc-sysinfo]
 default-features = true
 workspace = true

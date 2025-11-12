@@ -39,10 +39,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sc-transaction-pool-api]
-default-features = true
-workspace = true
-
 [dependencies.serde]
 features = ["derive"]
 workspace = true
@@ -51,22 +47,6 @@ default-features = true
 [dependencies.serde_json]
 workspace = true
 default-features = true
-
-[dependencies.sp-core]
-default-features = true
-workspace = true
-
-[dependencies.sp-rpc]
-default-features = true
-workspace = true
-
-[dependencies.sp-runtime]
-default-features = true
-workspace = true
-
-[dependencies.sp-version]
-default-features = true
-workspace = true
 
 [dependencies.thiserror]
 workspace = true
