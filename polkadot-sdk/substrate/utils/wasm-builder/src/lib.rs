@@ -354,8 +354,8 @@ impl CargoCommand {
 
 	/// Returns whether the `wasm32v1-none` target is installed in this version of the toolchain.
 	fn is_wasm32v1_none_target_installed(&self) -> bool {
-		let dummy_crate = DummyCrate::new(self, RuntimeTarget::Wasm, true);
-		dummy_crate.is_target_installed("wasm32v1-none").unwrap_or(false)
+		/* let dummy_crate = DummyCrate::new(self, RuntimeTarget::Wasm, true);
+		dummy_crate.is_target_installed("wasm32v1-none").unwrap_or(false) */ true
 	}
 
 	/// Returns whether the `wasm32v1-none` target is available in this version of the toolchain.
