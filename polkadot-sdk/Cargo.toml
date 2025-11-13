@@ -33,7 +33,6 @@ members = [
     "substrate/client/rpc-servers",
     "substrate/client/service",
     "substrate/client/state-db",
-    "substrate/client/storage-monitor",
     "substrate/client/sysinfo",
     "substrate/client/telemetry",
     "substrate/client/tracing",
@@ -392,9 +391,6 @@ default-features = false
 [workspace.dependencies.frame-try-runtime]
 path = "substrate/frame/try-runtime"
 default-features = false
-
-[workspace.dependencies.fs4]
-version = "0.13.0"
 
 [workspace.dependencies.futures]
 version = "0.3.31"

@@ -393,6 +393,7 @@ remove_crate_tree substrate/scripts
 
 # Remove unused utilities
 remove_crate_tree substrate/client/runtime-utilities
+remove_crate_tree substrate/client/storage-monitor
 remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
 remove_crate_tree substrate/utils/substrate-bip39
