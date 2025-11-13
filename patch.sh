@@ -298,9 +298,6 @@ remove_crate_tree substrate/client/consensus/aura
 remove_crate_tree substrate/frame/aura
 remove_crate_tree substrate/primitives/consensus/aura
 
-remove_crate_tree substrate/frame/contracts
-remove_crate_tree substrate/frame/revive
-
 # Remove the mixnet code
 remove_crate_tree substrate/client/mixnet
 remove_crate_tree substrate/frame/mixnet
@@ -412,11 +409,15 @@ remove_crate_tree substrate/frame/system/benchmarking
 remove_dev_dependencies
 remove_crate_tree substrate/client/executor/runtime-test
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/tests
+silent_rm ./polkadot-sdk/substrate/frame/support/tests
 silent_rm ./polkadot-sdk/substrate/primitives/runtime-interface/tests
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm
 remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
 remove_crate_tree substrate/primitives/test-primitives
 remove_crate_tree substrate/test-utils
+find ./polkadot-sdk/substrate -iname "tests.rs" | while read -r file; do
+  rm $file
+done
 
 # Remove metadata
 

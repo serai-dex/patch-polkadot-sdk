@@ -8,6 +8,8 @@
   Serai, and lack of desire to potentially use
   (https://github.com/libp2p/rust-libp2p/issues/2632).
 
+- `build-helper`: Removes use of the `build-helper` crate.
+
 - `docify`: Removes references to `docify`. `patch.sh` also removes
   `aquamarine`, `simple-mermaid`.
 
@@ -16,7 +18,12 @@
 - `frame-system-benchmarking`: Removes references to
   `frame-system-benchmarking`.
 
+- `frame-system-rpc`: Removes references to
+  `frame-system-rpc`.
+
 - `light_client`: Removes the unused light-client request server.
+
+- `memmap2`: Remove use of the `memmap2` crate.
 
 - `NativeExecutor`: Removes `NativeExecutor`, `NativeElseWasmExecutor`,
   which were deprecated and were supposed to be removed at the end of 2024.

@@ -57,10 +57,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.sc-client-api]
-default-features = true
-workspace = true
-
 [dependencies.sc-network]
 default-features = true
 workspace = true

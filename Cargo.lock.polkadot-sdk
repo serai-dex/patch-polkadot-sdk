@@ -5031,7 +5031,6 @@ dependencies = [
  "prost 0.14.1",
  "prost-build 0.14.1",
  "rand 0.8.5",
- "sc-client-api",
  "sc-network",
  "sc-network-types",
  "serde",
