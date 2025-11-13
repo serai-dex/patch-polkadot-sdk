@@ -24,7 +24,6 @@ members = [
     "substrate/client/network",
     "substrate/client/network-gossip",
     "substrate/client/network/common",
-    "substrate/client/network/light",
     "substrate/client/network/sync",
     "substrate/client/network/transactions",
     "substrate/client/network/types",
@@ -693,10 +692,6 @@ default-features = false
 
 [workspace.dependencies.sc-network-gossip]
 path = "substrate/client/network-gossip"
-default-features = false
-
-[workspace.dependencies.sc-network-light]
-path = "substrate/client/network/light"
 default-features = false
 
 [workspace.dependencies.sc-network-sync]

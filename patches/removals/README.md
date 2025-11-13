@@ -16,6 +16,8 @@
 - `frame-system-benchmarking`: Removes references to
   `frame-system-benchmarking`.
 
+- `light_client`: Removes the unused light-client request server.
+
 - `NativeExecutor`: Removes `NativeExecutor`, `NativeElseWasmExecutor`,
   which were deprecated and were supposed to be removed at the end of 2024.
 

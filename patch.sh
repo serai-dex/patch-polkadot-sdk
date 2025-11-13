@@ -266,10 +266,12 @@ remove_crate_tree substrate/bin
 # Remove the unused "bitswap" protocol
 # https://github.com/libp2p/rust-libp2p/issues/2632
 silent_rm ./polkadot-sdk/substrate/client/network/build.rs
-silent_rm ./polkadot-sdk/substrate/client/network/src/bitswap
 silent_rm ./polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 silent_rm ./polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
-remove_matching_lines ./polkadot-sdk/substrate/client/network/src/lib.rs "mod bitswap;$"
+remove_module ./polkadot-sdk/substrate/client/network/src bitswap
+
+# Remove the unused light-client networking protocol
+remove_crate_tree substrate/client/network/light
 
 # Remove the BEEFY consensus crates
 remove_crate_tree substrate/client/consensus/beefy

@@ -52,7 +52,7 @@ use sc_network::{
 	NetworkBackend, NetworkStateInfo,
 };
 use sc_network_common::role::{Role, Roles};
-use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
+// use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
 use sc_network_sync::{
 	block_relay_protocol::{BlockDownloader, BlockRelayParams},
 	block_request_handler::BlockRequestHandler,
@@ -1120,7 +1120,7 @@ where
 
 	let genesis_hash = client.info().genesis_hash;
 
-	let light_client_request_protocol_config = {
+	/* let light_client_request_protocol_config = {
 		// Allow both outgoing and incoming requests.
 		let (handler, protocol_config) =
 			LightClientRequestHandler::new::<Net>(&protocol_id, fork_id, client.clone());
@@ -1129,7 +1129,7 @@ where
 	};
 
 	// install request handlers to `FullNetworkConfiguration`
-	net_config.add_request_response_protocol(light_client_request_protocol_config);
+	net_config.add_request_response_protocol(light_client_request_protocol_config); */
 
 	// Create transactions protocol and add it to the list of supported protocols of
 	let (transactions_handler_proto, transactions_config) =

@@ -100,10 +100,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sc-network-light]
-default-features = true
-workspace = true
-
 [dependencies.sc-network-sync]
 default-features = true
 workspace = true

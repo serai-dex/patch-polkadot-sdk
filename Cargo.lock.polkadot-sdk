@@ -5511,26 +5511,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sc-network-light"
-version = "0.52.0"
-dependencies = [
- "array-bytes",
- "async-channel",
- "futures",
- "log",
- "parity-scale-codec",
- "prost 0.14.1",
- "prost-build 0.14.1",
- "sc-client-api",
- "sc-network",
- "sc-network-types",
- "sp-blockchain",
- "sp-core",
- "sp-runtime",
- "thiserror 2.0.17",
-]
-
-[[package]]
 name = "sc-network-sync"
 version = "0.52.0"
 dependencies = [
@@ -5688,7 +5668,6 @@ dependencies = [
  "sc-keystore",
  "sc-network",
  "sc-network-common",
- "sc-network-light",
  "sc-network-sync",
  "sc-network-transactions",
  "sc-network-types",
