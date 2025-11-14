@@ -29,7 +29,7 @@ impl Pallet {
 		item: &syn::ItemType,
 		pallet_index: u8,
 		disable_call: bool,
-		disable_unsigned: bool,
+		disable_unsigned: bool, disable_inherent: bool,
 		bounds: &Punctuated<syn::TypeParamBound, token::Plus>,
 	) -> syn::Result<Self> {
 		let name = item.ident.clone();
@@ -71,7 +71,7 @@ impl Pallet {
 				} else if let (true, &PalletPartKeyword::ValidateUnsigned(_)) =
 					(disable_unsigned, &part.keyword)
 				{
-					false
+					false } else if let (true, &PalletPartKeyword::Inherent(_)) = (disable_inherent, &part.keyword) { false
 				} else {
 					true
 				}

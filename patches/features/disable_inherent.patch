@@ -1,0 +1,89 @@
+diff --git a/substrate/frame/support/procedural/src/runtime/parse/mod.rs b/substrate/frame/support/procedural/src/runtime/parse/mod.rs
+index 27a7c35a..0036062c 100644
+--- a/substrate/frame/support/procedural/src/runtime/parse/mod.rs
++++ b/substrate/frame/support/procedural/src/runtime/parse/mod.rs
+@@ -38,7 +38,7 @@ mod keyword {
+ 	custom_keyword!(derive);
+ 	custom_keyword!(pallet_index);
+ 	custom_keyword!(disable_call);
+-	custom_keyword!(disable_unsigned);
++	custom_keyword!(disable_unsigned); custom_keyword!(disable_inherent);
+ }
+ 
+ enum RuntimeAttr {
+@@ -46,7 +46,7 @@ enum RuntimeAttr {
+ 	Derive(proc_macro2::Span, Vec<RuntimeType>),
+ 	PalletIndex(proc_macro2::Span, u8),
+ 	DisableCall(proc_macro2::Span),
+-	DisableUnsigned(proc_macro2::Span),
++	DisableUnsigned(proc_macro2::Span), DisableInherent(proc_macro2::Span),
+ }
+ 
+ impl RuntimeAttr {
+@@ -56,7 +56,7 @@ impl RuntimeAttr {
+ 			Self::Derive(span, _) => *span,
+ 			Self::PalletIndex(span, _) => *span,
+ 			Self::DisableCall(span) => *span,
+-			Self::DisableUnsigned(span) => *span,
++			Self::DisableUnsigned(span) => *span, Self::DisableInherent(span) => *span,
+ 		}
+ 	}
+ }
+@@ -93,7 +93,7 @@ impl syn::parse::Parse for RuntimeAttr {
+ 		} else if lookahead.peek(keyword::disable_call) {
+ 			Ok(RuntimeAttr::DisableCall(content.parse::<keyword::disable_call>()?.span()))
+ 		} else if lookahead.peek(keyword::disable_unsigned) {
+-			Ok(RuntimeAttr::DisableUnsigned(content.parse::<keyword::disable_unsigned>()?.span()))
++			Ok(RuntimeAttr::DisableUnsigned(content.parse::<keyword::disable_unsigned>()?.span())) } else if lookahead.peek(keyword::disable_inherent) { Ok(RuntimeAttr::DisableInherent(content.parse::<keyword::disable_inherent>()?.span()))
+ 		} else {
+ 			Err(lookahead.error())
+ 		}
+@@ -153,7 +153,7 @@ impl Def {
+ 			let mut pallet_index_and_item = None;
+ 
+ 			let mut disable_call = false;
+-			let mut disable_unsigned = false;
++			let mut disable_unsigned = false; let mut disable_inherent = false;
+ 
+ 			while let Some(runtime_attr) =
+ 				helper::take_first_item_runtime_attr::<RuntimeAttr>(item)?
+@@ -175,7 +175,7 @@ impl Def {
+ 						};
+ 					},
+ 					RuntimeAttr::DisableCall(_) => disable_call = true,
+-					RuntimeAttr::DisableUnsigned(_) => disable_unsigned = true,
++					RuntimeAttr::DisableUnsigned(_) => disable_unsigned = true, RuntimeAttr::DisableInherent(_) => disable_inherent = true,
+ 					attr => {
+ 						let msg = "Invalid duplicated attribute";
+ 						return Err(syn::Error::new(attr.span(), msg));
+@@ -207,7 +207,7 @@ impl Def {
+ 							&pallet_item,
+ 							pallet_index,
+ 							disable_call,
+-							disable_unsigned,
++							disable_unsigned, disable_inherent,
+ 							&bounds,
+ 						)?;
+ 
+diff --git a/substrate/frame/support/procedural/src/runtime/parse/pallet.rs b/substrate/frame/support/procedural/src/runtime/parse/pallet.rs
+index 1397b726..6f80f2a2 100644
+--- a/substrate/frame/support/procedural/src/runtime/parse/pallet.rs
++++ b/substrate/frame/support/procedural/src/runtime/parse/pallet.rs
+@@ -29,7 +29,7 @@ impl Pallet {
+ 		item: &syn::ItemType,
+ 		pallet_index: u8,
+ 		disable_call: bool,
+-		disable_unsigned: bool,
++		disable_unsigned: bool, disable_inherent: bool,
+ 		bounds: &Punctuated<syn::TypeParamBound, token::Plus>,
+ 	) -> syn::Result<Self> {
+ 		let name = item.ident.clone();
+@@ -71,7 +71,7 @@ impl Pallet {
+ 				} else if let (true, &PalletPartKeyword::ValidateUnsigned(_)) =
+ 					(disable_unsigned, &part.keyword)
+ 				{
+-					false
++					false } else if let (true, &PalletPartKeyword::Inherent(_)) = (disable_inherent, &part.keyword) { false
+ 				} else {
+ 					true
+ 				}

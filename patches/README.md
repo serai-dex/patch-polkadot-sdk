@@ -12,6 +12,8 @@ File removals are preferred to be done via `rm`, not via patch files, as `git`
 will consider updates to removed files as conflicts when the purpose is to
 remove them entirely.
 
+- `features`: Features added on top.
+
 - `fixes`: Bug fixes.
 
 - `metadata`: Removes `scale_info::TypeInfo` and metadata from the Serai
