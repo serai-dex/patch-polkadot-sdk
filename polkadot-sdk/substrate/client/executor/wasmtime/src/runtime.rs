@@ -217,8 +217,8 @@ fn setup_wasmtime_caching(
 
 fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config, WasmError> {
 	let mut config = wasmtime::Config::new();
-	config.cranelift_opt_level(wasmtime::OptLevel::Speed); config.cranelift_pcc(false);
-	config.cranelift_nan_canonicalization(semantics.canonicalize_nans);
+	config.cranelift_opt_level(wasmtime::OptLevel::Speed);
+	config.cranelift_pcc(false);
 
 	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
 		Some(os_string) if os_string == "jitdump" => wasmtime::ProfilingStrategy::JitDump,
@@ -251,45 +251,16 @@ fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config,
 
 	// Be clear and specific about the extensions we support. If an update brings new features
 	// they should be introduced here as well.
-	// config.wasm_reference_types(semantics.wasm_reference_types);
-	config.wasm_simd(semantics.wasm_simd);
-	config.wasm_relaxed_simd(semantics.wasm_simd);
-	config.wasm_bulk_memory(semantics.wasm_bulk_memory);
-	config.wasm_multi_value(semantics.wasm_multi_value);
-	config.wasm_multi_memory(false);
-	// config.wasm_threads(false);
-	config.wasm_memory64(false);
-
-	config.wasm_tail_call(false);
-	config.wasm_custom_page_sizes(false);
-	config.wasm_wide_arithmetic(false);
-	config.wasm_extended_const(false);
-	config.wasm_stack_switching(false);
-
-	config.wasm_relaxed_simd(false);
-	// Unnecessary since `wasm_relaxed_simd = false`
-	// config.relaxed_simd_deterministic(false);
-
-	// Requires the `threads` feature
-	// config.wasm_threads(false);
-	// config.wasm_shared_everything_threads(false);
-
-	// Requires the `gc` feature
-	config.gc_support(false);
-	// config.wasm_gc(false);
-	// config.wasm_function_references(false);
-	// config.wasm_reference_types(false);
-	// config.wasm_exceptions(false);
-
-	// Requires the `component-model` feature
-	// config.wasm_component_model(false);
-	// config.wasm_component_model_error_context(false);
-	// config.wasm_component_model_gc(false);
-
-	// Requires the `component-model` _and_ the `async` feature
-	// config.wasm_component_model_async(false);
-	// config.wasm_component_model_async_builtins(false);
-	// config.wasm_component_model_async_stackful(false);
+	let mut features = wasmtime::WasmFeatures::empty();
+	features.insert(wasmtime::WasmFeatures::FLOATS);
+	config.cranelift_nan_canonicalization(true);
+	features.insert(wasmtime::WasmFeatures::MUTABLE_GLOBAL);
+	features.set(wasmtime::WasmFeatures::MULTI_VALUE, semantics.wasm_multi_value);
+	features.set(wasmtime::WasmFeatures::BULK_MEMORY, semantics.wasm_bulk_memory);
+	features.set(wasmtime::WasmFeatures::REFERENCE_TYPES, semantics.wasm_reference_types);
+	features.set(wasmtime::WasmFeatures::SIMD, semantics.wasm_simd);
+	config.wasm_features(wasmtime::WasmFeatures::all(), false);
+	config.wasm_features(features, true);
 
 	let (use_pooling, use_cow) = match semantics.instantiation_strategy {
 		InstantiationStrategy::PoolingCopyOnWrite => (true, true),
@@ -437,7 +408,7 @@ pub struct Semantics {
 	// I.e. if [`CodeSupplyMode::Verbatim`] is used.
 	pub deterministic_stack_limit: Option<DeterministicStackLimit>,
 
-	/// Controls whether wasmtime should compile floating point in a way that doesn't allow for
+	/* /// Controls whether wasmtime should compile floating point in a way that doesn't allow for
 	/// non-determinism.
 	///
 	/// By default, the wasm spec allows some local non-determinism wrt. certain floating point
@@ -449,7 +420,7 @@ pub struct Semantics {
 	/// The classical runtime environment for Substrate allowed it and punted this on the runtime
 	/// developers. For PVFs, we want to ensure that execution is deterministic though. Therefore,
 	/// for PVF execution this flag is meant to be turned on.
-	pub canonicalize_nans: bool,
+	pub canonicalize_nans: bool, */
 
 	/// Configures wasmtime to use multiple threads for compiling.
 	pub parallel_compilation: bool,
@@ -463,8 +434,8 @@ pub struct Semantics {
 	/// Enables WASM Bulk Memory Operations proposal
 	pub wasm_bulk_memory: bool,
 
-	// /// Enables WASM Reference Types proposal
-	// pub wasm_reference_types: bool,
+	/// Enables WASM Reference Types proposal
+	pub wasm_reference_types: bool,
 
 	/// Enables WASM Fixed-Width SIMD proposal
 	pub wasm_simd: bool,

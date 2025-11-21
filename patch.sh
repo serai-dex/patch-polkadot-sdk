@@ -525,8 +525,10 @@ cargo_upgrade cfg-expr 0.20.0
 cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
 cargo_upgrade directories 6.0.0
+cargo_upgrade foldhash 0.2.0
 cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
+cargo_upgrade hashbrown 0.16.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade kvdb-rocksdb 0.20.0
 cargo_upgrade libp2p 0.56.0
@@ -542,9 +544,10 @@ cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
 cargo_upgrade strum 0.27.0
 cargo_upgrade thiserror 2.0.0
+cargo_upgrade toml 0.9.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 38.0.0
+cargo_upgrade wasmtime 39.0.0
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk
