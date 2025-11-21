@@ -525,10 +525,8 @@ cargo_upgrade cfg-expr 0.20.0
 cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
 cargo_upgrade directories 6.0.0
-cargo_upgrade foldhash 0.2.0
 cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
-cargo_upgrade hashbrown 0.16.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade kvdb-rocksdb 0.20.0
 cargo_upgrade libp2p 0.56.0

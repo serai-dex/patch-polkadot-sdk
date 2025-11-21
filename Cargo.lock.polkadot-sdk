@@ -6685,9 +6685,9 @@ name = "sp-trie"
 version = "41.1.0"
 dependencies = [
  "ahash",
- "foldhash 0.2.0",
+ "foldhash 0.1.5",
  "hash-db",
- "hashbrown 0.16.1",
+ "hashbrown 0.15.5",
  "memory-db",
  "nohash-hasher",
  "parity-scale-codec",

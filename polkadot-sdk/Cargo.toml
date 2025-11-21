@@ -220,7 +220,7 @@ level = "allow"
 priority = 2
 
 [workspace.dependencies]
-hashbrown = "0.16.0"
+hashbrown = "0.15.3"
 polkavm-derive = "0.26.0"
 polkavm-linker = "0.26.0"
 
@@ -354,7 +354,7 @@ default-features = false
 version = "1.0.6"
 
 [workspace.dependencies.foldhash]
-version = "0.2.0"
+version = "0.1.5"
 default-features = false
 
 [workspace.dependencies.fork-tree]
