@@ -1584,7 +1584,7 @@ dependencies = [
 
 [[package]]
 name = "frame-executive"
-version = "43.0.0"
+version = "43.0.1"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -1669,7 +1669,7 @@ dependencies = [
 
 [[package]]
 name = "frame-system"
-version = "43.0.0"
+version = "43.0.1"
 dependencies = [
  "cfg-if",
  "frame-support",
@@ -5766,7 +5766,7 @@ dependencies = [
 
 [[package]]
 name = "sc-tracing"
-version = "42.0.0"
+version = "42.0.1"
 dependencies = [
  "chrono",
  "console",
@@ -5784,6 +5784,7 @@ dependencies = [
  "sp-rpc",
  "sp-runtime",
  "sp-tracing",
+ "sp-trie",
  "thiserror 2.0.17",
  "tracing",
  "tracing-log",

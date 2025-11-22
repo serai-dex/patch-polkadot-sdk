@@ -5,7 +5,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=bd19559e1fa2a3f8018e1244c8831ded0f84b924
+POLKADOT_SDK_COMMIT=7304752b47858f2cd601b35d0eb734ad4ccbbc48
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -112,6 +112,9 @@ echo '[dependencies.tokio]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.t
 echo 'version = "1"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'features = ["time"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
+
+# Remove `frame-metadata` as a dependency
+remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "frame-metadata"
 
 # Remove unused HTTP module and associated dependencies
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
@@ -408,6 +411,7 @@ remove_crate_tree substrate/frame/system/benchmarking
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
 remove_crate_tree substrate/client/executor/runtime-test
+silent_rm ./polkadot-sdk/substrate/client/tracing/src/block/fixtures
 silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/tests
 silent_rm ./polkadot-sdk/substrate/frame/support/tests
 silent_rm ./polkadot-sdk/substrate/primitives/runtime-interface/tests

@@ -126,28 +126,6 @@ index d9aa3b8..56f006f 100644
  	TExPool: MaintainedTransactionPool<Block = TBl, Hash = <TBl as BlockT>::Hash> + 'static,
  	TBl::Hash: Unpin,
  	TBl::Header: Unpin,
-diff --git a/substrate/client/tracing/src/block/mod.rs b/substrate/client/tracing/src/block/mod.rs
-index 3ebbc3d..9fd4681 100644
---- a/substrate/client/tracing/src/block/mod.rs
-+++ b/substrate/client/tracing/src/block/mod.rs
-@@ -36,7 +36,7 @@ use tracing::{
- 
- use crate::{SpanDatum, TraceEvent, Values};
- use sc_client_api::BlockBackend;
--use sp_api::{Core, Metadata, ProvideRuntimeApi};
-+use sp_api::{Core, ProvideRuntimeApi};
- use sp_blockchain::HeaderBackend;
- use sp_core::hexdisplay::HexDisplay;
- use sp_rpc::tracing::{BlockTrace, Span, TraceBlockResponse};
-@@ -178,7 +178,7 @@ where
- 		+ Send
- 		+ Sync
- 		+ 'static,
--	Client::Api: Metadata<Block>,
-+	Client::Api: Core<Block>,
- {
- 	/// Create a new `BlockExecutor`
- 	pub fn new(
 diff --git a/substrate/primitives/runtime/src/generic/digest.rs b/substrate/primitives/runtime/src/generic/digest.rs
 index 593fbdd..751967f 100644
 --- a/substrate/primitives/runtime/src/generic/digest.rs
@@ -1527,3 +1505,56 @@ index bfcc8fe4..e20aa27f 100644
  	pub use sp_runtime::{
  		generic::ExtensionVersion,
  		impl_tx_ext_default,
+diff --git a/substrate/client/tracing/src/block/mod.rs b/substrate/client/tracing/src/block/mod.rs
+index b9e048c3..1a5a6285 100644
+--- a/substrate/client/tracing/src/block/mod.rs
++++ b/substrate/client/tracing/src/block/mod.rs
+@@ -35,9 +35,9 @@ use tracing::{
+ };
+ 
+ use crate::{SpanDatum, TraceEvent, Values};
+-use frame_metadata::{RuntimeMetadata, RuntimeMetadataPrefixed};
++// use frame_metadata::{RuntimeMetadata, RuntimeMetadataPrefixed};
+ use sc_client_api::BlockBackend;
+-use sp_api::{ApiExt, Core, Metadata, ProofRecorder, ProvideRuntimeApi};
++use sp_api::{ApiExt, Core, ProofRecorder, ProvideRuntimeApi};
+ use sp_blockchain::HeaderBackend;
+-use sp_core::{hexdisplay::HexDisplay, OpaqueMetadata};
++use sp_core::hexdisplay::HexDisplay;
+ use sp_rpc::tracing::{BlockTrace, Span, TraceBlockResponse};
+@@ -176,7 +176,7 @@ pub struct BlockExecutor<Block: BlockT, Client> {
+ 	record_proof: bool,
+ }
+ 
+-/// Decode the metadata and check if the runtime has the storage weight reclaim extension enabled.
++/* /// Decode the metadata and check if the runtime has the storage weight reclaim extension enabled.
+ /// If it has, proof recording needs to be enabled during tracing.
+ /// This check is best effort since we rely on a string identifier. This check exists for backwards
+ /// compatibility, versions more recent than `stable2509` of polkadot-sdk will have proof recording
+@@ -201,7 +201,7 @@ fn is_parachain(metadata: OpaqueMetadata) -> bool {
+ 	} else {
+ 		false
+ 	}
+-}
++} */
+ 
+ impl<Block, Client> BlockExecutor<Block, Client>
+ where
+@@ -212,7 +212,7 @@ where
+ 		+ Send
+ 		+ Sync
+ 		+ 'static,
+-	Client::Api: Metadata<Block>,
++	Client::Api: Core<Block>,
+ {
+ 	/// Create a new `BlockExecutor`
+ 	pub fn new(
+@@ -225,7 +225,7 @@ where
+ 		// Detect if this is tracing a parachain block.
+ 		// Parachains need to have proof recording enabled to trace blocks.
+ 		let record_proof =
+-			client.runtime_api().metadata(block).ok().map(is_parachain).unwrap_or_default();
++			false; // client.runtime_api().metadata(block).ok().map(is_parachain).unwrap_or_default();
+ 
+ 		Self { client, block, targets, storage_keys, methods, record_proof }
+ 	}
