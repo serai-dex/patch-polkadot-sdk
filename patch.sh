@@ -512,11 +512,49 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 echo "Removing extraneous \"qed\" claims"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
 
-# Remove the original sessions module
-mv ./polkadot-sdk/substrate/frame/session ./polkadot-sdk/substrate/frame/session-original
-cp -r ./patches/opinions/session ./polkadot-sdk/substrate/frame/session
-mv ./polkadot-sdk/substrate/frame/session-original ./polkadot-sdk/substrate/frame/session/session
-sed -e s/"name = \"pallet-session\""/"name = \"pallet-session-original\""/ -i ./polkadot-sdk/substrate/frame/session/session/Cargo.toml
+# Remove the sessions module for `ShouldEndSession` alone
+ORIGINAL_SESSION=$(cat ./polkadot-sdk/substrate/frame/session/src/lib.rs)
+silent_rm ./polkadot-sdk/substrate/frame/session/src
+mkdir ./polkadot-sdk/substrate/frame/session/src
+echo "$ORIGINAL_SESSION" | head -n $(($(echo "$ORIGINAL_SESSION" | grep -F -m1 -n "//!" | cut --delimiter=":" -f1) - 1)) > ./polkadot-sdk/substrate/frame/session/src/lib.rs
+echo "
+// This file has been modified since as part of https://github.com/serai-dex/patch-polkadot-sdk.
+// Please review it for the exact methodology of the changes, yet the work is offered under the same
+// terms as offered above.
+" >> ./polkadot-sdk/substrate/frame/session/src/lib.rs
+echo "#![no_std]" >> ./polkadot-sdk/substrate/frame/session/src/lib.rs
+SHOULD_END_SESSION=$(echo "$ORIGINAL_SESSION" | tail -n+$(($(echo "$ORIGINAL_SESSION" | grep -m1 -n "trait ShouldEndSession" | cut --delimiter=":" -f1))))
+SHOULD_END_SESSION=$(echo "$SHOULD_END_SESSION" | head -n$(($(echo "$SHOULD_END_SESSION" | grep -m1 -n "^}$" | cut --delimiter=":" -f1))))
+echo "$SHOULD_END_SESSION" >> ./polkadot-sdk/substrate/frame/session/src/lib.rs
+echo "
+/// Get the current session for Substrate's consensus.
+pub trait GetCurrentSessionForSubstrate {
+  /// Get the session.
+  fn get() -> u32;
+}
+
+#[frame_support::pallet]
+pub mod pallet {
+  use crate::GetCurrentSessionForSubstrate;
+
+  #[pallet::config]
+  pub trait Config: frame_system::Config {
+    /// The item which tracks the session.
+    type Session: GetCurrentSessionForSubstrate;
+  }
+
+  #[pallet::pallet]
+  pub struct Pallet<T>(_);
+
+  impl<T: Config> Pallet<T> {
+    /// The current session index for Substrate's consensus.
+    pub fn current_index() -> u32 {
+      T::Session::get()
+    }
+  }
+}
+pub use pallet::*;
+" >> ./polkadot-sdk/substrate/frame/session/src/lib.rs
 
 # Remove unused dependencies
 machete

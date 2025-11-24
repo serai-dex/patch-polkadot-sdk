@@ -19,18 +19,6 @@
 //!
 //! NOTE: If you're looking for `parameter_types`, it has moved in to the top-level module.
 
-pub mod tokens;
-pub use tokens::{
-	currency::{
-		ActiveIssuanceOf, Currency, InspectLockableCurrency, LockIdentifier, LockableCurrency,
-		NamedReservableCurrency, ReservableCurrency, TotalIssuanceOf, VestedTransfer,
-		VestingSchedule,
-	},
-	fungible, fungibles,
-	imbalance::{Imbalance, OnUnbalanced, SignedImbalance},
-	nonfungible, nonfungible_v2, nonfungibles, nonfungibles_v2, BalanceStatus,
-	ExistenceRequirement, Locker, WithdrawReasons,
-};
 
 mod members;
 #[allow(deprecated)]

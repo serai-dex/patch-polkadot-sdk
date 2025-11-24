@@ -1,9 +1,30 @@
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
-#![deny(missing_docs)]
-#![cfg_attr(not(feature = "std"), no_std)]
-//! A minified `pallet-session`.
+// This file is part of Substrate.
 
-pub use pallet_session_original::ShouldEndSession;
+// Copyright (C) Parity Technologies (UK) Ltd.
+// SPDX-License-Identifier: Apache-2.0
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// This file has been modified since as part of https://github.com/serai-dex/patch-polkadot-sdk.
+// Please review it for the exact methodology of the changes, yet the work is offered under the same
+// terms as offered above.
+
+#![no_std]
+pub trait ShouldEndSession<BlockNumber> {
+	/// Return `true` if the session should be ended.
+	fn should_end_session(now: BlockNumber) -> bool;
+}
 
 /// Get the current session for Substrate's consensus.
 pub trait GetCurrentSessionForSubstrate {
@@ -32,3 +53,4 @@ pub mod pallet {
   }
 }
 pub use pallet::*;
+

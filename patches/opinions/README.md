@@ -14,8 +14,5 @@
   genesis config in favor of `scale::{Encode, Decode}`, allowing non-JSON
   `GenesisConfig`s.
 
-- `session`: Replaces `pallet-session` with a much more minimal variant,
-  sufficient for `pallet-babe` and `pallet-grandpa`.
-
 - `wasm32v1-none`: Mandates use of `wasm32v1-none` without falling back to
   `wasm32-unknown-unknown`.

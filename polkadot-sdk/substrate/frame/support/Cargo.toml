@@ -26,9 +26,6 @@ workspace = true
 [dependencies.array-bytes]
 workspace = true
 
-[dependencies.bitflags]
-workspace = true
-
 [dependencies.codec]
 features = [
     "derive",
