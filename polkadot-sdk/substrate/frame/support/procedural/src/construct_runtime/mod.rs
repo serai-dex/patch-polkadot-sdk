@@ -685,7 +685,7 @@ pub(crate) fn decl_pallet_runtime_setup(
 				None
 			}
 
-			fn crate_version<P: 'static>() -> Option<#scrate::traits::CrateVersion> {
+			/* fn crate_version<P: 'static>() -> Option<#scrate::traits::CrateVersion> {
 				let type_id = core::any::TypeId::of::<P>();
 				#(
 					#pallet_attrs
@@ -697,7 +697,7 @@ pub(crate) fn decl_pallet_runtime_setup(
 				)*
 
 				None
-			}
+			} */
 		}
 	)
 }

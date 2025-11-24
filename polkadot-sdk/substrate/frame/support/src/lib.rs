@@ -529,7 +529,7 @@ pub use frame_support_procedural::{
 pub use frame_support_procedural::runtime;
 
 #[doc(hidden)]
-pub use frame_support_procedural::{__create_tt_macro, __generate_dummy_part_checker};
+pub use frame_support_procedural::{__create_tt_macro};
 
 /// Derive [`Clone`] but do not bound any generic.
 ///
@@ -699,7 +699,7 @@ pub use frame_support_procedural::DefaultNoBound;
 /// ```
 pub use frame_support_procedural::require_transactional;
 
-/// Convert the current crate version into a [`CrateVersion`](crate::traits::CrateVersion).
+/* /// Convert the current crate version into a [`CrateVersion`](crate::traits::CrateVersion).
 ///
 /// It uses the `CARGO_PKG_VERSION_MAJOR`, `CARGO_PKG_VERSION_MINOR` and
 /// `CARGO_PKG_VERSION_PATCH` environment variables to fetch the crate version.
@@ -712,7 +712,7 @@ pub use frame_support_procedural::require_transactional;
 /// # use frame_support::{traits::CrateVersion, crate_to_crate_version};
 /// const Version: CrateVersion = crate_to_crate_version!();
 /// ```
-pub use frame_support_procedural::crate_to_crate_version;
+pub use frame_support_procedural::crate_to_crate_version; */
 
 /// Return Err of the expression: `return Err($expression);`.
 ///

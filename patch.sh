@@ -493,6 +493,22 @@ remove_crate_tree substrate/primitives/maybe-compressed-blob
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
+# Remove unused parts of `frame-support-procedural`
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src crate_version
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src dummy_part_checker
+remove_matching_phrase ./polkadot-sdk/substrate/frame/support/src/lib.rs "\, __generate_dummy_part_checker"
+
+# Remove various unused traits
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits filter
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits preimages
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits proving
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits messages
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits reality
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits schedule
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits tokens
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits tx_pause
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits voting
+
 # Remove `aquamarine`, `docify` from the code
 # This is done last as it's quite slow, so it's best to do after we've achieved a small tree
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;

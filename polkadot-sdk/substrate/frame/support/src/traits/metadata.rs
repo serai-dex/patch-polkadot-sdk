@@ -36,8 +36,8 @@ pub trait PalletInfo {
 	fn name_hash<P: 'static>() -> Option<[u8; 16]>;
 	/// Convert the given pallet `P` into its Rust module name as used in `construct_runtime!`.
 	fn module_name<P: 'static>() -> Option<&'static str>;
-	/// Convert the given pallet `P` into its containing crate version.
-	fn crate_version<P: 'static>() -> Option<CrateVersion>;
+	/* /// Convert the given pallet `P` into its containing crate version.
+	fn crate_version<P: 'static>() -> Option<CrateVersion>; */
 }
 
 /// Information regarding an instance of a pallet.
@@ -49,8 +49,8 @@ pub struct PalletInfoData {
 	pub name: &'static str,
 	/// Name of the Rust module containing the pallet.
 	pub module_name: &'static str,
-	/// Version of the crate containing the pallet.
-	pub crate_version: CrateVersion,
+	/* /// Version of the crate containing the pallet.
+	pub crate_version: CrateVersion, */
 }
 
 /// Provides information about the pallet itself and its setup in the runtime.
@@ -66,8 +66,8 @@ pub trait PalletInfoAccess {
 	fn name_hash() -> [u8; 16];
 	/// Name of the Rust module containing the pallet.
 	fn module_name() -> &'static str;
-	/// Version of the crate containing the pallet.
-	fn crate_version() -> CrateVersion;
+	/* /// Version of the crate containing the pallet.
+	fn crate_version() -> CrateVersion; */
 }
 
 /// Provide information about a bunch of pallets.

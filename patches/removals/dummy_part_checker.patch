@@ -1,0 +1,18 @@
+diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
+index 4c24e186..dcde2cfb 100644
+--- a/substrate/frame/support/procedural/src/lib.rs
++++ b/substrate/frame/support/procedural/src/lib.rs
+@@ -424,11 +424,11 @@ pub fn impl_key_prefix_for_tuples(input: TokenStream) -> TokenStream {
+ 		.into()
+ }
+ 
+-/// Internal macro use by frame_support to generate dummy part checker for old pallet declaration
++/* /// Internal macro use by frame_support to generate dummy part checker for old pallet declaration
+ #[proc_macro]
+ pub fn __generate_dummy_part_checker(input: TokenStream) -> TokenStream {
+ 	dummy_part_checker::generate_dummy_part_checker(input)
+-}
++} */
+ 
+ /// Macro that inserts some tokens after the first match of some pattern.
+ ///

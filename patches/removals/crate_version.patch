@@ -1,0 +1,126 @@
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+index 8e326972..f5021c44 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+@@ -711,7 +711,7 @@ pub(crate) fn decl_pallet_runtime_setup(
+ 				None
+ 			}
+ 
+-			fn crate_version<P: 'static>() -> Option<#scrate::traits::CrateVersion> {
++			/* fn crate_version<P: 'static>() -> Option<#scrate::traits::CrateVersion> {
+ 				let type_id = core::any::TypeId::of::<P>();
+ 				#(
+ 					#pallet_attrs
+@@ -723,7 +723,7 @@ pub(crate) fn decl_pallet_runtime_setup(
+ 				)*
+ 
+ 				None
+-			}
++			} */
+ 		}
+ 	)
+ }
+diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
+index 4c24e186..527aef0c 100644
+--- a/substrate/frame/support/procedural/src/lib.rs
++++ b/substrate/frame/support/procedural/src/lib.rs
+@@ -403,13 +403,13 @@ pub fn derive_default_no_bound(input: TokenStream) -> TokenStream {
+ 	no_bound::default::derive_default_no_bound(input)
+ }
+ 
+-/// Macro used internally in FRAME to generate the crate version for a pallet.
++/* /// Macro used internally in FRAME to generate the crate version for a pallet.
+ #[proc_macro]
+ pub fn crate_to_crate_version(input: TokenStream) -> TokenStream {
+ 	crate_version::crate_to_crate_version(input)
+ 		.unwrap_or_else(|e| e.to_compile_error())
+ 		.into()
+-}
++} */
+ 
+ /// The number of module instances supported by the runtime, starting at index 1,
+ /// and up to `NUMBER_OF_INSTANCE`.
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs b/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
+index 747d9832..2c44f915 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/pallet_struct.rs
+@@ -272,9 +272,9 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 						implemented by the runtime")
+ 			}
+ 
+-			fn crate_version() -> #frame_support::traits::CrateVersion {
++			/* fn crate_version() -> #frame_support::traits::CrateVersion {
+ 				#frame_support::crate_to_crate_version!()
+-			}
++			} */
+ 		}
+ 
+ 		impl<#type_impl_gen> #frame_support::traits::PalletsInfoAccess
+@@ -288,7 +288,7 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
+ 					index: Self::index(),
+ 					name: Self::name(),
+ 					module_name: Self::module_name(),
+-					crate_version: Self::crate_version(),
++					// crate_version: Self::crate_version(),
+ 				};
+ 				#frame_support::__private::vec![item]
+ 			}
+diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
+index 1921383a..5051e803 100644
+--- a/substrate/frame/support/src/lib.rs
++++ b/substrate/frame/support/src/lib.rs
+@@ -705,7 +705,7 @@ pub use frame_support_procedural::DefaultNoBound;
+ /// ```
+ pub use frame_support_procedural::require_transactional;
+ 
+-/// Convert the current crate version into a [`CrateVersion`](crate::traits::CrateVersion).
++/* /// Convert the current crate version into a [`CrateVersion`](crate::traits::CrateVersion).
+ ///
+ /// It uses the `CARGO_PKG_VERSION_MAJOR`, `CARGO_PKG_VERSION_MINOR` and
+ /// `CARGO_PKG_VERSION_PATCH` environment variables to fetch the crate version.
+@@ -718,7 +718,7 @@ pub use frame_support_procedural::require_transactional;
+ /// # use frame_support::{traits::CrateVersion, crate_to_crate_version};
+ /// const Version: CrateVersion = crate_to_crate_version!();
+ /// ```
+-pub use frame_support_procedural::crate_to_crate_version;
++pub use frame_support_procedural::crate_to_crate_version; */
+ 
+ /// Return Err of the expression: `return Err($expression);`.
+ ///
+diff --git a/substrate/frame/support/src/traits/metadata.rs b/substrate/frame/support/src/traits/metadata.rs
+index 1e46470a..7e419ed9 100644
+--- a/substrate/frame/support/src/traits/metadata.rs
++++ b/substrate/frame/support/src/traits/metadata.rs
+@@ -36,8 +36,8 @@ pub trait PalletInfo {
+ 	fn name_hash<P: 'static>() -> Option<[u8; 16]>;
+ 	/// Convert the given pallet `P` into its Rust module name as used in `construct_runtime!`.
+ 	fn module_name<P: 'static>() -> Option<&'static str>;
+-	/// Convert the given pallet `P` into its containing crate version.
+-	fn crate_version<P: 'static>() -> Option<CrateVersion>;
++	/* /// Convert the given pallet `P` into its containing crate version.
++	fn crate_version<P: 'static>() -> Option<CrateVersion>; */
+ }
+ 
+ /// Information regarding an instance of a pallet.
+@@ -49,8 +49,8 @@ pub struct PalletInfoData {
+ 	pub name: &'static str,
+ 	/// Name of the Rust module containing the pallet.
+ 	pub module_name: &'static str,
+-	/// Version of the crate containing the pallet.
+-	pub crate_version: CrateVersion,
++	/* /// Version of the crate containing the pallet.
++	pub crate_version: CrateVersion, */
+ }
+ 
+ /// Provides information about the pallet itself and its setup in the runtime.
+@@ -66,8 +66,8 @@ pub trait PalletInfoAccess {
+ 	fn name_hash() -> [u8; 16];
+ 	/// Name of the Rust module containing the pallet.
+ 	fn module_name() -> &'static str;
+-	/// Version of the crate containing the pallet.
+-	fn crate_version() -> CrateVersion;
++	/* /// Version of the crate containing the pallet.
++	fn crate_version() -> CrateVersion; */
+ }
+ 
+ /// Provide information about a bunch of pallets.

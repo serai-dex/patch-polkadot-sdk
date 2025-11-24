@@ -22,10 +22,8 @@
 
 mod benchmark;
 mod construct_runtime;
-mod crate_version;
 mod deprecation;
 mod derive_impl;
-mod dummy_part_checker;
 mod dynamic_params;
 mod key_prefix;
 mod match_and_insert;
@@ -403,13 +401,13 @@ pub fn derive_default_no_bound(input: TokenStream) -> TokenStream {
 	no_bound::default::derive_default_no_bound(input)
 }
 
-/// Macro used internally in FRAME to generate the crate version for a pallet.
+/* /// Macro used internally in FRAME to generate the crate version for a pallet.
 #[proc_macro]
 pub fn crate_to_crate_version(input: TokenStream) -> TokenStream {
 	crate_version::crate_to_crate_version(input)
 		.unwrap_or_else(|e| e.to_compile_error())
 		.into()
-}
+} */
 
 /// The number of module instances supported by the runtime, starting at index 1,
 /// and up to `NUMBER_OF_INSTANCE`.
@@ -424,11 +422,11 @@ pub fn impl_key_prefix_for_tuples(input: TokenStream) -> TokenStream {
 		.into()
 }
 
-/// Internal macro use by frame_support to generate dummy part checker for old pallet declaration
+/* /// Internal macro use by frame_support to generate dummy part checker for old pallet declaration
 #[proc_macro]
 pub fn __generate_dummy_part_checker(input: TokenStream) -> TokenStream {
 	dummy_part_checker::generate_dummy_part_checker(input)
-}
+} */
 
 /// Macro that inserts some tokens after the first match of some pattern.
 ///

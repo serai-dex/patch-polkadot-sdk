@@ -39,8 +39,6 @@ pub use validation::{
 mod error;
 pub use error::PalletError;
 
-mod filter;
-pub use filter::{ClearFilterGuard, FilterStack, FilterStackGuard, InstanceFilter};
 
 mod misc;
 pub use misc::{
@@ -62,7 +60,6 @@ mod stored_map;
 pub use stored_map::{StorageMapShim, StoredMap};
 mod randomness;
 pub use randomness::Randomness;
-pub mod reality;
 
 mod metadata;
 pub use metadata::{
@@ -115,8 +112,6 @@ pub use messages::{
 mod safe_mode;
 pub use safe_mode::{SafeMode, SafeModeError, SafeModeNotify};
 
-mod tx_pause;
-pub use tx_pause::{TransactionPause, TransactionPauseError};
 
 pub mod dynamic_params;
 

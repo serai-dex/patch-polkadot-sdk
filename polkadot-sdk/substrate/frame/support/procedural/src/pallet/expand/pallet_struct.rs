@@ -272,9 +272,9 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
 						implemented by the runtime")
 			}
 
-			fn crate_version() -> #frame_support::traits::CrateVersion {
+			/* fn crate_version() -> #frame_support::traits::CrateVersion {
 				#frame_support::crate_to_crate_version!()
-			}
+			} */
 		}
 
 		impl<#type_impl_gen> #frame_support::traits::PalletsInfoAccess
@@ -288,7 +288,7 @@ pub fn expand_pallet_struct(def: &mut Def) -> proc_macro2::TokenStream {
 					index: Self::index(),
 					name: Self::name(),
 					module_name: Self::module_name(),
-					crate_version: Self::crate_version(),
+					// crate_version: Self::crate_version(),
 				};
 				#frame_support::__private::vec![item]
 			}
