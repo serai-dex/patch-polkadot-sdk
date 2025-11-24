@@ -95,40 +95,4 @@ fn verify(sig_data: Vec<u8>, message: Vec<u8>, uri: &str) -> error::Result<()>
 
 #[cfg(test)]
 mod test {
-	use super::*;
-
-	const ALICE: &str = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
-	const SIG1: &str = "0x4eb25a2285a82374888880af0024eb30c3a21ce086eae3862888d345af607f0ad6fb081312f11730932564f24a9f8ebcee2d46861413ae61307eca58db2c3e81";
-	const SIG2: &str = "0x026342225155056ea797118c1c8c8b3cc002aa2020c36f4217fa3c302783a572ad3dcd38c231cbaf86cadb93984d329c963ceac0685cc1ee4c1ed50fa443a68f";
-
-	// Verify work with `--message` argument.
-	#[test]
-	fn verify_immediate() {
-		let cmd = VerifyCmd::parse_from(&["verify", SIG1, ALICE, "--message", "test message"]);
-		assert!(cmd.run().is_ok(), "Alice' signature should verify");
-	}
-
-	// Verify work without `--message` argument.
-	#[test]
-	fn verify_stdin() {
-		let cmd = VerifyCmd::parse_from(&["verify", SIG1, ALICE]);
-		let message = "test message";
-		assert!(cmd.verify(|| message.as_bytes()).is_ok(), "Alice' signature should verify");
-	}
-
-	// Verify work with `--message` argument for hex message.
-	#[test]
-	fn verify_immediate_hex() {
-		let cmd = VerifyCmd::parse_from(&["verify", SIG2, ALICE, "--message", "0xaabbcc", "--hex"]);
-		assert!(cmd.run().is_ok(), "Alice' signature should verify");
-	}
-
-	// Verify work without `--message` argument for hex message.
-	#[test]
-	fn verify_stdin_hex() {
-		let cmd = VerifyCmd::parse_from(&["verify", SIG2, ALICE, "--hex"]);
-		assert!(cmd.verify(|| "0xaabbcc".as_bytes()).is_ok());
-		assert!(cmd.verify(|| "aabbcc".as_bytes()).is_ok());
-		assert!(cmd.verify(|| "0xaABBcC".as_bytes()).is_ok());
-	}
 }

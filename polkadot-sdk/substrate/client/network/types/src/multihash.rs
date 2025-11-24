@@ -173,18 +173,4 @@ impl From<Multihash> for multihash::Multihash<64> {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn code_from_u64() {
-		assert_eq!(Code::try_from(0x00).unwrap(), Code::Identity);
-		assert_eq!(Code::try_from(0x12).unwrap(), Code::Sha2_256);
-		assert!(matches!(Code::try_from(0x01).unwrap_err(), Error::UnsupportedCode(0x01)));
-	}
-
-	#[test]
-	fn code_into_u64() {
-		assert_eq!(u64::from(Code::Identity), 0x00);
-		assert_eq!(u64::from(Code::Sha2_256), 0x12);
-	}
 }

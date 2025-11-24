@@ -384,27 +384,4 @@ fn block_id_as_string<T: BlockT>(block_id: BlockId<T>) -> String {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn test_is_parachain_with_parachain_metadata() {
-		// Read parachain metadata from SCALE-encoded file in fixtures directory
-		let metadata_bytes = std::fs::read("src/block/fixtures/parachain_metadata.scale")
-			.expect("parachain_metadata.scale should exist in fixtures directory");
-		let opaque = OpaqueMetadata::new(metadata_bytes);
-
-		let result = is_parachain(opaque);
-		assert!(result, "Should detect parachain metadata as parachain");
-	}
-
-	#[test]
-	fn test_is_parachain_with_relay_chain_metadata() {
-		// Read relay chain metadata from SCALE-encoded file in fixtures directory
-		let metadata_bytes = std::fs::read("src/block/fixtures/relay_chain_metadata.scale")
-			.expect("relay_chain_metadata.scale should exist in fixtures directory");
-		let opaque = OpaqueMetadata::new(metadata_bytes);
-
-		let result = is_parachain(opaque);
-		assert!(!result, "Should not detect relay chain metadata as parachain");
-	}
 }

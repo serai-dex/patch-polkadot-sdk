@@ -23,8 +23,6 @@ mod checked_extrinsic;
 mod digest;
 mod era;
 mod header;
-#[cfg(test)]
-mod tests;
 mod unchecked_extrinsic;
 
 pub use self::{

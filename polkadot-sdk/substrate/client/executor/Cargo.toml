@@ -72,14 +72,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-runtime-interface]
-default-features = true
-workspace = true
-
-[dependencies.sp-trie]
-default-features = true
-workspace = true
-
 [dependencies.sp-version]
 default-features = true
 workspace = true
@@ -95,8 +87,6 @@ std = [
     "sp-core/std",
     "sp-externalities/std",
     "sp-io/std",
-    "sp-runtime-interface/std",
-    "sp-trie/std",
     "sp-version/std",
     "sp-wasm-interface/std",
 ]

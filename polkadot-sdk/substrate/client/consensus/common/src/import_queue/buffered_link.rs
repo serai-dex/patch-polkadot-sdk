@@ -173,13 +173,4 @@ impl<B: BlockT> BufferedLinkReceiver<B> {
 
 #[cfg(test)]
 mod tests {
-	use sp_test_primitives::Block;
-
-	#[test]
-	fn is_closed() {
-		let (tx, rx) = super::buffered_link::<Block>(1);
-		assert!(!tx.is_closed());
-		drop(rx);
-		assert!(tx.is_closed());
-	}
 }

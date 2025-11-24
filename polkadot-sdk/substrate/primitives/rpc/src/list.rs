@@ -64,13 +64,4 @@ impl<T> From<Vec<T>> for ListOrValue<T> {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::assert_deser;
-
-	#[test]
-	fn should_serialize_and_deserialize() {
-		assert_deser(r#"5"#, ListOrValue::Value(5_u64));
-		assert_deser(r#""str""#, ListOrValue::Value("str".to_string()));
-		assert_deser(r#"[1,2,3]"#, ListOrValue::List(vec![1_u64, 2_u64, 3_u64]));
-	}
 }

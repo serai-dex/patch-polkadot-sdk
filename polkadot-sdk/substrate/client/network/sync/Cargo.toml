@@ -49,9 +49,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.mockall]
-workspace = true
-
 [dependencies.prometheus-endpoint]
 default-features = true
 workspace = true

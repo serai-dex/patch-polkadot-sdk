@@ -94,9 +94,6 @@ optional = true
 workspace = true
 default-features = true
 
-[dependencies.mockall]
-workspace = true
-
 [dependencies.parking_lot]
 workspace = true
 default-features = true

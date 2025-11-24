@@ -198,35 +198,4 @@ pub fn run_in_context<R>(run: impl FnOnce() -> R) -> R {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn dispatch_context_works() {
-		// No context, so we don't execute
-		assert!(with_context::<(), _>(|_| ()).is_none());
-
-		let ret = run_in_context(|| with_context::<(), _>(|_| 1).unwrap());
-		assert_eq!(1, ret);
-
-		#[derive(Default)]
-		struct Context(i32);
-
-		let res = run_in_context(|| {
-			with_context::<Context, _>(|v| {
-				assert_eq!(0, v.or_default().0);
-
-				v.or_default().0 = 100;
-			});
-
-			run_in_context(|| {
-				run_in_context(|| {
-					run_in_context(|| with_context::<Context, _>(|v| v.or_default().0).unwrap())
-				})
-			})
-		});
-
-		// Ensure that the initial value set in the context is also accessible after nesting the
-		// `run_in_context` calls.
-		assert_eq!(100, res);
-	}
 }

@@ -73,10 +73,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.sc-block-builder]
-default-features = true
-workspace = true
-
 [dependencies.sc-chain-spec]
 default-features = true
 workspace = true

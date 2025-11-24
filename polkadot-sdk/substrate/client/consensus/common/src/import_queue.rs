@@ -58,7 +58,6 @@ pub type DefaultImportQueue<Block> = BasicQueue<Block>;
 
 mod basic_queue;
 pub mod buffered_link;
-pub mod mock;
 
 /// Shared block import struct used by the queue.
 pub type BoxBlockImport<B> = Box<dyn BlockImport<B, Error = ConsensusError> + Send + Sync>;

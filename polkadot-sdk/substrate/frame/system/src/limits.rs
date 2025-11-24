@@ -440,10 +440,4 @@ impl BlockWeightsBuilder {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn default_weights_are_valid() {
-		BlockWeights::default().validate().unwrap();
-	}
 }

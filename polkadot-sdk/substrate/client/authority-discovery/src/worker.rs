@@ -64,13 +64,9 @@ use sp_runtime::traits::Block as BlockT;
 mod addr_cache;
 /// Dht payload schemas generated from Protobuf definitions via Prost crate in build.rs.
 mod schema {
-	#[cfg(test)]
-	mod tests;
 
 	include!(concat!(env!("OUT_DIR"), "/authority_discovery_v3.rs"));
 }
-#[cfg(test)]
-pub mod tests;
 
 const LOG_TARGET: &str = "sub-authority-discovery";
 pub(crate) const ADDR_CACHE_FILE_NAME: &str = "authority_discovery_addr_cache.json";

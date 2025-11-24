@@ -44,9 +44,5 @@ features = ["derive"]
 workspace = true
 default-features = true
 
-[dependencies.serde_json]
-workspace = true
-default-features = true
-
 [dependencies.thiserror]
 workspace = true

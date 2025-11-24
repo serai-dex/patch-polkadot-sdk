@@ -69,10 +69,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-core]
-default-features = true
-workspace = true
-
 [dependencies.sp-inherents]
 default-features = true
 workspace = true

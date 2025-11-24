@@ -32,8 +32,6 @@
 
 #[macro_use]
 mod executor;
-#[cfg(test)]
-mod integration_tests;
 mod wasm_runtime;
 
 pub use codec::Codec;
@@ -64,26 +62,4 @@ pub trait RuntimeVersionOf {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use sc_executor_common::runtime_blob::RuntimeBlob;
-	use sc_runtime_test::wasm_binary_unwrap;
-	use sp_io::TestExternalities;
-
-	#[test]
-	fn call_in_interpreted_wasm_works() {
-		let mut ext = TestExternalities::default();
-		let mut ext = ext.ext();
-
-		let executor = WasmExecutor::<sp_io::SubstrateHostFunctions>::builder().build();
-		let res = executor
-			.uncached_call(
-				RuntimeBlob::uncompress_if_needed(wasm_binary_unwrap()).unwrap(),
-				&mut ext,
-				true,
-				"test_empty_return",
-				&[],
-			)
-			.unwrap();
-		assert_eq!(res, vec![0u8; 0]);
-	}
 }

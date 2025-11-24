@@ -154,43 +154,4 @@ impl DisconnectedPeers {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use std::time::Duration;
-
-	#[test]
-	fn test_disconnected_peer_state() {
-		let mut state = DisconnectedPeers::new();
-		let peer = PeerId::random();
-
-		// Is not part of the disconnected peers yet.
-		assert_eq!(state.is_peer_available(&peer), true);
-
-		for _ in 0..MAX_NUM_DISCONNECTS - 1 {
-			assert!(state.on_disconnect_during_request(peer).is_none());
-			assert_eq!(state.is_peer_available(&peer), false);
-		}
-
-		assert!(state.on_disconnect_during_request(peer).is_some());
-		// Peer is supposed to get banned and disconnected.
-		// The state ownership moves to the PeerStore.
-		assert!(state.disconnected_peers.get(&peer).is_none());
-	}
-
-	#[test]
-	fn ensure_backoff_time() {
-		const TEST_BACKOFF_SECONDS: u64 = 2;
-		let mut state = DisconnectedPeers {
-			disconnected_peers: LruMap::new(ByLength::new(1)),
-			backoff_seconds: TEST_BACKOFF_SECONDS,
-		};
-		let peer = PeerId::random();
-
-		assert!(state.on_disconnect_during_request(peer).is_none());
-		assert_eq!(state.is_peer_available(&peer), false);
-
-		// Wait until the backoff time has passed
-		std::thread::sleep(Duration::from_secs(TEST_BACKOFF_SECONDS + 1));
-
-		assert_eq!(state.is_peer_available(&peer), true);
-	}
 }

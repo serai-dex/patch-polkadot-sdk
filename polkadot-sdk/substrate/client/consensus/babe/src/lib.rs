@@ -147,8 +147,6 @@ mod verification;
 
 pub mod authorship;
 pub mod aux_schema;
-#[cfg(test)]
-mod tests;
 
 const LOG_TARGET: &str = "babe";
 

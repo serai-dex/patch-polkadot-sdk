@@ -18,6 +18,5 @@
 
 //! `SyncingEngine`-related service code
 
-pub mod mock;
 pub mod network;
 pub mod syncing_service;

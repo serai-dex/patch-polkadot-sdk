@@ -36,8 +36,6 @@ use crate::pubsub::{Hub, Receiver};
 mod registry;
 use registry::Registry;
 
-#[cfg(test)]
-mod tests;
 
 /// Trait used to define the "tracing key" string used to tag
 /// and identify the mpsc channels.

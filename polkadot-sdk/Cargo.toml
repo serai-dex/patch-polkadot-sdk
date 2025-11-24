@@ -220,7 +220,6 @@ level = "allow"
 priority = 2
 
 [workspace.dependencies]
-hashbrown = "0.15.3"
 polkavm-derive = "0.26.0"
 polkavm-linker = "0.26.0"
 
@@ -233,9 +232,6 @@ version = "0.8.2"
 [workspace.dependencies.anyhow]
 version = "1.0.81"
 default-features = false
-
-[workspace.dependencies.arbitrary]
-version = "1.3.2"
 
 [workspace.dependencies.array-bytes]
 version = "7.0.0"
@@ -494,9 +490,6 @@ default-features = false
 [workspace.dependencies.merlin]
 version = "3.0"
 default-features = false
-
-[workspace.dependencies.mockall]
-version = "0.13.1"
 
 [workspace.dependencies.multiaddr]
 version = "0.18.1"

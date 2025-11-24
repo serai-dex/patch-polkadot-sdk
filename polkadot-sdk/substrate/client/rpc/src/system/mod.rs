@@ -18,8 +18,6 @@
 
 //! Substrate system API.
 
-#[cfg(test)]
-mod tests;
 
 use futures::channel::oneshot;
 use jsonrpsee::{

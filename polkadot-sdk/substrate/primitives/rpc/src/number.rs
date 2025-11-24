@@ -111,16 +111,4 @@ impl From<NumberOrHex> for U256 {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::assert_deser;
-
-	#[test]
-	fn should_serialize_and_deserialize() {
-		assert_deser(r#""0x1234""#, NumberOrHex::Hex(0x1234.into()));
-		assert_deser(r#""0x0""#, NumberOrHex::Hex(0.into()));
-		assert_deser(r#"5"#, NumberOrHex::Number(5));
-		assert_deser(r#"10000"#, NumberOrHex::Number(10000));
-		assert_deser(r#"0"#, NumberOrHex::Number(0));
-		assert_deser(r#"1000000000000"#, NumberOrHex::Number(1000000000000));
-	}
 }

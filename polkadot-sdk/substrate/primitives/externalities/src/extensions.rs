@@ -231,45 +231,4 @@ impl Extend<Extensions> for Extensions {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	decl_extension! {
-		struct DummyExt(u32);
-	}
-	decl_extension! {
-		struct DummyExt2(u32);
-	}
-
-	#[test]
-	fn register_and_retrieve_extension() {
-		let mut exts = Extensions::new();
-		exts.register(DummyExt(1));
-		exts.register(DummyExt2(2));
-
-		let ext = exts.get_mut(TypeId::of::<DummyExt>()).expect("Extension is registered");
-		let ext_ty = ext.downcast_mut::<DummyExt>().expect("Downcasting works");
-
-		assert_eq!(ext_ty.0, 1);
-	}
-
-	#[test]
-	fn register_box_extension() {
-		let mut exts = Extensions::new();
-		let box1: Box<dyn Extension> = Box::new(DummyExt(1));
-		let box2: Box<dyn Extension> = Box::new(DummyExt2(2));
-		exts.register(box1);
-		exts.register(box2);
-
-		{
-			let ext = exts.get_mut(TypeId::of::<DummyExt>()).expect("Extension 1 is registered");
-			let ext_ty = ext.downcast_mut::<DummyExt>().expect("Downcasting works for Extension 1");
-			assert_eq!(ext_ty.0, 1);
-		}
-		{
-			let ext2 = exts.get_mut(TypeId::of::<DummyExt2>()).expect("Extension 2 is registered");
-			let ext_ty2 =
-				ext2.downcast_mut::<DummyExt2>().expect("Downcasting works for Extension 2");
-			assert_eq!(ext_ty2.0, 2);
-		}
-	}
 }

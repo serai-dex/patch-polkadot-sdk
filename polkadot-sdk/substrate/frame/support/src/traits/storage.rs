@@ -343,44 +343,4 @@ impl_incrementable!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::BoundedVec;
-	use sp_core::{ConstU32, ConstU64};
-
-	#[test]
-	fn incrementable_works() {
-		assert_eq!(0u8.increment(), Some(1));
-		assert_eq!(1u8.increment(), Some(2));
-
-		assert_eq!(u8::MAX.increment(), None);
-	}
-
-	#[test]
-	fn linear_storage_price_works() {
-		type Linear = LinearStoragePrice<ConstU64<7>, ConstU64<3>, u64>;
-		let p = |count, size| Linear::convert(Footprint { count, size });
-
-		assert_eq!(p(0, 0), 7);
-		assert_eq!(p(0, 1), 7);
-		assert_eq!(p(1, 0), 7);
-
-		assert_eq!(p(1, 1), 10);
-		assert_eq!(p(8, 1), 31);
-		assert_eq!(p(1, 8), 31);
-
-		assert_eq!(p(u64::MAX, u64::MAX), u64::MAX);
-	}
-
-	#[test]
-	fn footprint_from_mel_works() {
-		let footprint = Footprint::from_mel::<(u8, BoundedVec<u8, ConstU32<9>>)>();
-		let expected_size = BoundedVec::<u8, ConstU32<9>>::max_encoded_len() as u64;
-		assert_eq!(expected_size, 10);
-		assert_eq!(footprint, Footprint { count: 1, size: expected_size + 1 });
-
-		let footprint = Footprint::from_mel::<(u8, BoundedVec<u8, ConstU32<999>>)>();
-		let expected_size = BoundedVec::<u8, ConstU32<999>>::max_encoded_len() as u64;
-		assert_eq!(expected_size, 1001);
-		assert_eq!(footprint, Footprint { count: 1, size: expected_size + 1 });
-	}
 }

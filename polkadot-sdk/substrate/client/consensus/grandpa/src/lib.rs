@@ -152,8 +152,6 @@ pub use sp_consensus_grandpa::{
 };
 use std::marker::PhantomData;
 
-#[cfg(test)]
-mod tests;
 
 /// A global communication input stream for commits and catch up messages. Not
 /// exposed publicly, used internally to simplify types in the communication

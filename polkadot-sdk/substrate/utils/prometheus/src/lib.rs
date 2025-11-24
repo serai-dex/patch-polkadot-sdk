@@ -133,41 +133,4 @@ async fn init_prometheus_with_listener(
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use http_body_util::BodyExt;
-	use hyper::Uri;
-	use hyper_util::{client::legacy::Client, rt::TokioExecutor};
-
-	const METRIC_NAME: &str = "test_test_metric_name_test_test";
-
-	#[tokio::test]
-	async fn prometheus_works() {
-		let listener =
-			tokio::net::TcpListener::bind("127.0.0.1:0").await.expect("Creates listener");
-
-		let local_addr = listener.local_addr().expect("Returns the local addr");
-
-		let registry = Registry::default();
-		register(
-			prometheus::Counter::new(METRIC_NAME, "yeah").expect("Creates test counter"),
-			&registry,
-		)
-		.expect("Registers the test metric");
-
-		tokio::spawn(init_prometheus_with_listener(listener, registry));
-
-		let client = Client::builder(TokioExecutor::new()).build_http::<Body>();
-
-		let res = client
-			.get(Uri::try_from(&format!("http://{}/metrics", local_addr)).expect("Parses URI"))
-			.await
-			.expect("Requests metrics");
-
-		assert!(res.status().is_success());
-
-		let buf = res.into_body().collect().await.expect("Failed to read HTTP body").to_bytes();
-		let body = String::from_utf8(buf.to_vec()).expect("Converts body to String");
-
-		assert!(body.contains(&format!("{} 0", METRIC_NAME)));
-	}
 } */

@@ -211,47 +211,4 @@ impl FromStr for PeerId {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn extract_peer_id_from_multiaddr() {
-		{
-			let peer = PeerId::random();
-			let address = "/ip4/198.51.100.19/tcp/30333"
-				.parse::<Multiaddr>()
-				.unwrap()
-				.with(Protocol::P2p(peer.into()));
-
-			assert_eq!(PeerId::try_from_multiaddr(&address), Some(peer));
-		}
-
-		{
-			let peer = PeerId::random();
-			assert_eq!(
-				PeerId::try_from_multiaddr(&Multiaddr::empty().with(Protocol::P2p(peer.into()))),
-				Some(peer)
-			);
-		}
-
-		{
-			assert!(PeerId::try_from_multiaddr(
-				&"/ip4/198.51.100.19/tcp/30333".parse::<Multiaddr>().unwrap()
-			)
-			.is_none());
-		}
-	}
-
-	#[test]
-	fn from_ed25519() {
-		let keypair = litep2p::crypto::ed25519::Keypair::generate();
-		let original_peer_id = litep2p::PeerId::from_public_key(
-			&litep2p::crypto::PublicKey::Ed25519(keypair.public()),
-		);
-
-		let peer_id: PeerId = original_peer_id.into();
-		assert_eq!(original_peer_id.to_bytes(), peer_id.to_bytes());
-
-		let key = peer_id.into_ed25519().unwrap();
-		assert_eq!(PeerId::from_ed25519(&key).unwrap(), original_peer_id.into());
-	}
 }

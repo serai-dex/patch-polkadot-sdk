@@ -77,7 +77,6 @@ pub use hooks::{
 	PostTransactions, PreInherents, UncheckedOnRuntimeUpgrade,
 };
 
-pub mod schedule;
 mod storage;
 #[cfg(feature = "experimental")]
 pub use storage::MaybeConsideration;
@@ -96,18 +95,8 @@ pub use dispatch::{
 	OriginTrait, TryMapSuccess, TryWithMorphedArg, UnfilteredDispatchable,
 };
 
-mod voting;
-pub use voting::{ClassCountOf, NoOpPoll, PollStatus, Polling, VoteTally};
 
-mod preimages;
-pub use preimages::{Bounded, BoundedInline, FetchResult, QueryPreimage, StorePreimage};
 
-mod messages;
-pub use messages::{
-	BatchFootprint, BatchesFootprints, EnqueueMessage, EnqueueWithOrigin, ExecuteOverweightError,
-	HandleMessage, NoopServiceQueues, ProcessMessage, ProcessMessageError, QueueFootprint,
-	QueueFootprintQuery, QueuePausedQuery, ServiceQueues, TransformOrigin,
-};
 
 mod safe_mode;
 pub use safe_mode::{SafeMode, SafeModeError, SafeModeNotify};
@@ -118,8 +107,6 @@ pub mod dynamic_params;
 pub mod tasks;
 pub use tasks::Task;
 
-mod proving;
-pub use proving::*;
 
 #[cfg(feature = "try-runtime")]
 mod try_runtime;

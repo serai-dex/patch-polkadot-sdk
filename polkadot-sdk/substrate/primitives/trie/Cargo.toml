@@ -37,9 +37,6 @@ workspace = true
 [dependencies.hash-db]
 workspace = true
 
-[dependencies.hashbrown]
-workspace = true
-
 [dependencies.memory-db]
 workspace = true
 

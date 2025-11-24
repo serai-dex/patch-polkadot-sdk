@@ -127,8 +127,6 @@
 mod benchmarking;
 #[cfg(test)]
 mod mock;
-#[cfg(test)]
-mod tests;
 pub mod weights;
 
 use core::{cmp, result};

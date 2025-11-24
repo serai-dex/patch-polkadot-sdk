@@ -23,10 +23,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies.array-bytes]
-workspace = true
-default-features = true
-
 [dependencies.clap]
 features = ["derive"]
 optional = true
@@ -89,9 +85,5 @@ default-features = true
 workspace = true
 
 [dependencies.sp-state-machine]
-default-features = true
-workspace = true
-
-[dependencies.sp-tracing]
 default-features = true
 workspace = true

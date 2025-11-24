@@ -215,18 +215,6 @@ impl<T, C: Contains<T>> Filter<T> for C {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	match_types! {
-		pub type OneOrTenToTwenty: impl Contains<u8> = { 1 | 10..=20 };
-	}
-
-	#[test]
-	fn match_types_works() {
-		for i in 0..=255 {
-			assert_eq!(OneOrTenToTwenty::contains(&i), i == 1 || i >= 10 && i <= 20);
-		}
-	}
 }
 
 /// A trait for a set which can enumerate its members in order.

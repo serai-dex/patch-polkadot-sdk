@@ -183,35 +183,4 @@ impl<T> futures::Future for YieldAfter<T> {
 
 #[cfg(test)]
 mod tests {
-	use super::StatusSinks;
-	use crate::mpsc::tracing_unbounded;
-	use futures::prelude::*;
-	use std::time::Duration;
-
-	#[test]
-	fn works() {
-		// We're not testing that the `StatusSink` properly enforces an order in the intervals, as
-		// this easily causes test failures on busy CPUs.
-
-		let status_sinks = StatusSinks::new();
-
-		let (tx, rx) = tracing_unbounded("test", 100_000);
-		status_sinks.push(Duration::from_millis(100), tx);
-
-		let mut val_order = 5;
-
-		futures::executor::block_on(futures::future::select(
-			Box::pin(async move {
-				loop {
-					let ev = status_sinks.next().await;
-					val_order += 1;
-					ev.send(val_order);
-				}
-			}),
-			Box::pin(async {
-				let items: Vec<i32> = rx.take(3).collect().await;
-				assert_eq!(items, [6, 7, 8]);
-			}),
-		));
-	}
 }

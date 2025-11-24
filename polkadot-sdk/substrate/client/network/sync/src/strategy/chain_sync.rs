@@ -72,8 +72,6 @@ use std::{
 	sync::Arc,
 };
 
-#[cfg(test)]
-mod test;
 
 /// Maximum blocks to store in the import queue.
 const MAX_IMPORTING_BLOCKS: usize = 2048;

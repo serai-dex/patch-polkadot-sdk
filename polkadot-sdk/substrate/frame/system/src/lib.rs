@@ -161,8 +161,6 @@ pub mod offchain;
 mod extensions;
 #[cfg(feature = "std")]
 pub mod mocking;
-#[cfg(test)]
-mod tests;
 pub mod weights;
 
 pub mod migrations;

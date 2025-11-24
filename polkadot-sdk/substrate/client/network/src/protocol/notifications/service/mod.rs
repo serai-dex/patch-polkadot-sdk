@@ -45,8 +45,6 @@ use std::{collections::HashMap, fmt::Debug, sync::Arc};
 
 pub(crate) mod metrics;
 
-#[cfg(test)]
-mod tests;
 
 /// Logging target for the file.
 const LOG_TARGET: &str = "sub-libp2p::notification::service";

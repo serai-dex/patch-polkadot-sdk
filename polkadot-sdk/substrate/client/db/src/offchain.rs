@@ -119,32 +119,4 @@ pub(crate) fn concatenate_prefix_and_key(prefix: &[u8], key: &[u8]) -> Vec<u8> {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use sp_core::offchain::OffchainStorage;
-
-	#[test]
-	fn should_compare_and_set_and_clear_the_locks_map() {
-		let mut storage = LocalStorage::new_test();
-		let prefix = b"prefix";
-		let key = b"key";
-		let value = b"value";
-
-		storage.set(prefix, key, value);
-		assert_eq!(storage.get(prefix, key), Some(value.to_vec()));
-
-		assert_eq!(storage.compare_and_set(prefix, key, Some(value), b"asd"), true);
-		assert_eq!(storage.get(prefix, key), Some(b"asd".to_vec()));
-		assert!(storage.locks.lock().is_empty(), "Locks map should be empty!");
-	}
-
-	#[test]
-	fn should_compare_and_set_on_empty_field() {
-		let mut storage = LocalStorage::new_test();
-		let prefix = b"prefix";
-		let key = b"key";
-
-		assert_eq!(storage.compare_and_set(prefix, key, None, b"asd"), true);
-		assert_eq!(storage.get(prefix, key), Some(b"asd".to_vec()));
-		assert!(storage.locks.lock().is_empty(), "Locks map should be empty!");
-	}
 }

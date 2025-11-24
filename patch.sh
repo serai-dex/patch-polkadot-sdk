@@ -84,15 +84,57 @@ function remove_matching_lines {
   echo "$STRIPPED" > $1
 }
 
+# A regex to match a series of sequential one-line attributes
+MATCH_ATTRIBUTES="([[:space:]]*#\[([^\n])*]\n)*"
+
+function remove_matching_statement_and_preceding_attributes {
+  if [ ! -f $1 ]; then
+    return
+  fi
+  LINE_NUMBER=$(cat "$1" | grep -P -n -m1 "$2;$" | cut --delimiter=":" -f1)
+  if [ "$LINE_NUMBER" = "" ]; then
+    return
+  fi
+  # Match the attributes, filter empty lines, filter to the first match alone, get its line number
+  LINES=$(cat "$1" | grep -Pzo "$MATCH_ATTRIBUTES([^\n])*$2;" | grep --text -Ev "^([[:space:]])*$" | grep --text -n \; | head -n1 | cut --delimiter=":" -f1)
+  START_LINE=$(($LINE_NUMBER - ($LINES - 1)))
+  ORIGINAL=$(cat $1)
+  echo "$ORIGINAL" | head -n$(($START_LINE - 1)) > $1
+  echo "$ORIGINAL" | tail -n+$(($LINE_NUMBER + 1)) >> $1
+  remove_matching_statement_and_preceding_attributes $1 "$2"
+}
+
+function remove_use {
+  if [ ! -f $1 ]; then
+    return
+  fi
+
+  # Remove the single-line `use` statement for this
+  remove_matching_statement_and_preceding_attributes $1 "use $2([^\n;])*"
+
+  # Remove the multi-line `use` statement for this
+  OPEN_OF_MULTILINE_USE=$(cat "$1" | grep -E -n -m1 "use $2::(.)*{$" | cut --delimiter=":" -f1)
+  if [ "$OPEN_OF_MULTILINE_USE" = "" ]; then
+    return
+  fi
+  ATTRIBUTES=$(($(cat "$1" | grep -Pzo "$MATCH_ATTRIBUTES([^\n])*use $2::([^\n])*{" | grep --text -Ev "^([[:space:]])*$" | grep --text -n "use $2::" | head -n1 | cut --delimiter=":" -f1) - 1))
+  OPEN_OF_MULTILINE_USE=$(($OPEN_OF_MULTILINE_USE - $ATTRIBUTES))
+  LENGTH_OF_MULTILINE_USE=$(cat $1 | tail -n+$OPEN_OF_MULTILINE_USE | grep -n -m1 "};" | cut --delimiter=":" -f1)
+  END_LINE=$(($OPEN_OF_MULTILINE_USE + $LENGTH_OF_MULTILINE_USE))
+  ORIGINAL=$(cat $1)
+  echo "$ORIGINAL" | head -n$(($OPEN_OF_MULTILINE_USE - 1)) > $1
+  echo "$ORIGINAL" | tail -n+$END_LINE >> $1
+}
+
 function remove_module {
   silent_rm $1/$2.rs
   silent_rm $1/$2
-  remove_matching_lines $1/mod.rs "mod $2"
-  remove_matching_lines $1/mod.rs "use $2::(.)+;"
-  remove_matching_lines $1/lib.rs "mod $2"
-  remove_matching_lines $1/lib.rs "use $2::(.)+;"
-  remove_matching_lines $1.rs "mod $2"
-  remove_matching_lines $1.rs "use $2::(.)+;"
+  remove_matching_statement_and_preceding_attributes $1/mod.rs "mod $2"
+  remove_use $1/mod.rs "$2"
+  remove_matching_statement_and_preceding_attributes $1/lib.rs "mod $2"
+  remove_use $1/lib.rs "$2"
+  remove_matching_statement_and_preceding_attributes $1.rs "mod $2"
+  remove_use $1.rs "$2"
 }
 
 function remove_matching_phrase {
@@ -256,9 +298,6 @@ remove_crate_tree umbrella
 
 # Remove the `templates` folder (effectively examples)
 remove_crate_tree templates
-# And the actual examples
-remove_crate_tree substrate/frame/examples
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/examples
 
 # Remove the deprecated crates
 remove_crate_tree substrate/deprecated
@@ -398,11 +437,6 @@ remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
 remove_crate_tree substrate/utils/substrate-bip39
 
-# Remove fuzzers
-remove_crate_tree substrate/primitives/arithmetic/fuzzer
-remove_crate_tree substrate/primitives/core/fuzz
-remove_crate_tree substrate/primitives/state-machine/fuzz
-
 # Remove benchmarking code we don't use
 remove_crate_tree substrate/frame/benchmarking/pov
 remove_crate_tree substrate/frame/session/benchmarking
@@ -410,18 +444,39 @@ remove_crate_tree substrate/frame/system/benchmarking
 
 # Remove all dev dependencies, tests, benches, etc.
 remove_dev_dependencies
-remove_crate_tree substrate/client/executor/runtime-test
 silent_rm ./polkadot-sdk/substrate/client/tracing/src/block/fixtures
-silent_rm ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse/tests
-silent_rm ./polkadot-sdk/substrate/frame/support/tests
-silent_rm ./polkadot-sdk/substrate/primitives/runtime-interface/tests
-remove_crate_tree substrate/primitives/runtime-interface/test-wasm
-remove_crate_tree substrate/primitives/runtime-interface/test-wasm-deprecated
-remove_crate_tree substrate/primitives/test-primitives
-remove_crate_tree substrate/test-utils
-find ./polkadot-sdk/substrate -iname "tests.rs" | while read -r file; do
-  rm $file
-done
+function exhaustive_remove {
+  find $1 -iname "$2" | while read -r path; do
+    # Preserve `testing.rs` when matching `*test*`
+    if [ ! $(echo "$path" | grep "testing") = "" ]; then
+      continue
+    fi
+    in_src=$(echo "$path" | grep "src/")
+    folder=$(echo "$path" | sed s/"\/[^/]*$"//)
+    file=$(echo $path | sed s/"^.*\/"// | sed -e s/"\..*"//)
+    fileext=$(echo $path | sed -e s/".*\."//)
+    if [ "$in_src" = "" ]; then
+      if [ -d "$path" ]; then
+        remove_crate_tree $(echo "$path" | sed s/"^\.\/"// | sed s/"polkadot-sdk\/"//)
+      else
+        silent_rm $path
+      fi
+    else
+      if [ -d "$path" ] || [ $fileext = "rs" ]; then
+        remove_module "$folder" "$file"
+      fi
+      if [ -f "$path" ]; then
+        silent_rm $path
+      fi
+    fi
+  done
+}
+exhaustive_remove ./polkadot-sdk/substrate "*test*"
+exhaustive_remove ./polkadot-sdk/substrate "*fixtures*"
+exhaustive_remove ./polkadot-sdk/substrate "*fuzz*"
+exhaustive_remove ./polkadot-sdk/substrate/client "*mock*"
+WITHOUT_DOC=$(cat ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs | grep -Fv '#![doc = include_str!("../res/substrate_test')
+echo "$WITHOUT_DOC" > ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs
 
 # Remove metadata
 
@@ -528,6 +583,22 @@ find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); S
 echo "Removing extraneous \"qed\" claims"
 find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
 
+# Remove inline `test` `mod`ules
+find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
+  # This test module has a raw string we can't match against here
+  if [ $path = "./polkadot-sdk/substrate/client/chain-spec/src/extension.rs" ]; then
+    continue
+  fi
+  original=$(cat "$path")
+  TESTS_MOD_OPEN=$(echo "$original" | grep -E -m1 -n "^mod test(s)? {" | cut --delimiter=":" -f1)
+  if [ "$TESTS_MOD_OPEN" = "" ]; then
+    continue
+  fi
+  LENGTH_OF_MOD=$(echo "$original" | tail -n+$TESTS_MOD_OPEN | grep -m1 -n "^}" | cut --delimiter=":" -f1)
+  echo "$original" | head -n$TESTS_MOD_OPEN > $path
+  echo "$original" | tail -n+$(($TESTS_MOD_OPEN + LENGTH_OF_MOD - 1)) >> $path
+done
+
 # Remove the sessions module for `ShouldEndSession` alone
 ORIGINAL_SESSION=$(cat ./polkadot-sdk/substrate/frame/session/src/lib.rs)
 silent_rm ./polkadot-sdk/substrate/frame/session/src
@@ -620,6 +691,7 @@ silent_rm scripts
 silent_rm substrate/.maintain
 silent_rm substrate/docker
 silent_rm substrate/docs
+silent_rm substrate/primitives/core/check-features-variants.sh
 silent_rm substrate/scripts
 silent_rm substrate/zombienet
 silent_rm substrate/.dockerignore

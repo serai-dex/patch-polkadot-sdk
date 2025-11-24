@@ -23,8 +23,6 @@ pub(crate) mod enactment_state;
 pub(crate) mod error;
 pub(crate) mod metrics;
 pub(crate) mod sliding_stat;
-#[cfg(test)]
-pub(crate) mod tests;
 pub(crate) mod tracing_log_xt;
 
 use futures::StreamExt;

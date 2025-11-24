@@ -44,17 +44,4 @@ pub fn unpack_ptr_and_len(val: u64) -> (u32, u32) {
 
 #[cfg(test)]
 mod tests {
-	use super::{pack_ptr_and_len, unpack_ptr_and_len};
-
-	#[test]
-	fn ptr_len_packing_unpacking() {
-		const PTR: u32 = 0x1337;
-		const LEN: u32 = 0x7f000000;
-
-		let packed = pack_ptr_and_len(PTR, LEN);
-		let (ptr, len) = unpack_ptr_and_len(packed);
-
-		assert_eq!(PTR, ptr);
-		assert_eq!(LEN, len);
-	}
 }

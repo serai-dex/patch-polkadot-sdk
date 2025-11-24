@@ -247,8 +247,6 @@ mod behaviour;
 mod litep2p;
 mod protocol;
 
-#[cfg(test)]
-mod mock;
 
 pub mod config;
 pub mod discovery;

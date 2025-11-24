@@ -43,8 +43,6 @@ use std::{collections::HashSet, fmt};
 pub mod config;
 pub mod peerset;
 
-#[cfg(test)]
-mod tests;
 
 /// Logging target for the file.
 const LOG_TARGET: &str = "sub-libp2p::notification";

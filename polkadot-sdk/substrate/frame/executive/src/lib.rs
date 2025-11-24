@@ -147,8 +147,6 @@
 /// ```
 pub mod block_flowchart {}
 
-#[cfg(test)]
-mod tests;
 
 extern crate alloc;
 

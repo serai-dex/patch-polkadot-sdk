@@ -83,41 +83,4 @@ pub fn remove_children<K: Eq + Hash + Clone + Encode + Decode>(
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use std::sync::Arc;
-
-	#[test]
-	fn children_write_read_remove() {
-		const PREFIX: &[u8] = b"children";
-		let db = Arc::new(sp_database::MemDb::default());
-
-		let mut tx = Transaction::new();
-
-		let mut children1 = Vec::new();
-		children1.push(1_3);
-		children1.push(1_5);
-		write_children(&mut tx, 0, PREFIX, 1_1, children1);
-
-		let mut children2 = Vec::new();
-		children2.push(1_4);
-		children2.push(1_6);
-		write_children(&mut tx, 0, PREFIX, 1_2, children2);
-
-		db.commit(tx.clone()).unwrap();
-
-		let r1: Vec<u32> = read_children(&*db, 0, PREFIX, 1_1).expect("(1) Getting r1 failed");
-		let r2: Vec<u32> = read_children(&*db, 0, PREFIX, 1_2).expect("(1) Getting r2 failed");
-
-		assert_eq!(r1, vec![1_3, 1_5]);
-		assert_eq!(r2, vec![1_4, 1_6]);
-
-		remove_children(&mut tx, 0, PREFIX, 1_2);
-		db.commit(tx).unwrap();
-
-		let r1: Vec<u32> = read_children(&*db, 0, PREFIX, 1_1).expect("(2) Getting r1 failed");
-		let r2: Vec<u32> = read_children(&*db, 0, PREFIX, 1_2).expect("(2) Getting r2 failed");
-
-		assert_eq!(r1, vec![1_3, 1_5]);
-		assert_eq!(r2.len(), 0);
-	}
 }

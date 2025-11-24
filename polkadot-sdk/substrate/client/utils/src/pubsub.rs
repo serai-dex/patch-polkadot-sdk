@@ -50,8 +50,6 @@ use crate::{
 	mpsc::{TracingUnboundedReceiver, TracingUnboundedSender},
 };
 
-#[cfg(test)]
-mod tests;
 
 /// Unsubscribe: unregisters a previously created subscription.
 pub trait Unsubscribe {

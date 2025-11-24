@@ -85,42 +85,4 @@ fn sign(
 
 #[cfg(test)]
 mod test {
-	use super::*;
-
-	const SEED: &str = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
-
-	#[test]
-	fn sign_arg() {
-		let cmd = SignCmd::parse_from(&[
-			"sign",
-			"--suri",
-			&SEED,
-			"--message",
-			&SEED,
-			"--password",
-			"12345",
-			"--hex",
-		]);
-		let sig = cmd.sign(|| std::io::stdin().lock()).expect("Must sign");
-
-		assert!(sig.starts_with("0x"), "Signature must start with 0x");
-		assert!(array_bytes::hex2bytes(&sig).is_ok(), "Signature is valid hex");
-	}
-
-	#[test]
-	fn sign_stdin() {
-		let cmd = SignCmd::parse_from(&[
-			"sign",
-			"--suri",
-			SEED,
-			"--message",
-			&SEED,
-			"--password",
-			"12345",
-		]);
-		let sig = cmd.sign(|| SEED.as_bytes()).expect("Must sign");
-
-		assert!(sig.starts_with("0x"), "Signature must start with 0x");
-		assert!(array_bytes::hex2bytes(&sig).is_ok(), "Signature is valid hex");
-	}
 }

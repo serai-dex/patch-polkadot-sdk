@@ -237,14 +237,11 @@
 //! The following are the plain and `raw` versions of the chain specification JSON files, resulting
 //! from executing of the above [example](#building-a-chain-specification):
 //! ```ignore
-#![doc = include_str!("../res/substrate_test_runtime_from_patch.json")]
 //! ```
 //! ```ignore
-#![doc = include_str!("../res/substrate_test_runtime_from_patch_raw.json")]
 //! ```
 //! The following example shows the plain full config version of chain spec:
 //! ```ignore
-#![doc = include_str!("../res/substrate_test_runtime_from_config.json")]
 //! ```
 //! The [`ChainSpec`] trait represents the API to access values defined in the JSON chain specification.
 //!

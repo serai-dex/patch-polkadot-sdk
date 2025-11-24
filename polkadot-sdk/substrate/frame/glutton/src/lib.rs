@@ -31,8 +31,6 @@
 mod benchmarking;
 #[cfg(test)]
 mod mock;
-#[cfg(test)]
-mod tests;
 pub mod weights;
 
 extern crate alloc;

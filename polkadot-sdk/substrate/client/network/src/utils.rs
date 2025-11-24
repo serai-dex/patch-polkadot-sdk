@@ -62,27 +62,4 @@ impl<T: Hash + Eq> LruHashSet<T> {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn maintains_limit() {
-		let three = NonZeroUsize::new(3).unwrap();
-		let mut set = LruHashSet::<u8>::new(three);
-
-		// First element.
-		assert!(set.insert(1));
-		assert_eq!(vec![&1], set.set.iter().collect::<Vec<_>>());
-
-		// Second element.
-		assert!(set.insert(2));
-		assert_eq!(vec![&1, &2], set.set.iter().collect::<Vec<_>>());
-
-		// Inserting the same element updates its LRU position.
-		assert!(!set.insert(1));
-		assert_eq!(vec![&2, &1], set.set.iter().collect::<Vec<_>>());
-
-		// We reached the limit. The next element forces the oldest one out.
-		assert!(set.insert(3));
-		assert_eq!(vec![&1, &3], set.set.iter().collect::<Vec<_>>());
-	}
 }

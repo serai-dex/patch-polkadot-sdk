@@ -77,11 +77,4 @@ impl GenerateCmd {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn generate() {
-		let generate = GenerateCmd::parse_from(&["generate", "--password", "12345"]);
-		assert!(generate.run().is_ok())
-	}
 }

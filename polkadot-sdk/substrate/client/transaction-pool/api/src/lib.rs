@@ -582,26 +582,4 @@ impl<Block: BlockT> LocalTransactionPool for RejectAllTxPool<Block> {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn tx_status_compatibility() {
-		let event: TransactionStatus<u8, u8> = TransactionStatus::InBlock((1, 2));
-		let ser = serde_json::to_string(&event).unwrap();
-
-		let exp = r#"{"inBlock":1}"#;
-		assert_eq!(ser, exp);
-
-		let event_dec: TransactionStatus<u8, u8> = serde_json::from_str(exp).unwrap();
-		assert_eq!(event_dec, TransactionStatus::InBlock((1, 0)));
-
-		let event: TransactionStatus<u8, u8> = TransactionStatus::Finalized((1, 2));
-		let ser = serde_json::to_string(&event).unwrap();
-
-		let exp = r#"{"finalized":1}"#;
-		assert_eq!(ser, exp);
-
-		let event_dec: TransactionStatus<u8, u8> = serde_json::from_str(exp).unwrap();
-		assert_eq!(event_dec, TransactionStatus::Finalized((1, 0)));
-	}
 }

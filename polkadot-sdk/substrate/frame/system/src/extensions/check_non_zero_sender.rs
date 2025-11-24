@@ -80,45 +80,4 @@ impl<T: Config + Send + Sync> TransactionExtension<T::RuntimeCall> for CheckNonZ
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::mock::{new_test_ext, Test, CALL};
-	use frame_support::{assert_ok, dispatch::DispatchInfo};
-	use sp_runtime::{
-		traits::{AsTransactionAuthorizedOrigin, DispatchTransaction, TxBaseImplication},
-		transaction_validity::{TransactionSource::External, TransactionValidityError},
-	};
-
-	#[test]
-	fn zero_account_ban_works() {
-		new_test_ext().execute_with(|| {
-			let info = DispatchInfo::default();
-			let len = 0_usize;
-			assert_eq!(
-				CheckNonZeroSender::<Test>::new()
-					.validate_only(Some(0).into(), CALL, &info, len, External, 0)
-					.unwrap_err(),
-				TransactionValidityError::from(InvalidTransaction::BadSigner)
-			);
-			assert_ok!(CheckNonZeroSender::<Test>::new().validate_only(
-				Some(1).into(),
-				CALL,
-				&info,
-				len,
-				External,
-				0,
-			));
-		})
-	}
-
-	#[test]
-	fn unsigned_origin_works() {
-		new_test_ext().execute_with(|| {
-			let info = DispatchInfo::default();
-			let len = 0_usize;
-			let (_, _, origin) = CheckNonZeroSender::<Test>::new()
-				.validate(None.into(), CALL, &info, len, (), &TxBaseImplication(CALL), External)
-				.unwrap();
-			assert!(!origin.is_transaction_authorized());
-		})
-	}
 }

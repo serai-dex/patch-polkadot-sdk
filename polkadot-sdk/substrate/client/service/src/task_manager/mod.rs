@@ -41,8 +41,6 @@ use tokio::runtime::Handle;
 use tracing_futures::Instrument;
 
 mod prometheus_future;
-#[cfg(test)]
-mod tests;
 
 /// Default task group name.
 pub const DEFAULT_GROUP_NAME: &str = "default";

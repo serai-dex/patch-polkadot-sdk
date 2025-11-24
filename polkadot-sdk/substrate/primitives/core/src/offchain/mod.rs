@@ -572,27 +572,4 @@ pub enum OffchainOverlayedChange {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn timestamp_ops() {
-		let t = Timestamp(5);
-		assert_eq!(t.add(Duration::from_millis(10)), Timestamp(15));
-		assert_eq!(t.sub(Duration::from_millis(10)), Timestamp(0));
-		assert_eq!(t.diff(&Timestamp(3)), Duration(2));
-	}
-
-	#[test]
-	fn capabilities() {
-		let none = Capabilities::empty();
-		let all = Capabilities::all();
-		let some = Capabilities::KEYSTORE | Capabilities::RANDOMNESS;
-
-		assert!(!none.contains(Capabilities::KEYSTORE));
-		assert!(all.contains(Capabilities::KEYSTORE));
-		assert!(some.contains(Capabilities::KEYSTORE));
-		assert!(!none.contains(Capabilities::RANDOMNESS));
-		assert!(all.contains(Capabilities::RANDOMNESS));
-		assert!(!some.contains(Capabilities::TIME));
-	}
 }

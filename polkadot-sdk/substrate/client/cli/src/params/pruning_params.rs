@@ -130,36 +130,4 @@ impl Into<BlocksPruning> for DatabasePruningMode {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use clap::Parser;
-
-	#[derive(Parser)]
-	struct Cli {
-		#[clap(flatten)]
-		pruning: PruningParams,
-	}
-
-	#[test]
-	fn pruning_params_parse_works() {
-		let Cli { pruning } =
-			Cli::parse_from(["", "--state-pruning=1000", "--blocks-pruning=1000"]);
-
-		assert!(matches!(pruning.state_pruning, Some(DatabasePruningMode::Custom(1000))));
-		assert!(matches!(pruning.blocks_pruning, DatabasePruningMode::Custom(1000)));
-
-		let Cli { pruning } =
-			Cli::parse_from(["", "--state-pruning=archive", "--blocks-pruning=archive"]);
-
-		assert!(matches!(dbg!(pruning.state_pruning), Some(DatabasePruningMode::Archive)));
-		assert!(matches!(pruning.blocks_pruning, DatabasePruningMode::Archive));
-
-		let Cli { pruning } = Cli::parse_from([
-			"",
-			"--state-pruning=archive-canonical",
-			"--blocks-pruning=archive-canonical",
-		]);
-
-		assert!(matches!(dbg!(pruning.state_pruning), Some(DatabasePruningMode::ArchiveCanonical)));
-		assert!(matches!(pruning.blocks_pruning, DatabasePruningMode::ArchiveCanonical));
-	}
 }

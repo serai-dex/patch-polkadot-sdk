@@ -24,11 +24,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies.arbitrary]
-features = ["derive"]
-optional = true
-workspace = true
-
 [dependencies.codec]
 workspace = true
 
@@ -80,7 +75,7 @@ workspace = true
 
 [features]
 default = ["std"]
-fuzzing = ["arbitrary"]
+fuzzing = []
 std = [
     "codec/std",
     "hash-db/std",

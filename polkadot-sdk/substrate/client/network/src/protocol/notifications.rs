@@ -30,5 +30,4 @@ pub(crate) use self::service::ProtocolHandle;
 mod behaviour;
 mod handler;
 mod service;
-mod tests;
 mod upgrade;

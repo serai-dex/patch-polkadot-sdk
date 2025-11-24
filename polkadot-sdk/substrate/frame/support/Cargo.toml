@@ -103,9 +103,6 @@ workspace = true
 [dependencies.sp-tracing]
 workspace = true
 
-[dependencies.sp-trie]
-workspace = true
-
 [dependencies.sp-weights]
 workspace = true
 
@@ -132,7 +129,6 @@ std = [
     "sp-state-machine/std",
     "sp-std/std",
     "sp-tracing/std",
-    "sp-trie/std",
     "sp-weights/std",
 ]
 runtime-benchmarks = [

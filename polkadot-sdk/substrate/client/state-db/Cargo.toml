@@ -35,7 +35,3 @@ default-features = true
 [dependencies.parking_lot]
 workspace = true
 default-features = true
-
-[dependencies.sp-core]
-default-features = true
-workspace = true

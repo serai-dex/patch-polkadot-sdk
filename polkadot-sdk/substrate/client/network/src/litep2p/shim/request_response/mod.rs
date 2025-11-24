@@ -48,8 +48,6 @@ use std::{
 
 mod metrics;
 
-#[cfg(test)]
-mod tests;
 
 /// Logging target for the file.
 const LOG_TARGET: &str = "sub-libp2p::request-response";

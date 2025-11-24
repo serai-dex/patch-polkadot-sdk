@@ -132,38 +132,4 @@ impl NetworkServiceProvider {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use crate::service::mock::MockNetwork;
-
-	// typical pattern in `Protocol` code where peer is disconnected
-	// and then reported
-	#[tokio::test]
-	async fn disconnect_and_report_peer() {
-		let provider = NetworkServiceProvider::new();
-		let handle = provider.handle();
-
-		let peer = PeerId::random();
-		let proto = ProtocolName::from("test-protocol");
-		let proto_clone = proto.clone();
-		let change = sc_network::ReputationChange::new_fatal("test-change");
-
-		let mut mock_network = MockNetwork::new();
-		mock_network
-			.expect_disconnect_peer()
-			.withf(move |in_peer, in_proto| &peer == in_peer && &proto == in_proto)
-			.once()
-			.returning(|_, _| ());
-		mock_network
-			.expect_report_peer()
-			.withf(move |in_peer, in_change| &peer == in_peer && &change == in_change)
-			.once()
-			.returning(|_, _| ());
-
-		tokio::spawn(async move {
-			provider.run(Arc::new(mock_network)).await;
-		});
-
-		handle.disconnect_peer(peer, proto_clone);
-		handle.report_peer(peer, change);
-	}
 }

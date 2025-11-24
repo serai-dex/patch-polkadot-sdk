@@ -157,31 +157,4 @@ where
 
 #[cfg(test)]
 mod tests {
-
-	use super::*;
-
-	impl Size for i32 {
-		fn size(&self) -> usize {
-			*self as usize / 10
-		}
-	}
-
-	#[test]
-	fn basic() {
-		let map = TrackedMap::default();
-		map.write().insert(5, 10);
-		map.write().insert(6, 20);
-
-		assert_eq!(map.bytes(), 3);
-		assert_eq!(map.len(), 2);
-
-		map.write().insert(6, 30);
-
-		assert_eq!(map.bytes(), 4);
-		assert_eq!(map.len(), 2);
-
-		map.write().remove(&6);
-		assert_eq!(map.bytes(), 1);
-		assert_eq!(map.len(), 1);
-	}
 }

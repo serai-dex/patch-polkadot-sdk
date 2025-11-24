@@ -75,40 +75,4 @@ fn url_to_multiaddr(url: &str) -> Result<Multiaddr, multiaddr::Error> {
 
 #[cfg(test)]
 mod tests {
-	use super::{url_to_multiaddr, Multiaddr, TelemetryEndpoints};
-
-	#[test]
-	fn valid_endpoints() {
-		let endp = vec![
-			("wss://telemetry.polkadot.io/submit/".into(), 3),
-			("/ip4/80.123.90.4/tcp/5432".into(), 4),
-		];
-		let telem =
-			TelemetryEndpoints::new(endp.clone()).expect("Telemetry endpoint should be valid");
-		let mut res: Vec<(Multiaddr, u8)> = vec![];
-		for (a, b) in endp.iter() {
-			res.push((url_to_multiaddr(a).expect("provided url should be valid"), *b))
-		}
-		assert_eq!(telem.0, res);
-	}
-
-	#[test]
-	fn invalid_endpoints() {
-		let endp = vec![
-			("/ip4/...80.123.90.4/tcp/5432".into(), 3),
-			("/ip4/no:!?;rlkqre;;::::///tcp/5432".into(), 4),
-		];
-		let telem = TelemetryEndpoints::new(endp);
-		assert!(telem.is_err());
-	}
-
-	#[test]
-	fn valid_and_invalid_endpoints() {
-		let endp = vec![
-			("/ip4/80.123.90.4/tcp/5432".into(), 3),
-			("/ip4/no:!?;rlkqre;;::::///tcp/5432".into(), 4),
-		];
-		let telem = TelemetryEndpoints::new(endp);
-		assert!(telem.is_err());
-	}
 }

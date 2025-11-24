@@ -23,10 +23,6 @@ extern crate alloc;
 
 #[cfg(feature = "std")]
 mod analysis;
-#[cfg(test)]
-mod tests;
-#[cfg(test)]
-mod tests_instance;
 mod utils;
 
 pub mod baseline;

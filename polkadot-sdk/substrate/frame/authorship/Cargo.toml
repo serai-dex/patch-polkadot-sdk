@@ -36,19 +36,14 @@ workspace = true
 [dependencies.impl-trait-for-tuples]
 workspace = true
 
-[dependencies.sp-runtime]
-workspace = true
-
 [features]
 default = ["std"]
 std = [
     "codec/std",
     "frame-support/std",
     "frame-system/std",
-    "sp-runtime/std",
 ]
 try-runtime = [
     "frame-support/try-runtime",
     "frame-system/try-runtime",
-    "sp-runtime/try-runtime",
 ]

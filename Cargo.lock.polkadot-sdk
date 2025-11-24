@@ -169,9 +169,6 @@ name = "arbitrary"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3d036a3c4ab069c7b410a2ce876bd74808d2d0888a82667669f8e783a898bf1"
-dependencies = [
- "derive_arbitrary",
-]
 
 [[package]]
 name = "array-bytes"
@@ -1171,17 +1168,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "derive_arbitrary"
-version = "1.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e567bd82dcff979e4b03460c307b3cdc9e96fde3d73bed1496d2bc75d9dd62a"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.111",
-]
-
-[[package]]
 name = "derive_more"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1623,7 +1609,6 @@ dependencies = [
  "sp-state-machine",
  "sp-std",
  "sp-tracing",
- "sp-trie",
  "sp-weights",
  "tt-call",
 ]
@@ -3747,7 +3732,6 @@ dependencies = [
  "frame-system",
  "pallet-session",
  "parity-scale-codec",
- "sp-application-crypto",
  "sp-authority-discovery",
  "sp-runtime",
 ]
@@ -3760,7 +3744,6 @@ dependencies = [
  "frame-system",
  "impl-trait-for-tuples",
  "parity-scale-codec",
- "sp-runtime",
 ]
 
 [[package]]
@@ -5090,7 +5073,6 @@ dependencies = [
 name = "sc-chain-spec"
 version = "46.0.0"
 dependencies = [
- "array-bytes",
  "clap",
  "parity-scale-codec",
  "sc-chain-spec-derive",
@@ -5107,7 +5089,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-state-machine",
- "sp-tracing",
 ]
 
 [[package]]
@@ -5135,7 +5116,6 @@ dependencies = [
  "names",
  "parity-bip39",
  "parity-scale-codec",
- "rand 0.8.5",
  "regex",
  "rpassword",
  "sc-client-api",
@@ -5218,7 +5198,6 @@ dependencies = [
  "async-trait",
  "futures",
  "log",
- "mockall",
  "parking_lot",
  "sc-client-api",
  "sc-network-types",
@@ -5297,7 +5276,6 @@ dependencies = [
  "parity-scale-codec",
  "parking_lot",
  "rand 0.8.5",
- "sc-block-builder",
  "sc-chain-spec",
  "sc-client-api",
  "sc-consensus",
@@ -5340,7 +5318,6 @@ dependencies = [
  "sp-blockchain",
  "sp-consensus",
  "sp-consensus-slots",
- "sp-core",
  "sp-inherents",
  "sp-runtime",
  "sp-state-machine",
@@ -5361,8 +5338,6 @@ dependencies = [
  "sp-externalities",
  "sp-io",
  "sp-panic-handler",
- "sp-runtime-interface",
- "sp-trie",
  "sp-version",
  "sp-wasm-interface",
  "tracing",
@@ -5450,7 +5425,6 @@ dependencies = [
  "linked_hash_set",
  "litep2p",
  "log",
- "mockall",
  "parity-scale-codec",
  "parking_lot",
  "partial_sort",
@@ -5514,7 +5488,6 @@ dependencies = [
  "fork-tree",
  "futures",
  "log",
- "mockall",
  "parity-scale-codec",
  "prost 0.14.1",
  "prost-build 0.14.1",
@@ -5611,7 +5584,6 @@ dependencies = [
  "parity-scale-codec",
  "sc-chain-spec",
  "serde",
- "serde_json",
  "thiserror 2.0.17",
 ]
 
@@ -5704,7 +5676,6 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "parking_lot",
- "sp-core",
 ]
 
 [[package]]
@@ -6521,7 +6492,6 @@ version = "36.0.1"
 dependencies = [
  "rustc-hash 2.1.1",
  "serde",
- "sp-core",
 ]
 
 [[package]]
@@ -6532,7 +6502,6 @@ dependencies = [
  "hash256-std-hasher",
  "impl-trait-for-tuples",
  "log",
- "num-traits",
  "parity-scale-codec",
  "paste",
  "rand 0.8.5",
@@ -6589,9 +6558,7 @@ dependencies = [
 name = "sp-staking"
 version = "41.0.0"
 dependencies = [
- "impl-trait-for-tuples",
  "parity-scale-codec",
- "serde",
  "sp-core",
  "sp-runtime",
 ]
@@ -6600,7 +6567,6 @@ dependencies = [
 name = "sp-state-machine"
 version = "0.48.0"
 dependencies = [
- "arbitrary",
  "hash-db",
  "log",
  "parity-scale-codec",
@@ -6668,7 +6634,6 @@ dependencies = [
  "ahash",
  "foldhash 0.1.5",
  "hash-db",
- "hashbrown 0.15.5",
  "memory-db",
  "nohash-hasher",
  "parity-scale-codec",
@@ -6690,13 +6655,11 @@ version = "42.0.0"
 dependencies = [
  "impl-serde",
  "parity-scale-codec",
- "parity-wasm",
  "serde",
  "sp-crypto-hashing-proc-macro",
  "sp-runtime",
  "sp-std",
  "sp-version-proc-macro",
- "thiserror 2.0.17",
 ]
 
 [[package]]

@@ -70,10 +70,6 @@ default-features = true
 [dependencies.names]
 workspace = true
 
-[dependencies.rand]
-workspace = true
-default-features = true
-
 [dependencies.regex]
 workspace = true
 

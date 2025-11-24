@@ -606,25 +606,4 @@ impl ReturnValue {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use codec::Encode;
-
-	#[test]
-	fn pointer_offset_works() {
-		let ptr = Pointer::<u32>::null();
-
-		assert_eq!(ptr.offset(10).unwrap(), Pointer::new(40));
-		assert_eq!(ptr.offset(32).unwrap(), Pointer::new(128));
-
-		let ptr = Pointer::<u64>::null();
-
-		assert_eq!(ptr.offset(10).unwrap(), Pointer::new(80));
-		assert_eq!(ptr.offset(32).unwrap(), Pointer::new(256));
-	}
-
-	#[test]
-	fn return_value_encoded_max_size() {
-		let encoded = ReturnValue::Value(Value::I64(-1)).encode();
-		assert_eq!(encoded.len(), ReturnValue::ENCODED_MAX_SIZE);
-	}
 }

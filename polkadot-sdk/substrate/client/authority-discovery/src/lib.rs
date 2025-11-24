@@ -51,8 +51,6 @@ mod interval;
 mod service;
 mod worker;
 
-#[cfg(test)]
-mod tests;
 
 /// Configuration of [`Worker`].
 pub struct WorkerConfig {

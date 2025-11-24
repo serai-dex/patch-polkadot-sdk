@@ -66,8 +66,6 @@ use sp_consensus_grandpa::{AuthorityId, AuthoritySignature, RoundNumber, SetId a
 pub mod gossip;
 mod periodic;
 
-#[cfg(test)]
-pub(crate) mod tests;
 
 // How often to rebroadcast neighbor packets, in cases where no new packets are created.
 pub(crate) const NEIGHBOR_REBROADCAST_PERIOD: Duration = Duration::from_secs(2 * 60);

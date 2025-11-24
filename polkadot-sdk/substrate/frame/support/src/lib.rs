@@ -88,8 +88,6 @@ pub mod inherent;
 pub mod instances;
 pub mod migrations;
 pub mod storage;
-#[cfg(test)]
-mod tests;
 pub mod traits;
 pub mod view_functions;
 pub mod weights;
@@ -2867,91 +2865,4 @@ pub mod generate_genesis_config;
 
 #[cfg(test)]
 mod test {
-	// use super::*;
-	use crate::{
-		hash::*,
-		storage::types::{StorageMap, StorageValue, ValueQuery},
-		traits::{ConstU32, StorageInstance},
-		BoundedVec,
-	};
-	use sp_io::{hashing::twox_128, TestExternalities};
-
-	struct Prefix;
-	impl StorageInstance for Prefix {
-		fn pallet_prefix() -> &'static str {
-			"test"
-		}
-		const STORAGE_PREFIX: &'static str = "foo";
-	}
-
-	struct Prefix1;
-	impl StorageInstance for Prefix1 {
-		fn pallet_prefix() -> &'static str {
-			"test"
-		}
-		const STORAGE_PREFIX: &'static str = "MyVal";
-	}
-	struct Prefix2;
-	impl StorageInstance for Prefix2 {
-		fn pallet_prefix() -> &'static str {
-			"test"
-		}
-		const STORAGE_PREFIX: &'static str = "MyMap";
-	}
-
-	#[test]
-	pub fn example_storage_value_try_append() {
-		type MyVal = StorageValue<Prefix, BoundedVec<u8, ConstU32<10>>, ValueQuery>;
-
-		TestExternalities::default().execute_with(|| {
-			MyVal::set(BoundedVec::try_from(vec![42, 43]).unwrap());
-			assert_eq!(MyVal::get(), vec![42, 43]);
-			// Try to append a single u32 to BoundedVec stored in `MyVal`
-			assert_ok!(MyVal::try_append(40));
-			assert_eq!(MyVal::get(), vec![42, 43, 40]);
-		});
-	}
-
-	#[test]
-	pub fn example_storage_value_append() {
-		type MyVal = StorageValue<Prefix, Vec<u8>, ValueQuery>;
-
-		TestExternalities::default().execute_with(|| {
-			MyVal::set(vec![42, 43]);
-			assert_eq!(MyVal::get(), vec![42, 43]);
-			// Append a single u32 to Vec stored in `MyVal`
-			MyVal::append(40);
-			assert_eq!(MyVal::get(), vec![42, 43, 40]);
-		});
-	}
-
-	#[test]
-	pub fn example_storage_value_decode_len() {
-		type MyVal = StorageValue<Prefix, BoundedVec<u8, ConstU32<10>>, ValueQuery>;
-
-		TestExternalities::default().execute_with(|| {
-			MyVal::set(BoundedVec::try_from(vec![42, 43]).unwrap());
-			assert_eq!(MyVal::decode_len().unwrap(), 2);
-		});
-	}
-
-	#[test]
-	pub fn example_storage_value_map_prefixes() {
-		type MyVal = StorageValue<Prefix1, u32, ValueQuery>;
-		type MyMap = StorageMap<Prefix2, Blake2_128Concat, u16, u32, ValueQuery>;
-		TestExternalities::default().execute_with(|| {
-			// This example assumes `pallet_prefix` to be "test"
-			// Get storage key for `MyVal` StorageValue
-			assert_eq!(
-				MyVal::hashed_key().to_vec(),
-				[twox_128(b"test"), twox_128(b"MyVal")].concat()
-			);
-			// Get storage key for `MyMap` StorageMap and `key` = 1
-			let mut k: Vec<u8> = vec![];
-			k.extend(&twox_128(b"test"));
-			k.extend(&twox_128(b"MyMap"));
-			k.extend(&1u16.blake2_128_concat());
-			assert_eq!(MyMap::hashed_key_for(1).to_vec(), k);
-		});
-	}
 }

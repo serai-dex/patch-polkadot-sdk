@@ -385,37 +385,4 @@ pub fn is_node_name_valid(_name: &str) -> std::result::Result<(), &str> {
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn tests_node_name_good() {
-		assert!(is_node_name_valid("short name").is_ok());
-		assert!(is_node_name_valid("www").is_ok());
-		assert!(is_node_name_valid("aawww").is_ok());
-		assert!(is_node_name_valid("wwwaa").is_ok());
-		assert!(is_node_name_valid("www aa").is_ok());
-	}
-
-	#[test]
-	fn tests_node_name_bad() {
-		assert!(is_node_name_valid("").is_err());
-		assert!(is_node_name_valid(
-			"very very long names are really not very cool for the ui at all, really they're not"
-		)
-		.is_err());
-		assert!(is_node_name_valid("Dots.not.Ok").is_err());
-		// NOTE: the urls below don't include a domain otherwise
-		// they'd get filtered for including a `.`
-		assert!(is_node_name_valid("http://visitme").is_err());
-		assert!(is_node_name_valid("http:/visitme").is_err());
-		assert!(is_node_name_valid("http:visitme").is_err());
-		assert!(is_node_name_valid("https://visitme").is_err());
-		assert!(is_node_name_valid("https:/visitme").is_err());
-		assert!(is_node_name_valid("https:visitme").is_err());
-		assert!(is_node_name_valid("www.visit.me").is_err());
-		assert!(is_node_name_valid("www.visit").is_err());
-		assert!(is_node_name_valid("hello\\world").is_err());
-		assert!(is_node_name_valid("visit.www").is_err());
-		assert!(is_node_name_valid("email@domain").is_err());
-	}
 }

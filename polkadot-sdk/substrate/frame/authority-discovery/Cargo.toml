@@ -37,9 +37,6 @@ workspace = true
 features = ["historical"]
 workspace = true
 
-[dependencies.sp-application-crypto]
-workspace = true
-
 [dependencies.sp-authority-discovery]
 workspace = true
 
@@ -53,7 +50,6 @@ std = [
     "frame-support/std",
     "frame-system/std",
     "pallet-session/std",
-    "sp-application-crypto/std",
     "sp-authority-discovery/std",
     "sp-runtime/std",
 ]
