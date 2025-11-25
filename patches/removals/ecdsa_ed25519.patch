@@ -82,25 +82,6 @@ index b984ccf..b3c59cf 100644
  		secret_uri.phrase.expose_secret().as_str(),
  		password
  			.or_else(|| secret_uri.password.as_ref())
-diff --git a/substrate/client/cli/src/commands/mod.rs b/substrate/client/cli/src/commands/mod.rs
-index 2d7a0dc..f44a979 100644
---- a/substrate/client/cli/src/commands/mod.rs
-+++ b/substrate/client/cli/src/commands/mod.rs
-@@ -36,7 +36,6 @@ mod run_cmd;
- mod sign;
- mod test;
- pub mod utils;
--mod vanity;
- mod verify;
- 
- pub use self::{
-@@ -45,5 +44,5 @@ pub use self::{
- 	generate_node_key::GenerateKeyCmdCommon, import_blocks_cmd::ImportBlocksCmd,
- 	insert_key::InsertKeyCmd, inspect_key::InspectKeyCmd, inspect_node_key::InspectNodeKeyCmd,
- 	key::KeySubcommand, purge_chain_cmd::PurgeChainCmd, revert_cmd::RevertCmd, run_cmd::RunCmd,
--	sign::SignCmd, vanity::VanityCmd, verify::VerifyCmd,
-+	sign::SignCmd, verify::VerifyCmd,
- };
 diff --git a/substrate/client/cli/src/commands/sign.rs b/substrate/client/cli/src/commands/sign.rs
 index 91b0651..a020f9b 100644
 --- a/substrate/client/cli/src/commands/sign.rs
@@ -448,73 +429,6 @@ index 180b167..0952f12 100644
  
  	sp_keystore::bandersnatch_experimental_enabled! {
  		fn bandersnatch_public_keys(&self, key_type: KeyTypeId) -> Vec<bandersnatch::Public> {
-diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
-index e0d5d7e..acc1915 100644
---- a/substrate/frame/src/lib.rs
-+++ b/substrate/frame/src/lib.rs
-@@ -469,7 +469,7 @@ pub mod runtime {
- 		use sp_runtime::{generic, traits, OpaqueExtrinsic};
- 
- 		/// A signature type compatible capably of handling multiple crypto-schemes.
--		pub type Signature = sp_runtime::MultiSignature;
-+		pub type Signature = sp_core::sr25519::Signature;
- 
- 		/// The corresponding account-id type of [`Signature`].
- 		pub type AccountId =
-@@ -483,8 +483,8 @@ pub mod runtime {
- 
- 		// NOTE: `AccountIndex` is provided for future compatibility, if you want to introduce
- 		// something like `pallet-indices`.
--		type ExtrinsicInner<T, Extra, AccountIndex = ()> = generic::UncheckedExtrinsic<
--			sp_runtime::MultiAddress<AccountId, AccountIndex>,
-+		type ExtrinsicInner<T, Extra> = generic::UncheckedExtrinsic<
-+			sp_core::sr25519::Public,
- 			<T as SysConfig>::RuntimeCall,
- 			Signature,
- 			Extra,
-diff --git a/substrate/primitives/application-crypto/src/lib.rs b/substrate/primitives/application-crypto/src/lib.rs
-index 8180627..5e90c49 100644
---- a/substrate/primitives/application-crypto/src/lib.rs
-+++ b/substrate/primitives/application-crypto/src/lib.rs
-@@ -48,10 +48,8 @@ pub use serde;
- pub mod bandersnatch;
- #[cfg(feature = "bls-experimental")]
- pub mod bls381;
--pub mod ecdsa;
- #[cfg(feature = "bls-experimental")]
- pub mod ecdsa_bls381;
--pub mod ed25519;
- pub mod sr25519;
- mod traits;
- 
-@@ -62,10 +60,10 @@ pub use traits::*;
- /// types whose identifier is `$key_type`.
- ///
- /// ```rust
--/// # use sp_application_crypto::{app_crypto, ed25519, KeyTypeId};
--/// // Declare a new set of crypto types using ed25519 logic that identifies as `KeyTypeId`
-+/// # use sp_application_crypto::{app_crypto, sr25519, KeyTypeId};
-+/// // Declare a new set of crypto types using sr25519 logic that identifies as `KeyTypeId`
- /// // of value `b"fuba"`.
--/// app_crypto!(ed25519, KeyTypeId(*b"fuba"));
-+/// app_crypto!(sr25519, KeyTypeId(*b"fuba"));
- /// ```
- #[cfg(feature = "full_crypto")]
- #[macro_export]
-@@ -93,10 +91,10 @@ macro_rules! app_crypto {
- /// types whose identifier is `$key_type`.
- ///
- /// ```rust
--/// # use sp_application_crypto::{app_crypto, ed25519, KeyTypeId};
--/// // Declare a new set of crypto types using ed25519 logic that identifies as `KeyTypeId`
-+/// # use sp_application_crypto::{app_crypto, sr25519, KeyTypeId};
-+/// // Declare a new set of crypto types using sr25519 logic that identifies as `KeyTypeId`
- /// // of value `b"fuba"`.
--/// app_crypto!(ed25519, KeyTypeId(*b"fuba"));
-+/// app_crypto!(sr25519, KeyTypeId(*b"fuba"));
- /// ```
- #[cfg(not(feature = "full_crypto"))]
- #[macro_export]
 diff --git a/substrate/primitives/consensus/grandpa/src/lib.rs b/substrate/primitives/consensus/grandpa/src/lib.rs
 index 3aa4dc2..2d220e4 100644
 --- a/substrate/primitives/consensus/grandpa/src/lib.rs
@@ -797,47 +711,18 @@ index 0cda70e..af9978b 100644
  
  /// Means of signature verification of an application key.
  pub trait AppVerify {
-@@ -2185,12 +2193,9 @@ macro_rules! impl_opaque_keys_inner {
- ///
- /// ```rust
- /// use sp_runtime::{
--/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::{sr25519, ed25519}
-+/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::sr25519
- /// };
- ///
--/// pub struct KeyModule;
--/// impl BoundToRuntimeAppPublic for KeyModule { type Public = ed25519::AppPublic; }
--///
- /// pub struct KeyModule2;
- /// impl BoundToRuntimeAppPublic for KeyModule2 { type Public = sr25519::AppPublic; }
- ///
 diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
 index e9f0dae5..455e99a1 100644
 --- a/substrate/primitives/io/src/lib.rs
 +++ b/substrate/primitives/io/src/lib.rs
-@@ -94,11 +94,8 @@ use sp_core::{
- #[cfg(not(substrate_runtime))]
- use sp_keystore::KeystoreExt;
- 
--#[cfg(feature = "bandersnatch-experimental")]
--use sp_core::bandersnatch;
+@@ -99,6 +99,5 @@ use sp_core::{
  use sp_core::{
  	crypto::KeyTypeId,
 -	ecdsa, ed25519,
  	offchain::{
  		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
  	},
-@@ -107,9 +104,6 @@ use sp_core::{
- 	LogLevelFilter, OpaquePeerId, RuntimeInterfaceLogLevel, H256,
- };
- 
--#[cfg(feature = "bls-experimental")]
--use sp_core::{bls381, ecdsa_bls381};
--
- #[cfg(not(substrate_runtime))]
- use sp_trie::{LayoutV0, LayoutV1, TrieConfiguration};
- 
-@@ -124,12 +118,6 @@ use sp_runtime_interface::{
+@@ -124,12 +123,6 @@ use sp_runtime_interface::{
  
  use codec::{Decode, Encode};
  
@@ -850,7 +735,7 @@ index e9f0dae5..455e99a1 100644
  #[cfg(not(substrate_runtime))]
  use sp_externalities::{Externalities, ExternalitiesExt};
  
-@@ -148,17 +136,6 @@ mod global_alloc_riscv;
+@@ -148,17 +142,6 @@ mod global_alloc_riscv;
  #[cfg(not(substrate_runtime))]
  const LOG_TARGET: &str = "runtime::io";
  
@@ -868,7 +753,7 @@ index e9f0dae5..455e99a1 100644
  /// The outcome of calling `storage_kill`. Returned value is the number of storage items
  /// removed from the backend from making the `storage_kill` call.
  #[derive(Encode, Decode)]
-@@ -852,6 +829,7 @@ pub trait Misc {
+@@ -852,6 +834,7 @@ pub trait Misc {
  	}
  }
  
@@ -876,7 +761,7 @@ index e9f0dae5..455e99a1 100644
  #[cfg(not(substrate_runtime))]
  sp_externalities::decl_extension! {
  	/// Extension to signal to [`crypt::ed25519_verify`] to use the dalek crate.
-@@ -879,10 +857,12 @@ impl Default for UseDalekExt {
+@@ -879,10 +862,12 @@ impl Default for UseDalekExt {
  		Self
  	}
  }
@@ -889,7 +774,7 @@ index e9f0dae5..455e99a1 100644
  	/// Returns all `ed25519` public keys for the given key id from the keystore.
  	fn ed25519_public_keys(
  		&mut self,
-@@ -984,6 +964,7 @@ pub trait Crypto {
+@@ -984,6 +969,7 @@ pub trait Crypto {
  
  		res
  	}
@@ -897,7 +782,7 @@ index e9f0dae5..455e99a1 100644
  
  	/// Verify `sr25519` signature.
  	///
-@@ -1119,6 +1100,7 @@ pub trait Crypto {
+@@ -1119,6 +1105,7 @@ pub trait Crypto {
  		sr25519::Pair::verify_deprecated(sig, msg, pubkey)
  	}
  
@@ -905,7 +790,7 @@ index e9f0dae5..455e99a1 100644
  	/// Returns all `ecdsa` public keys for the given key id from the keystore.
  	fn ecdsa_public_keys(
  		&mut self,
-@@ -1436,6 +1418,7 @@ pub trait Crypto {
+@@ -1436,6 +1423,7 @@ pub trait Crypto {
  			.ok()
  			.flatten()
  	}

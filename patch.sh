@@ -83,8 +83,8 @@ function remove_matching_lines {
   echo "$STRIPPED" > "$1"
 }
 
-# A regex to match a series of sequential one-line attributes
-MATCH_ATTRIBUTES="([[:space:]]*#\[([^\n])*]\n)*"
+# A regex to match a series of sequential one-line attributes and line comments
+MATCH_ATTRIBUTES="([ \t]*((#\[[^\n]*])|((\/\/)[^\n]*))\n)*"
 
 function remove_matching_statement_and_preceding_attributes {
   if [ ! -f $1 ]; then
@@ -312,34 +312,24 @@ remove_module ./polkadot-sdk/substrate/client/network/src bitswap
 # Remove the unused light-client networking protocol
 remove_crate_tree substrate/client/network/light
 
-# Remove the BEEFY consensus crates
+# Remove unused consensus crates
+remove_crate_tree substrate/client/consensus/manual-seal
+
+remove_crate_tree substrate/client/consensus/aura
+remove_crate_tree substrate/primitives/consensus/aura
+
 remove_crate_tree substrate/client/consensus/beefy
 remove_crate_tree substrate/client/merkle-mountain-range
-remove_crate_tree substrate/frame/beefy
-remove_crate_tree substrate/frame/beefy-mmr
-remove_crate_tree substrate/frame/merkle-mountain-range
 remove_crate_tree substrate/primitives/consensus/beefy
 remove_crate_tree substrate/primitives/merkle-mountain-range
 
-# Remove the SASSAFRAS consensus crates
-remove_crate_tree substrate/frame/sassafras
-remove_crate_tree substrate/primitives/consensus/sassafras
-
-# Remove the proof-of-work consensus crates
 remove_crate_tree substrate/client/consensus/pow
 remove_crate_tree substrate/primitives/consensus/pow
 
-# Remove the manual-seal consensus crate
-remove_crate_tree substrate/client/consensus/manual-seal
-
-# Remove the Aura consensus crates
-remove_crate_tree substrate/client/consensus/aura
-remove_crate_tree substrate/frame/aura
-remove_crate_tree substrate/primitives/consensus/aura
+remove_crate_tree substrate/primitives/consensus/sassafras
 
 # Remove the mixnet code
 remove_crate_tree substrate/client/mixnet
-remove_crate_tree substrate/frame/mixnet
 remove_crate_tree substrate/primitives/mixnet
 remove_module ./polkadot-sdk/substrate/client/rpc-api/src mixnet
 remove_module ./polkadot-sdk/substrate/client/rpc/src mixnet
@@ -349,7 +339,6 @@ sed -e s/" mixnet_params::\*,"//g -i ./polkadot-sdk/substrate/client/cli/src/par
 # Remove the 'statement store'
 remove_crate_tree substrate/client/network/statement
 remove_crate_tree substrate/client/statement-store
-remove_crate_tree substrate/frame/statement
 remove_crate_tree substrate/primitives/statement-store
 remove_module ./polkadot-sdk/substrate/client/rpc-api/src statement
 remove_module ./polkadot-sdk/substrate/client/rpc/src statement
@@ -359,7 +348,6 @@ remove_crate_tree substrate/utils/binary-merkle-tree
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base2
 
 # Remove the transaction storage code
-remove_crate_tree substrate/frame/transaction-storage
 remove_crate_tree substrate/primitives/transaction-storage-proof
 
 # Remove the `serde_json`-premised genesis handling
@@ -367,26 +355,31 @@ remove_module ./polkadot-sdk/substrate/frame/support/src genesis_builder_helper
 remove_matching_lines ./polkadot-sdk/substrate/frame/src/lib.rs "genesis_builder_helper"
 
 # Remove non-Ristretto cryptography
-remove_crate_tree substrate/primitives/crypto/ec-utils
-remove_feature bls-experimental
-silent_rm ./polkadot-sdk/substrate/primitives/core/src/bls.rs
-silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/bls381.rs
-silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa_bls381.rs
 remove_feature bandersnatch-experimental
-silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/bandersnatch.rs
-silent_rm ./polkadot-sdk/substrate/primitives/core/src/bandersnatch.rs
-silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/bandersnatch.rs
-silent_rm ./polkadot-sdk/substrate/primitives/core/src/paired_crypto.rs
-remove_matching_lines ./polkadot-sdk/substrate/primitives/core/src/lib.rs "mod paired_crypto;$"
+remove_feature bls-experimental
 
-silent_rm ./polkadot-sdk/substrate/client/cli/src/commands/vanity.rs
-silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ecdsa.rs
+remove_crate_tree substrate/primitives/crypto/ec-utils
+
+remove_module ./polkadot-sdk/substrate/primitives/application-crypto/src ecdsa
+remove_module ./polkadot-sdk/substrate/primitives/application-crypto/src ed25519
+remove_module ./polkadot-sdk/substrate/primitives/application-crypto/src bandersnatch
+remove_module ./polkadot-sdk/substrate/primitives/application-crypto/src bls381
+remove_module ./polkadot-sdk/substrate/primitives/application-crypto/src ecdsa_bls381
+
 remove_module ./polkadot-sdk/substrate/primitives/core/src ecdsa
-silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ecdsa.rs
-remove_module ./polkadot-sdk/substrate/frame/support/src/crypto ecdsa
-silent_rm ./polkadot-sdk/substrate/primitives/application-crypto/src/ed25519.rs
 remove_module ./polkadot-sdk/substrate/primitives/core/src ed25519
-silent_rm ./polkadot-sdk/substrate/primitives/keyring/src/ed25519.rs
+remove_module ./polkadot-sdk/substrate/primitives/core/src bandersnatch
+remove_module ./polkadot-sdk/substrate/primitives/core/src bls
+remove_module ./polkadot-sdk/substrate/primitives/core/src paired_crypto
+
+remove_module ./polkadot-sdk/substrate/primitives/keyring/src ecdsa
+remove_module ./polkadot-sdk/substrate/primitives/keyring/src ed25519
+remove_module ./polkadot-sdk/substrate/primitives/keyring/src bandersnatch
+
+remove_module ./polkadot-sdk/substrate/frame/support/src/crypto ecdsa
+
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands vanity
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "\, vanity::VanityCmd"
 
 # Remove unused pallets
 used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa session support system timestamp try-runtime"
@@ -479,7 +472,6 @@ echo "$WITHOUT_DOC" > ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs
 
 # Remove the metadata hash and associated extension
 remove_feature metadata-hash
-remove_crate_tree substrate/frame/metadata-hash-extension
 silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
 
 # Remove various features for metadata

@@ -94,6 +94,8 @@ use sp_core::{
 #[cfg(not(substrate_runtime))]
 use sp_keystore::KeystoreExt;
 
+#[cfg(feature = "bandersnatch-experimental")]
+use sp_core::bandersnatch;
 use sp_core::{
 	crypto::KeyTypeId,
 	offchain::{
@@ -103,6 +105,9 @@ use sp_core::{
 	storage::StateVersion,
 	LogLevelFilter, OpaquePeerId, RuntimeInterfaceLogLevel, H256,
 };
+
+#[cfg(feature = "bls-experimental")]
+use sp_core::{bls381, ecdsa_bls381};
 
 #[cfg(not(substrate_runtime))]
 use sp_trie::{LayoutV0, LayoutV1, TrieConfiguration};

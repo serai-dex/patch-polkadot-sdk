@@ -44,12 +44,6 @@ pub use core::ops::Deref;
 #[cfg(feature = "serde")]
 pub use serde;
 
-#[cfg(feature = "bandersnatch-experimental")]
-pub mod bandersnatch;
-#[cfg(feature = "bls-experimental")]
-pub mod bls381;
-#[cfg(feature = "bls-experimental")]
-pub mod ecdsa_bls381;
 pub mod sr25519;
 mod traits;
 
@@ -60,10 +54,10 @@ pub use traits::*;
 /// types whose identifier is `$key_type`.
 ///
 /// ```rust
-/// # use sp_application_crypto::{app_crypto, sr25519, KeyTypeId};
-/// // Declare a new set of crypto types using sr25519 logic that identifies as `KeyTypeId`
+/// # use sp_application_crypto::{app_crypto, ed25519, KeyTypeId};
+/// // Declare a new set of crypto types using ed25519 logic that identifies as `KeyTypeId`
 /// // of value `b"fuba"`.
-/// app_crypto!(sr25519, KeyTypeId(*b"fuba"));
+/// app_crypto!(ed25519, KeyTypeId(*b"fuba"));
 /// ```
 #[cfg(feature = "full_crypto")]
 #[macro_export]
@@ -91,10 +85,10 @@ macro_rules! app_crypto {
 /// types whose identifier is `$key_type`.
 ///
 /// ```rust
-/// # use sp_application_crypto::{app_crypto, sr25519, KeyTypeId};
-/// // Declare a new set of crypto types using sr25519 logic that identifies as `KeyTypeId`
+/// # use sp_application_crypto::{app_crypto, ed25519, KeyTypeId};
+/// // Declare a new set of crypto types using ed25519 logic that identifies as `KeyTypeId`
 /// // of value `b"fuba"`.
-/// app_crypto!(sr25519, KeyTypeId(*b"fuba"));
+/// app_crypto!(ed25519, KeyTypeId(*b"fuba"));
 /// ```
 #[cfg(not(feature = "full_crypto"))]
 #[macro_export]

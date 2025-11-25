@@ -2200,8 +2200,11 @@ macro_rules! impl_opaque_keys_inner {
 ///
 /// ```rust
 /// use sp_runtime::{
-/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::sr25519
+/// 	impl_opaque_keys, KeyTypeId, BoundToRuntimeAppPublic, app_crypto::{sr25519, ed25519}
 /// };
+///
+/// pub struct KeyModule;
+/// impl BoundToRuntimeAppPublic for KeyModule { type Public = ed25519::AppPublic; }
 ///
 /// pub struct KeyModule2;
 /// impl BoundToRuntimeAppPublic for KeyModule2 { type Public = sr25519::AppPublic; }

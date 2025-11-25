@@ -1,9 +1,5 @@
 # Removals
 
-- `aura`: Removes references to Aura consensus.
-
-- `BinaryMerkleTreProver`: Enables removing the `binary-merkle-tree` crate.
-
 - `bitswap`: Removes support for the `bitswap` protocol due to lack of use by
   Serai, and lack of desire to potentially use
   (https://github.com/libp2p/rust-libp2p/issues/2632).
@@ -18,12 +14,6 @@
 - `dummy_part_checker`: Removes legacy code unused within the current result.
 
 - `ecdsa_ed25519`: Removes ECDSA, Ed25519 cryptography from the runtime.
-
-- `frame-system-benchmarking`: Removes references to
-  `frame-system-benchmarking`.
-
-- `frame-system-rpc`: Removes references to
-  `frame-system-rpc`.
 
 - `light_client`: Removes the unused light-client request server.
 

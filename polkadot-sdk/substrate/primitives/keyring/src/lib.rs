@@ -25,12 +25,7 @@ use alloc::fmt;
 /// Test account crypto for sr25519.
 pub mod sr25519;
 
-/// Test account crypto for bandersnatch.
-#[cfg(feature = "bandersnatch-experimental")]
-pub mod bandersnatch;
 
-#[cfg(feature = "bandersnatch-experimental")]
-pub use bandersnatch::Keyring as BandersnatchKeyring;
 pub use sr25519::Keyring as Sr25519Keyring;
 
 #[derive(Debug)]

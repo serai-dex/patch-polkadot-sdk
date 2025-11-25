@@ -414,17 +414,3 @@ index cabc16a..c092c16 100644
  #[cfg(feature = "serde")]
  mod apis_serialize {
  	use super::*;
-diff --git a/substrate/frame/src/lib.rs b/substrate/frame/src/lib.rs
-index ee64dc7..0484191 100644
---- a/substrate/frame/src/lib.rs
-+++ b/substrate/frame/src/lib.rs
-@@ -410,9 +410,6 @@ pub mod runtime {
- 		pub use sp_version::create_runtime_str;
- 		pub use sp_version::{runtime_version, RuntimeVersion};
- 
--		#[cfg(feature = "std")]
--		pub use sp_version::NativeVersion;
--
- 		/// Macro to implement runtime APIs.
- 		pub use sp_api::impl_runtime_apis;
- 
