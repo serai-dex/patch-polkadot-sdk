@@ -701,7 +701,7 @@ impl syn::parse::Parse for PalletAttr {
 				let config_values = fields.iter().collect::<Vec<_>>();
 
 				let mut with_default = false;
-				let mut without_automatic_metadata = false;
+				let without_automatic_metadata = false;
 				let mut frame_system_config = false;
 				for config in config_values {
 					match config {

@@ -72,7 +72,6 @@ use litep2p::{
 use prometheus_endpoint::Registry;
 use sc_network_types::kad::{Key as RecordKey, PeerRecord, Record as P2PRecord};
 
-use sc_client_api::BlockBackend;
 use sc_network_common::{role::Roles, ExHashT};
 use sc_network_types::PeerId;
 use sc_utils::mpsc::{tracing_unbounded, TracingUnboundedReceiver};

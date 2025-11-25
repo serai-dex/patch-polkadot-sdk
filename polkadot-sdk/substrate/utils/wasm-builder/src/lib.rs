@@ -117,7 +117,6 @@
 //! To install the `rust-src` component, use `rustup component add rust-src
 //! --toolchain nightly-2024-12-26`.
 
-use prerequisites::DummyCrate;
 use std::{
 	env, fs,
 	io::BufRead,

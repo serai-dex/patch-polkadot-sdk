@@ -26,7 +26,7 @@ use std::{
 	time::Instant,
 };
 
-use codec::{Decode, Encode};
+use codec::Encode;
 use parking_lot::Mutex;
 use tracing::{
 	dispatcher,

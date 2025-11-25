@@ -16,7 +16,7 @@
 // limitations under the License.
 
 use super::helper;
-use frame_support_procedural_tools::{get_cfg_attributes, get_doc_literals, is_using_frame_crate};
+use frame_support_procedural_tools::is_using_frame_crate;
 use proc_macro_warning::Warning;
 use quote::ToTokens;
 use syn::{parse_quote, spanned::Spanned, token, Token, TraitItemType};

@@ -760,6 +760,25 @@ if [ $? -ne 0 ]; then
   exit 13
 fi
 
+# Fix accrued minor errors (unused imports)
+cargo fix --all-features --allow-dirty
+if [ $? -ne 0 ]; then
+  echo "Failed to run \`cargo fix\` for \`polkadot-sdk\` which compiled"
+  exit 14
+fi
+
+# Re-run `machete`
+cd ..
+machete
+cd polkadot-sdk
+
+echo "Running \`cargo check\` for a final time"
+cargo check --all-features
+if [ $? -ne 0 ]; then
+  echo "Patched, fixed, machete'd \`polkadot-sdk\` failed to compile"
+  exit 15
+fi
+
 # Save >10 GB on what should be a static directory of no further use
 cargo clean
 

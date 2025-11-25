@@ -6546,7 +6546,6 @@ dependencies = [
  "sp-api",
  "sp-core",
  "sp-keystore",
- "sp-runtime",
  "sp-staking",
 ]
 

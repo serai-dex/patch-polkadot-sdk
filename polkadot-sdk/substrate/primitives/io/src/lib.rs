@@ -99,7 +99,7 @@ use sp_core::bandersnatch;
 use sp_core::{
 	crypto::KeyTypeId,
 	offchain::{
-		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
+		OpaqueNetworkState, StorageKind, Timestamp,
 	},
 	sr25519,
 	storage::StateVersion,

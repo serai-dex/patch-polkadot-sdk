@@ -38,7 +38,7 @@ use sc_executor_common::{
 };
 use sp_core::traits::{CallContext, CodeExecutor, Externalities, RuntimeCode};
 use sp_version::RuntimeVersion;
-use sp_wasm_interface::{ExtendedHostFunctions, HostFunctions};
+use sp_wasm_interface::HostFunctions;
 
 /// Set up the externalities and safe calling environment to execute runtime calls.
 ///

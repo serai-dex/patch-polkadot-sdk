@@ -35,7 +35,7 @@ use sc_client_api::{
 	BlockBackend, BlockchainEvents, ExecutorProvider, ForkBlocks, KeysIter, StorageProvider,
 	TrieCacheContext, UsageProvider,
 };
-use sc_client_db::{Backend, BlocksPruning, DatabaseSettings, PruningMode};
+use sc_client_db::{Backend, DatabaseSettings};
 use sc_consensus::import_queue::{ImportQueue, ImportQueueService};
 use sc_executor::{
 	sp_wasm_interface::HostFunctions, HeapAllocStrategy, RuntimeVersionOf,

@@ -15,12 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use proc_macro2::TokenStream;
-use quote::quote;
-use syn::{
-	punctuated::Punctuated, spanned::Spanned, Error, Expr, ExprLit, Lit, Meta, MetaNameValue,
-	Result, Token, Variant,
-};
 
 /* fn deprecation_msg_formatter(msg: &str) -> String {
 	format!(

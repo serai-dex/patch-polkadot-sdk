@@ -39,8 +39,6 @@ extern crate alloc;
 use alloc::fmt;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "std")]
-use std::collections::HashSet;
 
 #[doc(hidden)]
 pub use alloc::borrow::Cow;

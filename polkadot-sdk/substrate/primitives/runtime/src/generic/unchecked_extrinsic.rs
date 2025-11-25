@@ -28,7 +28,7 @@ use crate::{
 };
 #[cfg(all(not(feature = "std"), feature = "serde"))]
 use alloc::format;
-use alloc::{vec, vec::Vec};
+use alloc::vec::Vec;
 use codec::{
 	Compact, CountedInput, Decode, DecodeWithMemLimit, DecodeWithMemTracking, Encode, EncodeLike,
 	Input,

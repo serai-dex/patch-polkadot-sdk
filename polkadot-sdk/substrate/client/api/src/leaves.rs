@@ -164,7 +164,7 @@ where
 	/// `Displaced` objects that have returned by previous method calls
 	/// should be passed to via the appropriate methods. Otherwise,
 	/// the on-disk state may get out of sync with in-memory state.
-	pub fn undo(&mut self) -> Undo<H, N> {
+	pub fn undo(&mut self) -> Undo<'_, H, N> {
 		Undo { inner: self }
 	}
 

@@ -21,9 +21,8 @@ use proc_macro2::{Span, TokenStream};
 use proc_macro_crate::{crate_name, FoundCrate};
 use quote::{format_ident, quote};
 use syn::{
-	parenthesized, parse_quote, punctuated::Punctuated, spanned::Spanned, token::And, Attribute,
-	Error, Expr, ExprLit, FnArg, GenericArgument, Ident, ItemImpl, Lit, LitInt, LitStr, Meta,
-	MetaNameValue, Pat, Path, PathArguments, Result, ReturnType, Signature, Token, Type, TypePath,
+	parenthesized, parse_quote, spanned::Spanned, token::And, Attribute,
+	Error, FnArg, GenericArgument, Ident, ItemImpl, LitInt, LitStr, Pat, Path, PathArguments, Result, ReturnType, Signature, Type, TypePath,
 };
 
 /// Generates the access to the `sc_client` crate.

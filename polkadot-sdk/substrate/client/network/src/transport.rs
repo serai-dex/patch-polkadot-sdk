@@ -27,7 +27,7 @@ use libp2p::{
 	},
 	dns, identity, noise, tcp, websocket, PeerId, Transport,
 };
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 /// Builds the transport that serves as a common ground for all connections.
 ///
