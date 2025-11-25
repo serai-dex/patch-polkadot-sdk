@@ -27,11 +27,6 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.bip39]
-workspace = true
-default-features = true
-features = ["rand"]
-
 [dependencies.chrono]
 workspace = true
 
@@ -51,16 +46,6 @@ default-features = true
 workspace = true
 
 [dependencies.futures]
-workspace = true
-
-[dependencies.itertools]
-workspace = true
-
-[dependencies.libp2p-identity]
-features = [
-    "ed25519",
-    "peerid",
-]
 workspace = true
 
 [dependencies.log]
@@ -129,10 +114,6 @@ default-features = true
 workspace = true
 
 [dependencies.sp-keyring]
-default-features = true
-workspace = true
-
-[dependencies.sp-keystore]
 default-features = true
 workspace = true
 

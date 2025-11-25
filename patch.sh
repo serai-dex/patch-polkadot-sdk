@@ -581,6 +581,27 @@ remove_module ./polkadot-sdk/substrate/frame/support/src/traits tokens
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits tx_pause
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits voting
 
+# Remove unused commands
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands build_spec_cmd
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "build_spec_cmd::BuildSpecCmd\,"
+
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands insert_key
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "insert_key::InsertKeyCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands inspect_key
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "inspect_key::InspectKeyCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands inspect_node_key
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "inspect_node_key::InspectNodeKeyCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands key
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "key::KeySubcommand\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands generate_node_key
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "generate_node_key::GenerateKeyCmdCommon\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands generate
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "generate::GenerateCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands sign
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "sign::SignCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands verify
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "verify::VerifyCmd\,"
+
 find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
   file=$(cat "$path")
 
