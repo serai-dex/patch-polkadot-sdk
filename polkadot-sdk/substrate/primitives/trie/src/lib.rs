@@ -31,7 +31,6 @@ mod node_codec;
 mod node_header;
 #[cfg(feature = "std")]
 pub mod recorder;
-pub mod recorder_ext;
 mod storage_proof;
 mod trie_codec;
 mod trie_stream;

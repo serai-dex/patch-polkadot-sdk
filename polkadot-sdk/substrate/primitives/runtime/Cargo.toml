@@ -43,9 +43,6 @@ workspace = true
 [dependencies.log]
 workspace = true
 
-[dependencies.num-traits]
-workspace = true
-
 [dependencies.paste]
 workspace = true
 default-features = true
@@ -98,7 +95,6 @@ std = [
     "either/use_std",
     "hash256-std-hasher/std",
     "log/std",
-    "num-traits/std",
     "rand",
     "serde/std",
     "sp-application-crypto/std",

@@ -91,7 +91,6 @@ pub mod runtime_logger;
 pub mod testing;
 pub mod traits;
 pub mod transaction_validity;
-pub mod type_with_default;
 
 // Re-export Multiaddress
 pub use multiaddress::MultiAddress;

@@ -68,7 +68,6 @@ workspace = true
 workspace = true
 
 [dependencies.sp-staking]
-features = ["serde"]
 workspace = true
 
 [features]

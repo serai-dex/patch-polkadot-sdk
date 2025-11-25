@@ -30,7 +30,3 @@ workspace = true
 features = ["derive"]
 workspace = true
 default-features = true
-
-[dependencies.sp-core]
-default-features = true
-workspace = true

@@ -205,6 +205,10 @@ remove_matching_lines ./polkadot-sdk/Cargo.toml "substrate/frame\""
 remove_matching_lines ./polkadot-sdk/substrate/utils/prometheus/Cargo.toml "tokio"
 remove_matching_lines ./polkadot-sdk/substrate/utils/prometheus/Cargo.toml "\-util"
 
+# Remove usage of the `serde` feature from `sp-staking` which will itself be later removed
+sed -i s/"sp-staking = { features = \[\"serde\"\], "/"sp-staking = { "/ ./polkadot-sdk/substrate/frame/babe/Cargo.toml
+sed -i s/"sp-staking = { features = \[\"serde\"\], "/"sp-staking = { "/ ./polkadot-sdk/substrate/frame/grandpa/Cargo.toml
+
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release &> /dev/null
@@ -541,6 +545,26 @@ remove_crate_tree substrate/primitives/maybe-compressed-blob
 # Remove the unused `sc-offchain`
 remove_crate_tree substrate/client/offchain
 
+# Remove various unused primitives
+remove_module ./polkadot-sdk/substrate/primitives/rpc/src list
+remove_module ./polkadot-sdk/substrate/primitives/rpc/src number
+
+remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain storage_lock
+remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base16
+
+remove_matching_phrase ./polkadot-sdk/substrate/frame/system/src/mock.rs "type_with_default::TypeWithDefault\, "
+sed -i s/"TypeWithDefault<u64\, DefaultNonceProvider>"/"DefaultNonceProvider"/ ./polkadot-sdk/substrate/frame/system/src/mock.rs
+remove_module ./polkadot-sdk/substrate/primitives/runtime/src type_with_default
+
+remove_module ./polkadot-sdk/substrate/primitives/staking/src currency_to_vote
+remove_matching_lines ./polkadot-sdk/substrate/primitives/staking/src/lib.rs "CurrencyToVote"
+# Prune `sp-staking` after the `SessionIndex`, `EraIndex` type definitions
+staking_lines=$(grep -m1 -n "EraIndex" ./polkadot-sdk/substrate/primitives/staking/src/lib.rs | cut --delimiter=":" -f1)
+echo "$(cat ./polkadot-sdk/substrate/primitives/staking/src/lib.rs | head -n$staking_lines)" > ./polkadot-sdk/substrate/primitives/staking/src/lib.rs
+
+remove_module ./polkadot-sdk/substrate/primitives/trie/src recorder_ext
+remove_module ./polkadot-sdk/substrate/primitives/version/src embed
+
 # Remove unused parts of `frame-support-procedural`
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src crate_version
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src dummy_part_checker
@@ -686,6 +710,7 @@ silent_rm substrate/.maintain
 silent_rm substrate/docker
 silent_rm substrate/docs
 silent_rm substrate/primitives/core/check-features-variants.sh
+silent_rm substrate/primitives/keyring/check-features-variants.sh
 silent_rm substrate/scripts
 silent_rm substrate/zombienet
 silent_rm substrate/.dockerignore

@@ -17,7 +17,6 @@
 
 //! Types for merkle tries compatible with the runtime.
 
-pub mod base16;
 
 use crate::{Decode, DecodeWithMemTracking, DispatchError, Encode, MaxEncodedLen};
 #[cfg(feature = "serde")]

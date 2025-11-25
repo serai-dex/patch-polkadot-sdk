@@ -18,6 +18,5 @@
 //! A collection of higher lever helpers for offchain calls.
 
 pub mod storage;
-pub mod storage_lock;
 
 pub use sp_core::offchain::*;

@@ -27,17 +27,6 @@ workspace = true
 features = ["derive"]
 workspace = true
 
-[dependencies.impl-trait-for-tuples]
-workspace = true
-
-[dependencies.serde]
-features = [
-    "alloc",
-    "derive",
-]
-optional = true
-workspace = true
-
 [dependencies.sp-core]
 workspace = true
 
@@ -48,7 +37,6 @@ workspace = true
 default = ["std"]
 std = [
     "codec/std",
-    "serde/std",
     "sp-core/std",
     "sp-runtime/std",
 ]
