@@ -76,12 +76,11 @@ function apply_patches {
 }
 
 function remove_matching_lines {
-  if [ ! -f $1 ]; then
+  if [ ! -f "$1" ]; then
     return
   fi
-  ORIGINAL=$(cat $1)
-  STRIPPED=$(echo "$ORIGINAL" | grep -E -v "$2")
-  echo "$STRIPPED" > $1
+  STRIPPED=$(grep -E -v "$2" "$1")
+  echo "$STRIPPED" > "$1"
 }
 
 # A regex to match a series of sequential one-line attributes
@@ -91,14 +90,14 @@ function remove_matching_statement_and_preceding_attributes {
   if [ ! -f $1 ]; then
     return
   fi
-  LINE_NUMBER=$(cat "$1" | grep -P -n -m1 "$2;$" | cut --delimiter=":" -f1)
+  ORIGINAL=$(cat $1)
+  LINE_NUMBER=$(echo "$ORIGINAL" | grep -P -n -m1 "$2;$" | cut --delimiter=":" -f1)
   if [ "$LINE_NUMBER" = "" ]; then
     return
   fi
   # Match the attributes, filter empty lines, filter to the first match alone, get its line number
-  LINES=$(cat "$1" | grep -Pzo "$MATCH_ATTRIBUTES([^\n])*$2;" | grep --text -Ev "^([[:space:]])*$" | grep --text -n \; | head -n1 | cut --delimiter=":" -f1)
+  LINES=$(echo "$ORIGINAL" | grep -Pzo "$MATCH_ATTRIBUTES([^\n])*$2;" | grep --text -Ev "^([[:space:]])*$" | grep --text -n \; | head -n1 | cut --delimiter=":" -f1)
   START_LINE=$(($LINE_NUMBER - ($LINES - 1)))
-  ORIGINAL=$(cat $1)
   echo "$ORIGINAL" | head -n$(($START_LINE - 1)) > $1
   echo "$ORIGINAL" | tail -n+$(($LINE_NUMBER + 1)) >> $1
   remove_matching_statement_and_preceding_attributes $1 "$2"
@@ -113,15 +112,15 @@ function remove_use {
   remove_matching_statement_and_preceding_attributes $1 "use $2([^\n;])*"
 
   # Remove the multi-line `use` statement for this
-  OPEN_OF_MULTILINE_USE=$(cat "$1" | grep -E -n -m1 "use $2::(.)*{$" | cut --delimiter=":" -f1)
+  ORIGINAL=$(cat $1)
+  OPEN_OF_MULTILINE_USE=$(echo "$ORIGINAL" | grep -E -n -m1 "use $2::(.)*{$" | cut --delimiter=":" -f1)
   if [ "$OPEN_OF_MULTILINE_USE" = "" ]; then
     return
   fi
-  ATTRIBUTES=$(($(cat "$1" | grep -Pzo "$MATCH_ATTRIBUTES([^\n])*use $2::([^\n])*{" | grep --text -Ev "^([[:space:]])*$" | grep --text -n "use $2::" | head -n1 | cut --delimiter=":" -f1) - 1))
+  ATTRIBUTES=$(($(echo "$ORIGINAL" | grep -Pzo "$MATCH_ATTRIBUTES([^\n])*use $2::([^\n])*{" | grep --text -Ev "^([[:space:]])*$" | grep --text -n "use $2::" | head -n1 | cut --delimiter=":" -f1) - 1))
   OPEN_OF_MULTILINE_USE=$(($OPEN_OF_MULTILINE_USE - $ATTRIBUTES))
-  LENGTH_OF_MULTILINE_USE=$(cat $1 | tail -n+$OPEN_OF_MULTILINE_USE | grep -n -m1 "};" | cut --delimiter=":" -f1)
+  LENGTH_OF_MULTILINE_USE=$(echo "$ORIGINAL" | tail -n+$OPEN_OF_MULTILINE_USE | grep -n -m1 "};" | cut --delimiter=":" -f1)
   END_LINE=$(($OPEN_OF_MULTILINE_USE + $LENGTH_OF_MULTILINE_USE))
-  ORIGINAL=$(cat $1)
   echo "$ORIGINAL" | head -n$(($OPEN_OF_MULTILINE_USE - 1)) > $1
   echo "$ORIGINAL" | tail -n+$END_LINE >> $1
 }
@@ -141,9 +140,7 @@ function remove_matching_phrase {
   if [ ! -f $1 ]; then
     return
   fi
-  ORIGINAL=$(cat $1)
-  STRIPPED=$(echo "$ORIGINAL" | sed "s/$2//g")
-  echo "$STRIPPED" > $1
+  sed -i s/"$2"//g "$1"
 }
 
 # Apply `patches/`
@@ -163,9 +160,9 @@ remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
 silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs
 
 # Remove `aquamarine` from the dependencies
-find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'STRIPPED=$(grep -v "aquamarine" "{}"); echo "$STRIPPED" > "{}"' \;
 # Remove `docify` from the dependencies
-find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.toml" -exec bash -c 'STRIPPED=$(grep -v "docify" "{}"); echo "$STRIPPED" > "{}"' \;
 # Remove `simple-mermaid`
 remove_matching_lines ./polkadot-sdk/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs "simple_mermaid"
 
@@ -174,7 +171,7 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/core/Cargo.toml "bound
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "bounded-collections/std"
 
 # Remove `is-terminal`
-find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'sed -i s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/ "{}"' \;
 
 # Remove `wasm-opt` from `substrate-wasm-builder`
 remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "wasm-opt"
@@ -475,7 +472,7 @@ exhaustive_remove ./polkadot-sdk/substrate "*test*"
 exhaustive_remove ./polkadot-sdk/substrate "*fixtures*"
 exhaustive_remove ./polkadot-sdk/substrate "*fuzz*"
 exhaustive_remove ./polkadot-sdk/substrate/client "*mock*"
-WITHOUT_DOC=$(cat ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs | grep -Fv '#![doc = include_str!("../res/substrate_test')
+WITHOUT_DOC=$(grep -F -v '#![doc = include_str!("../res/substrate_test' ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs)
 echo "$WITHOUT_DOC" > ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs
 
 # Remove metadata
@@ -520,25 +517,29 @@ remove_matching_lines ./polkadot-sdk/substrate/frame/support/procedural/src/cons
 remove_dependency scale-info
 remove_trait substrate TypeInfo
 
-# Remove `use`s of `scale_info`
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -E -v "use scale_info(::(.)+)?;$"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -E -v "^[[:space:]]scale_info::\{(.)*\},$"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'STRIPPED=$(cat {} | grep -E -v "((((__private)|(crate))::scale_info)|pallet_prelude)::TypeInfo"); echo "$STRIPPED" > {}' \;
+find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
+  file=$(cat "$path")
 
-# Remove `(Static)TypeInfo` derivations/bounds
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\: (scale_info::)?(Static)?TypeInfo,"/,/g); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\: (scale_info::)?(Static)?TypeInfo>"/"\>"/g); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\: (scale_info::)?(Static)?TypeInfo\;"/";"/g); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"([ \t])*\+ (scale_info::)?(Static)?TypeInfo"//g); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\, (scale_info::)?(Static)?TypeInfo"//g); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"^([ \t])*(scale_info::)?(Static)?TypeInfo,$"//g); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | sed -E s/"\((scale_info::)?(Static)?TypeInfo,([ ])*"/"\("/g); echo "$STRIPPED" > {}' \;
+  # Remove `use`s of `scale_info`
+  file=$(echo "$file" | grep -E -v "use scale_info(::(.)+)?;$")
+  file=$(echo "$file" | grep -E -v "^[[:space:]]scale_info::\{(.)*\},$")
+  file=$(echo "$file" | grep -E -v "((((__private)|(crate))::scale_info)|pallet_prelude)::TypeInfo")
 
-# Remove `#[scale_info(...)]` attributes
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "\#\[scale_info"); echo "$STRIPPED" > {}' \;
+  # Remove `(Static)TypeInfo` derivations/bounds
+  file=$(echo "$file" | sed -E s/"[[:space:]]*(\:|\+|\,) (scale_info::)?(Static)?TypeInfo(,|>|\;)?"/"\4"/g)
+  # Remove when present as `(TypeInfo`
+  file=$(echo "$file" | sed -E s/"\((scale_info::)?(Static)?TypeInfo,[[:space:]]*"/"\("/g)
+  # Remove when present on its own line entirely
+  file=$(echo "$file" | sed -E s/"^[[:space:]]*(scale_info::)?(Static)?TypeInfo,$"//g)
+
+  # Remove `#[scale_info(...)]` attributes
+  file=$(echo "$file" | grep -F -v "#[scale_info")
+
+  echo "$file" > "$path"
+done
 
 # Replace a usage of `scale_info::prelude::hash` which is a reference to `core::hash`
-echo "$(cat ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs | sed s/"scale_info::prelude::hash::Hasher"/"core::hash::Hasher"/)" > ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs
+sed -i s/"scale_info::prelude::hash::Hasher"/"core::hash::Hasher"/ ./polkadot-sdk/substrate/primitives/core/src/crypto_bytes.rs
 
 # Metadata has now been removed
 
@@ -564,39 +565,40 @@ remove_module ./polkadot-sdk/substrate/frame/support/src/traits tokens
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits tx_pause
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits voting
 
-# Remove `aquamarine`, `docify` from the code
-# This is done last as it's quite slow, so it's best to do after we've achieved a small tree
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "aquamarine"); echo "$STRIPPED" > {}' \;
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "docify"); echo "$STRIPPED" > {}' \;
-
-# Remove the `SS58prefix` constant
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | grep -v "SS58Prefix"); echo "$STRIPPED" > {}' \;
-
-# Remove non-ASCII characters
-echo "Removing extraneous emojis"
-# Remove Unicode characters from the start of strings
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed -E "s/\"([ ]*[^\x00-\x7Fµ][ ]*)+/\"/"); echo "$STRIPPED" > {}' \;
-# Remove Unicode characters from the end of strings
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed -E "s/([ ]*[^\x00-\x7Fµ][ ]*)+\"/\"/"); echo "$STRIPPED" > {}' \;
-
-# Remove "; qed"
-echo "Removing extraneous \"qed\" claims"
-find ./polkadot-sdk/substrate -iname "*.rs" -exec bash -c 'ORIGINAL=$(cat {}); STRIPPED=$(echo "$ORIGINAL" | LC_COLLATE=C sed "s/\; qed//"); echo "$STRIPPED" > {}' \;
-
-# Remove inline `test` `mod`ules
 find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
+  file=$(cat "$path")
+
+  # Remove `aquamarine`, `docify` from the code
+  file=$(echo "$file" | grep -v "aquamarine")
+  file=$(echo "$file" | grep -v "docify")
+
+  # Remove the `SS58prefix` constant
+  file=$(echo "$file" | grep -v "SS58Prefix")
+
+  # Remove Unicode characters from the start, end of strings
+  UNICODE_TO_REMOVE="[^\x00-\x7fµ]"
+  UNICODE_WITH_SURROUNDING_WHITESPACE="([ ]*$UNICODE_TO_REMOVE[ ]*)+"
+  file=$(echo "$file" | LC_COLLATE=C sed -E s/"\"$UNICODE_WITH_SURROUNDING_WHITESPACE"/"\""/)
+  file=$(echo "$file" | LC_COLLATE=C sed -E s/"$UNICODE_WITH_SURROUNDING_WHITESPACE\""/"\""/)
+
+  # Remove "; qed"
+  file=$(echo "$file" | sed s/"\; qed"//g)
+
+  echo "$file" > "$path"
+
+  # Remove inline `test` `mod`ules
   # This test module has a raw string we can't match against here
   if [ $path = "./polkadot-sdk/substrate/client/chain-spec/src/extension.rs" ]; then
     continue
   fi
-  original=$(cat "$path")
-  TESTS_MOD_OPEN=$(echo "$original" | grep -E -m1 -n "^mod test(s)? {" | cut --delimiter=":" -f1)
+  TESTS_MOD_OPEN=$(echo "$file" | grep -E -m1 -n "^mod test(s)? {" | cut --delimiter=":" -f1)
   if [ "$TESTS_MOD_OPEN" = "" ]; then
     continue
   fi
-  LENGTH_OF_MOD=$(echo "$original" | tail -n+$TESTS_MOD_OPEN | grep -m1 -n "^}" | cut --delimiter=":" -f1)
-  echo "$original" | head -n$TESTS_MOD_OPEN > $path
-  echo "$original" | tail -n+$(($TESTS_MOD_OPEN + LENGTH_OF_MOD - 1)) >> $path
+  LENGTH_OF_MOD=$(echo "$file" | tail -n+$TESTS_MOD_OPEN | grep -m1 -n "^}" | cut --delimiter=":" -f1)
+  # We implement removal by removing all the lines inside of the module
+  echo "$file" | head -n$TESTS_MOD_OPEN > $path
+  echo "$file" | tail -n+$(($TESTS_MOD_OPEN + LENGTH_OF_MOD - 1)) >> $path
 done
 
 # Remove the sessions module for `ShouldEndSession` alone
