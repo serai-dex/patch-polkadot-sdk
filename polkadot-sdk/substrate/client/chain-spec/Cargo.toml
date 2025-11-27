@@ -32,10 +32,6 @@ workspace = true
 features = ["derive"]
 workspace = true
 
-[dependencies.sc-chain-spec-derive]
-default-features = true
-workspace = true
-
 [dependencies.sc-client-api]
 default-features = true
 workspace = true

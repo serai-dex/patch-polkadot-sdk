@@ -348,7 +348,6 @@ pub use self::{
 	},
 	json_patch::merge as json_merge,
 };
-pub use sc_chain_spec_derive::{ChainSpecExtension, ChainSpecGroup};
 
 use sc_network::config::MultiaddrWithPeerId;
 use sc_telemetry::TelemetryEndpoints;

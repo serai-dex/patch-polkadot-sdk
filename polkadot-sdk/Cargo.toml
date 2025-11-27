@@ -7,7 +7,6 @@ members = [
     "substrate/client/basic-authorship",
     "substrate/client/block-builder",
     "substrate/client/chain-spec",
-    "substrate/client/chain-spec/derive",
     "substrate/client/cli",
     "substrate/client/consensus/babe",
     "substrate/client/consensus/common",
@@ -621,10 +620,6 @@ default-features = false
 
 [workspace.dependencies.sc-chain-spec]
 path = "substrate/client/chain-spec"
-default-features = false
-
-[workspace.dependencies.sc-chain-spec-derive]
-path = "substrate/client/chain-spec/derive"
 default-features = false
 
 [workspace.dependencies.sc-client-api]

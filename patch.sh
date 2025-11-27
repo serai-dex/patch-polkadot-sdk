@@ -467,6 +467,7 @@ function exhaustive_remove {
 }
 exhaustive_remove ./polkadot-sdk/substrate "*test*"
 exhaustive_remove ./polkadot-sdk/substrate "*fixtures*"
+exhaustive_remove ./polkadot-sdk/substrate "res"
 exhaustive_remove ./polkadot-sdk/substrate "*fuzz*"
 exhaustive_remove ./polkadot-sdk/substrate/client "*mock*"
 WITHOUT_DOC=$(grep -F -v '#![doc = include_str!("../res/substrate_test' ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs)
@@ -681,6 +682,13 @@ pub mod pallet {
 }
 pub use pallet::*;
 " >> ./polkadot-sdk/substrate/frame/session/src/lib.rs
+
+# Remove sc-chain-spec-derive
+remove_crate_tree substrate/client/chain-spec/derive
+remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs "sc_chain_spec_derive"
+
+# Remove `generate_genesis_config`, which is premised on JSON
+remove_module ./polkadot-sdk/substrate/frame/support/src generate_genesis_config
 
 # Remove unused dependencies
 machete

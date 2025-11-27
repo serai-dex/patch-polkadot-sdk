@@ -5075,7 +5075,6 @@ version = "46.0.0"
 dependencies = [
  "clap",
  "parity-scale-codec",
- "sc-chain-spec-derive",
  "sc-client-api",
  "sc-executor",
  "sc-network",
@@ -5089,16 +5088,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-state-machine",
-]
-
-[[package]]
-name = "sc-chain-spec-derive"
-version = "12.0.0"
-dependencies = [
- "proc-macro-crate 3.4.0",
- "proc-macro2",
- "quote",
- "syn 2.0.111",
 ]
 
 [[package]]
