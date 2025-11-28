@@ -409,7 +409,6 @@ pub mod pallet {
 			/// Weight information for the extensions of this pallet.
 			type ExtensionsWeightInfo = ();
 
-			/// This is used as an identifier of the chain.
 
 			/// Version of the runtime.
 			type Version = ();

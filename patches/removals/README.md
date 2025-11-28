@@ -19,6 +19,9 @@
 
 - `memmap2`: Remove use of the `memmap2` crate.
 
+- `metadata`: Removes `scale_info::TypeInfo` and metadata from `frame-support`
+  and the rest of Substrate.
+
 - `NativeExecutor`: Removes `NativeExecutor`, `NativeElseWasmExecutor`,
   which were deprecated and were supposed to be removed at the end of 2024.
 

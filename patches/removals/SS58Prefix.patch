@@ -10,15 +10,15 @@ index 7c58874..f69fa7c 100644
  			type Version = ();
  			type BlockWeights = ();
  			type BlockLength = ();
-@@ -419,7 +418,6 @@ pub mod pallet {
+@@ -419,7 +418,5 @@ pub mod pallet {
  			type ExtensionsWeightInfo = ();
  
- 			/// This is used as an identifier of the chain.
+-			/// This is used as an identifier of the chain.
 -			type SS58Prefix = ();
  
  			/// Version of the runtime.
  			type Version = ();
-@@ -633,14 +631,6 @@ pub mod pallet {
+@@ -633,14 +630,6 @@ pub mod pallet {
  		/// Weight information for the transaction extensions of this pallet.
  		type ExtensionsWeightInfo: extensions::WeightInfo;
  

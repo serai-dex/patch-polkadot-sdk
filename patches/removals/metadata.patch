@@ -361,9 +361,7 @@ diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/s
 index 8e326972..fe037937 100644
 --- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
 +++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
-@@ -401,13 +401,13 @@ fn construct_runtime_final_expansion(
- 	let dispatch = expand::expand_outer_dispatch(&name, system_pallet, &pallets, &scrate);
- 	let tasks = expand::expand_outer_task(&name, &pallets, &scrate);
+@@ -403,11 +403,11 @@ fn construct_runtime_final_expansion(
  	let query = expand::expand_outer_query(&name, &pallets, &scrate);
 -	let metadata = expand::expand_runtime_metadata(
 +	/* let metadata = expand::expand_runtime_metadata(
@@ -525,7 +523,7 @@ diff --git a/substrate/frame/support/procedural/src/pallet/expand/mod.rs b/subst
 index c8bf5cad..067929ce 100644
 --- a/substrate/frame/support/procedural/src/pallet/expand/mod.rs
 +++ b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
-@@ -57,11 +57,11 @@ pub fn merge_where_clauses(clauses: &[&Option<syn::WhereClause>]) -> Option<syn:
+@@ -57,9 +57,9 @@ pub fn merge_where_clauses(clauses: &[&Option<syn::WhereClause>]) -> Option<syn:
  /// * impl stuff on them.
  pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
  	// Remove the `pallet_doc` attribute first.
@@ -538,18 +536,16 @@ index c8bf5cad..067929ce 100644
 -	let associated_types = config::expand_config_metadata(&def);
 +	// let associated_types = config::expand_config_metadata(&def);
  	let call = call::expand_call(&mut def);
- 	let tasks = tasks::expand_tasks(&mut def);
- 	let error = error::expand_error(&mut def);
 @@ -77,7 +77,7 @@ pub fn expand(mut def: Def) -> proc_macro2::TokenStream {
  	let origin = origin::expand_origin(&mut def);
  	let validate_unsigned = validate_unsigned::expand_validate_unsigned(&mut def);
  	let tt_default_parts = tt_default_parts::expand_tt_default_parts(&mut def);
 -	let doc_only = doc_only::expand_doc_only(&mut def);
 +	// let doc_only = doc_only::expand_doc_only(&mut def);
- 	let composites = composite::expand_composites(&mut def);
+ 	// let composites = composite::expand_composites(&mut def);
  
  	let warnings = def.config.warnings;
-@@ -105,11 +105,11 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
+@@ -105,9 +105,9 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
  		#(
  			#warnings
  		)*
@@ -562,15 +558,13 @@ index c8bf5cad..067929ce 100644
 -		#associated_types
 +		// #associated_types
  		#call
- 		#tasks
- 		#error
 @@ -125,7 +125,7 @@ storage item. Otherwise, all storage items are listed among [*Type Definitions*]
  		#origin
  		#validate_unsigned
  		#tt_default_parts
 -		#doc_only
 +		// #doc_only
- 		#composites
+ 		// #composites
  	);
  
 diff --git a/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs b/substrate/frame/support/procedural/src/pallet/expand/view_functions.rs
@@ -668,10 +662,10 @@ index 8d94c490..078b553f 100644
  	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
 -	pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
 +	// pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
- 	pub composites: Vec<composite::CompositeDef>,
+ 	// pub composites: Vec<composite::CompositeDef>,
  	pub type_values: Vec<type_value::TypeValueDef>,
  	pub frame_system: syn::Path,
-@@ -102,7 +102,7 @@ impl Def {
+@@ -102,6 +102,6 @@ impl Def {
  		let mut genesis_config = None;
  		let mut genesis_build = None;
  		let mut validate_unsigned = None;
@@ -679,7 +673,6 @@ index 8d94c490..078b553f 100644
 +		// let mut extra_constants = None;
  		let mut storages = vec![];
  		let mut type_values = vec![];
- 		let mut composites: Vec<CompositeDef> = vec![];
 @@ -113,14 +113,14 @@ impl Def {
  			let pallet_attr: Option<PalletAttr> = helper::take_first_item_pallet_attr(item)?;
  
@@ -706,7 +699,7 @@ index 8d94c490..078b553f 100644
  					extra_constants =
 -						Some(extra_constants::ExtraConstantsDef::try_from(item)?),
 +						Some(extra_constants::ExtraConstantsDef::try_from(item)?), */
- 				Some(PalletAttr::Composite(span)) => {
+ 				/* Some(PalletAttr::Composite(span)) => {
  					let composite =
  						composite::CompositeDef::try_from(span, &frame_support, item)?;
 @@ -247,7 +247,7 @@ impl Def {

@@ -380,7 +380,7 @@ remove_module ./polkadot-sdk/substrate/primitives/keyring/src ecdsa
 remove_module ./polkadot-sdk/substrate/primitives/keyring/src ed25519
 remove_module ./polkadot-sdk/substrate/primitives/keyring/src bandersnatch
 
-remove_module ./polkadot-sdk/substrate/frame/support/src/crypto ecdsa
+remove_module ./polkadot-sdk/substrate/frame/support/src crypto
 
 remove_module ./polkadot-sdk/substrate/client/cli/src/commands vanity
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "\, vanity::VanityCmd"

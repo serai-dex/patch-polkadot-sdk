@@ -16,25 +16,7 @@ remove them entirely.
 
 - `fixes`: Bug fixes.
 
-- `metadata`: Removes `scale_info::TypeInfo` and metadata from the Serai
-  protocol, which isn't intended to be a parachain dynamically connected to. We
-  have a specific, bespoke API requiring interfaces be tailored to us. The
-  metadata would be at best irrelevant and a waste of space, yet practically
-  would be incorrect and not only unhelpful, yet harmful.
-
 - `opinions`: Tweaks to behavior per Serai's opinions.
-
-- `optional_polkavm`: Makes `polkavm` (and related crates) optional
-  dependencies. This prevents the tree from including it, when it's
-  experimental code not recommended for use at this time. Overtime, `polkavm`
-  will become Serai's preferred backend however (due to being premised on
-  RISC-V, not WASM, and having a much smaller tree than `wasmtime`).
-
-- `optional_litep2p`: Makes `litep2p` an optional dependency. This is strongly
-  opinionated as `litep2p` is the _recommended_ network backend and will become
-  the only backend with a maintenance guarantee. Serai prefers it to be
-  optional as Serai independently uses `libp2p`, and prefers solely having
-  `libp2p` in-tree at this time.
 
 - `removals`: Patch to remove references to removed crates/functionality.
 
