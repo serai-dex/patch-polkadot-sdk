@@ -60,7 +60,7 @@ echo "Starting to patch..."
 # _to_ the `Cargo.toml` files accordingly
 
 function apply_patches {
-  find ./patches -iname "*.patch" | sort | while read -r patch; do
+  find ./patches -iname "*.patch" | LC_ALL=en_US.UTF8 sort | while read -r patch; do
     echo "Applying patch $patch"
     cd ./polkadot-sdk
     git apply .$patch
@@ -389,7 +389,7 @@ remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "
 
 # Remove unused pallets
 used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa session support system timestamp try-runtime"
-ls ./polkadot-sdk/substrate/frame | sort | while read -r folder; do
+ls ./polkadot-sdk/substrate/frame | while read -r folder; do
   if [ -d ./polkadot-sdk/substrate/frame/$folder ]; then
     if [ $(echo "$used_pallets src" | grep $folder | wc -l) -eq 0 ]; then
       remove_crate_tree substrate/frame/$folder
@@ -513,7 +513,7 @@ remove_module ./polkadot-sdk/substrate/primitives/api/proc-macro/src runtime_met
 # Remove `sp-metadata-ir`
 remove_crate_tree substrate/primitives/metadata-ir
 remove_matching_lines ./polkadot-sdk/substrate/frame/support/src/hash.rs "metadata_ir"
-ls ./polkadot-sdk/substrate/frame/support/src/storage/types | sort | while read -r file; do
+ls ./polkadot-sdk/substrate/frame/support/src/storage/types | while read -r file; do
   file=./polkadot-sdk/substrate/frame/support/src/storage/types/$file
   remove_matching_lines $file "^use sp_metadata_ir"
   remove_matching_phrase $file "\, StorageEntryMetadataBuilder"
