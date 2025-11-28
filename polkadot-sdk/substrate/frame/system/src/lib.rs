@@ -153,8 +153,6 @@ use sp_weights::{RuntimeDbWeight, Weight, WeightMeter};
 use sp_io::TestExternalities;
 
 pub mod limits;
-#[cfg(test)]
-pub(crate) mod mock;
 
 pub mod offchain;
 
@@ -163,23 +161,15 @@ mod extensions;
 pub mod mocking;
 pub mod weights;
 
-pub mod migrations;
 
 pub use extensions::{
 	authorize_call::AuthorizeCall,
-	check_genesis::CheckGenesis,
-	check_mortality::CheckMortality,
-	check_non_zero_sender::CheckNonZeroSender,
-	check_nonce::{CheckNonce, ValidNonceInfo},
-	check_spec_version::CheckSpecVersion,
-	check_tx_version::CheckTxVersion,
 	check_weight::CheckWeight,
 	weight_reclaim::WeightReclaim,
 	weights::SubstrateWeight as SubstrateExtensionsWeight,
 	WeightInfo as ExtensionsWeightInfo,
 };
 // Backward compatible re-export.
-pub use extensions::check_mortality::CheckMortality as CheckEra;
 pub use frame_support::dispatch::RawOrigin;
 use frame_support::traits::{Authorize, PostInherents, PostTransactions, PreInherents};
 use sp_core::storage::StateVersion;

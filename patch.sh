@@ -566,8 +566,6 @@ remove_module ./polkadot-sdk/substrate/primitives/rpc/src number
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain storage_lock
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base16
 
-remove_matching_phrase ./polkadot-sdk/substrate/frame/system/src/mock.rs "type_with_default::TypeWithDefault\, "
-sed -i s/"TypeWithDefault<u64\, DefaultNonceProvider>"/"DefaultNonceProvider"/ ./polkadot-sdk/substrate/frame/system/src/mock.rs
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src type_with_default
 
 remove_module ./polkadot-sdk/substrate/primitives/staking/src currency_to_vote
@@ -594,6 +592,23 @@ remove_module ./polkadot-sdk/substrate/frame/support/src/traits schedule
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits tokens
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits tx_pause
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits voting
+
+# Remove unused parts of `frame-system`
+remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_genesis
+remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_genesis
+remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_mortality
+remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_mortality
+remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_non_zero_sender
+remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_non_zero_sender
+remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_nonce
+remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_nonce
+remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_spec_version
+remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_spec_version
+remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_tx_version
+remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_tx_version
+
+remove_module ./polkadot-sdk/substrate/frame/system/src migrations
+remove_module ./polkadot-sdk/substrate/frame/system/src mock
 
 # Remove unused commands
 remove_module ./polkadot-sdk/substrate/client/cli/src/commands build_spec_cmd
