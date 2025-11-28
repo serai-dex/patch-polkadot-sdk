@@ -473,6 +473,19 @@ exhaustive_remove ./polkadot-sdk/substrate/client "*mock*"
 WITHOUT_DOC=$(grep -F -v '#![doc = include_str!("../res/substrate_test' ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs)
 echo "$WITHOUT_DOC" > ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs
 
+# Remove "composite"
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand composite_helper
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand lock_id
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand freeze_reason
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand hold_reason
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand slash_reason
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/construct_runtime/expand task
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse composite
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/parse tasks
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand composite
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src/pallet/expand tasks
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits tasks
+
 # Remove metadata
 
 # Remove the metadata hash and associated extension

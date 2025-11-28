@@ -20,7 +20,6 @@
 //! Parse the module into `Def` struct through `Def::try_from` function.
 
 pub mod call;
-pub mod composite;
 pub mod config;
 pub mod error;
 pub mod event;
@@ -32,15 +31,12 @@ pub mod inherent;
 pub mod origin;
 pub mod pallet_struct;
 pub mod storage;
-pub mod tasks;
 pub mod type_value;
 pub mod validate_unsigned;
 pub mod view_functions;
 
 
-use composite::{keyword::CompositeKeyword, CompositeDef};
 use frame_support_procedural_tools::generate_access_from_frame_or_crate;
-use quote::ToTokens;
 use syn::spanned::Spanned;
 
 /// Parsed definition of a pallet.
@@ -52,8 +48,8 @@ pub struct Def {
 	pub pallet_struct: pallet_struct::PalletStructDef,
 	pub hooks: Option<hooks::HooksDef>,
 	pub call: Option<call::CallDef>,
-	pub tasks: Option<tasks::TasksDef>,
-	pub task_enum: Option<tasks::TaskEnumDef>,
+	/* pub tasks: Option<tasks::TasksDef>,
+	pub task_enum: Option<tasks::TaskEnumDef>, */
 	pub storages: Vec<storage::StorageDef>,
 	pub error: Option<error::ErrorDef>,
 	pub event: Option<event::EventDef>,
@@ -63,7 +59,7 @@ pub struct Def {
 	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
 	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
 	// pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
-	pub composites: Vec<composite::CompositeDef>,
+	// pub composites: Vec<composite::CompositeDef>,
 	pub type_values: Vec<type_value::TypeValueDef>,
 	pub frame_system: syn::Path,
 	pub frame_support: syn::Path,
@@ -90,8 +86,8 @@ impl Def {
 		let mut pallet_struct = None;
 		let mut hooks = None;
 		let mut call = None;
-		let mut tasks = None;
-		let mut task_enum = None;
+		/* let mut tasks = None;
+		let mut task_enum = None; */
 		let mut error = None;
 		let mut event = None;
 		let mut origin = None;
@@ -102,7 +98,7 @@ impl Def {
 		// let mut extra_constants = None;
 		let mut storages = vec![];
 		let mut type_values = vec![];
-		let mut composites: Vec<CompositeDef> = vec![];
+		// let mut composites: Vec<CompositeDef> = vec![];
 		let mut view_functions = None;
 		let mut is_frame_system = false;
 
@@ -131,7 +127,7 @@ impl Def {
 				},
 				Some(PalletAttr::RuntimeCall(cw, span)) if call.is_none() =>
 					call = Some(call::CallDef::try_from(span, index, item, dev_mode, cw)?),
-				Some(PalletAttr::Tasks(span)) if tasks.is_none() => {
+				/* Some(PalletAttr::Tasks(span)) if tasks.is_none() => {
 					let item_tokens = item.to_token_stream();
 					// `TasksDef::parse` needs to know if attr was provided so we artificially
 					// re-insert it here
@@ -156,7 +152,7 @@ impl Def {
 					"`#[pallet::task_list]` can only be used on items within an `impl` statement."
 				)),
 				Some(PalletAttr::RuntimeTask(_)) if task_enum.is_none() =>
-					task_enum = Some(syn::parse2::<tasks::TaskEnumDef>(item.to_token_stream())?),
+					task_enum = Some(syn::parse2::<tasks::TaskEnumDef>(item.to_token_stream())?), */
 				Some(PalletAttr::Error(span)) if error.is_none() =>
 					error = Some(error::ErrorDef::try_from(span, index, item)?),
 				Some(PalletAttr::RuntimeEvent(span)) if event.is_none() =>
@@ -184,7 +180,7 @@ impl Def {
 				/* Some(PalletAttr::ExtraConstants(_)) =>
 					extra_constants =
 						Some(extra_constants::ExtraConstantsDef::try_from(item)?), */
-				Some(PalletAttr::Composite(span)) => {
+				/* Some(PalletAttr::Composite(span)) => {
 					let composite =
 						composite::CompositeDef::try_from(span, &frame_support, item)?;
 					if composites.iter().any(|def| {
@@ -209,7 +205,7 @@ impl Def {
 						return Err(syn::Error::new(composite.composite_keyword.span(), &msg))
 					}
 					composites.push(composite);
-				},
+				}, */
 				Some(PalletAttr::ViewFunctions(span)) => {
 					view_functions = Some(view_functions::ViewFunctionsImplDef::try_from(span, item)?);
 				}
@@ -232,7 +228,7 @@ impl Def {
 			return Err(syn::Error::new(item_span, msg));
 		}
 
-		Self::resolve_tasks(&item_span, &mut tasks, &mut task_enum, items)?;
+		// Self::resolve_tasks(&item_span, &mut tasks, &mut task_enum, items)?;
 
 		let def = Def {
 			item,
@@ -242,8 +238,8 @@ impl Def {
 				.ok_or_else(|| syn::Error::new(item_span, "Missing `#[pallet::pallet]`"))?,
 			hooks,
 			call,
-			tasks,
-			task_enum,
+			/* tasks,
+			task_enum, */
 			// extra_constants,
 			genesis_config,
 			genesis_build,
@@ -253,7 +249,7 @@ impl Def {
 			origin,
 			inherent,
 			storages,
-			composites,
+			// composites,
 			type_values,
 			frame_system,
 			frame_support,
@@ -267,7 +263,7 @@ impl Def {
 		Ok(def)
 	}
 
-	/// Performs extra logic checks necessary for the `#[pallet::tasks_experimental]` feature.
+	/* /// Performs extra logic checks necessary for the `#[pallet::tasks_experimental]` feature.
 	fn resolve_tasks(
 		item_span: &proc_macro2::Span,
 		tasks: &mut Option<tasks::TasksDef>,
@@ -358,7 +354,7 @@ impl Def {
 		}
 		*tasks = result;
 		Ok(())
-	}
+	} */
 
 	/// Check that usage of trait `Config` is consistent with the definition, i.e. it is used with
 	/// instance iff it is defined with instance.
@@ -393,9 +389,9 @@ impl Def {
 		/* if let Some(extra_constants) = &self.extra_constants {
 			instances.extend_from_slice(&extra_constants.instances[..]);
 		} */
-		if let Some(task_enum) = &self.task_enum {
+		/* if let Some(task_enum) = &self.task_enum {
 			instances.push(task_enum.instance_usage.clone());
-		}
+		} */
 
 		let mut errors = instances.into_iter().filter_map(|instances| {
 			if instances.has_instance == self.config.has_instance {
@@ -531,11 +527,11 @@ impl GenericKind {
 mod keyword {
 	syn::custom_keyword!(origin);
 	syn::custom_keyword!(call);
-	syn::custom_keyword!(tasks_experimental);
+	/* syn::custom_keyword!(tasks_experimental);
 	syn::custom_keyword!(task_enum);
 	syn::custom_keyword!(task_list);
 	syn::custom_keyword!(task_condition);
-	syn::custom_keyword!(task_index);
+	syn::custom_keyword!(task_index); */
 	syn::custom_keyword!(weight);
 	syn::custom_keyword!(event);
 	syn::custom_keyword!(config);
@@ -552,7 +548,7 @@ mod keyword {
 	syn::custom_keyword!(type_value);
 	syn::custom_keyword!(pallet);
 	// syn::custom_keyword!(extra_constants);
-	syn::custom_keyword!(composite_enum);
+	// syn::custom_keyword!(composite_enum);
 	syn::custom_keyword!(view_functions);
 }
 
@@ -633,11 +629,11 @@ enum PalletAttr {
 	/// instead of the zero weight. So to say: it works together with `dev_mode`.
 	RuntimeCall(Option<InheritedCallWeightAttr>, proc_macro2::Span),
 	Error(proc_macro2::Span),
-	Tasks(proc_macro2::Span),
+	/* Tasks(proc_macro2::Span),
 	TaskList(proc_macro2::Span),
 	TaskCondition(proc_macro2::Span),
 	TaskIndex(proc_macro2::Span),
-	RuntimeTask(proc_macro2::Span),
+	RuntimeTask(proc_macro2::Span), */
 	RuntimeEvent(proc_macro2::Span),
 	RuntimeOrigin(proc_macro2::Span),
 	Inherent(proc_macro2::Span),
@@ -647,7 +643,7 @@ enum PalletAttr {
 	ValidateUnsigned(proc_macro2::Span),
 	TypeValue(proc_macro2::Span),
 	ExtraConstants(proc_macro2::Span),
-	Composite(proc_macro2::Span),
+	// Composite(proc_macro2::Span),
 	ViewFunctions(proc_macro2::Span),
 }
 
@@ -657,12 +653,12 @@ impl PalletAttr {
 			Self::Config { span, .. } => *span,
 			Self::Pallet(span) => *span,
 			Self::Hooks(span) => *span,
-			Self::Tasks(span) => *span,
+			/* Self::Tasks(span) => *span,
 			Self::TaskCondition(span) => *span,
 			Self::TaskIndex(span) => *span,
-			Self::TaskList(span) => *span,
+			Self::TaskList(span) => *span, */
 			Self::Error(span) => *span,
-			Self::RuntimeTask(span) => *span,
+			// Self::RuntimeTask(span) => *span,
 			Self::RuntimeCall(_, span) => *span,
 			Self::RuntimeEvent(span) => *span,
 			Self::RuntimeOrigin(span) => *span,
@@ -673,7 +669,7 @@ impl PalletAttr {
 			Self::ValidateUnsigned(span) => *span,
 			Self::TypeValue(span) => *span,
 			Self::ExtraConstants(span) => *span,
-			Self::Composite(span) => *span,
+			// Self::Composite(span) => *span,
 			Self::ViewFunctions(span) => *span,
 		}
 	}
@@ -760,7 +756,7 @@ impl syn::parse::Parse for PalletAttr {
 				false => Some(InheritedCallWeightAttr::parse(&content)?),
 			};
 			Ok(PalletAttr::RuntimeCall(attr, span))
-		} else if lookahead.peek(keyword::tasks_experimental) {
+		/* } else if lookahead.peek(keyword::tasks_experimental) {
 			Ok(PalletAttr::Tasks(content.parse::<keyword::tasks_experimental>()?.span()))
 		} else if lookahead.peek(keyword::task_enum) {
 			Ok(PalletAttr::RuntimeTask(content.parse::<keyword::task_enum>()?.span()))
@@ -769,7 +765,7 @@ impl syn::parse::Parse for PalletAttr {
 		} else if lookahead.peek(keyword::task_index) {
 			Ok(PalletAttr::TaskIndex(content.parse::<keyword::task_index>()?.span()))
 		} else if lookahead.peek(keyword::task_list) {
-			Ok(PalletAttr::TaskList(content.parse::<keyword::task_list>()?.span()))
+			Ok(PalletAttr::TaskList(content.parse::<keyword::task_list>()?.span())) */
 		} else if lookahead.peek(keyword::error) {
 			Ok(PalletAttr::Error(content.parse::<keyword::error>()?.span()))
 		} else if lookahead.peek(keyword::event) {
@@ -790,8 +786,8 @@ impl syn::parse::Parse for PalletAttr {
 			Ok(PalletAttr::TypeValue(content.parse::<keyword::type_value>()?.span()))
 		/* } else if lookahead.peek(keyword::extra_constants) {
 			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span())) */
-		} else if lookahead.peek(keyword::composite_enum) {
-			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span()))
+		/* } else if lookahead.peek(keyword::composite_enum) {
+			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span())) */
 		} else if lookahead.peek(keyword::view_functions) {
 			Ok(PalletAttr::ViewFunctions(content.parse::<keyword::view_functions>()?.span()))
 		} else {

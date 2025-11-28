@@ -41,11 +41,11 @@ mod keyword {
 	syn::custom_keyword!(Origin);
 	syn::custom_keyword!(Inherent);
 	syn::custom_keyword!(ValidateUnsigned);
-	syn::custom_keyword!(FreezeReason);
+	/* syn::custom_keyword!(FreezeReason);
 	syn::custom_keyword!(HoldReason);
 	syn::custom_keyword!(Task);
 	syn::custom_keyword!(LockId);
-	syn::custom_keyword!(SlashReason);
+	syn::custom_keyword!(SlashReason); */
 	syn::custom_keyword!(exclude_parts);
 	syn::custom_keyword!(use_parts);
 	syn::custom_keyword!(expanded);
@@ -389,11 +389,11 @@ pub enum PalletPartKeyword {
 	Origin(keyword::Origin),
 	Inherent(keyword::Inherent),
 	ValidateUnsigned(keyword::ValidateUnsigned),
-	FreezeReason(keyword::FreezeReason),
+	/* FreezeReason(keyword::FreezeReason),
 	HoldReason(keyword::HoldReason),
 	Task(keyword::Task),
 	LockId(keyword::LockId),
-	SlashReason(keyword::SlashReason),
+	SlashReason(keyword::SlashReason), */
 }
 
 impl Parse for PalletPartKeyword {
@@ -418,7 +418,7 @@ impl Parse for PalletPartKeyword {
 			Ok(Self::Inherent(input.parse()?))
 		} else if lookahead.peek(keyword::ValidateUnsigned) {
 			Ok(Self::ValidateUnsigned(input.parse()?))
-		} else if lookahead.peek(keyword::FreezeReason) {
+		/* } else if lookahead.peek(keyword::FreezeReason) {
 			Ok(Self::FreezeReason(input.parse()?))
 		} else if lookahead.peek(keyword::HoldReason) {
 			Ok(Self::HoldReason(input.parse()?))
@@ -427,7 +427,7 @@ impl Parse for PalletPartKeyword {
 		} else if lookahead.peek(keyword::LockId) {
 			Ok(Self::LockId(input.parse()?))
 		} else if lookahead.peek(keyword::SlashReason) {
-			Ok(Self::SlashReason(input.parse()?))
+			Ok(Self::SlashReason(input.parse()?)) */
 		} else {
 			Err(lookahead.error())
 		}
@@ -447,11 +447,11 @@ impl PalletPartKeyword {
 			Self::Origin(_) => "Origin",
 			Self::Inherent(_) => "Inherent",
 			Self::ValidateUnsigned(_) => "ValidateUnsigned",
-			Self::FreezeReason(_) => "FreezeReason",
+			/* Self::FreezeReason(_) => "FreezeReason",
 			Self::HoldReason(_) => "HoldReason",
 			Self::Task(_) => "Task",
 			Self::LockId(_) => "LockId",
-			Self::SlashReason(_) => "SlashReason",
+			Self::SlashReason(_) => "SlashReason", */
 		}
 	}
 
@@ -462,7 +462,7 @@ impl PalletPartKeyword {
 
 	/// Returns the names of all pallet parts that allow to have a generic argument.
 	fn all_generic_arg() -> &'static [&'static str] {
-		&["Event", "Error", "Origin", "Config", "Task"]
+		&["Event", "Error", "Origin", "Config"]
 	}
 }
 
@@ -478,11 +478,11 @@ impl ToTokens for PalletPartKeyword {
 			Self::Origin(inner) => inner.to_tokens(tokens),
 			Self::Inherent(inner) => inner.to_tokens(tokens),
 			Self::ValidateUnsigned(inner) => inner.to_tokens(tokens),
-			Self::FreezeReason(inner) => inner.to_tokens(tokens),
+			/* Self::FreezeReason(inner) => inner.to_tokens(tokens),
 			Self::HoldReason(inner) => inner.to_tokens(tokens),
 			Self::Task(inner) => inner.to_tokens(tokens),
 			Self::LockId(inner) => inner.to_tokens(tokens),
-			Self::SlashReason(inner) => inner.to_tokens(tokens),
+			Self::SlashReason(inner) => inner.to_tokens(tokens), */
 		}
 	}
 }

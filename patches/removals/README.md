@@ -57,6 +57,9 @@
 - `sysinfo`: Removes `sysinfo` which was only included to print a warning in
   certain conditions.
 
+- `task`: Finishes removing `Task` from `frame-support`, already partially done
+  with `composite`.
+
 - `wasm-opt`: Removes `wasm-opt` whose requirement has been largely superseded
   by the introduction of `wasm32v1-none` and `-Zbuild-std`.
 

@@ -810,11 +810,11 @@ pub fn inject_runtime_type(_: TokenStream, tokens: TokenStream) -> TokenStream {
 	let item = syn::parse_macro_input!(item as TraitItemType);
 	if item.ident != "RuntimeCall" &&
 		item.ident != "RuntimeEvent" &&
-		item.ident != "RuntimeTask" &&
+		// item.ident != "RuntimeTask" &&
 		item.ident != "RuntimeViewFunction" &&
 		item.ident != "RuntimeOrigin" &&
-		item.ident != "RuntimeHoldReason" &&
-		item.ident != "RuntimeFreezeReason" &&
+		// item.ident != "RuntimeHoldReason" &&
+		// item.ident != "RuntimeFreezeReason" &&
 		item.ident != "RuntimeParameters" &&
 		item.ident != "PalletInfo"
 	{
@@ -1104,7 +1104,7 @@ pub fn origin(_: TokenStream, _: TokenStream) -> TokenStream {
 	pallet_macro_stub()
 }
 
-///
+/* ///
 /// ---
 ///
 /// Documentation for this macro can be found at `frame_support::pallet_macros::composite_enum`.
@@ -1195,7 +1195,7 @@ pub fn task_weight(_: TokenStream, _: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn task_index(_: TokenStream, _: TokenStream) -> TokenStream {
 	pallet_macro_stub()
-}
+} */
 
 ///
 /// ---

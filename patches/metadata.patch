@@ -711,8 +711,8 @@ index 8d94c490..078b553f 100644
  						composite::CompositeDef::try_from(span, &frame_support, item)?;
 @@ -247,7 +247,7 @@ impl Def {
  			call,
- 			tasks,
- 			task_enum,
+ 			/* tasks,
+ 			task_enum, */
 -			extra_constants,
 +			// extra_constants,
  			genesis_config,
@@ -727,9 +727,9 @@ index 8d94c490..078b553f 100644
  			instances.extend_from_slice(&extra_constants.instances[..]);
 -		}
 +		} */
- 		if let Some(task_enum) = &self.task_enum {
+ 		/* if let Some(task_enum) = &self.task_enum {
  			instances.push(task_enum.instance_usage.clone());
- 		}
+ 		} */
 @@ -543,7 +543,7 @@ mod keyword {
  	syn::custom_keyword!(event);
  	syn::custom_keyword!(config);
@@ -745,7 +745,7 @@ index 8d94c490..078b553f 100644
  	syn::custom_keyword!(pallet);
 -	syn::custom_keyword!(extra_constants);
 +	// syn::custom_keyword!(extra_constants);
- 	syn::custom_keyword!(composite_enum);
+ 	// syn::custom_keyword!(composite_enum);
  	syn::custom_keyword!(view_functions);
  }
 @@ -564,8 +564,8 @@ mod keyword {
@@ -814,7 +814,7 @@ index 8d94c490..078b553f 100644
  					frame_system_config: false,
  				})
  			}
-@@ -791,8 +791,8 @@ impl syn::parse::Parse for PalletAttr {
+@@ -791,6 +791,6 @@ impl syn::parse::Parse for PalletAttr {
  			Ok(PalletAttr::ValidateUnsigned(content.parse::<keyword::validate_unsigned>()?.span()))
  		} else if lookahead.peek(keyword::type_value) {
  			Ok(PalletAttr::TypeValue(content.parse::<keyword::type_value>()?.span()))
@@ -822,9 +822,7 @@ index 8d94c490..078b553f 100644
 -			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span()))
 +		/* } else if lookahead.peek(keyword::extra_constants) {
 +			Ok(PalletAttr::ExtraConstants(content.parse::<keyword::extra_constants>()?.span())) */
- 		} else if lookahead.peek(keyword::composite_enum) {
- 			Ok(PalletAttr::Composite(content.parse::<keyword::composite_enum>()?.span()))
- 		} else if lookahead.peek(keyword::view_functions) {
+ 		/* } else if lookahead.peek(keyword::composite_enum) {
 diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
 index ae466db5..f0fb0746 100644
 --- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs

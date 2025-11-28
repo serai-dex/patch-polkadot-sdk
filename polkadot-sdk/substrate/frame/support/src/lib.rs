@@ -1012,7 +1012,7 @@ pub mod pallet_prelude {
 		traits::{
 			Authorize, BuildGenesisConfig, ConstU32, ConstUint, EnsureOrigin, Get, GetDefault,
 			GetStorageVersion, Hooks, IsType, OriginTrait, PalletInfoAccess, StorageInfoTrait,
-			StorageVersion, Task, TypedGet,
+			StorageVersion, TypedGet,
 		},
 		Blake2_128, Blake2_128Concat, Blake2_256, CloneNoBound, DebugNoBound, EqNoBound, Identity,
 		PartialEqNoBound, RuntimeDebugNoBound, Twox128, Twox256, Twox64Concat,
@@ -1741,7 +1741,7 @@ pub mod pallet_macros {
 	/// ```
 	pub use frame_support_procedural::config;
 
-	/// Allows defining an enum that gets composed as an aggregate enum by `construct_runtime`.
+	/* /// Allows defining an enum that gets composed as an aggregate enum by `construct_runtime`.
 	///
 	/// The `#[pallet::composite_enum]` attribute allows you to define an enum that gets
 	/// composed as an aggregate enum by `construct_runtime`. This is similar in principle with
@@ -1789,7 +1789,7 @@ pub mod pallet_macros {
 	/// # 	#[pallet::config]
 	/// # 	pub trait Config: frame_system::Config {}
 	/// }
-	pub use frame_support_procedural::composite_enum;
+	pub use frame_support_procedural::composite_enum; */
 
 	/// Allows the pallet to validate unsigned transactions.
 	///
@@ -2779,7 +2779,7 @@ pub mod pallet_macros {
 	pub use frame_support_procedural::storage;
 
 	pub use frame_support_procedural::{
-		authorize, task_condition, task_index, task_list, task_weight, tasks_experimental,
+		authorize, /* task_condition, task_index, task_list, task_weight, tasks_experimental, */
 		weight_of_authorize,
 	};
 

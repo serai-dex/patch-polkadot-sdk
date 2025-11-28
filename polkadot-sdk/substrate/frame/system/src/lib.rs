@@ -357,8 +357,8 @@ pub mod pallet {
 			type RuntimeCall = ();
 			#[inject_runtime_type]
 			type PalletInfo = ();
-			#[inject_runtime_type]
-			type RuntimeTask = ();
+			/* #[inject_runtime_type]
+			type RuntimeTask = (); */
 			type BaseCallFilter = frame_support::traits::Everything;
 			type BlockHashCount = TestBlockHashCount<frame_support::traits::ConstU32<10>>;
 			type OnSetCode = ();
@@ -446,9 +446,9 @@ pub mod pallet {
 			#[inject_runtime_type]
 			type RuntimeCall = ();
 
-			/// The aggregated Task type, injected by `construct_runtime!`.
+			/* /// The aggregated Task type, injected by `construct_runtime!`.
 			#[inject_runtime_type]
-			type RuntimeTask = ();
+			type RuntimeTask = (); */
 
 			/// Converts a module to the index of the module, injected by `construct_runtime!`.
 			#[inject_runtime_type]
@@ -537,9 +537,9 @@ pub mod pallet {
 			+ From<Call<Self>>
 			+ Authorize;
 
-		/// The aggregated `RuntimeTask` type.
+		/* /// The aggregated `RuntimeTask` type.
 		#[pallet::no_default_bounds]
-		type RuntimeTask: Task;
+		type RuntimeTask: Task; */
 
 		/// This stores the number of previous transactions associated with a sender account.
 		type Nonce: Parameter
@@ -800,7 +800,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		#[cfg(feature = "experimental")]
+		/* #[cfg(feature = "experimental")]
 		#[pallet::call_index(8)]
 		#[pallet::weight(task.weight())]
 		pub fn do_task(_origin: OriginFor<T>, task: T::RuntimeTask) -> DispatchResultWithPostInfo {
@@ -819,7 +819,7 @@ pub mod pallet {
 
 			// Return success.
 			Ok(().into())
-		}
+		} */
 
 		/// Authorize an upgrade to a given `code_hash` for the runtime. The runtime can be supplied
 		/// later.
@@ -911,7 +911,7 @@ pub mod pallet {
 		KilledAccount { account: T::AccountId },
 		/// On on-chain remark happened.
 		Remarked { sender: T::AccountId, hash: T::Hash },
-		#[cfg(feature = "experimental")]
+		/* #[cfg(feature = "experimental")]
 		/// A [`Task`] has started executing
 		TaskStarted { task: T::RuntimeTask },
 		#[cfg(feature = "experimental")]
@@ -919,7 +919,7 @@ pub mod pallet {
 		TaskCompleted { task: T::RuntimeTask },
 		#[cfg(feature = "experimental")]
 		/// A [`Task`] failed during execution.
-		TaskFailed { task: T::RuntimeTask, err: DispatchError },
+		TaskFailed { task: T::RuntimeTask, err: DispatchError }, */
 		/// An upgrade was authorized.
 		UpgradeAuthorized { code_hash: T::Hash, check_version: bool },
 		/// An invalid authorized upgrade was rejected while trying to apply it.
@@ -947,12 +947,12 @@ pub mod pallet {
 		CallFiltered,
 		/// A multi-block migration is ongoing and prevents the current code from being replaced.
 		MultiBlockMigrationsOngoing,
-		#[cfg(feature = "experimental")]
+		/* #[cfg(feature = "experimental")]
 		/// The specified [`Task`] is not valid.
 		InvalidTask,
 		#[cfg(feature = "experimental")]
 		/// The specified [`Task`] failed during execution.
-		FailedTask,
+		FailedTask, */
 		/// No upgrade authorized.
 		NothingAuthorized,
 		/// The submitted code is not authorized.
@@ -1136,7 +1136,7 @@ pub mod pallet {
 				}
 			}
 
-			#[cfg(feature = "experimental")]
+			/* #[cfg(feature = "experimental")]
 			if let Call::do_task { ref task } = call {
 				if task.is_valid() {
 					return Ok(ValidTransaction {
@@ -1147,7 +1147,7 @@ pub mod pallet {
 						propagate: true,
 					})
 				}
-			}
+			} */
 
 			Err(InvalidTransaction::Call.into())
 		}

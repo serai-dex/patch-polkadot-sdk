@@ -177,11 +177,11 @@ fn construct_runtime_final_expansion(
 	let mut outer_event = None;
 	let mut outer_error = None;
 	let mut outer_origin = None;
-	let mut freeze_reason = None;
+	/* let mut freeze_reason = None;
 	let mut hold_reason = None;
 	let mut slash_reason = None;
 	let mut lock_id = None;
-	let mut task = None;
+	let mut task = None; */
 	let mut query = None;
 
 	for runtime_type in runtime_types.iter() {
@@ -210,7 +210,7 @@ fn construct_runtime_final_expansion(
 				outer_origin =
 					Some(expand::expand_outer_origin(&name, system_pallet, &pallets, &scrate)?);
 			},
-			RuntimeType::RuntimeFreezeReason(_) => {
+			/* RuntimeType::RuntimeFreezeReason(_) => {
 				freeze_reason = Some(expand::expand_outer_freeze_reason(&pallets, &scrate));
 			},
 			RuntimeType::RuntimeHoldReason(_) => {
@@ -224,7 +224,7 @@ fn construct_runtime_final_expansion(
 			},
 			RuntimeType::RuntimeTask(_) => {
 				task = Some(expand::expand_outer_task(&name, &pallets, &scrate));
-			},
+			}, */
 			RuntimeType::RuntimeViewFunction(_) => {
 				query = Some(expand::expand_outer_query(&name, &pallets, &scrate));
 			},
@@ -277,7 +277,7 @@ fn construct_runtime_final_expansion(
 
 		#dispatch
 
-		#task
+		// #task
 
 		#query
 
@@ -289,13 +289,13 @@ fn construct_runtime_final_expansion(
 
 		#validate_unsigned
 
-		#freeze_reason
+		/* #freeze_reason
 
 		#hold_reason
 
 		#lock_id
 
-		#slash_reason
+		#slash_reason */
 
 		#integrity_test
 

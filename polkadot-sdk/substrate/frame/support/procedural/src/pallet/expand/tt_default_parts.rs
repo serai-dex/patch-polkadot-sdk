@@ -16,7 +16,7 @@
 // limitations under the License.
 
 use crate::{
-	pallet::{CompositeKeyword, Def},
+	pallet::Def,
 	COUNTER,
 };
 use syn::spanned::Spanned;
@@ -33,7 +33,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 
 	let call_part = def.call.as_ref().map(|_| quote::quote!(Call,));
 
-	let task_part = def.tasks.as_ref().map(|_| quote::quote!(Task,));
+	// let task_part = def.tasks.as_ref().map(|_| quote::quote!(Task,));
 
 	let storage_part = (!def.storages.is_empty()).then(|| quote::quote!(Storage,));
 
@@ -59,7 +59,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 	let validate_unsigned_part =
 		def.validate_unsigned.as_ref().map(|_| quote::quote!(ValidateUnsigned,));
 
-	let freeze_reason_part = def
+	/* let freeze_reason_part = def
 		.composites
 		.iter()
 		.any(|c| matches!(c.composite_keyword, CompositeKeyword::FreezeReason(_)))
@@ -81,11 +81,11 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 		.composites
 		.iter()
 		.any(|c| matches!(c.composite_keyword, CompositeKeyword::SlashReason(_)))
-		.then_some(quote::quote!(SlashReason,));
+		.then_some(quote::quote!(SlashReason,)); */
 
 	let call_part_v2 = def.call.as_ref().map(|_| quote::quote!(+ Call));
 
-	let task_part_v2 = def.tasks.as_ref().map(|_| quote::quote!(+ Task));
+	// let task_part_v2 = def.tasks.as_ref().map(|_| quote::quote!(+ Task));
 
 	let storage_part_v2 = (!def.storages.is_empty()).then(|| quote::quote!(+ Storage));
 
@@ -111,7 +111,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 	let validate_unsigned_part_v2 =
 		def.validate_unsigned.as_ref().map(|_| quote::quote!(+ ValidateUnsigned));
 
-	let freeze_reason_part_v2 = def
+	/* let freeze_reason_part_v2 = def
 		.composites
 		.iter()
 		.any(|c| matches!(c.composite_keyword, CompositeKeyword::FreezeReason(_)))
@@ -133,7 +133,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 		.composites
 		.iter()
 		.any(|c| matches!(c.composite_keyword, CompositeKeyword::SlashReason(_)))
-		.then_some(quote::quote!(+ SlashReason));
+		.then_some(quote::quote!(+ SlashReason)); */
 
 	quote::quote!(
 		// This macro follows the conventions as laid out by the `tt-call` crate. It does not
@@ -155,8 +155,8 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 					tokens = [{
 						expanded::{
 							Pallet, #call_part #storage_part #event_part #error_part #origin_part #config_part
-							#inherent_part #validate_unsigned_part #freeze_reason_part #task_part
-							#hold_reason_part #lock_id_part #slash_reason_part
+							#inherent_part #validate_unsigned_part /* #freeze_reason_part #task_part
+							#hold_reason_part #lock_id_part #slash_reason_part */
 						}
 					}]
 				}
@@ -204,8 +204,8 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 					$caller
 					tokens = [{
 						+ Pallet #call_part_v2 #storage_part_v2 #event_part_v2 #error_part_v2 #origin_part_v2 #config_part_v2
-						#inherent_part_v2 #validate_unsigned_part_v2 #freeze_reason_part_v2 #task_part_v2
-						#hold_reason_part_v2 #lock_id_part_v2 #slash_reason_part_v2
+						#inherent_part_v2 #validate_unsigned_part_v2 /* #freeze_reason_part_v2 #task_part_v2
+						#hold_reason_part_v2 #lock_id_part_v2 #slash_reason_part_v2 */
 					}]
 				}
 			};
