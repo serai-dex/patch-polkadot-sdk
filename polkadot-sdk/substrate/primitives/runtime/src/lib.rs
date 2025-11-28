@@ -71,7 +71,11 @@ pub use sp_core::storage::StateVersion;
 #[cfg(feature = "std")]
 pub use sp_core::storage::{Storage, StorageChild};
 
-use sp_core::crypto::{ByteArray, FromEntropy};
+use sp_core::{
+	crypto::{self, ByteArray, FromEntropy},
+	hash::{H256, H512},
+	sr25519,
+};
 
 use alloc::vec;
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};

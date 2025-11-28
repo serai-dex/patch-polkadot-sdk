@@ -592,6 +592,7 @@ pub fn storage_alias(attributes: TokenStream, input: TokenStream) -> TokenStream
 ///     type OnNewAccount = ();
 ///     type OnKilledAccount = ();
 ///     type SystemWeightInfo = ();
+///     type SS58Prefix = ();
 ///     type MaxConsumers = frame_support::traits::ConstU32<16>;
 /// }
 /// ```
@@ -624,6 +625,7 @@ pub fn storage_alias(attributes: TokenStream, input: TokenStream) -> TokenStream
 ///     type OnNewAccount = <TestDefaultConfig as DefaultConfig>::OnNewAccount;
 ///     type OnKilledAccount = <TestDefaultConfig as DefaultConfig>::OnKilledAccount;
 ///     type SystemWeightInfo = <TestDefaultConfig as DefaultConfig>::SystemWeightInfo;
+///     type SS58Prefix = <TestDefaultConfig as DefaultConfig>::SS58Prefix;
 ///     type MaxConsumers = <TestDefaultConfig as DefaultConfig>::MaxConsumers;
 /// }
 /// ```
@@ -737,6 +739,7 @@ pub fn no_default_bounds(_: TokenStream, _: TokenStream) -> TokenStream {
 /// 	type BlockWeights = ();
 /// 	type BlockLength = ();
 /// 	...
+/// 	type SS58Prefix = ();
 /// 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 /// }
 /// ```

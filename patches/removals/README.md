@@ -38,10 +38,7 @@
 - `sp-transaction-storage-proof`: Removes references to
   `sp-transaction-storage`.
 
-- `SS58Prefix`: Removes `SS58Prefix`, as Serai prefers `bech32` and doesn't
-  need it as a chain ID. Note this patch is partnered by a blanket removal of
-  all lines mentioning `SS58Prefix` (manually reviewed) which is known to bork
-  some docstrings.
+- `SS58Prefix`: Removes `SS58Prefix`.
 
 - `substrate-bip39`: Removes `substrate-bip39` from usage. `substrate-bip39`
   was forked from `tiny-bip39` as it was unmaintained, yet for some reason,

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function silent_rm {
   $(rm -rf $1)
   return 0
@@ -91,7 +93,7 @@ function remove_matching_statement_and_preceding_attributes {
     return
   fi
   ORIGINAL=$(cat $1)
-  LINE_NUMBER=$(echo "$ORIGINAL" | grep -P -n -m1 "$2;$" | cut --delimiter=":" -f1)
+  LINE_NUMBER=$(echo "$ORIGINAL" | grep -P -n "$2;$" | grep -E -v "^[^:]*:[[:space:]]*///" | head -n1 | cut --delimiter=":" -f1)
   if [ "$LINE_NUMBER" = "" ]; then
     return
   fi
@@ -526,8 +528,7 @@ remove_matching_lines ./polkadot-sdk/substrate/frame/support/procedural/src/cons
 # Remove `scale-info`
 remove_dependency scale-info
 remove_trait substrate TypeInfo
-
-find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
+grep -E -r -m1 "(scale_info)|(TypeInfo)" ./polkadot-sdk/substrate/ | cut -d ':' -f1 | grep -E "\.rs$" | while IFS= read -r path; do
   file=$(cat "$path")
 
   # Remove `use`s of `scale_info`
@@ -631,15 +632,19 @@ remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "
 remove_module ./polkadot-sdk/substrate/client/cli/src/commands verify
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "verify::VerifyCmd\,"
 
+# Remove statements using the `SS58Prefix` constant
+echo "Removing \`SS58Prefix\`"
+grep -E -r -m1 "SS58Prefix" ./polkadot-sdk/substrate/ | cut -d ':' -f1 | grep -E "\.rs$" | while IFS= read -r path; do
+  remove_matching_statement_and_preceding_attributes $path "SS58Prefix([^\n;])*"
+done
+
+echo "Removing miscealleneous text elements"
 find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
   file=$(cat "$path")
 
   # Remove `aquamarine`, `docify` from the code
   file=$(echo "$file" | grep -v "aquamarine")
   file=$(echo "$file" | grep -v "docify")
-
-  # Remove the `SS58prefix` constant
-  file=$(echo "$file" | grep -v "SS58Prefix")
 
   # Remove Unicode characters from the start, end of strings
   UNICODE_TO_REMOVE="[^\x00-\x7fµ]"
@@ -797,6 +802,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Fix accrued minor errors (unused imports)
+cargo fix --all-features --allow-dirty
+# Run a second time, as for some reason, the first-pass fails on a clean build
 cargo fix --all-features --allow-dirty
 if [ $? -ne 0 ]; then
   echo "Failed to run \`cargo fix\` for \`polkadot-sdk\` which compiled"

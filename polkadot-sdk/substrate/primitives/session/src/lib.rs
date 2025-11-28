@@ -23,6 +23,10 @@ extern crate alloc;
 
 use codec::{Decode, DecodeWithMemTracking, Encode};
 
+#[cfg(feature = "std")]
+use sp_api::ProvideRuntimeApi;
+#[cfg(feature = "std")]
+use sp_runtime::traits::Block as BlockT;
 
 use alloc::vec::Vec;
 use sp_core::RuntimeDebug;

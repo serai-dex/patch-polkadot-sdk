@@ -22,10 +22,10 @@ jobs:
         uses: ./.github/actions/build-dependencies
 
       - name: Install nightly rust
-        run: rustup toolchain install ${{ steps.nightly.outputs.version }} --profile minimal --target wasm32v1-none --component rust-src
+        run: rustup toolchain install ${{ steps.nightly.outputs.version }} --profile minimal --target wasm32v1-none
 
       - name: Install cargo machete
-        run: cargo +1.91 install cargo-machete --version =0.9.1
+        run: cargo +1.91.1 install cargo-machete --version =0.9.1
 
       - name: Run `patch.sh` and ensure the output matches the committed artifact
         run: |
