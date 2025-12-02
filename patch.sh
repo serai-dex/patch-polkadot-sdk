@@ -733,6 +733,7 @@ machete
 cargo_upgrade array-bytes 7.0.0
 cargo_upgrade async-channel 2.0.0
 cargo_upgrade asynchronous-codec 0.7.0
+cargo_upgrade cargo_metadata 0.19.0
 cargo_upgrade cfg-expr 0.20.0
 cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
