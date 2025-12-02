@@ -23,7 +23,6 @@ use crate::{
 	},
 	DispatchResult,
 };
-use alloc::vec::Vec;
 use codec::{Codec, Decode, DecodeWithMemTracking, Encode};
 use core::fmt::Debug;
 #[doc(hidden)]

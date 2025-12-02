@@ -187,7 +187,7 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "ed25519
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "libsecp256k1"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/io/Cargo.toml "secp256k1"
 
-# Remove schemars
+# Remove `schemars`
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/src/weight_v2.rs "schemars"
 remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "schemars"
 
@@ -195,21 +195,24 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "sc
 remove_module ./polkadot-sdk/substrate/primitives/session/src runtime_api
 
 # Remove various unnecessary features
-remove_matching_phrase ./polkadot-sdk/substrate/primitives/consensus/common/Cargo.toml "features = [\"thread-pool\"],"
-remove_matching_phrase ./polkadot-sdk/substrate/primitives/core/Cargo.toml "features = [\"small_rng\"],"
+remove_matching_phrase ./polkadot-sdk/substrate/primitives/consensus/common/Cargo.toml 'features = ["thread-pool"],'
+remove_matching_phrase ./polkadot-sdk/substrate/primitives/core/Cargo.toml 'features = ["small_rng"],'
 
 # Remove `polkadot-sdk-frame`, which will end up unused by the end of this
 silent_rm ./polkadot-sdk/substrate/frame/src
 silent_rm ./polkadot-sdk/substrate/frame/Cargo.toml
-remove_matching_lines ./polkadot-sdk/Cargo.toml "substrate/frame\""
+remove_matching_lines ./polkadot-sdk/Cargo.toml 'substrate/frame"'
 
 # Remove unused dependencies from the patched `substrate-prometheus-endpoint`
 remove_matching_lines ./polkadot-sdk/substrate/utils/prometheus/Cargo.toml "tokio"
 remove_matching_lines ./polkadot-sdk/substrate/utils/prometheus/Cargo.toml "\-util"
 
 # Remove usage of the `serde` feature from `sp-staking` which will itself be later removed
-sed -i s/"sp-staking = { features = \[\"serde\"\], "/"sp-staking = { "/ ./polkadot-sdk/substrate/frame/babe/Cargo.toml
-sed -i s/"sp-staking = { features = \[\"serde\"\], "/"sp-staking = { "/ ./polkadot-sdk/substrate/frame/grandpa/Cargo.toml
+sed -i s/'sp-staking = { features = \["serde"\], '/'sp-staking = { '/ ./polkadot-sdk/substrate/frame/babe/Cargo.toml
+sed -i s/'sp-staking = { features = \["serde"\], '/'sp-staking = { '/ ./polkadot-sdk/substrate/frame/grandpa/Cargo.toml
+
+# Remove `default-features` from `kvdb-rocksdb`
+sed -i s/'kvdb-rocksdb = {'/'kvdb-rocksdb = { default-features = false, '/ ./polkadot-sdk/Cargo.toml
 
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
@@ -737,7 +740,7 @@ cargo_upgrade directories 6.0.0
 cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
 cargo_upgrade itertools 0.14.0
-cargo_upgrade kvdb-rocksdb 0.20.0
+cargo_upgrade kvdb-rocksdb 0.21.0
 cargo_upgrade libp2p 0.56.0
 cargo_upgrade libp2p-kad 0.48.0
 cargo_upgrade macro_magic 0.6.0
@@ -801,25 +804,26 @@ if [ $? -ne 0 ]; then
   exit 13
 fi
 
-# Fix accrued minor errors (unused imports)
-cargo fix --all-features --allow-dirty
-# Run a second time, as for some reason, the first-pass fails on a clean build
-cargo fix --all-features --allow-dirty
-if [ $? -ne 0 ]; then
-  echo "Failed to run \`cargo fix\` for \`polkadot-sdk\` which compiled"
-  exit 14
-fi
+# Run `cargo fix` until no further changes occur
+SUBSTRATE_HASH=""
+while [ ! "$SUBSTRATE_HASH" = "$(find ./substrate -type f -exec sha256sum \{\} \; | sort)" ]; do
+  SUBSTRATE_HASH="$(find ./substrate -type f -exec sha256sum \{\} \; | sort)"
 
-# Re-run `machete`
-cd ..
-machete
-cd polkadot-sdk
+  cargo fix --all-features --allow-dirty
+
+  cd ..
+  # Re-run `machete`
+  machete
+  # Remove unused dependencies from the workspace `Cargo.toml`
+  trim_workspace_dependencies
+  cd polkadot-sdk
+done
 
 echo "Running \`cargo check\` for a final time"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched, fixed, machete'd \`polkadot-sdk\` failed to compile"
-  exit 15
+  exit 14
 fi
 
 # Save >10 GB on what should be a static directory of no further use
@@ -828,9 +832,6 @@ cargo clean
 touch .patched
 
 cd ..
-
-# Remove unused dependencies from the workspace `Cargo.toml`
-trim_workspace_dependencies
 
 # Synchronoize the `polkadot-sdk` `Cargo.lock`
 silent_rm ./Cargo.lock.polkadot-sdk

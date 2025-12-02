@@ -447,7 +447,8 @@ version = "0.13.0"
 version = "0.13.0"
 
 [workspace.dependencies.kvdb-rocksdb]
-version = "0.20.0"
+default-features = false
+version = "0.21.0"
 
 [workspace.dependencies.libc]
 version = "0.2.155"
