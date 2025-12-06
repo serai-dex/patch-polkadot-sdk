@@ -97,7 +97,6 @@ members = [
     "substrate/primitives/weights",
     "substrate/utils/fork-tree",
     "substrate/utils/prometheus",
-    "substrate/utils/wasm-builder",
 ]
 
 [workspace.package]
@@ -220,7 +219,6 @@ priority = 2
 
 [workspace.dependencies]
 polkavm-derive = "0.26.0"
-polkavm-linker = "0.26.0"
 
 [workspace.dependencies.Inflector]
 version = "0.11.4"
@@ -279,9 +277,6 @@ default-features = false
 [workspace.dependencies.bytes]
 version = "1.4.0"
 default-features = false
-
-[workspace.dependencies.cargo_metadata]
-version = "0.19.0"
 
 [workspace.dependencies.cfg-expr]
 version = "0.20.0"
@@ -434,9 +429,6 @@ version = "0.4.1"
 [workspace.dependencies.itertools]
 version = "0.14.0"
 
-[workspace.dependencies.jobserver]
-version = "0.1.26"
-
 [workspace.dependencies.jsonrpsee]
 version = "0.24.3"
 
@@ -530,9 +522,6 @@ default-features = false
 
 [workspace.dependencies.parity-db]
 version = "0.5.0"
-
-[workspace.dependencies.parity-wasm]
-version = "0.45.0"
 
 [workspace.dependencies.parking_lot]
 version = "0.12.1"
@@ -778,9 +767,6 @@ default-features = false
 version = "0.10.0"
 default-features = false
 
-[workspace.dependencies.shlex]
-version = "1.3.0"
-
 [workspace.dependencies.smallvec]
 version = "1.11.0"
 default-features = false
@@ -973,9 +959,6 @@ default-features = false
 [workspace.dependencies.tokio-stream]
 version = "0.1.14"
 
-[workspace.dependencies.toml]
-version = "0.9.0"
-
 [workspace.dependencies.tower]
 version = "0.4.13"
 
@@ -1020,9 +1003,6 @@ default-features = false
 
 [workspace.dependencies.unsigned-varint]
 version = "0.8.0"
-
-[workspace.dependencies.walkdir]
-version = "2.5.0"
 
 [workspace.dependencies.wasm-instrument]
 version = "0.4"

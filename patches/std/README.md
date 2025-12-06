@@ -1,7 +1,5 @@
 # `std`
 
-- `filetime`: Replaces `filetime` with the `std::fs::FileTimes` API introduced
-  in Rust 1.75.
 - `static_init`: Replaces `static_init` with `std::sync::{OnceLock, Mutex}`
   (possible since Rust 1.70).
 - `is_terminal`: Not present as a patch file, yet `patch.sh` also replaces

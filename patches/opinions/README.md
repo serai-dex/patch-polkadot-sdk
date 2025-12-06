@@ -13,6 +13,3 @@
 - `scale_genesis_config`: Removes `serde::{Serialize, Deserialize}` from the
   genesis config in favor of `scale::{Encode, Decode}`, allowing non-JSON
   `GenesisConfig`s.
-
-- `wasm32v1-none`: Mandates use of `wasm32v1-none` without falling back to
-  `wasm32-unknown-unknown`.

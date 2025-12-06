@@ -4,8 +4,6 @@
   Serai, and lack of desire to potentially use
   (https://github.com/libp2p/rust-libp2p/issues/2632).
 
-- `build-helper`: Removes use of the `build-helper` crate.
-
 - `crate_version`: Remove the `crate_version` metadata from pallets.
 
 - `docify`: Removes references to `docify`. `patch.sh` also removes
@@ -59,8 +57,5 @@
 
 - `task`: Finishes removing `Task` from `frame-support`, already partially done
   with `composite`.
-
-- `wasm-opt`: Removes `wasm-opt` whose requirement has been largely superseded
-  by the introduction of `wasm32v1-none` and `-Zbuild-std`.
 
 - `wasm-timer`: Removes support for WASM from `sc-network`, `sc-telemtry`.

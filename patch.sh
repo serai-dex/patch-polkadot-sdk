@@ -175,9 +175,6 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/weights/Cargo.toml "bo
 # Remove `is-terminal`
 find ./polkadot-sdk/substrate/client/tracing -iname "*.rs" -exec bash -c 'sed -i s/"is_terminal::IsTerminal"/"std::io::IsTerminal"/ "{}"' \;
 
-# Remove `wasm-opt` from `substrate-wasm-builder`
-remove_matching_lines ./polkadot-sdk/substrate/utils/wasm-builder/Cargo.toml "wasm-opt"
-
 # Remove `sysinfo` from `sc-db`, which is detected as in-use because it's also the name of a `mod`
 remove_matching_lines ./polkadot-sdk/substrate/client/db/Cargo.toml "sysinfo"
 # Remove `prost-build` from `sc-network`, which is unused yet `machete` doesn't realize
@@ -435,6 +432,7 @@ remove_crate_tree substrate/client/storage-monitor
 remove_crate_tree substrate/utils/build-script-utils
 remove_crate_tree substrate/utils/frame
 remove_crate_tree substrate/utils/substrate-bip39
+remove_crate_tree substrate/utils/wasm-builder
 
 # Remove benchmarking code we don't use
 remove_crate_tree substrate/frame/benchmarking/pov
@@ -493,11 +491,8 @@ remove_module ./polkadot-sdk/substrate/frame/support/src/traits tasks
 
 # Remove metadata
 
-# Remove the metadata hash and associated extension
-remove_feature metadata-hash
-silent_rm ./polkadot-sdk/substrate/utils/wasm-builder/src/metadata_hash.rs
-
 # Remove various features for metadata
+remove_feature metadata-hash
 remove_feature frame-metadata
 remove_feature no-metadata-docs
 remove_feature full-metadata-docs
