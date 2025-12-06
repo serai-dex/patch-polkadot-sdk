@@ -58,4 +58,9 @@
 - `task`: Finishes removing `Task` from `frame-support`, already partially done
   with `composite`.
 
+- `wasm-instrument`: Removes `wasm-instrument`, and with it the unmaintained
+  `parity-wasm` (which may be complete yet also does not accept issues), via
+  removing the functionality it offers (unnecessary for WASM blob of trusted
+  origin).
+
 - `wasm-timer`: Removes support for WASM from `sc-network`, `sc-telemtry`.

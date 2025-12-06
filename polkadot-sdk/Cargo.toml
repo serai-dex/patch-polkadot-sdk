@@ -1004,10 +1004,6 @@ default-features = false
 [workspace.dependencies.unsigned-varint]
 version = "0.8.0"
 
-[workspace.dependencies.wasm-instrument]
-version = "0.4"
-default-features = false
-
 [workspace.dependencies.wasmtime]
 version = "39.0.0"
 default-features = false

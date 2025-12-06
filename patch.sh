@@ -157,6 +157,9 @@ echo 'features = ["time"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.to
 # Remove `frame-metadata` as a dependency
 remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "frame-metadata"
 
+# Remove `wasm-instrument` as a dependency
+remove_matching_lines ./polkadot-sdk/substrate/client/executor/common/Cargo.toml "wasm-instrument"
+
 # Remove unused HTTP module and associated dependencies
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src/offchain http
 silent_rm ./polkadot-sdk/substrate/client/offchain/src/api/http.rs

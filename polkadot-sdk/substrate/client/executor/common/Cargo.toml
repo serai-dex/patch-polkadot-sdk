@@ -39,9 +39,5 @@ workspace = true
 [dependencies.thiserror]
 workspace = true
 
-[dependencies.wasm-instrument]
-workspace = true
-default-features = true
-
 [features]
 default = []
