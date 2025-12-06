@@ -593,18 +593,8 @@ remove_module ./polkadot-sdk/substrate/frame/support/src/traits tx_pause
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits voting
 
 # Remove unused parts of `frame-system`
-remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_genesis
-remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_genesis
-remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_mortality
-remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_mortality
-remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_non_zero_sender
-remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_non_zero_sender
-remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_nonce
-remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_nonce
-remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_spec_version
-remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_spec_version
-remove_module ./polkadot-sdk/substrate/frame/system/src/extensions check_tx_version
-remove_matching_lines ./polkadot-sdk/substrate/frame/system/src/lib.rs check_tx_version
+remove_module ./polkadot-sdk/substrate/frame/system/src extensions
+remove_matching_statement_and_preceding_attributes ./polkadot-sdk/substrate/frame/system/src/lib.rs "ExtensionsWeightInfo([^\n;])*"
 
 remove_module ./polkadot-sdk/substrate/frame/system/src migrations
 remove_module ./polkadot-sdk/substrate/frame/system/src mock

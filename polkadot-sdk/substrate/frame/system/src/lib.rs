@@ -156,20 +156,11 @@ pub mod limits;
 
 pub mod offchain;
 
-mod extensions;
 #[cfg(feature = "std")]
 pub mod mocking;
 pub mod weights;
 
 
-pub use extensions::{
-	authorize_call::AuthorizeCall,
-	check_weight::CheckWeight,
-	weight_reclaim::WeightReclaim,
-	weights::SubstrateWeight as SubstrateExtensionsWeight,
-	WeightInfo as ExtensionsWeightInfo,
-};
-// Backward compatible re-export.
 pub use frame_support::dispatch::RawOrigin;
 use frame_support::traits::{Authorize, PostInherents, PostTransactions, PreInherents};
 use sp_core::storage::StateVersion;
@@ -334,7 +325,6 @@ pub mod pallet {
 			type OnNewAccount = ();
 			type OnKilledAccount = ();
 			type SystemWeightInfo = ();
-			type ExtensionsWeightInfo = ();
 			type Version = ();
 			type BlockWeights = ();
 			type BlockLength = ();
@@ -406,8 +396,6 @@ pub mod pallet {
 			/// Weight information for the extrinsics of this pallet.
 			type SystemWeightInfo = ();
 
-			/// Weight information for the extensions of this pallet.
-			type ExtensionsWeightInfo = ();
 
 
 			/// Version of the runtime.
@@ -620,8 +608,6 @@ pub mod pallet {
 		/// Weight information for the extrinsics of this pallet.
 		type SystemWeightInfo: WeightInfo;
 
-		/// Weight information for the transaction extensions of this pallet.
-		type ExtensionsWeightInfo: extensions::WeightInfo;
 
 		/// What to do if the runtime wants to change the code to something new.
 		///
