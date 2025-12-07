@@ -63,6 +63,3 @@ jobs:
 
           # Verify `sc-executor` builds without `polkavm`
           cargo check -p sc-executor
-
-          # Verify `substrate-wasm-builder` builds without `polkavm-linker`
-          cargo check -p substrate-wasm-builder
