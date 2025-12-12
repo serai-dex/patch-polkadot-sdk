@@ -11,7 +11,14 @@ folder) to produce our `polkadot-sdk` fork. It's called by `patch.sh`.
 `patch.sh` orchestrates the derivation process, applies some patches directly
 using `bash`, and applies some patches via patch files present in
 [`/patches`](patches/). Please note the patches in `/patches` are not
-guaranteed to work on their own.
+guaranteed to work independently.
+
+Neither the `serai-polkadot-sdk` binary nor `patch.sh` script are intended to
+be wholly and entirely accurate, in every case. Instead, they're sufficiently
+accurate for the expressed goal _with each transformation having been reviewed
+to ensure it was proper_. This means even without fully lexing the Rust syntax,
+some transformations are checked to be applied properly for this specific
+use-case.
 
 The primary goal is simply to minimize the `polkadot-sdk` tree. This script
 leaves roughly just a third of the dependencies in use standing, and the result

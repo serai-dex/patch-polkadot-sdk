@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=7304752b47858f2cd601b35d0eb734ad4ccbbc48
+POLKADOT_SDK_COMMIT=7304752b47858f2cd601b35d0eb734ad4ccbbc48 # stable2509
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -649,7 +649,7 @@ find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
   echo "$file" > "$path"
 
   # Remove inline `test` `mod`ules
-  # This test module has a raw string we can't match against here
+  # This test module has a raw string we can't successfully match against here
   if [ $path = "./polkadot-sdk/substrate/client/chain-spec/src/extension.rs" ]; then
     continue
   fi
@@ -823,7 +823,7 @@ touch .patched
 
 cd ..
 
-# Synchronoize the `polkadot-sdk` `Cargo.lock`
+# Synchronize the `polkadot-sdk` `Cargo.lock`
 silent_rm ./Cargo.lock.polkadot-sdk
 cp ./polkadot-sdk/Cargo.lock ./Cargo.lock.polkadot-sdk
 
