@@ -445,7 +445,7 @@ impl ConfigDef {
 				helper::take_first_item_pallet_attr::<PalletAttr>(trait_item)
 			{
 				match (pallet_attr.typ, &trait_item) {
-					(PalletAttrType::Constant(_), syn::TraitItem::Type(ref typ)) => {
+					(PalletAttrType::Constant(_), syn::TraitItem::Type(_typ)) => {
 						if already_constant {
 							return Err(syn::Error::new(
 								pallet_attr._bracket.span.join(),

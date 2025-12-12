@@ -983,7 +983,7 @@ version = "0.2.0"
 version = "0.3.18"
 
 [workspace.dependencies.trie-db]
-version = "0.30.0"
+version = "0.31.0"
 default-features = false
 
 [workspace.dependencies.trie-root]

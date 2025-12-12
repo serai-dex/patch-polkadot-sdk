@@ -615,7 +615,7 @@ pub(crate) fn decl_pallet_runtime_setup(
 	let name_hashes = pallet_declarations.iter().map(|d| two128_str(&d.name.to_string()));
 	let module_names = pallet_declarations.iter().map(|d| d.path.module_name());
 	let indices = pallet_declarations.iter().map(|pallet| pallet.index as usize);
-	let pallet_structs = pallet_declarations
+	let _pallet_structs = pallet_declarations
 		.iter()
 		.map(|pallet| {
 			let path = &pallet.path;

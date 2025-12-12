@@ -211,7 +211,7 @@ pub fn expand_call(def: &mut Def) -> proc_macro2::TokenStream {
 	let count = COUNTER.with(|counter| counter.borrow_mut().inc());
 	let macro_ident = syn::Ident::new(&format!("__is_call_part_defined_{}", count), span);
 
-	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
+	let _capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
 
 	// Wrap all calls inside of storage layers
 	if let Some(call) = def.call.as_ref() {

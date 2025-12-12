@@ -102,7 +102,7 @@ pub fn expand_error(def: &mut Def) -> proc_macro2::TokenStream {
 	};
 	error_item.variants.insert(0, phantom_variant);
 
-	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
+	let _capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
 
 	/* let deprecation = match crate::deprecation::get_deprecation_enum(
 		&quote::quote! {#frame_support},

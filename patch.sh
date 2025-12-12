@@ -744,6 +744,7 @@ cargo_upgrade rustc-hash 2.0.0
 cargo_upgrade strum 0.27.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade toml 0.9.0
+cargo_upgrade trie-db 0.31.0 # https://github.com/paritytech/polkadot-sdk/pull/10573
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
 cargo_upgrade wasmtime 39.0.0

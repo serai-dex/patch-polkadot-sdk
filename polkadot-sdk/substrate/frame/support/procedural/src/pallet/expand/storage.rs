@@ -412,13 +412,13 @@ pub fn expand_storages(def: &mut Def) -> proc_macro2::TokenStream {
 	// let mut entries_builder = vec![];
 	for storage in def.storages.iter() {
 		let no_docs = vec![];
-		let docs = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &storage.docs };
+		let _docs = if cfg!(feature = "no-metadata-docs") { &no_docs } else { &storage.docs };
 
 		let ident = &storage.ident;
 		let gen = &def.type_use_generics(storage.attr_span);
-		let full_ident = quote::quote_spanned!(storage.attr_span => #ident<#gen> );
+		let _full_ident = quote::quote_spanned!(storage.attr_span => #ident<#gen> );
 
-		let cfg_attrs = &storage.cfg_attrs;
+		let _cfg_attrs = &storage.cfg_attrs;
 		/* let deprecation = match crate::deprecation::get_deprecation(
 			&quote::quote! { #frame_support },
 			&storage.attrs,

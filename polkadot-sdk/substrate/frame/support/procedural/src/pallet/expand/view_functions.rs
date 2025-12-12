@@ -80,7 +80,7 @@ fn expand_view_function(
 	let type_impl_gen = &def.type_impl_generics(span);
 	let type_decl_bounded_gen = &def.type_decl_bounded_generics(span);
 	let type_use_gen = &def.type_use_generics(span);
-	let capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
+	let _capture_docs = if cfg!(feature = "no-metadata-docs") { "never" } else { "always" };
 
 	let view_function_struct_ident = view_fn.view_function_struct_ident();
 	let view_fn_name = &view_fn.name;

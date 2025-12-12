@@ -255,7 +255,7 @@ fn generate_runtime_decls(decls: &[ItemTrait]) -> Result<TokenStream> {
 			}
 		});
 
-		let versioned_methods_iter = methods_by_version
+		let _versioned_methods_iter = methods_by_version
 			.iter()
 			.flat_map(|(&version, methods)| methods.iter().map(move |method| (method, version)));
 		/* let metadata =

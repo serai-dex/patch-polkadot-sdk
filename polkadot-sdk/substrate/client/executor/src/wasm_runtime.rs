@@ -353,7 +353,7 @@ fn decode_runtime_apis(apis: &[u8]) -> Result<Vec<([u8; 8], u32)>, WasmError> {
 ///
 /// If there are no such sections, it returns `None`. If there is an error during decoding those
 /// sections, `Err` will be returned.
-pub fn read_embedded_version(blob: &RuntimeBlob) -> Result<Option<RuntimeVersion>, WasmError> {
+pub fn read_embedded_version(_blob: &RuntimeBlob) -> Result<Option<RuntimeVersion>, WasmError> {
 	/* if let Some(mut version_section) = blob.custom_section_contents("runtime_version") {
 		let apis = blob
 			.custom_section_contents("runtime_apis")
