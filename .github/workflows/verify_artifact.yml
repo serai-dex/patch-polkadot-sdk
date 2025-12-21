@@ -58,6 +58,9 @@ jobs:
 
           cd polkadot-sdk
 
+          # Verify `frame-support` builds without `debug_assertions`
+          cargo check -p frame-support --all-features --release
+
           # Verify `sc-network` builds without `litep2p`
           cargo check -p sc-network
 

@@ -143,7 +143,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 		//
 		// We need to accept a path argument here, because this macro gets expanded on the
 		// crate that called the `construct_runtime!` macro, and the actual path is unknown.
-		#[macro_export]
+		#[cfg(debug_assertions)] #[macro_export]
 		#[doc(hidden)]
 		macro_rules! #default_parts_unique_id {
 			{
@@ -163,7 +163,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
 			};
 		}
 
-		pub use #default_parts_unique_id as tt_default_parts;
+		#[cfg(debug_assertions)] pub use #default_parts_unique_id as tt_default_parts;
 
 
 		// This macro is similar to the `tt_default_parts!`. It expands the pallets that are declared

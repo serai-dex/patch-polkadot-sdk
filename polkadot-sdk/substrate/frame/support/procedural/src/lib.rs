@@ -33,7 +33,6 @@ mod pallet_error;
 mod runtime;
 mod storage_alias;
 mod transactional;
-mod tt_macro;
 
 use frame_support_procedural_tools::generate_access_from_frame_or_crate;
 use macro_magic::{import_tokens_attr, import_tokens_attr_verbatim};
@@ -186,7 +185,7 @@ fn counter_prefix(prefix: &str) -> String {
 ///
 /// * The macro generates a type alias for each pallet to their `Pallet`. E.g. `type System =
 ///   frame_system::Pallet<Runtime>`
-#[proc_macro]
+#[cfg(debug_assertions)] #[proc_macro]
 pub fn construct_runtime(input: TokenStream) -> TokenStream {
 	construct_runtime::construct_runtime(input)
 }
@@ -457,11 +456,11 @@ pub fn derive_pallet_error(input: TokenStream) -> TokenStream {
 	pallet_error::derive_pallet_error(input)
 }
 
-/// Internal macro used by `frame_support` to create tt-call-compliant macros
+/*/// Internal macro used by `frame_support` to create tt-call-compliant macros
 #[proc_macro]
 pub fn __create_tt_macro(input: TokenStream) -> TokenStream {
 	tt_macro::create_tt_return_macro(input)
-}
+}*/
 
 ///
 /// ---

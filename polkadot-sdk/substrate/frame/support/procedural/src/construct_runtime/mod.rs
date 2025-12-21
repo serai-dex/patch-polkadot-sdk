@@ -229,7 +229,7 @@ const SYSTEM_PALLET_NAME: &str = "System";
 
 /// Implementation of `construct_runtime` macro. Either expand to some code which will call
 /// `construct_runtime` again, or expand to the final runtime definition.
-pub fn construct_runtime(input: TokenStream) -> TokenStream {
+#[cfg(debug_assertions)] pub fn construct_runtime(input: TokenStream) -> TokenStream {
 	let input_copy = input.clone();
 	let definition = syn::parse_macro_input!(input as RuntimeDeclaration);
 
@@ -281,7 +281,7 @@ pub fn construct_runtime(input: TokenStream) -> TokenStream {
 /// [`RuntimeDeclaration::Explicit`] that is not yet fully expanded.
 ///
 /// For more details, please refer to the root documentation.
-fn construct_runtime_implicit_to_explicit(
+#[cfg(debug_assertions)] fn construct_runtime_implicit_to_explicit(
 	input: TokenStream2,
 	definition: ImplicitRuntimeDeclaration,
 ) -> Result<TokenStream2> {
@@ -317,7 +317,7 @@ fn construct_runtime_implicit_to_explicit(
 /// into [`RuntimeDeclaration::ExplicitExpanded`] fully expanded.
 ///
 /// For more details, please refer to the root documentation.
-fn construct_runtime_explicit_to_explicit_expanded(
+#[cfg(debug_assertions)] fn construct_runtime_explicit_to_explicit_expanded(
 	input: TokenStream2,
 	definition: ExplicitRuntimeDeclaration,
 ) -> Result<TokenStream2> {
@@ -345,7 +345,7 @@ fn construct_runtime_explicit_to_explicit_expanded(
 }
 
 /// All pallets have explicit definition of parts, this will expand to the runtime declaration.
-fn construct_runtime_final_expansion(
+#[cfg(debug_assertions)] fn construct_runtime_final_expansion(
 	definition: ExplicitRuntimeDeclaration,
 ) -> Result<TokenStream2> {
 	let ExplicitRuntimeDeclaration { name, pallets, pallets_token, where_section } = definition;

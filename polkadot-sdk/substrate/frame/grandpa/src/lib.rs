@@ -59,8 +59,6 @@ pub mod migrations;
 
 #[cfg(any(feature = "runtime-benchmarks", test))]
 mod benchmarking;
-#[cfg(all(feature = "std", test))]
-mod mock;
 
 pub use equivocation::{EquivocationOffence, EquivocationReportSystem, TimeSlot};
 

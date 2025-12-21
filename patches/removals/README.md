@@ -9,8 +9,6 @@
 - `docify`: Removes references to `docify`. `patch.sh` also removes
   `aquamarine`, `simple-mermaid`.
 
-- `dummy_part_checker`: Removes legacy code unused within the current result.
-
 - `ecdsa_ed25519`: Removes ECDSA, Ed25519 cryptography from the runtime.
 
 - `light_client`: Removes the unused light-client request server.
@@ -57,6 +55,8 @@
 
 - `task`: Finishes removing `Task` from `frame-support`, already partially done
   with `composite`.
+
+- `unused-frame-support`: Removes legacy code unused within the current result.
 
 - `wasm-instrument`: Removes `wasm-instrument`, and with it the unmaintained
   `parity-wasm` (which may be complete yet also does not accept issues), via

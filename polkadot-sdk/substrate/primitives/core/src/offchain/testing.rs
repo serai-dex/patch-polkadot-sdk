@@ -22,8 +22,7 @@
 
 use crate::{
 	offchain::{
-		self, storage::InMemOffchainStorage, HttpError, HttpRequestId as RequestId,
-		HttpRequestStatus as RequestStatus, OffchainOverlayedChange, OffchainStorage,
+		self, storage::InMemOffchainStorage, HttpRequestId as RequestId, OffchainOverlayedChange, OffchainStorage,
 		OpaqueNetworkState, StorageKind, Timestamp, TransactionPool,
 	},
 	OpaquePeerId,

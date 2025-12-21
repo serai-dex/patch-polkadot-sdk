@@ -518,15 +518,15 @@ pub fn debug(data: &impl core::fmt::Debug) {
 	runtime_print!("{:?}", data);
 }
 
-#[doc(inline)]
+#[cfg(debug_assertions)]#[doc(inline)]pub use frame_support_procedural::construct_runtime;#[doc(inline)]
 pub use frame_support_procedural::{
-	construct_runtime, match_and_insert, transactional, PalletError, RuntimeDebugNoBound,
+	match_and_insert, transactional, PalletError, RuntimeDebugNoBound,
 };
 
 pub use frame_support_procedural::runtime;
 
-#[doc(hidden)]
-pub use frame_support_procedural::{__create_tt_macro};
+/*#[doc(hidden)]
+pub use frame_support_procedural::{__create_tt_macro, __generate_dummy_part_checker};*/
 
 /// Derive [`Clone`] but do not bound any generic.
 ///

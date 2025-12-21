@@ -125,8 +125,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 mod benchmarking;
-#[cfg(test)]
-mod mock;
 pub mod weights;
 
 use core::{cmp, result};

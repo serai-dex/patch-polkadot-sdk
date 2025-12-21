@@ -1,0 +1,51 @@
+diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
+index 4c24e186..dcde2cfb 100644
+--- a/substrate/frame/support/procedural/src/lib.rs
++++ b/substrate/frame/support/procedural/src/lib.rs
+@@ -424,11 +424,11 @@ pub fn impl_key_prefix_for_tuples(input: TokenStream) -> TokenStream {
+ 		.into()
+ }
+ 
+-/// Internal macro use by frame_support to generate dummy part checker for old pallet declaration
++/* /// Internal macro use by frame_support to generate dummy part checker for old pallet declaration
+ #[proc_macro]
+ pub fn __generate_dummy_part_checker(input: TokenStream) -> TokenStream {
+ 	dummy_part_checker::generate_dummy_part_checker(input)
+-}
++} */
+ 
+ /// Macro that inserts some tokens after the first match of some pattern.
+ ///
+diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
+index 4c24e1860f..a6f8444953 100644
+--- a/substrate/frame/support/procedural/src/lib.rs
++++ b/substrate/frame/support/procedural/src/lib.rs
+@@ -459,11 +459,11 @@ pub fn derive_pallet_error(input: TokenStream) -> TokenStream {
+ 	pallet_error::derive_pallet_error(input)
+ }
+ 
+-/// Internal macro used by `frame_support` to create tt-call-compliant macros
++/*/// Internal macro used by `frame_support` to create tt-call-compliant macros
+ #[proc_macro]
+ pub fn __create_tt_macro(input: TokenStream) -> TokenStream {
+ 	tt_macro::create_tt_return_macro(input)
+-}
++}*/
+ 
+ ///
+ /// ---
+diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
+index 1921383ad2..ae3aeddf3f 100644
+--- a/substrate/frame/support/src/lib.rs
++++ b/substrate/frame/support/src/lib.rs
+@@ -534,8 +534,8 @@ pub use frame_support_procedural::{
+ 
+ pub use frame_support_procedural::runtime;
+ 
+-#[doc(hidden)]
+-pub use frame_support_procedural::{__create_tt_macro, __generate_dummy_part_checker};
++/*#[doc(hidden)]
++pub use frame_support_procedural::{__create_tt_macro, __generate_dummy_part_checker};*/
+ 
+ /// Derive [`Clone`] but do not bound any generic.
+ ///

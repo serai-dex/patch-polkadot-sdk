@@ -1,0 +1,89 @@
+diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/support/procedural/src/lib.rs
+index 4c24e1860f..754bab1967 100644
+--- a/substrate/frame/support/procedural/src/lib.rs
++++ b/substrate/frame/support/procedural/src/lib.rs
+@@ -188,7 +188,7 @@ fn counter_prefix(prefix: &str) -> String {
+ ///
+ /// * The macro generates a type alias for each pallet to their `Pallet`. E.g. `type System =
+ ///   frame_system::Pallet<Runtime>`
+-#[proc_macro]
++#[cfg(debug_assertions)] #[proc_macro]
+ pub fn construct_runtime(input: TokenStream) -> TokenStream {
+ 	construct_runtime::construct_runtime(input)
+ }
+diff --git a/substrate/frame/support/procedural/src/pallet/expand/tt_default_parts.rs b/substrate/frame/support/procedural/src/pallet/expand/tt_default_parts.rs
+index 6d53de3133..c17af1b151 100644
+--- a/substrate/frame/support/procedural/src/pallet/expand/tt_default_parts.rs
++++ b/substrate/frame/support/procedural/src/pallet/expand/tt_default_parts.rs
+@@ -143,7 +143,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
+ 		//
+ 		// We need to accept a path argument here, because this macro gets expanded on the
+ 		// crate that called the `construct_runtime!` macro, and the actual path is unknown.
+-		#[macro_export]
++		#[cfg(debug_assertions)] #[macro_export]
+ 		#[doc(hidden)]
+ 		macro_rules! #default_parts_unique_id {
+ 			{
+@@ -163,7 +163,7 @@ pub fn expand_tt_default_parts(def: &mut Def) -> proc_macro2::TokenStream {
+ 			};
+ 		}
+ 
+-		pub use #default_parts_unique_id as tt_default_parts;
++		#[cfg(debug_assertions)] pub use #default_parts_unique_id as tt_default_parts;
+ 
+ 
+ 		// This macro is similar to the `tt_default_parts!`. It expands the pallets that are declared
+diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
+index 1921383ad2..5a8c6b692f 100644
+--- a/substrate/frame/support/src/lib.rs
++++ b/substrate/frame/support/src/lib.rs
+@@ -529,7 +529,7 @@ pub fn debug(data: &impl core::fmt::Debug) {
+ 
+-#[doc(inline)]
++#[cfg(debug_assertions)]#[doc(inline)]pub use frame_support_procedural::construct_runtime;#[doc(inline)]
+ pub use frame_support_procedural::{
+-	construct_runtime, match_and_insert, transactional, PalletError, RuntimeDebugNoBound,
++	match_and_insert, transactional, PalletError, RuntimeDebugNoBound,
+ };
+ 
+ pub use frame_support_procedural::runtime;
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+index 8e326972a2..05f50dfb06 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+@@ -229,7 +229,7 @@ const SYSTEM_PALLET_NAME: &str = "System";
+ 
+ /// Implementation of `construct_runtime` macro. Either expand to some code which will call
+ /// `construct_runtime` again, or expand to the final runtime definition.
+-pub fn construct_runtime(input: TokenStream) -> TokenStream {
++#[cfg(debug_assertions)] pub fn construct_runtime(input: TokenStream) -> TokenStream {
+ 	let input_copy = input.clone();
+ 	let definition = syn::parse_macro_input!(input as RuntimeDeclaration);
+ 
+@@ -281,7 +281,7 @@ pub fn construct_runtime(input: TokenStream) -> TokenStream {
+ /// [`RuntimeDeclaration::Explicit`] that is not yet fully expanded.
+ ///
+ /// For more details, please refer to the root documentation.
+-fn construct_runtime_implicit_to_explicit(
++#[cfg(debug_assertions)] fn construct_runtime_implicit_to_explicit(
+ 	input: TokenStream2,
+ 	definition: ImplicitRuntimeDeclaration,
+ ) -> Result<TokenStream2> {
+@@ -317,7 +317,7 @@ fn construct_runtime_implicit_to_explicit(
+ /// into [`RuntimeDeclaration::ExplicitExpanded`] fully expanded.
+ ///
+ /// For more details, please refer to the root documentation.
+-fn construct_runtime_explicit_to_explicit_expanded(
++#[cfg(debug_assertions)] fn construct_runtime_explicit_to_explicit_expanded(
+ 	input: TokenStream2,
+ 	definition: ExplicitRuntimeDeclaration,
+ ) -> Result<TokenStream2> {
+@@ -345,7 +345,7 @@ fn construct_runtime_explicit_to_explicit_expanded(
+ }
+ 
+ /// All pallets have explicit definition of parts, this will expand to the runtime declaration.
+-fn construct_runtime_final_expansion(
++#[cfg(debug_assertions)] fn construct_runtime_final_expansion(
+ 	definition: ExplicitRuntimeDeclaration,
+ ) -> Result<TokenStream2> {
+ 	let ExplicitRuntimeDeclaration { name, pallets, pallets_token, where_section } = definition;

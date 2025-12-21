@@ -476,6 +476,7 @@ exhaustive_remove ./polkadot-sdk/substrate "*fixtures*"
 exhaustive_remove ./polkadot-sdk/substrate "res"
 exhaustive_remove ./polkadot-sdk/substrate "*fuzz*"
 exhaustive_remove ./polkadot-sdk/substrate/client "*mock*"
+exhaustive_remove ./polkadot-sdk/substrate/frame "*mock.rs"
 WITHOUT_DOC=$(grep -F -v '#![doc = include_str!("../res/substrate_test' ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs)
 echo "$WITHOUT_DOC" > ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs
 
@@ -582,7 +583,7 @@ remove_module ./polkadot-sdk/substrate/primitives/version/src embed
 # Remove unused parts of `frame-support-procedural`
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src crate_version
 remove_module ./polkadot-sdk/substrate/frame/support/procedural/src dummy_part_checker
-remove_matching_phrase ./polkadot-sdk/substrate/frame/support/src/lib.rs "\, __generate_dummy_part_checker"
+remove_module ./polkadot-sdk/substrate/frame/support/procedural/src tt_macro
 
 # Remove various unused traits
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits filter
