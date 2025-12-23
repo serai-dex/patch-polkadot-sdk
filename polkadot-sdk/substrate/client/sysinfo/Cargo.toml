@@ -1,6 +1,6 @@
 [package]
 name = "sc-sysinfo"
-version = "45.0.0"
+version = "46.0.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "A crate that provides basic hardware and software telemetry information."
 documentation = "https://docs.rs/sc-sysinfo"

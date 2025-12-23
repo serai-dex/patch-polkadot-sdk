@@ -78,15 +78,13 @@ index 1921383a..5051e803 100644
  ///
  /// It uses the `CARGO_PKG_VERSION_MAJOR`, `CARGO_PKG_VERSION_MINOR` and
  /// `CARGO_PKG_VERSION_PATCH` environment variables to fetch the crate version.
-@@ -718,7 +718,7 @@ pub use frame_support_procedural::require_transactional;
+@@ -718,5 +718,5 @@ pub use frame_support_procedural::require_transactional;
  /// # use frame_support::{traits::CrateVersion, crate_to_crate_version};
  /// const Version: CrateVersion = crate_to_crate_version!();
  /// ```
 -pub use frame_support_procedural::crate_to_crate_version;
 +pub use frame_support_procedural::crate_to_crate_version; */
  
- /// Return Err of the expression: `return Err($expression);`.
- ///
 diff --git a/substrate/frame/support/src/traits/metadata.rs b/substrate/frame/support/src/traits/metadata.rs
 index 1e46470a..7e419ed9 100644
 --- a/substrate/frame/support/src/traits/metadata.rs

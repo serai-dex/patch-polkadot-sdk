@@ -247,8 +247,7 @@ version = "0.7.0"
 version = "0.3.71"
 
 [workspace.dependencies.bip39]
-package = "parity-bip39"
-version = "2.0.1"
+version = "2.2.0"
 default-features = false
 
 [workspace.dependencies.bitflags]
@@ -430,7 +429,7 @@ version = "0.4.1"
 version = "0.14.0"
 
 [workspace.dependencies.jsonrpsee]
-version = "0.24.3"
+version = "0.24.10"
 
 [workspace.dependencies.kvdb]
 version = "0.13.0"
@@ -465,8 +464,11 @@ version = "0.1.4"
 version = "0.5.1"
 
 [workspace.dependencies.litep2p]
-version = "0.10.0"
-features = ["websocket"]
+version = "0.12.3"
+features = [
+    "rsa",
+    "websocket",
+]
 
 [workspace.dependencies.log]
 version = "0.4.22"
@@ -1005,7 +1007,7 @@ default-features = false
 version = "0.8.0"
 
 [workspace.dependencies.wasmtime]
-version = "39.0.0"
+version = "40.0.0"
 default-features = false
 
 [workspace.dependencies.zeroize]

@@ -1,6 +1,6 @@
 [package]
 name = "sc-rpc-server"
-version = "25.0.0"
+version = "27.0.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate RPC servers."
 readme = "README.md"

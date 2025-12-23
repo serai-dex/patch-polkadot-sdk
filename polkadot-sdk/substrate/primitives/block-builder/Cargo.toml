@@ -1,6 +1,6 @@
 [package]
 name = "sp-block-builder"
-version = "39.0.0"
+version = "40.0.0"
 license = "Apache-2.0"
 description = "The block builder runtime api."
 readme = "README.md"

@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=8e5ee34b9dde1c009a408bb84c47232683b5b390 # stable2509-3
+POLKADOT_SDK_COMMIT=1b9a876861ac022c5d00f0a4d18b5343b0039bb5 # stable2512
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -213,6 +213,13 @@ sed -i s/'sp-staking = { features = \["serde"\], '/'sp-staking = { '/ ./polkadot
 
 # Remove `default-features` from `kvdb-rocksdb`
 sed -i s/'kvdb-rocksdb = {'/'kvdb-rocksdb = { default-features = false, '/ ./polkadot-sdk/Cargo.toml
+
+# Remove `interest-cache` from `tracing-log`, which has a horifically old version of `lru`
+sed -i s/', features = \["interest-cache"\]'// ./polkadot-sdk/substrate/client/tracing/Cargo.toml
+remove_matching_lines ./polkadot-sdk/substrate/client/tracing/src/logging/mod.rs "with_interest_cache"
+
+# Remove `profiling` as always-on from `wasmtime`
+remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "profiling"
 
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
@@ -591,6 +598,7 @@ remove_module ./polkadot-sdk/substrate/frame/support/src/traits preimages
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits proving
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits messages
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits reality
+remove_module ./polkadot-sdk/substrate/frame/support/src/traits rewards
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits schedule
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits tokens
 remove_module ./polkadot-sdk/substrate/frame/support/src/traits tx_pause
@@ -730,7 +738,6 @@ cargo_upgrade directories 6.0.0
 cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
 cargo_upgrade itertools 0.14.0
-cargo_upgrade kvdb-rocksdb 0.21.0
 cargo_upgrade libp2p 0.56.0
 cargo_upgrade libp2p-kad 0.48.0
 cargo_upgrade macro_magic 0.6.0
@@ -748,7 +755,7 @@ cargo_upgrade toml 0.9.0
 cargo_upgrade trie-db 0.31.0 # https://github.com/paritytech/polkadot-sdk/pull/10573
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 39.0.0
+cargo_upgrade wasmtime 40.0.0
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk

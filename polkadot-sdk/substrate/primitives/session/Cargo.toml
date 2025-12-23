@@ -1,6 +1,6 @@
 [package]
 name = "sp-session"
-version = "41.0.0"
+version = "42.0.0"
 license = "Apache-2.0"
 description = "Primitives for sessions"
 readme = "README.md"

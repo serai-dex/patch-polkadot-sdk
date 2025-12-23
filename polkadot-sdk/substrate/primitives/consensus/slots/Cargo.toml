@@ -1,6 +1,6 @@
 [package]
 name = "sp-consensus-slots"
-version = "0.45.0"
+version = "0.46.0"
 description = "Primitives for slots-based consensus"
 license = "Apache-2.0"
 readme = "README.md"

@@ -79,44 +79,6 @@
 //! /// Executive: handles dispatch to the various modules.
 //! pub type Executive = executive::Executive<Runtime, Block, Context, Runtime, AllPalletsWithSystem>;
 //! ```
-//!
-//! ### Custom `OnRuntimeUpgrade` logic
-//!
-//! You can add custom logic that should be called in your runtime on a runtime upgrade. This is
-//! done by setting an optional generic parameter. The custom logic will be called before
-//! the on runtime upgrade logic of all modules is called.
-//!
-//! ```
-//! # use sp_runtime::generic;
-//! # use frame_executive as executive;
-//! # pub struct UncheckedExtrinsic {};
-//! # pub struct Header {};
-//! # type Context = frame_system::ChainContext<Runtime>;
-//! # pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-//! # pub type Balances = u64;
-//! # pub type AllPalletsWithSystem = u64;
-//! # pub enum Runtime {};
-//! # use sp_runtime::transaction_validity::{
-//! #    TransactionValidity, UnknownTransaction, TransactionSource,
-//! # };
-//! # use sp_runtime::traits::ValidateUnsigned;
-//! # impl ValidateUnsigned for Runtime {
-//! #     type Call = ();
-//! #
-//! #     fn validate_unsigned(_source: TransactionSource, _call: &Self::Call) -> TransactionValidity {
-//! #         UnknownTransaction::NoUnsignedValidator.into()
-//! #     }
-//! # }
-//! struct CustomOnRuntimeUpgrade;
-//! impl frame_support::traits::OnRuntimeUpgrade for CustomOnRuntimeUpgrade {
-//!     fn on_runtime_upgrade() -> frame_support::weights::Weight {
-//!         // Do whatever you want.
-//!         frame_support::weights::Weight::zero()
-//!     }
-//! }
-//!
-//! pub type Executive = executive::Executive<Runtime, Block, Context, Runtime, AllPalletsWithSystem, CustomOnRuntimeUpgrade>;
-//! ```
 
 #[cfg(doc)]
 /// # Block Execution
@@ -169,7 +131,7 @@ use frame_system::pallet_prelude::BlockNumberFor;
 use sp_runtime::{
 	generic::Digest,
 	traits::{
-		self, Applyable, CheckEqual, Checkable, Dispatchable, Header, NumberFor, One,
+		self, Applyable, CheckEqual, Checkable, Dispatchable, Header, LazyBlock, NumberFor, One,
 		ValidateUnsigned, Zero,
 	},
 	transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
@@ -194,8 +156,33 @@ pub type CheckedOf<E, C> = <E as Checkable<C>>::Checked;
 pub type CallOf<E, C> = <CheckedOf<E, C> as Applyable>::Call;
 pub type OriginOf<E, C> = <CallOf<E, C> as Dispatchable>::RuntimeOrigin;
 
+/// Configuration for try-runtime upgrade checks.
+#[cfg(feature = "try-runtime")]
+#[derive(Debug, Clone)]
+pub struct TryRuntimeUpgradeConfig {
+	/// Whether to execute `pre/post_upgrade` and `try_state` hooks.
+	pub checks: UpgradeCheckSelect,
+	/// Which pallets' try_state hooks to execute.
+	pub try_state_select: TryStateSelect,
+}
+
+#[cfg(feature = "try-runtime")]
+impl TryRuntimeUpgradeConfig {
+	/// Create a new config with default settings (run all checks for all pallets).
+	pub fn new(checks: UpgradeCheckSelect) -> Self {
+		Self { checks, try_state_select: TryStateSelect::All }
+	}
+
+	/// Set which pallets' try_state hooks to execute.
+	pub fn with_try_state_select(mut self, try_state_select: TryStateSelect) -> Self {
+		self.try_state_select = try_state_select;
+		self
+	}
+}
+
 #[derive(PartialEq)]
 pub enum ExecutiveError {
+	UnableToDecodeExtrinsic,
 	InvalidInherentPosition(usize),
 	OnlyInherentsAllowed,
 	ApplyExtrinsic(TransactionValidityError),
@@ -205,6 +192,8 @@ pub enum ExecutiveError {
 impl core::fmt::Debug for ExecutiveError {
 	fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
 		match self {
+			ExecutiveError::UnableToDecodeExtrinsic =>
+				write!(fmt, "The extrinsic could not be decoded correctly"),
 			ExecutiveError::InvalidInherentPosition(i) =>
 				write!(fmt, "Invalid inherent position for extrinsic at index {}", i),
 			ExecutiveError::OnlyInherentsAllowed =>
@@ -228,15 +217,19 @@ impl core::fmt::Debug for ExecutiveError {
 /// - `UnsignedValidator`: The unsigned transaction validator of the runtime.
 /// - `AllPalletsWithSystem`: Tuple that contains all pallets including frame system pallet. Will be
 ///   used to call hooks e.g. `on_initialize`.
-/// - `OnRuntimeUpgrade`: Custom logic that should be called after a runtime upgrade. Modules are
-///   already called by `AllPalletsWithSystem`. It will be called before all modules will be called.
+/// - [**DEPRECATED** `OnRuntimeUpgrade`]: This parameter is deprecated and will be removed after
+///   September 2026. Use type `SingleBlockMigrations` in frame_system::Config instead.
+#[allow(deprecated, useless_deprecated)]
 pub struct Executive<
 	System,
 	Block,
 	Context,
 	UnsignedValidator,
 	AllPalletsWithSystem,
-	OnRuntimeUpgrade = (),
+	#[deprecated(
+		note = "`OnRuntimeUpgrade` parameter in Executive is deprecated, will be removed after September 2026. \
+		Use type `SingleBlockMigrations` in frame_system::Config instead."
+	)] OnRuntimeUpgrade = (),
 >(
 	PhantomData<(
 		System,
@@ -248,6 +241,10 @@ pub struct Executive<
 	)>,
 );
 
+/// TODO: The `OnRuntimeUpgrade` generic parameter in `Executive` is deprecated and will be
+/// removed in a future version. Once removed, this `#[allow(deprecated)]` attribute
+/// can be safely deleted.
+#[allow(deprecated)]
 impl<
 		System: frame_system::Config + IsInherent<Block::Extrinsic>,
 		Block: traits::Block<
@@ -274,7 +271,7 @@ where
 	OriginOf<Block::Extrinsic, Context>: From<Option<System::AccountId>>,
 	UnsignedValidator: ValidateUnsigned<Call = CallOf<Block::Extrinsic, Context>>,
 {
-	fn execute_block(block: Block) {
+	fn execute_block(block: Block::LazyBlock) {
 		Executive::<
 			System,
 			Block,
@@ -286,6 +283,10 @@ where
 	}
 }
 
+/// TODO: The `OnRuntimeUpgrade` generic parameter in `Executive` is deprecated and will be
+/// removed in a future version. Once removed, this `#[allow(deprecated)]` attribute
+/// can be safely deleted.
+#[allow(deprecated)]
 #[cfg(feature = "try-runtime")]
 impl<
 		System: frame_system::Config + IsInherent<Block::Extrinsic>,
@@ -323,7 +324,7 @@ where
 	///
 	/// Should only be used for testing ONLY.
 	pub fn try_execute_block(
-		block: Block,
+		block: Block::LazyBlock,
 		state_root_check: bool,
 		signature_check: bool,
 		select: frame_try_runtime::TryStateSelect,
@@ -338,8 +339,7 @@ where
 		);
 
 		let mode = Self::initialize_block(block.header());
-		Self::initial_checks(&block);
-		let (header, extrinsics) = block.deconstruct();
+		Self::initial_checks(block.header());
 
 		// Apply extrinsics:
 		let signature_check = if signature_check {
@@ -347,7 +347,7 @@ where
 		} else {
 			Block::Extrinsic::unchecked_into_checked_i_know_what_i_am_doing
 		};
-		Self::apply_extrinsics(mode, extrinsics.into_iter(), |uxt, is_inherent| {
+		Self::apply_extrinsics(mode, block.extrinsics(), |uxt, is_inherent| {
 			Self::do_apply_extrinsic(uxt, is_inherent, signature_check)
 		})?;
 
@@ -360,6 +360,7 @@ where
 		<frame_system::Pallet<System>>::note_finished_extrinsics();
 		<System as frame_system::Config>::PostTransactions::post_transactions();
 
+		let header = block.header();
 		Self::on_idle_hook(*header.number());
 		Self::on_finalize_hook(*header.number());
 
@@ -419,13 +420,39 @@ where
 	/// [`frame_system::LastRuntimeUpgrade`] is set to the current runtime version after
 	/// migrations execute. This is important for idempotency checks, because some migrations use
 	/// this value to determine whether or not they should execute.
+	///
+	/// This function runs `try_state` hooks for all pallets. Use
+	/// [`Self::try_runtime_upgrade_with_config`] if you need more control over which pallets'
+	/// `try_state` hooks to execute.
 	pub fn try_runtime_upgrade(checks: UpgradeCheckSelect) -> Result<Weight, TryRuntimeError> {
+		Self::try_runtime_upgrade_with_config(TryRuntimeUpgradeConfig::new(checks))
+	}
+
+	/// Execute all Migrations of this runtime with custom configuration.
+	///
+	/// This function provides more granular control over runtime upgrade testing compared to
+	/// [`Self::try_runtime_upgrade`]. Use [`TryRuntimeUpgradeConfig`] to specify which checks
+	/// to run and which pallets' try_state hooks to execute.
+	///
+	/// [`frame_system::LastRuntimeUpgrade`] is set to the current runtime version after
+	/// migrations execute. This is important for idempotency checks, because some migrations use
+	/// this value to determine whether or not they should execute.
+	pub fn try_runtime_upgrade_with_config(
+		config: TryRuntimeUpgradeConfig,
+	) -> Result<Weight, TryRuntimeError> {
+		let checks = config.checks;
+		let try_state_select = config.try_state_select;
 		let before_all_weight =
 			<AllPalletsWithSystem as BeforeAllRuntimeMigrations>::before_all_runtime_migrations();
+
 		let try_on_runtime_upgrade_weight =
-			<(COnRuntimeUpgrade, AllPalletsWithSystem) as OnRuntimeUpgrade>::try_on_runtime_upgrade(
-				checks.pre_and_post(),
-			)?;
+			<(
+				COnRuntimeUpgrade,
+				<System as frame_system::Config>::SingleBlockMigrations,
+				// We want to run the migrations before we call into the pallets as they may
+				// access any state that would then not be migrated.
+				AllPalletsWithSystem,
+			) as OnRuntimeUpgrade>::try_on_runtime_upgrade(checks.pre_and_post())?;
 
 		frame_system::LastRuntimeUpgrade::<System>::put(
 			frame_system::LastRuntimeUpgradeInfo::from(
@@ -446,7 +473,7 @@ where
 		if checks.try_state() {
 			AllPalletsWithSystem::try_state(
 				frame_system::Pallet::<System>::block_number(),
-				TryStateSelect::All,
+				try_state_select,
 			)?;
 		}
 
@@ -518,6 +545,10 @@ frame_support::impl_for_tuples_attr! {
 	}
 }
 
+/// TODO: The `OnRuntimeUpgrade` generic parameter in `Executive` is deprecated and will be
+/// removed in a future version. Once removed, this `#[allow(deprecated)]` attribute
+/// can be safely deleted.
+#[allow(deprecated)]
 impl<
 		System: frame_system::Config + IsInherent<Block::Extrinsic>,
 		Block: traits::Block<
@@ -640,9 +671,8 @@ where
 		last.map(|v| v.was_upgraded(&current)).unwrap_or(true)
 	}
 
-	fn initial_checks(block: &Block) {
+	fn initial_checks(header: &Block::Header) {
 		sp_tracing::enter_span!(sp_tracing::Level::TRACE, "initial_checks");
-		let header = block.header();
 
 		// Check that `parent_hash` is correct.
 		let n = *header.number();
@@ -655,18 +685,18 @@ where
 	}
 
 	/// Actually execute all transitions for `block`.
-	pub fn execute_block(block: Block) {
+	pub fn execute_block(block: Block::LazyBlock) {
 		sp_io::init_tracing();
 		sp_tracing::within_span! {
 			sp_tracing::info_span!("execute_block", ?block);
 			// Execute `on_runtime_upgrade` and `on_initialize`.
 			let mode = Self::initialize_block(block.header());
-			Self::initial_checks(&block);
+			Self::initial_checks(block.header());
 
-			let (header, extrinsics) = block.deconstruct();
+			let extrinsics = block.extrinsics();
 			if let Err(e) = Self::apply_extrinsics(
 				mode,
-				extrinsics.into_iter(),
+				extrinsics,
 				|uxt, is_inherent| {
 					Self::do_apply_extrinsic(uxt, is_inherent, Block::Extrinsic::check)
 				}
@@ -682,6 +712,7 @@ where
 			<frame_system::Pallet<System>>::note_finished_extrinsics();
 			<System as frame_system::Config>::PostTransactions::post_transactions();
 
+			let header = block.header();
 			Self::on_idle_hook(*header.number());
 			Self::on_finalize_hook(*header.number());
 			Self::final_checks(&header);
@@ -710,11 +741,12 @@ where
 	/// Execute given extrinsics.
 	fn apply_extrinsics(
 		mode: ExtrinsicInclusionMode,
-		extrinsics: impl Iterator<Item = Block::Extrinsic>,
+		extrinsics: impl Iterator<Item = Result<Block::Extrinsic, codec::Error>>,
 		mut apply_extrinsic: impl FnMut(Block::Extrinsic, bool) -> ApplyExtrinsicResult,
 	) -> Result<(), ExecutiveError> {
 		let mut first_non_inherent_idx = 0;
-		for (idx, uxt) in extrinsics.into_iter().enumerate() {
+		for (idx, maybe_uxt) in extrinsics.into_iter().enumerate() {
+			let uxt = maybe_uxt.map_err(|_| ExecutiveError::UnableToDecodeExtrinsic)?;
 			let is_inherent = System::is_inherent(&uxt);
 			if is_inherent {
 				// Check if inherents are first

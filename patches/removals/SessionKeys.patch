@@ -11,8 +11,7 @@ index 3919fb2..9be3226 100644
  		+ sp_api::ApiExt<TBl>,
  	TBl: BlockT,
  	TBl::Hash: Unpin,
-@@ -498,13 +498,13 @@ where
- 
+@@ -503,12 +503,12 @@ where 
  	let chain_info = client.usage_info().chain;
  
 -	sp_session::generate_initial_session_keys(

@@ -1111,18 +1111,30 @@ pub mod pallet {
 				}
 			}
 
-			/* #[cfg(feature = "experimental")]
+			/*#[cfg(feature = "experimental")]
 			if let Call::do_task { ref task } = call {
-				if task.is_valid() {
-					return Ok(ValidTransaction {
-						priority: u64::max_value(),
-						requires: Vec::new(),
-						provides: vec![T::Hashing::hash_of(&task.encode()).as_ref().to_vec()],
-						longevity: TransactionLongevity::max_value(),
-						propagate: true,
-					})
+				// If valid, the tasks provides the tag: hash of task.
+				// But it is allowed to have many task for a single process, e.g. a task that takes
+				// a limit on the number of item to migrate is valid from 1 to the limit while
+				// actually advancing a single migration process.
+				// In the transaction pool, transaction are identified by their provides tag.
+				// So in order to protect the transaction pool against spam, we only accept tasks
+				// from local source.
+				if source == TransactionSource::InBlock || source == TransactionSource::Local {
+					if task.is_valid() {
+						return Ok(ValidTransaction {
+							priority: u64::max_value(),
+							requires: Vec::new(),
+							provides: vec![T::Hashing::hash_of(&task.encode()).as_ref().to_vec()],
+							longevity: TransactionLongevity::max_value(),
+							propagate: false,
+						})
+					}
 				}
-			} */
+			}*/
+
+			#[cfg(not(feature = "experimental"))]
+			let _ = source;
 
 			Err(InvalidTransaction::Call.into())
 		}
@@ -2275,7 +2287,7 @@ impl<T: Config> Pallet<T> {
 					core::hint::black_box((new_version, current_version));
 				} else {
 					if new_version.spec_name != current_version.spec_name {
-						return CanSetCodeResult::InvalidVersion( Error::<T>::InvalidSpecName)
+						return CanSetCodeResult::InvalidVersion(Error::<T>::InvalidSpecName)
 					}
 
 					if new_version.spec_version <= current_version.spec_version {

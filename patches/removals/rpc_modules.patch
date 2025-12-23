@@ -1,5 +1,5 @@
 diff --git a/substrate/client/service/src/builder.rs b/substrate/client/service/src/builder.rs
-index 74d94c30..b656fce2 100644
+index 1ec349fc55..3fc52347e7 100644
 --- a/substrate/client/service/src/builder.rs
 +++ b/substrate/client/service/src/builder.rs
 @@ -67,19 +67,19 @@ use sc_network_sync::{
@@ -24,54 +24,81 @@ index 74d94c30..b656fce2 100644
 -};
 +}; */
  use sc_telemetry::{telemetry, ConnectionMessage, Telemetry, TelemetryHandle, SUBSTRATE_INFO};
+ use sc_tracing::block::TracingExecuteBlock;
  use sc_transaction_pool_api::{MaintainedTransactionPool, TransactionPool};
- use sc_utils::mpsc::{tracing_unbounded, TracingUnboundedSender};
-@@ -593,7 +593,7 @@ where
- 
+@@ -598,13 +598,13 @@ where
  	let rpc_id_provider = config.rpc.id_provider.take();
  
--	// jsonrpsee RPC
-+	/* // jsonrpsee RPC
- 	// RPC-V2 specific metrics need to be registered before the RPC server is started,
+ 	// jsonrpsee RPC
+-	// RPC-V2 specific metrics need to be registered before the RPC server is started,
++	/* // RPC-V2 specific metrics need to be registered before the RPC server is started,
  	// since we might have two instances running (one for the in-memory RPC and one for the network
  	// RPC).
-@@ -618,7 +618,7 @@ where
- 			&*rpc_builder,
- 			rpc_v2_metrics.clone(),
- 		)
+ 	let rpc_v2_metrics = config
+ 		.prometheus_registry()
+ 		.map(|registry| sc_rpc_spec_v2::transaction::TransactionMetrics::new(registry))
+-		.transpose()?;
++		.transpose()?; */
+ 
+ 	let gen_rpc_module = || {
+ 		gen_rpc_module(GenRpcModuleParams {
+@@ -620,7 +620,7 @@ where
+ 			blocks_pruning: config.blocks_pruning,
+ 			backend: backend.clone(),
+ 			rpc_builder: &*rpc_builder,
+-			metrics: rpc_v2_metrics.clone(),
++			// metrics: rpc_v2_metrics.clone(),
+ 			tracing_execute_block: execute_block.clone(),
+ 		})
+ 	};
+@@ -781,8 +781,8 @@ pub struct GenRpcModuleParams<'a, TBl: BlockT, TBackend, TCl, TRpc, TExPool> {
+ 	pub backend: Arc<TBackend>,
+ 	/// RPC builder.
+ 	pub rpc_builder: &'a dyn Fn(SubscriptionTaskExecutor) -> Result<RpcModule<TRpc>, Error>,
+-	/// Transaction metrics handle.
+-	pub metrics: Option<sc_rpc_spec_v2::transaction::TransactionMetrics>,
++	/* /// Transaction metrics handle.
++	pub metrics: Option<sc_rpc_spec_v2::transaction::TransactionMetrics>, */
+ 	/// Optional [`TracingExecuteBlock`] handle.
+ 	///
+ 	/// Will be used by the `trace_block` RPC to execute the actual block.
+@@ -804,7 +804,7 @@ pub fn gen_rpc_module<TBl, TBackend, TCl, TRpc, TExPool>(
+ 		blocks_pruning,
+ 		backend,
+ 		rpc_builder,
+-		metrics,
++		// metrics,
+ 		tracing_execute_block: execute_block,
+ 	}: GenRpcModuleParams<TBl, TBackend, TCl, TRpc, TExPool>,
+ ) -> Result<RpcModule<()>, Error>
+@@ -828,18 +828,18 @@ where
+ 	TBl::Hash: Unpin,
+ 	TBl::Header: Unpin,
+ {
+-	let system_info = sc_rpc::system::SystemInfo {
++	/* let system_info = sc_rpc::system::SystemInfo {
+ 		chain_name: chain_spec.name().into(),
+ 		impl_name,
+ 		impl_version,
+ 		properties: chain_spec.properties(),
+ 		chain_type: chain_spec.chain_type(),
 -	};
-+	}; */ let gen_rpc_module = || { let mut rpc_api = RpcModule::new(()); rpc_api.merge(rpc_builder(Arc::new(task_manager.spawn_handle()))?).map_err(|e| Error::Application(e.into()))?; Ok(rpc_api) };
++	}; */
  
- 	let rpc_server_handle = start_rpc_servers(
- 		&config.rpc,
-@@ -750,7 +750,7 @@ where
- 	Ok(telemetry.handle())
- }
+ 	let mut rpc_api = RpcModule::new(());
+ 	let task_executor = Arc::new(spawn_handle);
  
--/// Generate RPC module using provided configuration
-+/* /// Generate RPC module using provided configuration
- pub fn gen_rpc_module<TBl, TBackend, TCl, TRpc, TExPool>(
- 	spawn_handle: SpawnTaskHandle,
- 	client: Arc<TCl>,
-@@ -894,7 +894,7 @@ where
+-	let (chain, state, child_state) = {
++	/* let (chain, state, child_state) = {
+ 		let chain = sc_rpc::chain::new_full(client.clone(), task_executor.clone()).into_rpc();
+ 		let (state, child_state) =
+ 			sc_rpc::state::new_full(client.clone(), task_executor.clone(), execute_block);
+@@ -931,7 +931,7 @@ where
+ 	rpc_api.merge(author).map_err(|e| Error::Application(e.into()))?;
+ 	rpc_api.merge(system).map_err(|e| Error::Application(e.into()))?;
+ 	rpc_api.merge(state).map_err(|e| Error::Application(e.into()))?;
+-	rpc_api.merge(child_state).map_err(|e| Error::Application(e.into()))?;
++	rpc_api.merge(child_state).map_err(|e| Error::Application(e.into()))?; */
+ 	// Additional [`RpcModule`]s defined in the node to fit the specific blockchain
+ 	let extra_rpcs = rpc_builder(task_executor.clone())?;
  	rpc_api.merge(extra_rpcs).map_err(|e| Error::Application(e.into()))?;
- 
- 	Ok(rpc_api)
--}
-+} */
- 
- /// Parameters to pass into [`build_network`].
- pub struct BuildNetworkParams<'a, Block, Net, TxPool, IQ, Client>
-diff --git a/substrate/client/service/src/lib.rs b/substrate/client/service/src/lib.rs
-index a7f1b071..af3f325f 100644
---- a/substrate/client/service/src/lib.rs
-+++ b/substrate/client/service/src/lib.rs
-@@ -57,7 +57,7 @@ use sp_runtime::traits::{Block as BlockT, Header as HeaderT};
- pub use self::{
- 	builder::{
- 		build_default_block_downloader, build_default_syncing_engine, build_network,
--		build_network_advanced, build_polkadot_syncing_strategy, gen_rpc_module, init_telemetry,
-+		build_network_advanced, build_polkadot_syncing_strategy, /* gen_rpc_module, */ init_telemetry,
- 		new_client, new_db_backend, new_full_client, new_full_parts, new_full_parts_record_import,
- 		new_full_parts_with_genesis_builder, new_wasm_executor,
- 		propagate_transaction_notifications, spawn_tasks, BuildNetworkAdvancedParams,

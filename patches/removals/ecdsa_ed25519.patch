@@ -481,24 +481,6 @@ index b9f69b6..2f4c483 100644
  /// Signature verify that can work with any known signature types.
  #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
  #[derive(
-@@ -380,16 +380,14 @@ impl FromEntropy for MultiSigner {
- /// we convert the hash into some AccountId, it's fine to use any scheme.
- impl<T: Into<H256>> crypto::UncheckedFrom<T> for MultiSigner {
- 	fn unchecked_from(x: T) -> Self {
--		ed25519::Public::unchecked_from(x.into()).into()
-+		sr25519::Public::unchecked_from(x.into()).into()
- 	}
- }
- 
- impl AsRef<[u8]> for MultiSigner {
- 	fn as_ref(&self) -> &[u8] {
- 		match *self {
--			Self::Ed25519(ref who) => who.as_ref(),
- 			Self::Sr25519(ref who) => who.as_ref(),
--			Self::Ecdsa(ref who) => who.as_ref(),
- 		}
- 	}
- }
 @@ -515,6 +513,7 @@ impl From<ed25519::Signature> for AnySignature {
  		Self(s.into())
  	}

@@ -1,6 +1,6 @@
 [package]
 name = "sc-tracing"
-version = "42.0.1"
+version = "44.0.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Instrumentation implementation for substrate."
 readme = "README.md"
@@ -80,10 +80,6 @@ default-features = true
 workspace = true
 
 [dependencies.sp-tracing]
-default-features = true
-workspace = true
-
-[dependencies.sp-trie]
 default-features = true
 workspace = true
 

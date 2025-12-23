@@ -1,6 +1,6 @@
 [package]
 name = "sp-rpc"
-version = "36.0.1"
+version = "37.0.0"
 license = "Apache-2.0"
 description = "Substrate RPC primitives and utilities."
 readme = "README.md"

@@ -1,6 +1,6 @@
 [package]
 name = "sp-weights"
-version = "33.1.0"
+version = "33.2.0"
 license = "Apache-2.0"
 description = "Types and traits for interfacing between the host and the wasm runtime."
 documentation = "https://docs.rs/sp-wasm-interface"

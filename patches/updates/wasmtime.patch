@@ -2,7 +2,7 @@ diff --git a/substrate/client/executor/wasmtime/Cargo.toml b/substrate/client/ex
 index d6ab3e13..cc080d8b 100644
 --- a/substrate/client/executor/wasmtime/Cargo.toml
 +++ b/substrate/client/executor/wasmtime/Cargo.toml
-@@ -31,25 +31,21 @@ sc-executor-common.workspace = true
+@@ -31,26 +31,22 @@ sc-executor-common.workspace = true
  sp-runtime-interface.default-features = true
  sp-runtime-interface.workspace = true
  sp-wasm-interface = { features = ["wasmtime"], workspace = true, default-features = true }
@@ -19,6 +19,7 @@ index d6ab3e13..cc080d8b 100644
 +	# "gc-null",
  	"parallel-compilation",
  	"pooling-allocator",
+ 	"profiling",
 -	"threads",
 +	# "threads",
  ], workspace = true }

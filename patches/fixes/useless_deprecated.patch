@@ -1,0 +1,13 @@
+diff --git a/substrate/frame/executive/src/lib.rs b/substrate/frame/executive/src/lib.rs
+index 5262fa6f75..2e17ab96da 100644
+--- a/substrate/frame/executive/src/lib.rs
++++ b/substrate/frame/executive/src/lib.rs
+@@ -222,7 +222,7 @@ impl core::fmt::Debug for ExecutiveError {
+ ///   used to call hooks e.g. `on_initialize`.
+ /// - [**DEPRECATED** `OnRuntimeUpgrade`]: This parameter is deprecated and will be removed after
+ ///   September 2026. Use type `SingleBlockMigrations` in frame_system::Config instead.
+-#[allow(deprecated)]
++#[allow(deprecated, useless_deprecated)]
+ pub struct Executive<
+ 	System,
+ 	Block,

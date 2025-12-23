@@ -208,7 +208,7 @@ impl From<Justification> for Justifications {
 
 use traits::{Lazy, Verify};
 
-use crate::traits::IdentifyAccount;
+use crate::traits::{IdentifyAccount, LazyExtrinsic};
 #[cfg(feature = "serde")]
 pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
@@ -288,6 +288,8 @@ pub enum MultiSignature {
 	Sr25519(sr25519::Signature),
 	/// An ECDSA/SECP256k1 signature.
 	Ecdsa(ecdsa::Signature),
+	/// An ECDSA/SECP256k1 signature but with a different address derivation.
+	Eth(ecdsa::KeccakSignature),
 }
 
 impl From<ed25519::Signature> for MultiSignature {
@@ -362,14 +364,22 @@ pub enum MultiSigner {
 	Sr25519(sr25519::Public),
 	/// An SECP256k1/ECDSA identity (actually, the Blake2 hash of the compressed pub key).
 	Ecdsa(ecdsa::Public),
+	/// Same as `Ecdsa` but its account id is derived based off its eth address instead of its
+	/// pubkey.
+	///
+	/// This is important so that the address matches the address to address mapping in
+	/// `pallet_revive`. This means that the same public key controls two accounts. But
+	/// this is already the case due to `pallet_revive`'s address mapping.
+	Eth(ecdsa::KeccakPublic),
 }
 
 impl FromEntropy for MultiSigner {
 	fn from_entropy(input: &mut impl codec::Input) -> Result<Self, codec::Error> {
-		Ok(match input.read_byte()? % 3 {
+		Ok(match input.read_byte()? % 4 {
 			0 => Self::Ed25519(FromEntropy::from_entropy(input)?),
 			1 => Self::Sr25519(FromEntropy::from_entropy(input)?),
-			2.. => Self::Ecdsa(FromEntropy::from_entropy(input)?),
+			2 => Self::Ecdsa(FromEntropy::from_entropy(input)?),
+			3.. => Self::Eth(FromEntropy::from_entropy(input)?),
 		})
 	}
 }
@@ -378,14 +388,17 @@ impl FromEntropy for MultiSigner {
 /// we convert the hash into some AccountId, it's fine to use any scheme.
 impl<T: Into<H256>> crypto::UncheckedFrom<T> for MultiSigner {
 	fn unchecked_from(x: T) -> Self {
-		sr25519::Public::unchecked_from(x.into()).into()
+		ed25519::Public::unchecked_from(x.into()).into()
 	}
 }
 
 impl AsRef<[u8]> for MultiSigner {
 	fn as_ref(&self) -> &[u8] {
 		match *self {
+			Self::Ed25519(ref who) => who.as_ref(),
 			Self::Sr25519(ref who) => who.as_ref(),
+			Self::Ecdsa(ref who) => who.as_ref(),
+			Self::Eth(ref who) => who.as_ref(),
 		}
 	}
 }
@@ -397,6 +410,17 @@ impl traits::IdentifyAccount for MultiSigner {
 			Self::Ed25519(who) => <[u8; 32]>::from(who).into(),
 			Self::Sr25519(who) => <[u8; 32]>::from(who).into(),
 			Self::Ecdsa(who) => sp_io::hashing::blake2_256(who.as_ref()).into(),
+			Self::Eth(who) => {
+				// It is important that the account id is based off the eth address rather
+				// than its pubkey. This is because in many cases we don't know the pubkey
+				// of an eth account.
+				let eth_address = &sp_io::hashing::keccak_256(who.as_ref())[12..];
+				// This is by convention: `pallet_revive` maps eth addresses to account ids
+				// by filling up the additional 12 bytes with 0xEE.
+				let mut address = [0xEE; 32];
+				address[..20].copy_from_slice(eth_address);
+				address.into()
+			},
 		}
 	}
 }
@@ -459,6 +483,7 @@ impl std::fmt::Display for MultiSigner {
 			Self::Ed25519(who) => write!(fmt, "ed25519: {}", who),
 			Self::Sr25519(who) => write!(fmt, "sr25519: {}", who),
 			Self::Ecdsa(who) => write!(fmt, "ecdsa: {}", who),
+			Self::Eth(who) => write!(fmt, "eth: {}", who),
 		}
 	}
 }
@@ -474,6 +499,13 @@ impl Verify for MultiSignature {
 				let m = sp_io::hashing::blake2_256(msg.get());
 				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m)
 					.map_or(false, |pubkey| sp_io::hashing::blake2_256(&pubkey) == who)
+			},
+			Self::Eth(sig) => {
+				let m = sp_io::hashing::keccak_256(msg.get());
+				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m)
+					.map_or(false, |pubkey| {
+						&MultiSigner::Eth(pubkey.into()).into_account() == signer
+					})
 			},
 		}
 	}
@@ -964,19 +996,41 @@ macro_rules! assert_eq_error_rate_float {
 /// Simple blob to hold an extrinsic without committing to its format and ensure it is serialized
 /// correctly.
 #[derive(PartialEq, Eq, Clone, Default, Encode, Decode, DecodeWithMemTracking)]
-pub struct OpaqueExtrinsic(Vec<u8>);
+pub struct OpaqueExtrinsic(bytes::Bytes);
 
 impl OpaqueExtrinsic {
 	/// Convert an encoded extrinsic to an `OpaqueExtrinsic`.
-	pub fn from_bytes(mut bytes: &[u8]) -> Result<Self, codec::Error> {
+	pub fn try_from_encoded_extrinsic(mut bytes: &[u8]) -> Result<Self, codec::Error> {
 		Self::decode(&mut bytes)
+	}
+
+	/// Convert an encoded extrinsic to an `OpaqueExtrinsic`.
+	#[deprecated = "Use `try_from_encoded_extrinsic()` instead"]
+	pub fn from_bytes(bytes: &[u8]) -> Result<Self, codec::Error> {
+		Self::try_from_encoded_extrinsic(bytes)
+	}
+
+	/// Create a new instance of `OpaqueExtrinsic` from a `Vec<u8>`.
+	pub fn from_blob(bytes: Vec<u8>) -> Self {
+		Self(bytes.into())
+	}
+
+	/// Get the actual blob.
+	pub fn inner(&self) -> &[u8] {
+		&self.0
+	}
+}
+
+impl LazyExtrinsic for OpaqueExtrinsic {
+	fn decode_unprefixed(data: &[u8]) -> Result<Self, codec::Error> {
+		Ok(Self(data.to_vec().into()))
 	}
 }
 
 impl core::fmt::Debug for OpaqueExtrinsic {
 	#[cfg(feature = "std")]
 	fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
-		write!(fmt, "{}", sp_core::hexdisplay::HexDisplay::from(&self.0))
+		write!(fmt, "{}", sp_core::hexdisplay::HexDisplay::from(&self.0.as_ref()))
 	}
 
 	#[cfg(not(feature = "std"))]
@@ -1073,7 +1127,7 @@ pub enum ExtrinsicInclusionMode {
 }
 
 /// Simple blob that hold a value in an encoded form without committing to its type.
-#[derive(Decode, Encode, PartialEq)]
+#[derive(Decode, Encode, PartialEq, Eq, Clone, RuntimeDebug)]
 pub struct OpaqueValue(Vec<u8>);
 impl OpaqueValue {
 	/// Create a new `OpaqueValue` using the given encoded representation.
@@ -1099,6 +1153,7 @@ macro_rules! create_runtime_str {
 // TODO: Re-export for ^ macro `create_runtime_str`, should be removed once macro is gone
 #[doc(hidden)]
 pub use alloc::borrow::Cow;
+
 // TODO: Remove in future versions
 /// Deprecated alias to improve upgrade experience
 #[deprecated = "Use String or Cow<'static, str> instead"]

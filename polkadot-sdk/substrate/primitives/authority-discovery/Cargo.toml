@@ -1,6 +1,6 @@
 [package]
 name = "sp-authority-discovery"
-version = "39.0.0"
+version = "40.0.0"
 description = "Authority discovery primitives"
 license = "Apache-2.0"
 readme = "README.md"

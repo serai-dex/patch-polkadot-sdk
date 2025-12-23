@@ -1,6 +1,6 @@
 [package]
 name = "sc-service"
-version = "0.54.0"
+version = "0.56.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate service. Starts a thread that spins up the network, client, and extrinsic pool. Manages communication between them."
 readme = "README.md"
@@ -236,3 +236,4 @@ runtime-benchmarks = [
     "sc-client-db/runtime-benchmarks",
     "sp-runtime/runtime-benchmarks",
 ]
+jemalloc-allocator = ["sc-client-db/jemalloc-allocator"]
