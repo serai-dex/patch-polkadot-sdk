@@ -1,6 +1,6 @@
 [package]
 name = "frame-benchmarking"
-version = "45.0.0"
+version = "45.0.1"
 license = "Apache-2.0"
 description = "Macro for benchmarking a FRAME runtime."
 readme = "README.md"

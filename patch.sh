@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=1b9a876861ac022c5d00f0a4d18b5343b0039bb5 # stable2512
+POLKADOT_SDK_COMMIT=c6ba84fb4938a367d0d0e06bb532b2cd8874fad9 # stable2512-1
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -755,7 +755,7 @@ cargo_upgrade toml 0.9.0
 cargo_upgrade trie-db 0.31.0 # https://github.com/paritytech/polkadot-sdk/pull/10573
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 40.0.0
+cargo_upgrade wasmtime 41.0.1
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk
