@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=c6ba84fb4938a367d0d0e06bb532b2cd8874fad9 # stable2512-1
+POLKADOT_SDK_COMMIT=00fbc91e415b563fd1b4f839628cdd392adcd0d4 # stable2512-2
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -218,7 +218,9 @@ sed -i s/'kvdb-rocksdb = {'/'kvdb-rocksdb = { default-features = false, '/ ./pol
 sed -i s/', features = \["interest-cache"\]'// ./polkadot-sdk/substrate/client/tracing/Cargo.toml
 remove_matching_lines ./polkadot-sdk/substrate/client/tracing/src/logging/mod.rs "with_interest_cache"
 
-# Remove `profiling` as always-on from `wasmtime`
+# Remove `anyhow`, `profiling` as always-on from `wasmtime`
+remove_matching_lines ./polkadot-sdk/substrate/primitives/wasm-interface/Cargo.toml "anyhow"
+remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "anyhow"
 remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "profiling"
 
 # Now, set up the Rust binary and make all the invasive changes
@@ -749,13 +751,13 @@ cargo_upgrade prometheus 0.14.0
 cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
-cargo_upgrade strum 0.27.0
+cargo_upgrade strum 0.28.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade toml 0.9.0
 cargo_upgrade trie-db 0.31.0 # https://github.com/paritytech/polkadot-sdk/pull/10573
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 41.0.1
+cargo_upgrade wasmtime 42.0.1
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk

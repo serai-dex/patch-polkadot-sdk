@@ -31,9 +31,6 @@ default-features = true
 workspace = true
 default-features = true
 
-[dependencies.anyhow]
-workspace = true
-
 [dependencies.sc-allocator]
 default-features = true
 workspace = true

@@ -11,7 +11,7 @@ jobs:
   clippy:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-26-intel, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # 6.0.0
 
       - name: Install cargo deny
-        run: cargo +1.92 install cargo-deny --version =0.18.9
+        run: cargo +1.93 install cargo-deny --version =0.19.0
 
       - name: Run cargo deny
         run: |
@@ -77,5 +77,5 @@ jobs:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # 6.0.0
       - name: Verify all dependencies are in use
         run: |
-          cargo +1.92 install cargo-machete --version =0.9.1
-          cargo +1.92 machete ./Cargo.toml
+          cargo +1.93 install cargo-machete --version =0.9.1
+          cargo +1.93 machete ./Cargo.toml

@@ -43,7 +43,7 @@ if_wasmtime_is_enabled! {
 	pub use wasmtime;
 
 	// Wasmtime uses anyhow types but doesn't reexport them.
-	pub use anyhow;
+	pub use wasmtime::error as anyhow;
 }
 
 /// Result type used by traits in this crate.

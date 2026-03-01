@@ -109,3 +109,29 @@ index 8f189ca9..280eb1d2 100644
  						parallel_compilation: true,
  						wasm_multi_value: false,
  						wasm_bulk_memory: false,
+diff --git a/substrate/primitives/wasm-interface/src/lib.rs b/substrate/primitives/wasm-interface/src/lib.rs
+index 5e2bd10c16..47d986e1c6 100644
+--- a/substrate/primitives/wasm-interface/src/lib.rs
++++ b/substrate/primitives/wasm-interface/src/lib.rs
+@@ -43,7 +43,7 @@ if_wasmtime_is_enabled! {
+ 	pub use wasmtime;
+ 
+ 	// Wasmtime uses anyhow types but doesn't reexport them.
+-	pub use anyhow;
++	pub use wasmtime::error as anyhow;
+ }
+ 
+ /// Result type used by traits in this crate.
+diff --git a/substrate/client/executor/wasmtime/src/imports.rs b/substrate/client/executor/wasmtime/src/imports.rs
+index fccc121fa0..8dfa03c865 100644
+--- a/substrate/client/executor/wasmtime/src/imports.rs
++++ b/substrate/client/executor/wasmtime/src/imports.rs
+@@ -67,7 +67,7 @@ where
+ 				log::debug!("Missing import: '{}' {:?}", name, func_ty);
+ 				linker
+ 					.func_new("env", &name, func_ty.clone(), move |_, _, _| {
+-					    Err(anyhow::Error::msg(error.clone()))
++					    Err(wasmtime::error::Error::msg(error.clone()))
+ 					})
+ 					.expect("adding a missing import stub can only fail when the item already exists, and it is missing here; qed");
+ 			}

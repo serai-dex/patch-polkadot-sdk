@@ -1,5 +1,5 @@
 name: build-dependencies
-description: Installs build dependencies for Serai
+description: Installs build dependencies
 
 runs:
   using: "composite"

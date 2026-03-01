@@ -283,10 +283,7 @@ fn main() {
           .map(|deps| deps.as_table().unwrap().keys().cloned())
           .into_iter()
           .chain(
-            crate_toml
-              .get("features")
-              .map(|features| features.as_table().unwrap().keys().cloned())
-              .into_iter(),
+            crate_toml.get("features").map(|features| features.as_table().unwrap().keys().cloned()),
           )
           .flatten()
           .collect::<HashSet<_>>();
