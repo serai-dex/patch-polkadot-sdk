@@ -305,6 +305,8 @@ remove_crate_tree polkadot
 
 # Remove the `docs` crate, which won't compile after this and isn't worth the effort to patch
 remove_crate_tree docs
+# Remove a broken symlink to the `docs` crate within `sp-runtime`
+silent_rm ./polkadot-sdk/substrate/primitives/runtime/docs
 
 # Remove the `umbrella` crate, which we don't use, so we don't have to
 # re-generate it (requiring multiple bespoke binary tools be added to the system
