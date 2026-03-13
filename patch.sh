@@ -402,7 +402,7 @@ remove_module ./polkadot-sdk/substrate/client/cli/src/commands vanity
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "\, vanity::VanityCmd"
 
 # Remove unused pallets
-used_pallets="authority-discovery authorship babe benchmarking executive glutton grandpa session support system timestamp try-runtime"
+used_pallets="authorship babe benchmarking executive grandpa session support system timestamp try-runtime"
 ls ./polkadot-sdk/substrate/frame | while read -r folder; do
   if [ -d ./polkadot-sdk/substrate/frame/$folder ]; then
     if [ $(echo "$used_pallets src" | grep $folder | wc -l) -eq 0 ]; then
@@ -618,6 +618,18 @@ remove_module ./polkadot-sdk/substrate/frame/system/src mock
 # Remove unused commands
 remove_module ./polkadot-sdk/substrate/client/cli/src/commands build_spec_cmd
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "build_spec_cmd::BuildSpecCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands export_chain_spec_cmd
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "export_chain_spec_cmd::ExportChainSpecCmd\,"
+
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands check_block_cmd
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "check_block_cmd::CheckBlockCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands import_blocks_cmd
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "import_blocks_cmd::ImportBlocksCmd\,"
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands export_blocks_cmd
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "export_blocks_cmd::ExportBlocksCmd\,"
+
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands export_state_cmd
+remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "export_state_cmd::ExportStateCmd\,"
 
 remove_module ./polkadot-sdk/substrate/client/cli/src/commands insert_key
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "insert_key::InsertKeyCmd\,"

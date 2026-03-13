@@ -3702,18 +3702,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
-name = "pallet-authority-discovery"
-version = "45.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "pallet-session",
- "parity-scale-codec",
- "sp-authority-discovery",
- "sp-runtime",
-]
-
-[[package]]
 name = "pallet-authorship"
 version = "45.0.0"
 dependencies = [
@@ -3741,21 +3729,6 @@ dependencies = [
  "sp-runtime",
  "sp-session",
  "sp-staking",
-]
-
-[[package]]
-name = "pallet-glutton"
-version = "31.0.0"
-dependencies = [
- "blake2",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "sp-inherents",
- "sp-io",
- "sp-runtime",
 ]
 
 [[package]]
