@@ -771,7 +771,7 @@ cargo_upgrade toml 0.9.0
 cargo_upgrade trie-db 0.31.0 # https://github.com/paritytech/polkadot-sdk/pull/10573
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 42.0.1
+cargo_upgrade wasmtime 43.0.0
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk

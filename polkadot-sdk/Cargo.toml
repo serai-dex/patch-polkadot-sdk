@@ -1001,7 +1001,7 @@ default-features = false
 version = "0.8.0"
 
 [workspace.dependencies.wasmtime]
-version = "42.0.1"
+version = "43.0.0"
 default-features = false
 
 [workspace.dependencies.zeroize]
