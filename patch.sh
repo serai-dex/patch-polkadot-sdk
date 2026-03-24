@@ -223,6 +223,10 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/wasm-interface/Cargo.t
 remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "anyhow"
 remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "profiling"
 
+# Remove `rpassword` from `sc-cli` as it isn't used, but won't be detected as unused by `machete`
+# as the code which uses it was commented out, not removed outright
+remove_matching_lines ./polkadot-sdk/substrate/client/cli/Cargo.toml "rpassword"
+
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release &> /dev/null
@@ -647,6 +651,8 @@ remove_module ./polkadot-sdk/substrate/client/cli/src/commands sign
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "sign::SignCmd\,"
 remove_module ./polkadot-sdk/substrate/client/cli/src/commands verify
 remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "verify::VerifyCmd\,"
+
+remove_module ./polkadot-sdk/substrate/client/cli/src/commands utils
 
 # Remove statements using the `SS58Prefix` constant
 echo "Removing \`SS58Prefix\`"

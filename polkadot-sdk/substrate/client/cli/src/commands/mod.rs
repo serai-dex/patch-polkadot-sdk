@@ -22,7 +22,6 @@ mod chain_info_cmd;
 mod purge_chain_cmd;
 mod revert_cmd;
 mod run_cmd;
-pub mod utils;
 
 pub use self::{
 	 chain_info_cmd::ChainInfoCmd, 

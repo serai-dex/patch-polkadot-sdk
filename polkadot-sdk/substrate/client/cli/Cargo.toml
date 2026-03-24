@@ -58,9 +58,6 @@ workspace = true
 [dependencies.regex]
 workspace = true
 
-[dependencies.rpassword]
-workspace = true
-
 [dependencies.sc-client-api]
 default-features = true
 workspace = true

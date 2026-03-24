@@ -25,6 +25,10 @@
   `sc-offchain`, etc. This allows removing a variety of crates for HTTP from
   the tree.
 
+- `rpassword`: Removes the code which calls `rpassword` from `sc-cli` as it's
+   unused within the resulting tree, and not used by Serai, but imports a
+   specific old version of `windows-sys` not otherwise present.
+
 - `rpc_modules`: Removes provided RPC modules.
 
 - `SessionKeys`: Removes `sp_session::runtime_api::SessionKeys`.
