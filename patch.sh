@@ -326,6 +326,9 @@ remove_crate_tree substrate/deprecated
 # Remove the provided binaries, which we don't use
 remove_crate_tree substrate/bin
 
+# Remove `sc-cli`, as unused by Serai
+remove_crate_tree substrate/client/cli
+
 # Remove the unused "bitswap" protocol
 # https://github.com/libp2p/rust-libp2p/issues/2632
 silent_rm ./polkadot-sdk/substrate/client/network/build.rs
@@ -618,41 +621,6 @@ remove_matching_statement_and_preceding_attributes ./polkadot-sdk/substrate/fram
 
 remove_module ./polkadot-sdk/substrate/frame/system/src migrations
 remove_module ./polkadot-sdk/substrate/frame/system/src mock
-
-# Remove unused commands
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands build_spec_cmd
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "build_spec_cmd::BuildSpecCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands export_chain_spec_cmd
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "export_chain_spec_cmd::ExportChainSpecCmd\,"
-
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands check_block_cmd
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "check_block_cmd::CheckBlockCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands import_blocks_cmd
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "import_blocks_cmd::ImportBlocksCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands export_blocks_cmd
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "export_blocks_cmd::ExportBlocksCmd\,"
-
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands export_state_cmd
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "export_state_cmd::ExportStateCmd\,"
-
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands insert_key
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "insert_key::InsertKeyCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands inspect_key
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "inspect_key::InspectKeyCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands inspect_node_key
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "inspect_node_key::InspectNodeKeyCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands key
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "key::KeySubcommand\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands generate_node_key
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "generate_node_key::GenerateKeyCmdCommon\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands generate
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "generate::GenerateCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands sign
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "sign::SignCmd\,"
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands verify
-remove_matching_phrase ./polkadot-sdk/substrate/client/cli/src/commands/mod.rs "verify::VerifyCmd\,"
-
-remove_module ./polkadot-sdk/substrate/client/cli/src/commands utils
 
 # Remove statements using the `SS58Prefix` constant
 echo "Removing \`SS58Prefix\`"

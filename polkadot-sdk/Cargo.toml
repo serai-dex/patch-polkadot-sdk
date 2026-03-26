@@ -7,7 +7,6 @@ members = [
     "substrate/client/basic-authorship",
     "substrate/client/block-builder",
     "substrate/client/chain-spec",
-    "substrate/client/cli",
     "substrate/client/consensus/babe",
     "substrate/client/consensus/common",
     "substrate/client/consensus/epochs",
@@ -326,9 +325,6 @@ version = "0.2.0"
 [workspace.dependencies.expander]
 version = "2.0.0"
 
-[workspace.dependencies.fdlimit]
-version = "0.3.0"
-
 [workspace.dependencies.finality-grandpa]
 version = "0.16.3"
 default-features = false
@@ -484,10 +480,6 @@ version = "0.18.1"
 
 [workspace.dependencies.multihash]
 version = "0.19.1"
-default-features = false
-
-[workspace.dependencies.names]
-version = "0.14.0"
 default-features = false
 
 [workspace.dependencies.nohash-hasher]
@@ -689,10 +681,6 @@ default-features = false
 path = "substrate/client/rpc-servers"
 default-features = false
 
-[workspace.dependencies.sc-service]
-path = "substrate/client/service"
-default-features = false
-
 [workspace.dependencies.sc-state-db]
 path = "substrate/client/state-db"
 default-features = false
@@ -842,10 +830,6 @@ default-features = false
 
 [workspace.dependencies.sp-io]
 path = "substrate/primitives/io"
-default-features = false
-
-[workspace.dependencies.sp-keyring]
-path = "substrate/primitives/keyring"
 default-features = false
 
 [workspace.dependencies.sp-keystore]
