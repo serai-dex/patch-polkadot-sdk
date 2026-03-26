@@ -9,7 +9,7 @@ index d6ab3e13..cc080d8b 100644
 -wasmtime = { features = [
 +wasmtime = { default-features = false, features = [
  	"addr2line",
- 	"cache",
+ 	# "cache",
  	"cranelift",
 -	"demangle",
 +	# "demangle",

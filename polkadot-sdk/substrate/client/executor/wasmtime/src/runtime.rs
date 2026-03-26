@@ -41,7 +41,7 @@ use std::{
 		Arc,
 	},
 };
-use wasmtime::{AsContext, Cache, CacheConfig, Engine, Memory};
+use wasmtime::{AsContext, /* Cache, CacheConfig,*/ Engine, Memory};
 
 const MAX_INSTANCE_COUNT: u32 = 64;
 
@@ -191,7 +191,7 @@ impl WasmInstance for WasmtimeInstance {
 	}
 }
 
-/// Prepare a directory structure and a config file to enable wasmtime caching.
+/* /// Prepare a directory structure and a config file to enable wasmtime caching.
 ///
 /// In case of an error the caching will not be enabled.
 fn setup_wasmtime_caching(
@@ -213,7 +213,7 @@ fn setup_wasmtime_caching(
 	config.cache(Some(cache));
 
 	Ok(())
-}
+} */
 
 fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config, WasmError> {
 	let mut config = wasmtime::Config::new();
@@ -557,15 +557,15 @@ where
 {
 	replace_strategy_if_broken(&mut config.semantics.instantiation_strategy);
 
-	let mut wasmtime_config = common_config(&config.semantics)?;
-	if let Some(ref cache_path) = config.cache_path {
+	let wasmtime_config = common_config(&config.semantics)?;
+	/* if let Some(ref cache_path) = config.cache_path {
 		if let Err(reason) = setup_wasmtime_caching(cache_path, &mut wasmtime_config) {
 			log::warn!(
 				"failed to setup wasmtime cache. Performance may degrade significantly: {}.",
 				reason,
 			);
 		}
-	}
+	} */
 
 	let engine = Engine::new(&wasmtime_config)
 		.map_err(|e| WasmError::Other(format!("cannot create the wasmtime engine: {:#}", e)))?;

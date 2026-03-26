@@ -52,7 +52,6 @@ default-features = true
 default-features = false
 features = [
     "addr2line",
-    "cache",
     "cranelift",
     "parallel-compilation",
     "pooling-allocator",
