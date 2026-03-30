@@ -68,10 +68,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-panic-handler]
-default-features = true
-workspace = true
-
 [dependencies.sp-version]
 default-features = true
 workspace = true

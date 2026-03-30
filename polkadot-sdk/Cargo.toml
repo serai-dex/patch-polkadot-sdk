@@ -74,7 +74,6 @@ members = [
     "substrate/primitives/keyring",
     "substrate/primitives/keystore",
     "substrate/primitives/offchain",
-    "substrate/primitives/panic-handler",
     "substrate/primitives/rpc",
     "substrate/primitives/runtime",
     "substrate/primitives/runtime-interface",
@@ -235,9 +234,6 @@ version = "0.1.88"
 
 [workspace.dependencies.asynchronous-codec]
 version = "0.7.0"
-
-[workspace.dependencies.backtrace]
-version = "0.3.71"
 
 [workspace.dependencies.bip39]
 version = "2.2.0"
@@ -834,10 +830,6 @@ default-features = false
 
 [workspace.dependencies.sp-keystore]
 path = "substrate/primitives/keystore"
-default-features = false
-
-[workspace.dependencies.sp-panic-handler]
-path = "substrate/primitives/panic-handler"
 default-features = false
 
 [workspace.dependencies.sp-rpc]

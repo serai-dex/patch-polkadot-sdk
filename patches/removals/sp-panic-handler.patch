@@ -1,0 +1,28 @@
+diff --git a/substrate/client/executor/src/executor.rs b/substrate/client/executor/src/executor.rs
+index 198a2a31ab..42720505c3 100644
+--- a/substrate/client/executor/src/executor.rs
++++ b/substrate/client/executor/src/executor.rs
+@@ -50,7 +50,7 @@ where
+ 	sp_externalities::set_and_run_with_externalities(ext, move || {
+ 		// Substrate uses custom panic hook that terminates process on panic. Disable
+ 		// termination for the native call.
+-		let _guard = sp_panic_handler::AbortGuard::force_unwind();
++		// let _guard = sp_panic_handler::AbortGuard::force_unwind();
+ 		std::panic::catch_unwind(f).map_err(|e| {
+ 			if let Some(err) = e.downcast_ref::<String>() {
+ 				Error::RuntimePanicked(err.clone())
+diff --git a/substrate/primitives/state-machine/src/ext.rs b/substrate/primitives/state-machine/src/ext.rs
+index 62f76124a9..f0de2c3984 100644
+--- a/substrate/primitives/state-machine/src/ext.rs
++++ b/substrate/primitives/state-machine/src/ext.rs
+@@ -47,8 +47,8 @@ const BENCHMARKING_FN: &str = "\
+ 	Without client transactions the loop condition guarantees the success of the tx close.";
+ 
+ #[cfg(feature = "std")]
+-fn guard() -> sp_panic_handler::AbortGuard {
+-	sp_panic_handler::AbortGuard::force_abort()
++fn guard() -> () {
++	()
+ }
+ 
+ #[cfg(not(feature = "std"))]

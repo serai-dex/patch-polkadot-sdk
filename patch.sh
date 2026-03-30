@@ -324,6 +324,9 @@ remove_crate_tree substrate/bin
 
 # Remove `sc-cli`, as unused by Serai
 remove_crate_tree substrate/client/cli
+# Remove `sp-panic-handler`, which is partially related to `sc-cli` and partially historical to when
+# runtimes were sometimes executed as native code (not solely within a sandbox)
+remove_crate_tree substrate/primitives/panic-handler
 
 # Remove the unused "bitswap" protocol
 # https://github.com/libp2p/rust-libp2p/issues/2632

@@ -31,6 +31,14 @@
 
 - `sp-maybe-compressed-blob`: Remove compression of the on-chain code.
 
+- `sp-panic-handler`: Removes Substrate's bespoke panic handler which only had
+  two references in the resulting codebase. The first was to force aborting the
+  process, when Serai is fundamentally built with `panic = "abort"`, making it
+  unnecessary. The second was for unwinding upon runtime panics, which should
+  be unreachable now that native execution was removed, all execution of the
+  runtime is via WASM, and the runtime panicking will call `wasmtime` to yield
+  an error (not propagate the panic).
+
 - `sp-transaction-storage-proof`: Removes references to
   `sp-transaction-storage`.
 

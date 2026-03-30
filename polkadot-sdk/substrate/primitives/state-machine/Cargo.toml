@@ -53,11 +53,6 @@ workspace = true
 [dependencies.sp-externalities]
 workspace = true
 
-[dependencies.sp-panic-handler]
-optional = true
-workspace = true
-default-features = true
-
 [dependencies.sp-trie]
 workspace = true
 
@@ -84,7 +79,6 @@ std = [
     "rand",
     "sp-core/std",
     "sp-externalities/std",
-    "sp-panic-handler",
     "sp-trie/std",
     "thiserror",
     "tracing",
