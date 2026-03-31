@@ -72,7 +72,6 @@ members = [
     "substrate/primitives/io",
     "substrate/primitives/keyring",
     "substrate/primitives/keystore",
-    "substrate/primitives/offchain",
     "substrate/primitives/rpc",
     "substrate/primitives/runtime",
     "substrate/primitives/runtime-interface",

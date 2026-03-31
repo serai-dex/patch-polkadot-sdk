@@ -6106,15 +6106,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sp-offchain"
-version = "40.0.0"
-dependencies = [
- "sp-api",
- "sp-core",
- "sp-runtime",
-]
-
-[[package]]
 name = "sp-rpc"
 version = "37.0.0"
 dependencies = [
