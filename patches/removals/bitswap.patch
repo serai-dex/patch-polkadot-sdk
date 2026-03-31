@@ -1,26 +1,3 @@
-diff --git a/substrate/client/cli/src/params/network_params.rs b/substrate/client/cli/src/params/network_params.rs
-index 280d79a..3ee87e3 100644
---- a/substrate/client/cli/src/params/network_params.rs
-+++ b/substrate/client/cli/src/params/network_params.rs
-@@ -148,10 +148,6 @@ pub struct NetworkParams {
- 	#[arg(long, default_value = "20")]
- 	pub kademlia_replication_factor: NonZeroUsize,
- 
--	/// Join the IPFS network and serve transactions over bitswap protocol.
--	#[arg(long)]
--	pub ipfs_server: bool,
--
- 	/// Blockchain syncing mode.
- 	#[arg(
- 		long,
-@@ -279,7 +275,6 @@ impl NetworkParams {
- 			allow_non_globals_in_dht,
- 			kademlia_disjoint_query_paths: self.kademlia_disjoint_query_paths,
- 			kademlia_replication_factor: self.kademlia_replication_factor,
--			ipfs_server: self.ipfs_server,
- 			sync_mode: self.sync.into(),
- 			network_backend: self.network_backend.into(),
- 		}
 diff --git a/substrate/client/network/src/config.rs b/substrate/client/network/src/config.rs
 index dd7e77e..3db879e 100644
 --- a/substrate/client/network/src/config.rs

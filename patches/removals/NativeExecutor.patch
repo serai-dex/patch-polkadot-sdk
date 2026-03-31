@@ -1,22 +1,3 @@
-diff --git a/substrate/client/cli/src/arg_enums.rs b/substrate/client/cli/src/arg_enums.rs
-index fa0befa..28b9fa3 100644
---- a/substrate/client/cli/src/arg_enums.rs
-+++ b/substrate/client/cli/src/arg_enums.rs
-@@ -140,14 +140,8 @@ pub enum OutputType {
- #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
- #[value(rename_all = "kebab-case")]
- pub enum ExecutionStrategy {
--	/// Execute with native build (if available, WebAssembly otherwise).
--	Native,
- 	/// Only execute with the WebAssembly build.
- 	Wasm,
--	/// Execute with both native (where available) and WebAssembly builds.
--	Both,
--	/// Execute with the native build if possible; if it fails, then execute with WebAssembly.
--	NativeElseWasm,
- }
- 
- /// Available RPC methods.
 diff --git a/substrate/client/executor/src/executor.rs b/substrate/client/executor/src/executor.rs
 index 913bcdf..29884b6 100644
 --- a/substrate/client/executor/src/executor.rs
