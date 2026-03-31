@@ -1,6 +1,6 @@
 [package]
 name = "sp-trie"
-version = "42.0.1"
+version = "43.0.0"
 description = "Patricia trie stuff using a parity-scale-codec node format"
 license = "Apache-2.0"
 documentation = "https://docs.rs/sp-trie"

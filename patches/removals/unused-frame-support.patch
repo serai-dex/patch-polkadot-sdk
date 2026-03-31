@@ -20,7 +20,7 @@ diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/sup
 index 4c24e1860f..a6f8444953 100644
 --- a/substrate/frame/support/procedural/src/lib.rs
 +++ b/substrate/frame/support/procedural/src/lib.rs
-@@ -459,11 +459,11 @@ pub fn derive_pallet_error(input: TokenStream) -> TokenStream {
+@@ -459,10 +459,10 @@ pub fn derive_pallet_error(input: TokenStream) -> TokenStream {
  	pallet_error::derive_pallet_error(input)
  }
  
@@ -32,7 +32,6 @@ index 4c24e1860f..a6f8444953 100644
 -}
 +}*/
  
- ///
  /// ---
 diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
 index 1921383ad2..ae3aeddf3f 100644

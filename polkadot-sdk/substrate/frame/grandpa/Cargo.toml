@@ -1,6 +1,6 @@
 [package]
 name = "pallet-grandpa"
-version = "45.0.0"
+version = "46.0.0"
 license = "Apache-2.0"
 description = "FRAME pallet for GRANDPA finality gadget"
 readme = "README.md"

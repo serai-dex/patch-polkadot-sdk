@@ -65,7 +65,7 @@ pub fn expand_outer_dispatch(
 			#scrate::__private::codec::Encode,
 			#scrate::__private::codec::Decode,
 			#scrate::__private::codec::DecodeWithMemTracking,
-			#scrate::__private::RuntimeDebug,
+			#scrate::__private::Debug,
 		)]
 		pub enum RuntimeCall {
 			#variant_defs

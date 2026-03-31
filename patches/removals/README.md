@@ -6,10 +6,9 @@
 
 - `crate_version`: Remove the `crate_version` metadata from pallets.
 
-- `docify`: Removes references to `docify`. `patch.sh` also removes
-  `aquamarine`, `simple-mermaid`.
-
 - `ecdsa_ed25519`: Removes ECDSA, Ed25519 cryptography from the runtime.
+
+- `fixed_point`: Remove the `sp_arithmetic::fixed_point` module.
 
 - `light_client`: Removes the unused light-client request server.
 

@@ -28,12 +28,10 @@ use crate::{
 	codec::{Decode, DecodeWithMemTracking, Encode, Error, Input},
 	ConsensusEngineId,
 };
-use sp_core::RuntimeDebug;
+use Debug;
 
 /// Generic header digest.
-#[derive(
-	PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, RuntimeDebug, Default,
-)]
+#[derive(PartialEq, Eq, Clone, Encode, Decode, DecodeWithMemTracking, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Digest {
 	/// A list of logs in the digest.
@@ -69,7 +67,7 @@ impl Digest {
 
 /// Digest item that is able to encode/decode 'system' digest items and
 /// provide opaque access to other items.
-#[derive(PartialEq, Eq, Clone, DecodeWithMemTracking, RuntimeDebug)]
+#[derive(PartialEq, Eq, Clone, DecodeWithMemTracking, Debug)]
 pub enum DigestItem {
 	/// A pre-runtime digest.
 	///
@@ -130,7 +128,7 @@ impl<'a> serde::Deserialize<'a> for DigestItem {
 
 /// A 'referencing view' for digest item. Does not own its contents. Used by
 /// final runtime implementations for encoding/decoding its log items.
-#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum DigestItemRef<'a> {
 	/// A pre-runtime digest.
 	///
@@ -318,7 +316,9 @@ impl<'a> DigestItemRef<'a> {
 			(OpaqueDigestItemId::Seal(w), &Self::Seal(v, s)) |
 			(OpaqueDigestItemId::PreRuntime(w), &Self::PreRuntime(v, s))
 				if v == w =>
-				Some(s),
+			{
+				Some(s)
+			},
 			(OpaqueDigestItemId::Other, &Self::Other(s)) => Some(s),
 			_ => None,
 		}

@@ -34,16 +34,18 @@ index 6d53de3133..c17af1b151 100644
  
  		// This macro is similar to the `tt_default_parts!`. It expands the pallets that are declared
 diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
-index 1921383ad2..5a8c6b692f 100644
+index d017a940..beb8e0d9 100644
 --- a/substrate/frame/support/src/lib.rs
 +++ b/substrate/frame/support/src/lib.rs
-@@ -529,7 +529,7 @@ pub fn debug(data: &impl core::fmt::Debug) {
+@@ -200,9 +200,9 @@ pub mod dynamic_params {
+ 	};
+ }
  
 -#[doc(inline)]
 +#[cfg(debug_assertions)]#[doc(inline)]pub use frame_support_procedural::construct_runtime;#[doc(inline)]
  pub use frame_support_procedural::{
--	construct_runtime, match_and_insert, transactional, PalletError, RuntimeDebugNoBound,
-+	match_and_insert, transactional, PalletError, RuntimeDebugNoBound,
+-	construct_runtime, match_and_insert, transactional, PalletError,
++	match_and_insert, transactional, PalletError,
  };
  
  pub use frame_support_procedural::runtime;

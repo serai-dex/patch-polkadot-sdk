@@ -33,7 +33,11 @@ index 913bcdf..29884b6 100644
  fn unwrap_heap_pages(pages: Option<HeapAllocStrategy>) -> HeapAllocStrategy {
  	pages.unwrap_or_else(|| DEFAULT_HEAP_ALLOC_STRATEGY)
  }
-@@ -564,197 +549,6 @@ where
+diff --git a/substrate/client/executor/src/executor.rs b/substrate/client/executor/src/executor.rs
+index 5aa0eeed..ce702fe0 100644
+--- a/substrate/client/executor/src/executor.rs
++++ b/substrate/client/executor/src/executor.rs
+@@ -564,196 +564,6 @@ where
  	}
  }
  
@@ -54,7 +58,6 @@ index 913bcdf..29884b6 100644
 -
 -#[allow(deprecated)]
 -impl<D: NativeExecutionDispatch> NativeElseWasmExecutor<D> {
--	///
 -	/// Create new instance.
 -	///
 -	/// # Parameters
@@ -282,11 +285,11 @@ index 56f006f..f8c08b9 100644
  pub fn new_wasm_executor<H: HostFunctions>(config: &ExecutorConfiguration) -> WasmExecutor<H> {
  	let strategy = config
 diff --git a/substrate/client/service/src/client/call_executor.rs b/substrate/client/service/src/client/call_executor.rs
-index 1341aa0..cf09d07 100644
+index 94413782..6acb3fb3 100644
 --- a/substrate/client/service/src/client/call_executor.rs
 +++ b/substrate/client/service/src/client/call_executor.rs
-@@ -254,14 +254,3 @@ where
- 		CallExecutor::runtime_version(self, at).map_err(|e| e.to_string())
+@@ -270,14 +270,3 @@ where
+ 		CallExecutor::runtime_version(self, at, call_context).map_err(|e| e.to_string())
  	}
  }
 -

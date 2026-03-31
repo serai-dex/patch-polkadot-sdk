@@ -1,6 +1,6 @@
 [package]
 name = "sc-executor-polkavm"
-version = "0.40.0"
+version = "0.41.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "PolkaVM executor for Substrate"
 readme = "README.md"
@@ -30,6 +30,10 @@ workspace = true
 workspace = true
 
 [dependencies.sc-executor-common]
+default-features = true
+workspace = true
+
+[dependencies.sp-runtime-interface]
 default-features = true
 workspace = true
 

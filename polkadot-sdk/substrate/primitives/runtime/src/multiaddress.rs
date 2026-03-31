@@ -22,14 +22,7 @@ use codec::{Decode, DecodeWithMemTracking, Encode};
 
 /// A multi-format address wrapper for on-chain accounts.
 #[derive(
-	Encode,
-	Decode,
-	DecodeWithMemTracking,
-	PartialEq,
-	Eq,
-	Clone,
-	crate::RuntimeDebug,
-
+	Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, Debug,
 )]
 #[cfg_attr(feature = "std", derive(Hash))]
 pub enum MultiAddress<AccountId, AccountIndex> {

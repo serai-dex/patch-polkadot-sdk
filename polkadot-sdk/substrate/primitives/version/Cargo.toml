@@ -1,6 +1,6 @@
 [package]
 name = "sp-version"
-version = "43.0.0"
+version = "44.0.0"
 license = "Apache-2.0"
 description = "Version module for the Substrate runtime; Provides a function that returns the runtime version."
 documentation = "https://docs.rs/sp-version"
@@ -40,6 +40,9 @@ features = [
 optional = true
 workspace = true
 
+[dependencies.sp-core]
+workspace = true
+
 [dependencies.sp-crypto-hashing-proc-macro]
 default-features = true
 workspace = true
@@ -56,6 +59,7 @@ std = [
     "codec/std",
     "impl-serde/std",
     "serde/std",
+    "sp-core/std",
     "sp-runtime/std",
 ]
 serde = [

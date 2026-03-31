@@ -1,6 +1,6 @@
 [package]
 name = "sc-basic-authorship"
-version = "0.53.0"
+version = "0.54.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Basic implementation of block-authoring logic."
 readme = "README.md"
@@ -75,9 +75,5 @@ default-features = true
 workspace = true
 
 [dependencies.sp-runtime]
-default-features = true
-workspace = true
-
-[dependencies.sp-trie]
 default-features = true
 workspace = true

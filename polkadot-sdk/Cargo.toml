@@ -66,7 +66,6 @@ members = [
     "substrate/primitives/crypto/hashing",
     "substrate/primitives/crypto/hashing/proc-macro",
     "substrate/primitives/database",
-    "substrate/primitives/debug-derive",
     "substrate/primitives/externalities",
     "substrate/primitives/inherents",
     "substrate/primitives/io",
@@ -211,7 +210,7 @@ level = "allow"
 priority = 2
 
 [workspace.dependencies]
-polkavm-derive = "0.30.0"
+polkavm-derive = "0.31.0"
 
 [workspace.dependencies.Inflector]
 version = "0.11.4"
@@ -519,7 +518,7 @@ default-features = false
 version = "1.1.3"
 
 [workspace.dependencies.polkavm]
-version = "0.30.0"
+version = "0.31.0"
 default-features = false
 
 [workspace.dependencies.primitive-types]
@@ -803,10 +802,6 @@ default-features = false
 
 [workspace.dependencies.sp-database]
 path = "substrate/primitives/database"
-default-features = false
-
-[workspace.dependencies.sp-debug-derive]
-path = "substrate/primitives/debug-derive"
 default-features = false
 
 [workspace.dependencies.sp-externalities]

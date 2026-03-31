@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-babe"
-version = "0.55.0"
+version = "0.56.0"
 description = "BABE consensus algorithm for substrate"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-consensus-babe"

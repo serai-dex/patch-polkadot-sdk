@@ -23,7 +23,7 @@ use core::ops::{
 };
 pub use ensure::{
 	ensure_pow, Ensure, EnsureAdd, EnsureAddAssign, EnsureDiv, EnsureDivAssign,
-	EnsureFixedPointNumber, EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign, EnsureOp,
+	/* EnsureFixedPointNumber, */ EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign, EnsureOp,
 	EnsureOpAssign, EnsureSub, EnsureSubAssign,
 };
 pub use integer_sqrt::IntegerSquareRoot;
@@ -198,6 +198,7 @@ impl<T: AtLeast32Bit + Unsigned + MultiplyRational> AtLeast32BitUnsigned for T {
 /// then it'll saturate the destination.
 pub trait UniqueSaturatedFrom<T: Sized>: Sized {
 	/// Convert from a value of `T` into an equivalent instance of `Self`.
+	#[must_use]
 	fn unique_saturated_from(t: T) -> Self;
 }
 
@@ -205,6 +206,7 @@ pub trait UniqueSaturatedFrom<T: Sized>: Sized {
 /// then it'll saturate the destination.
 pub trait UniqueSaturatedInto<T: Sized>: Sized {
 	/// Consume self to return an equivalent value of `T`.
+	#[must_use]
 	fn unique_saturated_into(self) -> T;
 }
 
@@ -224,21 +226,26 @@ impl<T: Bounded + Sized, S: TryInto<T> + Sized> UniqueSaturatedInto<T> for S {
 pub trait Saturating {
 	/// Saturating addition. Compute `self + rhs`, saturating at the numeric bounds instead of
 	/// overflowing.
+	#[must_use]
 	fn saturating_add(self, rhs: Self) -> Self;
 
 	/// Saturating subtraction. Compute `self - rhs`, saturating at the numeric bounds instead of
 	/// overflowing.
+	#[must_use]
 	fn saturating_sub(self, rhs: Self) -> Self;
 
 	/// Saturating multiply. Compute `self * rhs`, saturating at the numeric bounds instead of
 	/// overflowing.
+	#[must_use]
 	fn saturating_mul(self, rhs: Self) -> Self;
 
 	/// Saturating exponentiation. Compute `self.pow(exp)`, saturating at the numeric bounds
 	/// instead of overflowing.
+	#[must_use]
 	fn saturating_pow(self, exp: usize) -> Self;
 
 	/// Decrement self by one, saturating at zero.
+	#[must_use]
 	fn saturating_less_one(mut self) -> Self
 	where
 		Self: One,
@@ -248,6 +255,7 @@ pub trait Saturating {
 	}
 
 	/// Increment self by one, saturating at the numeric bounds instead of overflowing.
+	#[must_use]
 	fn saturating_plus_one(mut self) -> Self
 	where
 		Self: One,
@@ -319,7 +327,7 @@ impl<T: Clone + Zero + One + PartialOrd + CheckedMul + Bounded + num_traits::Sat
 	}
 
 	fn saturating_pow(self, exp: usize) -> Self {
-		let neg = self < T::zero() && exp % 2 != 0;
+		let neg = self < T::zero() && !exp.is_multiple_of(2);
 		checked_pow(self, exp).unwrap_or_else(|| {
 			if neg {
 				Bounded::min_value()
@@ -339,6 +347,7 @@ pub trait SaturatedConversion {
 	/// This just uses `UniqueSaturatedFrom` internally but with this
 	/// variant you can provide the destination type using turbofish syntax
 	/// in case Rust happens not to assume the correct type.
+	#[must_use]
 	fn saturated_from<T>(t: T) -> Self
 	where
 		Self: UniqueSaturatedFrom<T>,
@@ -351,6 +360,7 @@ pub trait SaturatedConversion {
 	/// This just uses `UniqueSaturatedInto` internally but with this
 	/// variant you can provide the destination type using turbofish syntax
 	/// in case Rust happens not to assume the correct type.
+	#[must_use]
 	fn saturated_into<T>(self) -> T
 	where
 		Self: UniqueSaturatedInto<T>,
@@ -393,7 +403,7 @@ impl<T: Sized> SaturatedConversion for T {}
 /// returning an [`ArithmeticError`](crate::ArithmeticError) instead of `None`.
 mod ensure {
 	use super::{checked_pow, CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, One, Zero};
-	use crate::{ArithmeticError, FixedPointNumber, FixedPointOperand};
+	use crate::{ArithmeticError, /* FixedPointNumber, FixedPointOperand */ };
 
 	/// Performs addition that returns [`ArithmeticError`] instead of wrapping around on overflow.
 	pub trait EnsureAdd: EnsureAddAssign {
@@ -781,7 +791,7 @@ mod ensure {
 	pub trait Ensure: EnsureOp + EnsureOpAssign {}
 	impl<T: EnsureOp + EnsureOpAssign> Ensure for T {}
 
-	/// Extends [`FixedPointNumber`] with the Ensure family functions.
+	/* /// Extends [`FixedPointNumber`] with the Ensure family functions.
 	pub trait EnsureFixedPointNumber: FixedPointNumber {
 		/// Creates `self` from a rational number. Equal to `n / d`.
 		///
@@ -869,7 +879,7 @@ mod ensure {
 		}
 	}
 
-	impl<T: FixedPointNumber> EnsureFixedPointNumber for T {}
+	impl<T: FixedPointNumber> EnsureFixedPointNumber for T {} */
 
 	/// Similar to [`TryFrom`] but returning an [`ArithmeticError`] error.
 	pub trait EnsureFrom<T: PartialOrd + Zero>: TryFrom<T> + PartialOrd + Zero {

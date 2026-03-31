@@ -1,6 +1,6 @@
 [package]
 name = "sp-storage"
-version = "22.0.0"
+version = "23.0.0"
 description = "Storage related primitives"
 license = "Apache-2.0"
 documentation = "https://docs.rs/sp-storage/"
@@ -43,16 +43,12 @@ features = [
 optional = true
 workspace = true
 
-[dependencies.sp-debug-derive]
-workspace = true
-
 [features]
 default = ["std"]
 std = [
     "codec/std",
     "impl-serde/std",
     "serde/std",
-    "sp-debug-derive/std",
 ]
 serde = [
     "dep:serde",

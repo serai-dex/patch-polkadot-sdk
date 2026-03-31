@@ -259,7 +259,7 @@ index 0cda70e..af9978b 100644
  
  impl IdentifyAccount for sp_core::sr25519::Public {
  	type AccountId = Self;
-@@ -98,12 +100,14 @@ impl IdentifyAccount for sp_core::sr25519::Public {
+@@ -98,10 +100,12 @@ impl IdentifyAccount for sp_core::sr25519::Public {
  	}
  }
  
@@ -272,8 +272,6 @@ index 0cda70e..af9978b 100644
  }
 +*/
  
- /// Means of signature verification.
- pub trait Verify {
 @@ -119,6 +123,7 @@ pub trait Verify {
  	) -> bool;
  }
@@ -299,7 +297,7 @@ index 0cda70e..af9978b 100644
  	type Signer = sp_core::ecdsa::Public;
  	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa::Public) -> bool {
 @@ -147,6 +154,7 @@ impl Verify for sp_core::ecdsa::Signature {
- 		}
+ 		<sp_core::ecdsa_bls381::Pair as sp_core::Pair>::verify(self, msg.get(), signer)
  	}
  }
 +*/

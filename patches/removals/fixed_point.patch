@@ -1,0 +1,68 @@
+diff --git a/substrate/primitives/arithmetic/src/traits.rs b/substrate/primitives/arithmetic/src/traits.rs
+index 3e9a34e62b..685ddc9b84 100644
+--- a/substrate/primitives/arithmetic/src/traits.rs
++++ b/substrate/primitives/arithmetic/src/traits.rs
+@@ -23,7 +23,7 @@ use core::ops::{
+ };
+ pub use ensure::{
+ 	ensure_pow, Ensure, EnsureAdd, EnsureAddAssign, EnsureDiv, EnsureDivAssign,
+-	EnsureFixedPointNumber, EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign, EnsureOp,
++	/* EnsureFixedPointNumber, */ EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign, EnsureOp,
+ 	EnsureOpAssign, EnsureSub, EnsureSubAssign,
+ };
+ pub use integer_sqrt::IntegerSquareRoot;
+@@ -403,7 +403,7 @@ impl<T: Sized> SaturatedConversion for T {}
+ /// returning an [`ArithmeticError`](crate::ArithmeticError) instead of `None`.
+ mod ensure {
+ 	use super::{checked_pow, CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, One, Zero};
+-	use crate::{ArithmeticError, FixedPointNumber, FixedPointOperand};
++	use crate::{ArithmeticError, /* FixedPointNumber, FixedPointOperand */ };
+ 
+ 	/// Performs addition that returns [`ArithmeticError`] instead of wrapping around on overflow.
+ 	pub trait EnsureAdd: EnsureAddAssign {
+@@ -791,7 +791,7 @@ mod ensure {
+ 	pub trait Ensure: EnsureOp + EnsureOpAssign {}
+ 	impl<T: EnsureOp + EnsureOpAssign> Ensure for T {}
+ 
+-	/// Extends [`FixedPointNumber`] with the Ensure family functions.
++	/* /// Extends [`FixedPointNumber`] with the Ensure family functions.
+ 	pub trait EnsureFixedPointNumber: FixedPointNumber {
+ 		/// Creates `self` from a rational number. Equal to `n / d`.
+ 		///
+@@ -879,7 +879,7 @@ mod ensure {
+ 		}
+ 	}
+ 
+-	impl<T: FixedPointNumber> EnsureFixedPointNumber for T {}
++	impl<T: FixedPointNumber> EnsureFixedPointNumber for T {} */
+ 
+ 	/// Similar to [`TryFrom`] but returning an [`ArithmeticError`] error.
+ 	pub trait EnsureFrom<T: PartialOrd + Zero>: TryFrom<T> + PartialOrd + Zero {
+diff --git a/substrate/primitives/runtime/src/lib.rs b/substrate/primitives/runtime/src/lib.rs
+index 15a38bf53c..579c9df11b 100644
+--- a/substrate/primitives/runtime/src/lib.rs
++++ b/substrate/primitives/runtime/src/lib.rs
+@@ -124,8 +124,8 @@ pub use sp_arithmetic::biguint;
+ pub use sp_arithmetic::helpers_128bit;
+ /// Re-export top-level arithmetic stuff.
+ pub use sp_arithmetic::{
+-	traits::SaturatedConversion, ArithmeticError, FixedI128, FixedI64, FixedPointNumber,
+-	FixedPointOperand, FixedU128, FixedU64, InnerOf, PerThing, PerU16, Perbill, Percent, Permill,
++	traits::SaturatedConversion, ArithmeticError, /* FixedI128, FixedI64, FixedPointNumber,
++	FixedPointOperand, FixedU128, FixedU64, */ InnerOf, PerThing, PerU16, Perbill, Percent, Permill,
+ 	Perquintill, Rational128, Rounding, UpperOf,
+ };
+ /// Re-export this since it's part of the API of this crate.
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index 874bc53542..370c0c5c34 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -39,7 +39,7 @@ use sp_application_crypto::AppCrypto;
+ pub use sp_arithmetic::traits::{
+ 	checked_pow, ensure_pow, AtLeast32Bit, AtLeast32BitUnsigned, Bounded, CheckedAdd, CheckedDiv,
+ 	CheckedMul, CheckedShl, CheckedShr, CheckedSub, Ensure, EnsureAdd, EnsureAddAssign, EnsureDiv,
+-	EnsureDivAssign, EnsureFixedPointNumber, EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign,
++	EnsureDivAssign, /* EnsureFixedPointNumber, */ EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign,
+ 	EnsureOp, EnsureOpAssign, EnsureSub, EnsureSubAssign, IntegerSquareRoot, One,
+ 	SaturatedConversion, Saturating, UniqueSaturatedFrom, UniqueSaturatedInto, Zero,
+ };

@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-grandpa"
-version = "0.40.0"
+version = "0.41.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Integration of the GRANDPA finality gadget into substrate."
 documentation = "https://docs.rs/sc-consensus-grandpa"
@@ -78,6 +78,10 @@ default-features = true
 workspace = true
 
 [dependencies.sc-client-api]
+default-features = true
+workspace = true
+
+[dependencies.sc-client-db]
 default-features = true
 workspace = true
 

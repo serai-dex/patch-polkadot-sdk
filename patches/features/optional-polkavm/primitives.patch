@@ -12,13 +12,13 @@ index e440cc14..4448bed1 100644
  [build-dependencies]
  rustversion = { workspace = true }
 diff --git a/substrate/primitives/runtime-interface/Cargo.toml b/substrate/primitives/runtime-interface/Cargo.toml
-index 592876b4..d0f5c2f7 100644
+index 9dbc7cef..acb415f8 100644
 --- a/substrate/primitives/runtime-interface/Cargo.toml
 +++ b/substrate/primitives/runtime-interface/Cargo.toml
-@@ -31,7 +31,7 @@ sp-wasm-interface.workspace = true
+@@ -29,7 +29,7 @@ sp-wasm-interface = { workspace = true }
  static_assertions = { workspace = true, default-features = true }
  
- [target.'cfg(all(any(target_arch = "riscv32", target_arch = "riscv64"), substrate_runtime))'.dependencies]
+ [target.'cfg(all(target_arch = "riscv64", substrate_runtime))'.dependencies]
 -polkavm-derive = { workspace = true }
 +polkavm-derive = { workspace = true, optional = true }
  

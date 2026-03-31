@@ -36,15 +36,11 @@ macro_rules! assert_eq_error_rate {
 }
 
 pub mod biguint;
-pub mod fixed_point;
 pub mod helpers_128bit;
 pub mod per_things;
 pub mod rational;
 pub mod traits;
 
-pub use fixed_point::{
-	FixedI128, FixedI64, FixedPointNumber, FixedPointOperand, FixedU128, FixedU64,
-};
 pub use per_things::{
 	InnerOf, MultiplyArg, PerThing, PerU16, Perbill, Percent, Permill, Perquintill, RationalArg,
 	ReciprocalArg, Rounding, SignedRounding, UpperOf,

@@ -1,6 +1,6 @@
 [package]
 name = "sp-timestamp"
-version = "40.0.0"
+version = "41.0.0"
 license = "Apache-2.0"
 description = "Substrate core types and inherents for timestamps."
 readme = "README.md"
@@ -34,9 +34,6 @@ workspace = true
 [dependencies.sp-inherents]
 workspace = true
 
-[dependencies.sp-runtime]
-workspace = true
-
 [dependencies.thiserror]
 optional = true
 workspace = true
@@ -47,6 +44,5 @@ std = [
     "async-trait",
     "codec/std",
     "sp-inherents/std",
-    "sp-runtime/std",
     "thiserror",
 ]

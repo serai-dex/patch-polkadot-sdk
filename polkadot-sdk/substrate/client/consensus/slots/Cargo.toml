@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-slots"
-version = "0.54.0"
+version = "0.55.0"
 description = "Generic slots-based utilities for consensus"
 build = "build.rs"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
@@ -78,5 +78,9 @@ default-features = true
 workspace = true
 
 [dependencies.sp-state-machine]
+default-features = true
+workspace = true
+
+[dependencies.sp-trie]
 default-features = true
 workspace = true

@@ -20,7 +20,7 @@
 
 #![allow(deprecated)]
 
-use sp_core::RuntimeDebug;
+use Debug;
 
 use crate::{
 	traits::{AsSystemOriginSigner, SignedExtension, ValidateResult},
@@ -30,7 +30,7 @@ use crate::{
 use super::*;
 
 /// Adapter to use a `SignedExtension` in the place of a `TransactionExtension`.
-#[derive(Encode, Decode, DecodeWithMemTracking, Clone, PartialEq, Eq, RuntimeDebug)]
+#[derive(Encode, Decode, DecodeWithMemTracking, Clone, PartialEq, Eq, Debug)]
 #[deprecated = "Convert your SignedExtension to a TransactionExtension."]
 pub struct AsTransactionExtension<SE: SignedExtension>(pub SE);
 

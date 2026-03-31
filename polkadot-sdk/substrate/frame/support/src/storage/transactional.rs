@@ -59,7 +59,7 @@ fn kill_transaction_level() {
 fn inc_transaction_level() -> Result<StorageLayerGuard, ()> {
 	let existing_levels = get_transaction_level();
 	if existing_levels >= TRANSACTIONAL_LIMIT {
-		return Err(())
+		return Err(());
 	}
 	// Cannot overflow because of check above.
 	set_transaction_level(existing_levels + 1);

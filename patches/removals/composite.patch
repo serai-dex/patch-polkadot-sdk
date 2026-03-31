@@ -155,23 +155,21 @@ index 4c24e18..76b1ca1 100644
  		item.ident != "RuntimeParameters" &&
  		item.ident != "PalletInfo"
  	{
-@@ -1111,7 +1111,7 @@ pub fn origin(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -1035,6 +1035,6 @@ pub fn origin(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
  }
  
--///
-+/* ///
- /// ---
+-/// ---
++/* /// ---
  ///
  /// Documentation for this macro can be found at `frame_support::pallet_macros::composite_enum`.
-@@ -1204,7 +1204,7 @@ pub fn task_weight(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -1204,6 +1204,6 @@ pub fn task_weight(_: TokenStream, _: TokenStream) -> TokenStream {
  #[proc_macro_attribute]
  pub fn task_index(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
 -}
 +} */
- 
- ///
+
  /// ---
 diff --git a/substrate/frame/support/procedural/src/pallet/expand/mod.rs b/substrate/frame/support/procedural/src/pallet/expand/mod.rs
 index c8bf5ca..94c0611 100644
@@ -696,7 +694,7 @@ diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/li
 index 1921383..ac71cde 100644
 --- a/substrate/frame/support/src/lib.rs
 +++ b/substrate/frame/support/src/lib.rs
-@@ -1020,7 +1020,7 @@ pub mod pallet_prelude {
+@@ -433,7 +433,7 @@ pub mod pallet_prelude {
  		traits::{
  			Authorize, BuildGenesisConfig, ConstU32, ConstUint, EnsureOrigin, Get, GetDefault,
  			GetStorageVersion, Hooks, IsType, OriginTrait, PalletInfoAccess, StorageInfoTrait,
@@ -704,7 +702,7 @@ index 1921383..ac71cde 100644
 +			StorageVersion, TypedGet,
  		},
  		Blake2_128, Blake2_128Concat, Blake2_256, CloneNoBound, DebugNoBound, EqNoBound, Identity,
- 		PartialEqNoBound, RuntimeDebugNoBound, Twox128, Twox256, Twox64Concat,
+ 		PartialEqNoBound, Twox128, Twox256, Twox64Concat,
 @@ -1750,7 +1750,7 @@ pub mod pallet_macros {
  	/// ```
  	pub use frame_support_procedural::config;
@@ -832,7 +830,7 @@ index 9d80e6e..f90d3a6 100644
  				// If valid, the tasks provides the tag: hash of task.
  				// But it is allowed to have many task for a single process, e.g. a task that takes
 @@ -1171,9 +1171,9 @@ pub mod pallet {
- 						})
+ 						});
  					}
  				}
  			}

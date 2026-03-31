@@ -11,7 +11,7 @@ index 7c58874..533d479 100644
  	pub fn deposit_event(event: impl Into<T::RuntimeEvent>) {
  		Self::deposit_event_indexed(&[], event.into());
  	}
-@@ -1815,16 +1813,9 @@ impl<T: Config> Pallet<T> {
+@@ -1883,16 +1881,9 @@ impl<T: Config> Pallet<T> {
  	///
  	/// This will update storage entries that correspond to the specified topics.
  	/// It is expected that light-clients could subscribe to this topics.
@@ -22,7 +22,7 @@ index 7c58874..533d479 100644
  
 -		// Don't populate events on genesis.
 -		if block_number.is_zero() {
--			return
+-			return;
 -		}
 -
  		let phase = ExecutionPhase::<T>::get().unwrap_or_default();
@@ -96,23 +96,4 @@ index 7c58874..533d479 100644
  		);
  	}
  
-diff --git a/substrate/frame/system/src/tests.rs b/substrate/frame/system/src/tests.rs
-index 59137f4..addaff3 100644
---- a/substrate/frame/system/src/tests.rs
-+++ b/substrate/frame/system/src/tests.rs
-@@ -775,6 +775,7 @@ fn runtime_upgraded_with_set_storage() {
- 	});
- }
- 
-+/*
- #[test]
- fn events_not_emitted_during_genesis() {
- 	new_test_ext().execute_with(|| {
-@@ -790,6 +791,7 @@ fn events_not_emitted_during_genesis() {
- 		assert!(System::events().len() == 1);
- 	});
- }
-+*/
- 
- #[test]
- fn extrinsics_root_is_calculated_correctly() {
+

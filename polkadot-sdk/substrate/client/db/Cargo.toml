@@ -1,6 +1,6 @@
 [package]
 name = "sc-client-db"
-version = "0.51.0"
+version = "0.52.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Client backend that uses RocksDB database as storage."
 readme = "README.md"

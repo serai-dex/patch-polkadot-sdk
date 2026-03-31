@@ -28,9 +28,7 @@ use serde::{Deserialize, Serialize};
 use sp_core::U256;
 
 /// Abstraction over a block header for a substrate chain.
-#[derive(
-	Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, sp_core::RuntimeDebug,
-)]
+#[derive(Encode, Decode, DecodeWithMemTracking, PartialEq, Eq, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 #[cfg_attr(feature = "serde", serde(deny_unknown_fields))]

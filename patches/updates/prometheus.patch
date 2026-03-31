@@ -101,7 +101,7 @@ index e48c539..8b7942b 100644
  		}
  	}
 diff --git a/substrate/client/network/src/service/out_events.rs b/substrate/client/network/src/service/out_events.rs
-index ededccd..aac1aba 100644
+index 5893db85..4e03d2be 100644
 --- a/substrate/client/network/src/service/out_events.rs
 +++ b/substrate/client/network/src/service/out_events.rs
 @@ -310,7 +310,7 @@ impl Metrics {
@@ -111,14 +111,14 @@ index ededccd..aac1aba 100644
 -						.with_label_values(&[protocol, "sent", name])
 +						.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), "sent", name])
  						.inc_by(u64::try_from(message.len()).unwrap_or(u64::MAX));
- 				},
- 		}
-@@ -339,7 +339,7 @@ impl Metrics {
+ 				}
+ 			},
+@@ -340,7 +340,7 @@ impl Metrics {
  							.inc();
  					});
  					self.notifications_sizes
 -						.with_label_values(&[protocol, "received", name])
 +						.with_label_values(&[<_ as AsRef<str>>::as_ref(&protocol), "received", name])
  						.inc_by(u64::try_from(message.len()).unwrap_or(u64::MAX));
- 				},
- 		}
+ 				}
+ 			},

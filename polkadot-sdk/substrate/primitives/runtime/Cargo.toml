@@ -1,6 +1,6 @@
 [package]
 name = "sp-runtime"
-version = "45.0.0"
+version = "46.0.0"
 license = "Apache-2.0"
 description = "Runtime Modules shared primitive types."
 documentation = "https://docs.rs/sp-runtime"

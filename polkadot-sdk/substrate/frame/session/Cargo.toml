@@ -1,6 +1,6 @@
 [package]
 name = "pallet-session"
-version = "45.2.0"
+version = "46.0.0"
 license = "Apache-2.0"
 description = "FRAME sessions pallet"
 readme = "README.md"

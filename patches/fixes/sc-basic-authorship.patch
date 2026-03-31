@@ -1,8 +1,8 @@
 diff --git a/substrate/client/basic-authorship/src/basic_authorship.rs b/substrate/client/basic-authorship/src/basic_authorship.rs
-index b3519f4..79653db 100644
+index b9cd2abc..27597f36 100644
 --- a/substrate/client/basic-authorship/src/basic_authorship.rs
 +++ b/substrate/client/basic-authorship/src/basic_authorship.rs
-@@ -374,18 +374,18 @@ where
+@@ -346,18 +346,18 @@ where
  
  		for inherent in inherents {
  			match block_builder.push(inherent) {
@@ -16,7 +16,7 @@ index b3519f4..79653db 100644
  					error!(
  						"❌️ Mandatory inherent extrinsic returned error. Block cannot be produced."
  					);
- 					return Err(ApplyExtrinsicFailed(Validity(e)))
+ 					return Err(ApplyExtrinsicFailed(Validity(e)));
  				},
 +				Err(ApplyExtrinsicFailed(Validity(e))) if e.exhausted_resources() => {
 +					warn!(

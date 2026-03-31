@@ -33,7 +33,6 @@ use sp_arithmetic::{
 	traits::{BaseArithmetic, SaturatedConversion, Unsigned},
 	Perbill,
 };
-use sp_debug_derive::RuntimeDebug;
 
 pub use weight_meter::*;
 pub use weight_v2::*;
@@ -52,7 +51,7 @@ pub mod constants {
 ///
 /// NOTE: This is currently only measured in computational time, and will probably
 /// be updated all together once proof size is accounted for.
-#[derive(Clone, Copy, Eq, PartialEq, Default, RuntimeDebug, Encode, Decode)]
+#[derive(Clone, Copy, Eq, PartialEq, Default, Debug, Encode, Decode)]
 pub struct RuntimeDbWeight {
 	pub read: u64,
 	pub write: u64,

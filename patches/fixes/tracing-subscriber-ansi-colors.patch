@@ -1,0 +1,16 @@
+diff --git a/substrate/client/tracing/src/logging/mod.rs b/substrate/client/tracing/src/logging/mod.rs
+index bdbc4fedcd..5eebeb1cc9 100644
+--- a/substrate/client/tracing/src/logging/mod.rs
++++ b/substrate/client/tracing/src/logging/mod.rs
+@@ -200,6 +200,10 @@ where
+ 	};
+ 	let builder = FmtSubscriber::builder().with_env_filter(env_filter);
+ 
++	// This allows malicious ANSI in logs in exchange for allowing colors, as per the behavior of
++	// 0.3.19: https://github.com/tokio-rs/tracing/issues/3378
++	let builder = builder.with_ansi_sanitization(false);
++
+ 	let builder = builder.with_span_events(format::FmtSpan::NONE);
+ 
+ 	let builder = builder.with_writer(MakeStderrWriter::default());
+

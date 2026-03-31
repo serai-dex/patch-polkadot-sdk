@@ -1,6 +1,6 @@
 [package]
 name = "sc-executor-wasmtime"
-version = "0.43.0"
+version = "0.44.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Defines a `WasmRuntime` that uses the Wasmtime JIT to execute."
 readme = "README.md"

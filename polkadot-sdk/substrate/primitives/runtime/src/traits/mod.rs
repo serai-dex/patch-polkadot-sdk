@@ -23,7 +23,7 @@ use crate::{
 		TransactionSource, TransactionValidity, TransactionValidityError, UnknownTransaction,
 		ValidTransaction,
 	},
-	DispatchResult, OpaqueExtrinsic,
+	DispatchResult, KeyTypeId, OpaqueExtrinsic,
 };
 use alloc::vec::Vec;
 use codec::{
@@ -38,11 +38,11 @@ use sp_application_crypto::AppCrypto;
 pub use sp_arithmetic::traits::{
 	checked_pow, ensure_pow, AtLeast32Bit, AtLeast32BitUnsigned, Bounded, CheckedAdd, CheckedDiv,
 	CheckedMul, CheckedShl, CheckedShr, CheckedSub, Ensure, EnsureAdd, EnsureAddAssign, EnsureDiv,
-	EnsureDivAssign, EnsureFixedPointNumber, EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign,
+	EnsureDivAssign, /* EnsureFixedPointNumber, */ EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign,
 	EnsureOp, EnsureOpAssign, EnsureSub, EnsureSubAssign, IntegerSquareRoot, One,
 	SaturatedConversion, Saturating, UniqueSaturatedFrom, UniqueSaturatedInto, Zero,
 };
-use sp_core::{self, storage::StateVersion, Hasher, RuntimeDebug, TypeId, U256};
+use sp_core::{self, storage::StateVersion, Hasher, TypeId, U256};
 #[doc(hidden)]
 pub use sp_core::{
 	parameter_types, ConstBool, ConstI128, ConstI16, ConstI32, ConstI64, ConstI8, ConstInt,
@@ -108,6 +108,14 @@ impl IdentifyAccount for sp_core::ecdsa::Public {
 }
 */
 
+#[cfg(feature = "bls-experimental")]
+impl IdentifyAccount for sp_core::ecdsa_bls381::Public {
+	type AccountId = Self;
+	fn into_account(self) -> Self {
+		self
+	}
+}
+
 /// Means of signature verification.
 pub trait Verify {
 	/// Type of the signer.
@@ -153,6 +161,14 @@ impl Verify for sp_core::ecdsa::Signature {
 		}
 	}
 }
+
+#[cfg(feature = "bls-experimental")]
+impl Verify for sp_core::ecdsa_bls381::Signature {
+	type Signer = sp_core::ecdsa_bls381::Public;
+	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa_bls381::Public) -> bool {
+		<sp_core::ecdsa_bls381::Pair as sp_core::Pair>::verify(self, msg.get(), signer)
+	}
+}
 */
 
 /// Means of signature verification of an application key.
@@ -192,7 +208,7 @@ where
 }
 
 /// An error type that indicates that the origin is invalid.
-#[derive(Encode, Decode, RuntimeDebug)]
+#[derive(Encode, Decode, Debug)]
 pub struct BadOrigin;
 
 impl From<BadOrigin> for &'static str {
@@ -202,7 +218,7 @@ impl From<BadOrigin> for &'static str {
 }
 
 /// An error that indicates that a lookup failed.
-#[derive(Encode, Decode, RuntimeDebug)]
+#[derive(Encode, Decode, Debug)]
 pub struct LookupError;
 
 impl From<LookupError> for &'static str {
@@ -1047,7 +1063,7 @@ impl<T> HashOutput for T where
 }
 
 /// Blake2-256 Hash implementation.
-#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct BlakeTwo256;
 
@@ -1074,7 +1090,7 @@ impl Hash for BlakeTwo256 {
 }
 
 /// Keccak-256 Hash implementation.
-#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Keccak256;
 
@@ -1622,7 +1638,7 @@ impl Dispatchable for () {
 }
 
 /// Dispatchable impl containing an arbitrary value which panics if it actually is dispatched.
-#[derive(Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, RuntimeDebug)]
+#[derive(Clone, Eq, PartialEq, Encode, Decode, DecodeWithMemTracking, Debug)]
 pub struct FakeDispatchable<Inner>(pub Inner);
 impl<Inner> From<Inner> for FakeDispatchable<Inner> {
 	fn from(inner: Inner) -> Self {
@@ -1920,21 +1936,25 @@ pub trait ValidateUnsigned {
 /// Opaque data type that may be destructured into a series of raw byte slices (which represent
 /// individual keys).
 pub trait OpaqueKeys: Clone {
-	/// Types bound to this opaque keys that provide the key type ids returned.
+	/// The types that are bound to the [`KeyTypeId`]s.
+	///
+	/// They can be seen as the ones working with the keys associated to the [`KeyTypeId`]s.
 	type KeyTypeIdProviders;
 
 	/// Return the key-type IDs supported by this set.
-	fn key_ids() -> &'static [crate::KeyTypeId];
+	fn key_ids() -> &'static [KeyTypeId];
+
 	/// Get the raw bytes of key with key-type ID `i`.
-	fn get_raw(&self, i: super::KeyTypeId) -> &[u8];
+	fn get_raw(&self, i: KeyTypeId) -> &[u8];
+
 	/// Get the decoded key with key-type ID `i`.
-	fn get<T: Decode>(&self, i: super::KeyTypeId) -> Option<T> {
+	fn get<T: Decode>(&self, i: KeyTypeId) -> Option<T> {
 		T::decode(&mut self.get_raw(i)).ok()
 	}
-	/// Verify a proof of ownership for the keys.
-	fn ownership_proof_is_valid(&self, _proof: &[u8]) -> bool {
-		true
-	}
+
+	/// Proof the ownership of `owner` over the keys using `proof`.
+	#[must_use]
+	fn ownership_proof_is_valid(&self, owner: &[u8], proof: &[u8]) -> bool;
 }
 
 /// Input that adds infinite number of zero after wrapped input.
@@ -1970,7 +1990,7 @@ impl<'a, T: codec::Input> codec::Input for AppendZerosInput<'a, T> {
 					into[i] = b;
 					i += 1;
 				} else {
-					break
+					break;
 				}
 			}
 			i
@@ -2087,7 +2107,7 @@ impl<T: Encode + Decode, Id: Encode + Decode + TypeId> AccountIdConversion<T> fo
 	fn try_from_sub_account<S: Decode>(x: &T) -> Option<(Self, S)> {
 		x.using_encoded(|d| {
 			if d[0..4] != Id::TYPE_ID {
-				return None
+				return None;
 			}
 			let mut cursor = &d[4..];
 			let result = Decode::decode(&mut cursor).ok()?;
@@ -2130,15 +2150,18 @@ macro_rules! impl_opaque_keys_inner {
 				$( #[ $inner_attr:meta ] )*
 				pub $field:ident: $type:ty,
 			)*
-		}
+		},
+		$crate_path:path,
 	) => {
 		$( #[ $attr ] )*
+		///
+		#[doc = concat!("Generated by [`impl_opaque_keys!`](", stringify!($crate_path),"::impl_opaque_keys).")]
 		#[derive(
 			Clone, PartialEq, Eq,
 			$crate::codec::Encode,
 			$crate::codec::Decode,
 			$crate::codec::DecodeWithMemTracking,
-			$crate::RuntimeDebug,
+			Debug,
 		)]
 		pub struct $name {
 			$(
@@ -2152,9 +2175,30 @@ macro_rules! impl_opaque_keys_inner {
 			///
 			/// The generated key pairs are stored in the keystore.
 			///
-			/// Returns the concatenated SCALE encoded public keys.
-			pub fn generate(seed: Option<$crate::Vec<u8>>) -> $crate::Vec<u8> {
-				let keys = Self{
+			/// - `owner`: Some bytes that will be signed by the generated private keys.
+			/// These signatures are put into a tuple in the same order as the public keys.
+			/// The SCALE encoded signature tuple corresponds to the `proof` returned by this
+			/// function.
+			///
+			/// - `seed`: Optional `seed` for seeding the private key generation.
+			///
+			/// Returns the generated public session keys and proof.
+			#[allow(dead_code)]
+			pub fn generate(
+				owner: &[u8],
+				seed: Option<$crate::sp_std::vec::Vec<u8>>,
+			) -> $crate::traits::GeneratedSessionKeys<
+				Self,
+				(
+					$(
+						<
+							<$type as $crate::BoundToRuntimeAppPublic>::Public
+								as $crate::RuntimeAppPublic
+						>::ProofOfPossession
+					),*
+				)
+			> {
+				let mut keys = Self {
 					$(
 						$field: <
 							<
@@ -2163,10 +2207,18 @@ macro_rules! impl_opaque_keys_inner {
 						>::generate_pair(seed.clone()),
 					)*
 				};
-				$crate::codec::Encode::encode(&keys)
+
+				let proof = keys.create_ownership_proof(owner)
+					.expect("Private key that was generated a moment ago, should exist");
+
+				$crate::traits::GeneratedSessionKeys {
+					keys,
+					proof
+				}
 			}
 
 			/// Converts `Self` into a `Vec` of `(raw public key, KeyTypeId)`.
+			#[allow(dead_code)]
 			pub fn into_raw_public_keys(
 				self,
 			) -> $crate::Vec<($crate::Vec<u8>, $crate::KeyTypeId)> {
@@ -2189,12 +2241,44 @@ macro_rules! impl_opaque_keys_inner {
 			/// keys (see [`Self::into_raw_public_keys`]).
 			///
 			/// Returns `None` when the decoding failed, otherwise `Some(_)`.
+			#[allow(dead_code)]
 			pub fn decode_into_raw_public_keys(
 				encoded: &[u8],
 			) -> Option<$crate::Vec<($crate::Vec<u8>, $crate::KeyTypeId)>> {
 				<Self as $crate::codec::Decode>::decode(&mut &encoded[..])
 					.ok()
 					.map(|s| s.into_raw_public_keys())
+			}
+
+			/// Create the ownership proof.
+			///
+			/// - `owner`: Some bytes that will be signed by the private keys associated to the
+			/// public keys in this session key object. These signatures are put into a tuple in
+			/// the same order as the public keys. The SCALE encoded signature tuple corresponds
+			/// to the `proof` returned by this function.
+			///
+			/// Returns the SCALE encoded proof that will proof the ownership of the keys for `user`.
+			/// An error is returned if the signing of `user` failed, e.g. a private key isn't present in the keystore.
+			#[allow(dead_code)]
+			pub fn create_ownership_proof(
+				&mut self,
+				owner: &[u8],
+			) -> $crate::sp_std::result::Result<
+				(
+					$(
+						<
+							<$type as $crate::BoundToRuntimeAppPublic>::Public
+								as $crate::RuntimeAppPublic
+						>::ProofOfPossession
+					),*
+				),
+				()
+			> {
+				let res = ($(
+					$crate::RuntimeAppPublic::generate_proof_of_possession(&mut self.$field, &owner).ok_or(())?
+				),*);
+
+				Ok(res)
 			}
 		}
 
@@ -2226,14 +2310,62 @@ macro_rules! impl_opaque_keys_inner {
 					_ => &[],
 				}
 			}
+
+			fn ownership_proof_is_valid(&self, owner: &[u8], proof: &[u8]) -> bool {
+				// The proof is expected to be a tuple of all the signatures.
+				let Ok(proof) = <($(
+						<
+							<
+								$type as $crate::BoundToRuntimeAppPublic
+							>::Public as $crate::RuntimeAppPublic
+						>::ProofOfPossession
+				),*) as $crate::codec::DecodeAll>::decode_all(&mut &proof[..]) else {
+					return false
+				};
+
+				// "unpack" the proof so that we can access the individual signatures.
+				let ( $( $field ),* ) = proof;
+
+				// Verify that all the signatures signed `owner`.
+				$(
+					let valid = $crate::RuntimeAppPublic::verify_proof_of_possession(&self.$field, &owner, &$field);
+
+					if !valid {
+						// We found an invalid signature.
+						return false
+					}
+				)*
+
+				true
+			}
 		}
 	};
 }
 
-/// Implement `OpaqueKeys` for a described struct.
+/// The output of generating session keys.
+///
+/// Contains the public session keys and a `proof` to verify the ownership of these keys.
+///
+/// To generate session keys the [`impl_opaque_keys!`](crate::impl_opaque_keys) needs to be used
+/// first to create the session keys type and this type provides the `generate` function.
+#[derive(Debug, Clone, Encode, Decode)]
+pub struct GeneratedSessionKeys<Keys, Proof> {
+	/// The opaque public session keys for registering on-chain.
+	pub keys: Keys,
+	/// The opaque proof to verify the ownership of the keys.
+	pub proof: Proof,
+}
+
+/// Implement [`OpaqueKeys`] for a described struct.
 ///
 /// Every field type must implement [`BoundToRuntimeAppPublic`](crate::BoundToRuntimeAppPublic).
-/// `KeyTypeIdProviders` is set to the types given as fields.
+/// The [`KeyTypeIdProviders`](OpaqueKeys::KeyTypeIdProviders) type is set to tuple of all field
+/// types passed to the macro.
+///
+/// The `proof` type used by the generated session keys for
+/// [`ownership_proof_is_valid`](OpaqueKeys::ownership_proof_is_valid) is the SCALE encoded tuple of
+/// all signatures. The order of the signatures is the same as the order of the fields in the
+/// struct. Each signature is created by signing the `owner` given to the `generate` function.
 ///
 /// ```rust
 /// use sp_runtime::{
@@ -2277,7 +2409,8 @@ macro_rules! impl_opaque_keys {
 						$( #[ $inner_attr ] )*
 						pub $field: $type,
 					)*
-				}
+				},
+				$crate,
 			}
 		}
 	}
@@ -2303,7 +2436,8 @@ macro_rules! impl_opaque_keys {
 					$( #[ $inner_attr ] )*
 					pub $field: $type,
 				)*
-			}
+			},
+			$crate,
 		}
 	}
 }

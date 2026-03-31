@@ -79,8 +79,9 @@ where
 				break;
 			};
 			match payload {
-				WorkerPayload::RevalidateView(view, worker_channels) =>
-					view.revalidate(worker_channels).await,
+				WorkerPayload::RevalidateView(view, worker_channels) => {
+					view.revalidate(worker_channels).await
+				},
 				WorkerPayload::RevalidateMempool(
 					mempool,
 					view_store,
@@ -195,6 +196,6 @@ where
 }
 
 #[cfg(test)]
-//todo: add more tests [#5480]
+// todo: add more tests [#5480]
 mod tests {
 }

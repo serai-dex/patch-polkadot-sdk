@@ -119,7 +119,6 @@
 //! 1. If no timestamp is set at the end of a block.
 //!
 //! 2. If a timestamp is set more than once per block:
-//!
 //! 3. If a timestamp is set before the [`Config::MinimumPeriod`] is elapsed:
 #![deny(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]

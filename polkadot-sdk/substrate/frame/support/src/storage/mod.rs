@@ -1100,7 +1100,7 @@ impl<T, OnRemoval: PrefixIteratorOnRemoval> Iterator for PrefixIterator<T, OnRem
 								"next_key returned a key with no value at {:?}",
 								self.previous_key,
 							);
-							continue
+							continue;
 						},
 					};
 					if self.drain {
@@ -1116,14 +1116,14 @@ impl<T, OnRemoval: PrefixIteratorOnRemoval> Iterator for PrefixIterator<T, OnRem
 								self.previous_key,
 								e,
 							);
-							continue
+							continue;
 						},
 					};
 
 					Some(item)
 				},
 				None => None,
-			}
+			};
 		}
 	}
 }
@@ -1198,12 +1198,12 @@ impl<T> Iterator for KeyPrefixIterator<T> {
 					Ok(item) => return Some(item),
 					Err(e) => {
 						log::error!("key failed to decode at {:?}: {:?}", self.previous_key, e);
-						continue
+						continue;
 					},
 				}
 			}
 
-			return None
+			return None;
 		}
 	}
 }
@@ -1313,7 +1313,7 @@ impl<T> Iterator for ChildTriePrefixIterator<T> {
 								"next_key returned a key with no value at {:?}",
 								self.previous_key,
 							);
-							continue
+							continue;
 						},
 					};
 					if self.drain {
@@ -1328,14 +1328,14 @@ impl<T> Iterator for ChildTriePrefixIterator<T> {
 								self.previous_key,
 								e,
 							);
-							continue
+							continue;
 						},
 					};
 
 					Some(item)
 				},
 				None => None,
-			}
+			};
 		}
 	}
 }
@@ -1457,7 +1457,7 @@ pub trait StoragePrefixedMap<Value: FullCodec> {
 				},
 				None => {
 					log::error!("old key failed to decode at {:?}", previous_key);
-					continue
+					continue;
 				},
 			}
 		}

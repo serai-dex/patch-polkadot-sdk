@@ -20,7 +20,6 @@
 
 use sc_consensus::IncomingBlock;
 use sp_consensus::BlockOrigin;
-pub use sp_consensus_grandpa::{AuthorityList, SetId};
 
 use crate::{
 	block_relay_protocol::{BlockDownloader, BlockResponseError},
@@ -60,12 +59,25 @@ pub struct WarpProofRequest<B: BlockT> {
 	pub begin: B::Hash,
 }
 
+/// Verifier for warp sync proofs. Each verifier operates in a specific context.
+pub trait Verifier<Block: BlockT>: Send + Sync {
+	/// Verify a warp sync proof.
+	fn verify(
+		&mut self,
+		proof: &EncodedProof,
+	) -> Result<VerificationResult<Block>, Box<dyn std::error::Error + Send + Sync>>;
+	/// Hash to be used as the starting point for the next proof request.
+	fn next_proof_context(&self) -> Block::Hash;
+	/// Get status text for progress reporting
+	fn status(&self) -> Option<String>;
+}
+
 /// Proof verification result.
 pub enum VerificationResult<Block: BlockT> {
 	/// Proof is valid, but the target was not reached.
-	Partial(SetId, AuthorityList, Block::Hash, Vec<(Block::Header, Justifications)>),
+	Partial(Vec<(Block::Header, Justifications)>),
 	/// Target finality is proved.
-	Complete(SetId, AuthorityList, Block::Header, Vec<(Block::Header, Justifications)>),
+	Complete(Block::Header, Vec<(Block::Header, Justifications)>),
 }
 
 /// Warp sync backend. Handles retrieving and verifying warp sync proofs.
@@ -76,16 +88,8 @@ pub trait WarpSyncProvider<Block: BlockT>: Send + Sync {
 		&self,
 		start: Block::Hash,
 	) -> Result<EncodedProof, Box<dyn std::error::Error + Send + Sync>>;
-	/// Verify warp proof against current set of authorities.
-	fn verify(
-		&self,
-		proof: &EncodedProof,
-		set_id: SetId,
-		authorities: AuthorityList,
-	) -> Result<VerificationResult<Block>, Box<dyn std::error::Error + Send + Sync>>;
-	/// Get current list of authorities. This is supposed to be genesis authorities when starting
-	/// sync.
-	fn current_authorities(&self) -> AuthorityList;
+	/// Create a verifier for warp sync proofs.
+	fn create_verifier(&self) -> Box<dyn Verifier<Block>>;
 }
 
 mod rep {
@@ -115,7 +119,7 @@ mod rep {
 pub enum WarpSyncPhase<Block: BlockT> {
 	/// Waiting for peers to connect.
 	AwaitingPeers { required_peers: usize },
-	/// Downloading and verifying grandpa warp proofs.
+	/// Downloading and verifying warp proofs.
 	DownloadingWarpProofs,
 	/// Downloading target block.
 	DownloadingTargetBlock,
@@ -132,8 +136,9 @@ pub enum WarpSyncPhase<Block: BlockT> {
 impl<Block: BlockT> fmt::Display for WarpSyncPhase<Block> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		match self {
-			Self::AwaitingPeers { required_peers } =>
-				write!(f, "Waiting for {required_peers} peers to be connected"),
+			Self::AwaitingPeers { required_peers } => {
+				write!(f, "Waiting for {required_peers} peers to be connected")
+			},
 			Self::DownloadingWarpProofs => write!(f, "Downloading finality proofs"),
 			Self::DownloadingTargetBlock => write!(f, "Downloading target block"),
 			Self::DownloadingState => write!(f, "Downloading state"),
@@ -151,6 +156,8 @@ pub struct WarpSyncProgress<Block: BlockT> {
 	pub phase: WarpSyncPhase<Block>,
 	/// Total bytes downloaded so far.
 	pub total_bytes: u64,
+	/// Optional status text from the verifier.
+	pub status: Option<String>,
 }
 
 /// Warp sync configuration as accepted by [`WarpSync`].
@@ -168,12 +175,7 @@ enum Phase<B: BlockT> {
 	/// Waiting for enough peers to connect.
 	WaitingForPeers { warp_sync_provider: Arc<dyn WarpSyncProvider<B>> },
 	/// Downloading warp proofs.
-	WarpProof {
-		set_id: SetId,
-		authorities: AuthorityList,
-		last_hash: B::Hash,
-		warp_sync_provider: Arc<dyn WarpSyncProvider<B>>,
-	},
+	WarpProof { verifier: Box<dyn Verifier<B>> },
 	/// Downloading target block.
 	TargetBlock(B::Header),
 	/// Warp sync is complete.
@@ -204,9 +206,8 @@ pub struct WarpSyncResult<B: BlockT> {
 }
 
 /// Warp sync state machine. Accumulates warp proofs and state.
-pub struct WarpSync<B: BlockT, Client> {
+pub struct WarpSync<B: BlockT> {
 	phase: Phase<B>,
-	client: Arc<Client>,
 	total_proof_bytes: u64,
 	total_state_bytes: u64,
 	peers: HashMap<PeerId, Peer<B>>,
@@ -219,10 +220,9 @@ pub struct WarpSync<B: BlockT, Client> {
 	min_peers_to_start_warp_sync: usize,
 }
 
-impl<B, Client> WarpSync<B, Client>
+impl<B> WarpSync<B>
 where
 	B: BlockT,
-	Client: HeaderBackend<B> + 'static,
 {
 	/// Strategy key used by warp sync.
 	pub const STRATEGY_KEY: StrategyKey = StrategyKey::new("Warp");
@@ -230,13 +230,16 @@ where
 	/// Create a new instance. When passing a warp sync provider we will be checking for proof and
 	/// authorities. Alternatively we can pass a target block when we want to skip downloading
 	/// proofs, in this case we will continue polling until the target block is known.
-	pub fn new(
+	pub fn new<Client>(
 		client: Arc<Client>,
 		warp_sync_config: WarpSyncConfig<B>,
 		protocol_name: Option<ProtocolName>,
 		block_downloader: Arc<dyn BlockDownloader<B>>,
 		min_peers_to_start_warp_sync: Option<usize>,
-	) -> Self {
+	) -> Self
+	where
+		Client: HeaderBackend<B> + 'static,
+	{
 		let min_peers_to_start_warp_sync =
 			min_peers_to_start_warp_sync.unwrap_or(MIN_PEERS_TO_START_WARP_SYNC);
 		if client.info().finalized_state.is_some() {
@@ -245,7 +248,6 @@ where
 				"Can't use warp sync mode with a partially synced database. Reverting to full sync mode."
 			);
 			return Self {
-				client,
 				phase: Phase::Complete,
 				total_proof_bytes: 0,
 				total_state_bytes: 0,
@@ -256,17 +258,17 @@ where
 				actions: vec![SyncingAction::Finished],
 				result: None,
 				min_peers_to_start_warp_sync,
-			}
+			};
 		}
 
 		let phase = match warp_sync_config {
-			WarpSyncConfig::WithProvider(warp_sync_provider) =>
-				Phase::WaitingForPeers { warp_sync_provider },
+			WarpSyncConfig::WithProvider(warp_sync_provider) => {
+				Phase::WaitingForPeers { warp_sync_provider }
+			},
 			WarpSyncConfig::WithTarget(target_header) => Phase::TargetBlock(target_header),
 		};
 
 		Self {
-			client,
 			phase,
 			total_proof_bytes: 0,
 			total_state_bytes: 0,
@@ -326,16 +328,12 @@ where
 		let Phase::WaitingForPeers { warp_sync_provider } = &self.phase else { return };
 
 		if self.peers.len() < self.min_peers_to_start_warp_sync {
-			return
+			return;
 		}
 
-		self.phase = Phase::WarpProof {
-			set_id: 0,
-			authorities: warp_sync_provider.current_authorities(),
-			last_hash: self.client.info().genesis_hash,
-			warp_sync_provider: Arc::clone(warp_sync_provider),
-		};
-		trace!(target: LOG_TARGET, "Started warp sync with {} peers.", self.peers.len());
+		let verifier = warp_sync_provider.create_verifier();
+		self.phase = Phase::WarpProof { verifier };
+		debug!(target: LOG_TARGET, "Started warp sync with {} peers.", self.peers.len());
 	}
 
 	pub fn on_generic_response(
@@ -396,13 +394,11 @@ where
 			peer.state = PeerState::Available;
 		}
 
-		let Phase::WarpProof { set_id, authorities, last_hash, warp_sync_provider } =
-			&mut self.phase
-		else {
+		let Phase::WarpProof { verifier } = &mut self.phase else {
 			debug!(target: LOG_TARGET, "Unexpected warp proof response");
 			self.actions
 				.push(SyncingAction::DropPeer(BadPeer(*peer_id, rep::UNEXPECTED_RESPONSE)));
-			return
+			return;
 		};
 
 		let proof_to_incoming_block =
@@ -424,36 +420,53 @@ where
 				}
 			};
 
-		match warp_sync_provider.verify(&response, *set_id, authorities.clone()) {
+		match verifier.verify(&response) {
 			Err(e) => {
 				debug!(target: LOG_TARGET, "Bad warp proof response: {}", e);
 				self.actions
 					.push(SyncingAction::DropPeer(BadPeer(*peer_id, rep::BAD_WARP_PROOF)))
 			},
-			Ok(VerificationResult::Partial(new_set_id, new_authorities, new_last_hash, proofs)) => {
-				log::debug!(target: LOG_TARGET, "Verified partial proof, set_id={:?}", new_set_id);
-				*set_id = new_set_id;
-				*authorities = new_authorities;
-				*last_hash = new_last_hash;
+			Ok(VerificationResult::Partial(proofs)) => {
+				debug!(target: LOG_TARGET, "Verified partial proof");
 				self.total_proof_bytes += response.0.len() as u64;
 				self.actions.push(SyncingAction::ImportBlocks {
-					origin: BlockOrigin::NetworkInitialSync,
+					origin: BlockOrigin::WarpSync,
 					blocks: proofs.into_iter().map(proof_to_incoming_block).collect(),
 				});
 			},
-			Ok(VerificationResult::Complete(new_set_id, _, header, proofs)) => {
-				log::debug!(
+			Ok(VerificationResult::Complete(header, proofs)) => {
+				debug!(
 					target: LOG_TARGET,
-					"Verified complete proof, set_id={:?}. Continuing with target block download: {} ({}).",
-					new_set_id,
+					"Verified complete proof. Continuing with target block download: {} ({}).",
 					header.hash(),
 					header.number(),
 				);
 				self.total_proof_bytes += response.0.len() as u64;
-				self.phase = Phase::TargetBlock(header);
+				self.phase = Phase::TargetBlock(header.clone());
+				let incoming_blocks: Vec<_> = proofs
+					.into_iter()
+					.map(proof_to_incoming_block)
+					.filter(|i| {
+						// We need target block with state and warp sync does not provide this.
+						// That's why we filter out target block here, otherwise oncoming state sync
+						// (which comes after warp sync) will abort because target block is already
+						// imported.
+						if header.number() != i.header.as_ref().unwrap().number() {
+							true
+						} else {
+							log::trace!(
+								target: LOG_TARGET,
+								"Filtered out target block: {} ({})",
+								header.hash(),
+								header.number()
+							);
+							false
+						}
+					})
+					.collect();
 				self.actions.push(SyncingAction::ImportBlocks {
-					origin: BlockOrigin::NetworkInitialSync,
-					blocks: proofs.into_iter().map(proof_to_incoming_block).collect(),
+					origin: BlockOrigin::WarpSync,
+					blocks: incoming_blocks,
 				});
 			},
 		}
@@ -483,7 +496,7 @@ where
 
 		let Phase::TargetBlock(header) = &mut self.phase else {
 			debug!(target: LOG_TARGET, "Unexpected target block response from {peer_id}");
-			return Err(BadPeer(peer_id, rep::UNEXPECTED_RESPONSE))
+			return Err(BadPeer(peer_id, rep::UNEXPECTED_RESPONSE));
 		};
 
 		if blocks.is_empty() {
@@ -491,7 +504,7 @@ where
 				target: LOG_TARGET,
 				"Downloading target block failed: empty block response from {peer_id}",
 			);
-			return Err(BadPeer(peer_id, rep::NO_BLOCK))
+			return Err(BadPeer(peer_id, rep::NO_BLOCK));
 		}
 
 		if blocks.len() > 1 {
@@ -500,7 +513,7 @@ where
 				"Too many blocks ({}) in warp target block response from {peer_id}",
 				blocks.len(),
 			);
-			return Err(BadPeer(peer_id, rep::NOT_REQUESTED))
+			return Err(BadPeer(peer_id, rep::NOT_REQUESTED));
 		}
 
 		validate_blocks::<B>(&blocks, &peer_id, Some(request))?;
@@ -512,7 +525,7 @@ where
 				target: LOG_TARGET,
 				"Downloading target block failed: missing header in response from {peer_id}.",
 			);
-			return Err(BadPeer(peer_id, rep::VERIFICATION_FAIL))
+			return Err(BadPeer(peer_id, rep::VERIFICATION_FAIL));
 		};
 
 		if block_header != header {
@@ -520,7 +533,7 @@ where
 				target: LOG_TARGET,
 				"Downloading target block failed: different header in response from {peer_id}.",
 			);
-			return Err(BadPeer(peer_id, rep::VERIFICATION_FAIL))
+			return Err(BadPeer(peer_id, rep::VERIFICATION_FAIL));
 		}
 
 		if block.body.is_none() {
@@ -528,7 +541,7 @@ where
 				target: LOG_TARGET,
 				"Downloading target block failed: missing body in response from {peer_id}.",
 			);
-			return Err(BadPeer(peer_id, rep::VERIFICATION_FAIL))
+			return Err(BadPeer(peer_id, rep::VERIFICATION_FAIL));
 		}
 
 		self.result = Some(WarpSyncResult {
@@ -549,7 +562,7 @@ where
 	) -> Option<PeerId> {
 		let mut targets: Vec<_> = self.peers.values().map(|p| p.best_number).collect();
 		if targets.is_empty() {
-			return None
+			return None;
 		}
 		targets.sort();
 		let median = targets[targets.len() / 2];
@@ -562,7 +575,7 @@ where
 				self.disconnected_peers.is_peer_available(peer_id)
 			{
 				peer.state = new_state;
-				return Some(*peer_id)
+				return Some(*peer_id);
 			}
 		}
 		None
@@ -570,10 +583,10 @@ where
 
 	/// Produce warp proof request.
 	fn warp_proof_request(&mut self) -> Option<(PeerId, ProtocolName, WarpProofRequest<B>)> {
-		let Phase::WarpProof { last_hash, .. } = &self.phase else { return None };
+		let Phase::WarpProof { verifier } = &self.phase else { return None };
 
-		// Copy `last_hash` early to cut the borrowing tie.
-		let begin = *last_hash;
+		// Copy verifier context early to cut the borrowing tie.
+		let begin = verifier.next_proof_context();
 
 		if self
 			.peers
@@ -581,7 +594,7 @@ where
 			.any(|peer| matches!(peer.state, PeerState::DownloadingProofs))
 		{
 			// Only one warp proof request at a time is possible.
-			return None
+			return None;
 		}
 
 		let peer_id = self.schedule_next_peer(PeerState::DownloadingProofs, None)?;
@@ -610,7 +623,7 @@ where
 			.any(|peer| matches!(peer.state, PeerState::DownloadingTargetBlock))
 		{
 			// Only one target block request at a time is possible.
-			return None
+			return None;
 		}
 
 		// Cut the borrowing tie.
@@ -649,18 +662,22 @@ where
 					required_peers: self.min_peers_to_start_warp_sync,
 				},
 				total_bytes: self.total_proof_bytes,
+				status: None,
 			},
-			Phase::WarpProof { .. } => WarpSyncProgress {
+			Phase::WarpProof { verifier } => WarpSyncProgress {
 				phase: WarpSyncPhase::DownloadingWarpProofs,
 				total_bytes: self.total_proof_bytes,
+				status: verifier.status(),
 			},
 			Phase::TargetBlock(_) => WarpSyncProgress {
 				phase: WarpSyncPhase::DownloadingTargetBlock,
 				total_bytes: self.total_proof_bytes,
+				status: None,
 			},
 			Phase::Complete => WarpSyncProgress {
 				phase: WarpSyncPhase::Complete,
 				total_bytes: self.total_proof_bytes + self.total_state_bytes,
+				status: None,
 			},
 		}
 	}

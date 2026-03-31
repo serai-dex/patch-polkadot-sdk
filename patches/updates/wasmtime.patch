@@ -3,8 +3,8 @@ index d6ab3e13..cc080d8b 100644
 --- a/substrate/client/executor/wasmtime/Cargo.toml
 +++ b/substrate/client/executor/wasmtime/Cargo.toml
 @@ -31,26 +31,22 @@ sc-executor-common.workspace = true
- sp-runtime-interface.default-features = true
- sp-runtime-interface.workspace = true
+ sc-executor-common = { default-features = true, workspace = true }
+ sp-runtime-interface = { default-features = true, workspace = true }
  sp-wasm-interface = { features = ["wasmtime"], workspace = true, default-features = true }
 -wasmtime = { features = [
 +wasmtime = { default-features = false, features = [

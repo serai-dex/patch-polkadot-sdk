@@ -362,7 +362,7 @@ const SYSTEM_PALLET_NAME: &str = "System";
 		return Err(syn::Error::new(
 			system_pallet.name.span(),
 			"`System` pallet declaration is feature gated, please remove any `#[cfg]` attributes",
-		))
+		));
 	}
 
 	let features = pallets
@@ -445,7 +445,7 @@ const SYSTEM_PALLET_NAME: &str = "System";
 		};
 
 		#[derive(
-			Clone, Copy, PartialEq, Eq, #scrate::sp_runtime::RuntimeDebug,
+			Clone, Copy, PartialEq, Eq, core::fmt::Debug,
 		)]
 		pub struct #name;
 		impl #scrate::sp_runtime::traits::GetRuntimeBlockType for #name {
@@ -774,7 +774,7 @@ pub(crate) fn check_pallet_number(input: TokenStream2, pallet_num: usize) -> Res
 					""
 				},
 			),
-		))
+		));
 	}
 
 	Ok(())

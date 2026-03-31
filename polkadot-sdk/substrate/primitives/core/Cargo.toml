@@ -1,6 +1,6 @@
 [package]
 name = "sp-core"
-version = "39.0.0"
+version = "40.0.0"
 license = "Apache-2.0"
 description = "Shareable Substrate types."
 documentation = "https://docs.rs/sp-core"
@@ -104,9 +104,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.sp-debug-derive]
-workspace = true
-
 [dependencies.sp-externalities]
 optional = true
 workspace = true
@@ -184,7 +181,6 @@ std = [
     "schnorrkel/std",
     "serde/std",
     "sp-crypto-hashing/std",
-    "sp-debug-derive/std",
     "sp-externalities/std",
     "sp-storage/std",
     "ss58-registry/std",

@@ -1,6 +1,6 @@
 [package]
 name = "sp-api"
-version = "40.0.0"
+version = "41.0.0"
 license = "Apache-2.0"
 description = "Substrate runtime api primitives"
 readme = "README.md"

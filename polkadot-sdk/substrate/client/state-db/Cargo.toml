@@ -1,6 +1,6 @@
 [package]
 name = "sc-state-db"
-version = "0.41.0"
+version = "0.42.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "State database maintenance. Handles canonicalization and pruning in the database."
 readme = "README.md"

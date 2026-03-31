@@ -1,6 +1,6 @@
 [package]
 name = "frame-support"
-version = "45.1.0"
+version = "46.0.0"
 license = "Apache-2.0"
 description = "Support code for the runtime."
 readme = "README.md"
@@ -77,9 +77,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-debug-derive]
-workspace = true
-
 [dependencies.sp-inherents]
 workspace = true
 
@@ -118,7 +115,6 @@ std = [
     "sp-api/std",
     "sp-arithmetic/std",
     "sp-core/std",
-    "sp-debug-derive/std",
     "sp-inherents/std",
     "sp-io/std",
     "sp-runtime/std",
@@ -131,10 +127,7 @@ runtime-benchmarks = [
     "sp-runtime/runtime-benchmarks",
     "sp-staking/runtime-benchmarks",
 ]
-try-runtime = [
-    "sp-debug-derive/force-debug",
-    "sp-runtime/try-runtime",
-]
+try-runtime = ["sp-runtime/try-runtime"]
 experimental = ["frame-support-procedural/experimental"]
 tuples-96 = ["frame-support-procedural/tuples-96"]
 tuples-128 = ["frame-support-procedural/tuples-128"]

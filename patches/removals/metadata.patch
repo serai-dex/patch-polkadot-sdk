@@ -21,7 +21,7 @@ index d9aa3b8..56f006f 100644
  	TBl::Hash: Unpin,
  	TBl::Header: Unpin,
 diff --git a/substrate/primitives/runtime/src/generic/digest.rs b/substrate/primitives/runtime/src/generic/digest.rs
-index 593fbdd..751967f 100644
+index 23854d92..aa08e0df 100644
 --- a/substrate/primitives/runtime/src/generic/digest.rs
 +++ b/substrate/primitives/runtime/src/generic/digest.rs
 @@ -26,10 +26,6 @@ use serde::{Deserialize, Serialize};
@@ -34,7 +34,7 @@ index 593fbdd..751967f 100644
 -	},
  	ConsensusEngineId,
  };
- use sp_core::RuntimeDebug;
+ use Debug;
 diff --git a/substrate/frame/support/src/traits.rs b/substrate/frame/support/src/traits.rs
 index 481ac09a..c93c6113 100644
 --- a/substrate/frame/support/src/traits.rs
@@ -51,16 +51,15 @@ index 481ac09a..c93c6113 100644
  	StorageVersion, STORAGE_VERSION_STORAGE_KEY_POSTFIX,
  };
 diff --git a/substrate/frame/support/src/traits/metadata.rs b/substrate/frame/support/src/traits/metadata.rs
-index 1e46470a..af9dd770 100644
+index d921c9e9..4ccff1da 100644
 --- a/substrate/frame/support/src/traits/metadata.rs
 +++ b/substrate/frame/support/src/traits/metadata.rs
-@@ -95,14 +95,14 @@ impl PalletsInfoAccess for Tuple {
- 	}
+@@ -96,13 +96,13 @@ impl PalletsInfoAccess for Tuple {
  }
  
--/// The function and pallet name of the Call.
-+/* /// The function and pallet name of the Call.
- #[derive(Clone, Eq, PartialEq, Default, RuntimeDebug)]
+ /// The function and pallet name of the Call.
+-#[derive(Clone, Eq, PartialEq, Default, Debug)]
++/* #[derive(Clone, Eq, PartialEq, Default, Debug)]
  pub struct CallMetadata {
  	/// Name of the function.
  	pub function_name: &'static str,
@@ -410,31 +409,28 @@ diff --git a/substrate/frame/support/procedural/src/lib.rs b/substrate/frame/sup
 index 4c24e186..2525853f 100644
 --- a/substrate/frame/support/procedural/src/lib.rs
 +++ b/substrate/frame/support/procedural/src/lib.rs
-@@ -854,7 +854,7 @@ pub fn config(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -854,6 +854,6 @@ pub fn config(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
  }
  
--///
-+/* ///
- /// ---
+-/// ---
++/* /// ---
  ///
  /// Documentation for this macro can be found at `frame_support::pallet_macros::constant`.
-@@ -870,7 +870,7 @@ pub fn constant(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -870,6 +870,6 @@ pub fn constant(_: TokenStream, _: TokenStream) -> TokenStream {
  #[proc_macro_attribute]
  pub fn constant_name(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
 -}
 +} */
  
- ///
  /// ---
-@@ -947,14 +947,14 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -947,12 +947,12 @@ pub fn feeless_if(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
  }
  
--///
-+/* ///
- /// ---
+-/// ---
++/* /// ---
  ///
  /// Documentation for this macro can be found at `frame_support::pallet_macros::extra_constants`.
  #[proc_macro_attribute]
@@ -443,15 +439,13 @@ index 4c24e186..2525853f 100644
 -}
 +} */
  
- ///
  /// ---
-@@ -974,14 +974,14 @@ pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
+@@ -974,12 +974,12 @@ pub fn event(_: TokenStream, _: TokenStream) -> TokenStream {
  	pallet_macro_stub()
  }
  
--///
-+/* ///
- /// ---
+-/// ---
++/* /// ---
  ///
  /// Documentation for this macro can be found at `frame_support::pallet_macros::include_metadata`.
  #[proc_macro_attribute]
@@ -460,7 +454,6 @@ index 4c24e186..2525853f 100644
 -}
 +} */
  
- ///
  /// ---
 diff --git a/substrate/frame/support/procedural/src/pallet/expand/call.rs b/substrate/frame/support/procedural/src/pallet/expand/call.rs
 index af19e5e0..5ae68409 100644
@@ -618,11 +611,11 @@ index 851b75e3..f1b78205 100644
  		let instances = vec![
  			helper::check_impl_gen(&item_impl.generics, item_impl.impl_token.span())?,
 diff --git a/substrate/frame/support/procedural/src/pallet/parse/error.rs b/substrate/frame/support/procedural/src/pallet/parse/error.rs
-index e725ac1e..63383150 100644
+index 2edc340b..cec28d77 100644
 --- a/substrate/frame/support/procedural/src/pallet/parse/error.rs
 +++ b/substrate/frame/support/procedural/src/pallet/parse/error.rs
 @@ -74,7 +74,7 @@ impl ErrorDef {
- 			return Err(syn::Error::new(item.span(), msg))
+ 			return Err(syn::Error::new(item.span(), msg));
  		}
  
 -		crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item.attrs)?;
@@ -631,11 +624,11 @@ index e725ac1e..63383150 100644
  		let instances =
  			vec![helper::check_type_def_gen_no_bounds(&item.generics, item.ident.span())?];
 diff --git a/substrate/frame/support/procedural/src/pallet/parse/event.rs b/substrate/frame/support/procedural/src/pallet/parse/event.rs
-index 673adbf3..60509815 100644
+index 1516953a..f33008c8 100644
 --- a/substrate/frame/support/procedural/src/pallet/parse/event.rs
 +++ b/substrate/frame/support/procedural/src/pallet/parse/event.rs
 @@ -107,7 +107,7 @@ impl EventDef {
- 			return Err(syn::Error::new(item.span(), "Invalid pallet::event, expected enum item"))
+ 			return Err(syn::Error::new(item.span(), "Invalid pallet::event, expected enum item"));
  		};
  
 -		crate::deprecation::prevent_deprecation_attr_on_outer_enum(&item.attrs)?;

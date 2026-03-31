@@ -1,6 +1,6 @@
 [package]
 name = "sp-consensus-grandpa"
-version = "27.0.0"
+version = "28.0.0"
 license = "Apache-2.0"
 description = "Primitives for GRANDPA integration, suitable for WASM compilation."
 documentation = "https://docs.rs/sp-consensus-grandpa"

@@ -1,6 +1,6 @@
 [package]
 name = "sp-externalities"
-version = "0.31.0"
+version = "0.32.0"
 license = "Apache-2.0"
 description = "Substrate externalities abstraction"
 documentation = "https://docs.rs/sp-externalities"
