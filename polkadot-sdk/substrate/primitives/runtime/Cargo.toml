@@ -75,9 +75,6 @@ workspace = true
 [dependencies.sp-io]
 workspace = true
 
-[dependencies.sp-std]
-workspace = true
-
 [dependencies.sp-trie]
 workspace = true
 
@@ -109,7 +106,6 @@ std = [
     "sp-arithmetic/std",
     "sp-core/std",
     "sp-io/std",
-    "sp-std/std",
     "sp-trie/std",
     "sp-weights/std",
     "strum/std",

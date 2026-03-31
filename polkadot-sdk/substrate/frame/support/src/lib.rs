@@ -74,7 +74,6 @@ pub mod __private {
 	};
 	#[cfg(feature = "std")]
 	pub use sp_state_machine::BasicExternalities;
-	pub use sp_std;
 	pub use sp_tracing;
 	pub use tt_call::*;
 }

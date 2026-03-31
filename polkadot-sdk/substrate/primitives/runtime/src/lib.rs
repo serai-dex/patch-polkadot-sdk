@@ -56,8 +56,6 @@ pub use codec;
 #[cfg(feature = "serde")]
 #[doc(hidden)]
 pub use serde;
-#[doc(hidden)]
-pub use sp_std;
 
 #[doc(hidden)]
 pub use paste;

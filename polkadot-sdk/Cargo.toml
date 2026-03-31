@@ -79,7 +79,6 @@ members = [
     "substrate/primitives/session",
     "substrate/primitives/staking",
     "substrate/primitives/state-machine",
-    "substrate/primitives/std",
     "substrate/primitives/storage",
     "substrate/primitives/timestamp",
     "substrate/primitives/tracing",
@@ -852,10 +851,6 @@ default-features = false
 
 [workspace.dependencies.sp-state-machine]
 path = "substrate/primitives/state-machine"
-default-features = false
-
-[workspace.dependencies.sp-std]
-path = "substrate/primitives/std"
 default-features = false
 
 [workspace.dependencies.sp-storage]

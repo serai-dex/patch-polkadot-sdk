@@ -45,8 +45,6 @@ pub use alloc::borrow::Cow;
 use codec::{Decode, Encode, Input};
 #[allow(deprecated)]
 pub use sp_runtime::{create_runtime_str, StateVersion};
-#[doc(hidden)]
-pub use sp_std;
 
 #[cfg(feature = "std")]
 use sp_runtime::traits::Block as BlockT;

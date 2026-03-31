@@ -47,9 +47,6 @@ workspace = true
 [dependencies.sp-runtime]
 workspace = true
 
-[dependencies.sp-std]
-workspace = true
-
 [dependencies.sp-version-proc-macro]
 workspace = true
 
@@ -60,7 +57,6 @@ std = [
     "impl-serde/std",
     "serde/std",
     "sp-runtime/std",
-    "sp-std/std",
 ]
 serde = [
     "dep:serde",

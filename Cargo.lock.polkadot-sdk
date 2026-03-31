@@ -1533,7 +1533,6 @@ dependencies = [
  "sp-runtime",
  "sp-staking",
  "sp-state-machine",
- "sp-std",
  "sp-tracing",
  "sp-weights",
  "tt-call",
@@ -5998,7 +5997,6 @@ dependencies = [
  "sp-crypto-hashing",
  "sp-debug-derive",
  "sp-externalities",
- "sp-std",
  "sp-storage",
  "ss58-registry",
  "thiserror 2.0.18",
@@ -6125,7 +6123,6 @@ dependencies = [
  "sp-arithmetic",
  "sp-core",
  "sp-io",
- "sp-std",
  "sp-trie",
  "sp-weights",
  "strum",
@@ -6141,7 +6138,6 @@ dependencies = [
  "polkavm-derive",
  "sp-externalities",
  "sp-runtime-interface-proc-macro",
- "sp-std",
  "sp-tracing",
  "sp-wasm-interface",
 ]
@@ -6195,10 +6191,6 @@ dependencies = [
  "tracing",
  "trie-db",
 ]
-
-[[package]]
-name = "sp-std"
-version = "14.0.0"
 
 [[package]]
 name = "sp-storage"
@@ -6272,7 +6264,6 @@ dependencies = [
  "serde",
  "sp-crypto-hashing-proc-macro",
  "sp-runtime",
- "sp-std",
  "sp-version-proc-macro",
 ]
 

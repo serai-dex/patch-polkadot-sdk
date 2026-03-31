@@ -38,9 +38,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-std]
-workspace = true
-
 [dependencies.sp-tracing]
 workspace = true
 
@@ -57,7 +54,6 @@ std = [
     "bytes/std",
     "codec/std",
     "sp-externalities/std",
-    "sp-std/std",
     "sp-tracing/std",
     "sp-wasm-interface/std",
 ]

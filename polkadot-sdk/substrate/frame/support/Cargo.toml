@@ -97,9 +97,6 @@ workspace = true
 optional = true
 workspace = true
 
-[dependencies.sp-std]
-workspace = true
-
 [dependencies.sp-tracing]
 workspace = true
 
@@ -127,7 +124,6 @@ std = [
     "sp-runtime/std",
     "sp-staking/std",
     "sp-state-machine/std",
-    "sp-std/std",
     "sp-tracing/std",
     "sp-weights/std",
 ]

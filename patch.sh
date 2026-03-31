@@ -716,6 +716,13 @@ silent_rm ./polkadot-sdk/substrate/primitives/debug-derive/src/*
 echo "pub use core::fmt::Debug as RuntimeDebug;" > ./polkadot-sdk/substrate/primitives/debug-derive/src/lib.rs
 remove_matching_lines ./polkadot-sdk/substrate/primitives/debug-derive/Cargo.toml "proc-macro = true"
 
+# Remove `sp-std`
+sed -i s/"sp_std::vec::Vec"/"alloc::vec::Vec"/ ./polkadot-sdk/substrate/primitives/core/src/proof_of_possession.rs
+find ./polkadot-sdk/substrate -type f | while IFS="\n" read -r file; do
+  remove_matching_statement_and_preceding_attributes "$file" "pub use sp_std"
+done
+remove_crate_tree substrate/primitives/std
+
 # Remove unused dependencies
 machete
 
