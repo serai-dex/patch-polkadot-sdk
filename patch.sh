@@ -710,6 +710,12 @@ remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs "sc_
 remove_crate_tree substrate/primitives/genesis-builder
 remove_module ./polkadot-sdk/substrate/frame/support/src generate_genesis_config
 
+# Replace `RuntimeDebug` with `Debug`
+# This follows https://github.com/paritytech/polkadot-sdk/pull/10582
+silent_rm ./polkadot-sdk/substrate/primitives/debug-derive/src/*
+echo "pub use core::fmt::Debug as RuntimeDebug;" > ./polkadot-sdk/substrate/primitives/debug-derive/src/lib.rs
+remove_matching_lines ./polkadot-sdk/substrate/primitives/debug-derive/Cargo.toml "proc-macro = true"
+
 # Remove unused dependencies
 machete
 
