@@ -4809,7 +4809,6 @@ dependencies = [
  "sp-blockchain",
  "sp-core",
  "sp-crypto-hashing",
- "sp-genesis-builder",
  "sp-io",
  "sp-runtime",
  "sp-state-machine",
@@ -6053,14 +6052,6 @@ dependencies = [
  "environmental",
  "parity-scale-codec",
  "sp-storage",
-]
-
-[[package]]
-name = "sp-genesis-builder"
-version = "0.21.0"
-dependencies = [
- "parity-scale-codec",
- "sp-api",
 ]
 
 [[package]]

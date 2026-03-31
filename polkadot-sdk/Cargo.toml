@@ -68,7 +68,6 @@ members = [
     "substrate/primitives/database",
     "substrate/primitives/debug-derive",
     "substrate/primitives/externalities",
-    "substrate/primitives/genesis-builder",
     "substrate/primitives/inherents",
     "substrate/primitives/io",
     "substrate/primitives/keyring",
@@ -814,10 +813,6 @@ default-features = false
 
 [workspace.dependencies.sp-externalities]
 path = "substrate/primitives/externalities"
-default-features = false
-
-[workspace.dependencies.sp-genesis-builder]
-path = "substrate/primitives/genesis-builder"
 default-features = false
 
 [workspace.dependencies.sp-inherents]

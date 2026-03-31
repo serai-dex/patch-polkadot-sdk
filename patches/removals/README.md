@@ -29,6 +29,8 @@
 
 - `SessionKeys`: Removes `sp_session::runtime_api::SessionKeys`.
 
+- `sp-genesis-builder`: Removes the JSON-premised genesis code.
+
 - `sp-maybe-compressed-blob`: Remove compression of the on-chain code.
 
 - `sp-panic-handler`: Removes Substrate's bespoke panic handler which only had

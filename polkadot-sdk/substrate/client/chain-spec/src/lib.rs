@@ -344,7 +344,7 @@ pub use self::{
 		GenesisBlockBuilder,
 	},
 	genesis_config_builder::{
-		GenesisConfigBuilderRuntimeCaller, DEV_RUNTIME_PRESET, LOCAL_TESTNET_RUNTIME_PRESET,
+		GenesisConfigBuilderRuntimeCaller, /* DEV_RUNTIME_PRESET, LOCAL_TESTNET_RUNTIME_PRESET, */
 	},
 	json_patch::merge as json_merge,
 };

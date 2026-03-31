@@ -704,7 +704,8 @@ pub use pallet::*;
 remove_crate_tree substrate/client/chain-spec/derive
 remove_matching_lines ./polkadot-sdk/substrate/client/chain-spec/src/lib.rs "sc_chain_spec_derive"
 
-# Remove `generate_genesis_config`, which is premised on JSON
+# Remove `sp-genesis-builder`, which is premised on JSON
+remove_crate_tree substrate/primitives/genesis-builder
 remove_module ./polkadot-sdk/substrate/frame/support/src generate_genesis_config
 
 # Remove unused dependencies

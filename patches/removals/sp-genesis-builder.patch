@@ -1,0 +1,53 @@
+diff --git a/substrate/client/chain-spec/src/genesis_config_builder.rs b/substrate/client/chain-spec/src/genesis_config_builder.rs
+index 0b07c87bcd..b098e8d37c 100644
+--- a/substrate/client/chain-spec/src/genesis_config_builder.rs
++++ b/substrate/client/chain-spec/src/genesis_config_builder.rs
+@@ -26,8 +26,8 @@ use sp_core::{
+ 	storage::Storage,
+ 	traits::{CallContext, CodeExecutor, Externalities, FetchRuntimeCode, RuntimeCode},
+ };
+-use sp_genesis_builder::{PresetId, Result as BuildResult};
+-pub use sp_genesis_builder::{DEV_RUNTIME_PRESET, LOCAL_TESTNET_RUNTIME_PRESET};
++// use sp_genesis_builder::{PresetId, Result as BuildResult};
++// pub use sp_genesis_builder::{DEV_RUNTIME_PRESET, LOCAL_TESTNET_RUNTIME_PRESET};
+ use sp_state_machine::BasicExternalities;
+ use std::borrow::Cow;
+ 
+@@ -122,7 +122,7 @@ where
+ 			.call(&mut ext, "GenesisBuilder_build_state", &json_pretty_str.encode())
+ 			.map_err(|e| format!("wasm call error {e}"))?;
+ 
+-		BuildResult::decode(&mut &call_result[..])
++		core::result::Result::<(), String>::decode(&mut &call_result[..])
+ 			.map_err(|e| format!("scale codec error: {e}"))?
+ 			.map_err(|e| format!("{e} for blob:\n{}", json_pretty_str))?;
+ 
+@@ -160,7 +160,7 @@ where
+ 		self.get_storage_for_patch(self.get_named_preset(name)?)
+ 	}
+ 
+-	pub fn preset_names(&self) -> core::result::Result<Vec<PresetId>, String> {
++	/* pub fn preset_names(&self) -> core::result::Result<Vec<PresetId>, String> {
+ 		let mut t = BasicExternalities::new_empty();
+ 		let call_result = self
+ 			.call(&mut t, "GenesisBuilder_preset_names", &vec![])
+@@ -170,5 +170,5 @@ where
+ 			.map_err(|e| format!("scale codec error: {e}"))?;
+ 
+ 		Ok(preset_names)
+-	}
++	} */
+ }
+diff --git a/substrate/client/chain-spec/src/lib.rs b/substrate/client/chain-spec/src/lib.rs
+index 43639ffb5a..c9ca79f575 100644
+--- a/substrate/client/chain-spec/src/lib.rs
++++ b/substrate/client/chain-spec/src/lib.rs
+@@ -352,7 +348,7 @@ pub use self::{
+ 		GenesisBlockBuilder,
+ 	},
+ 	genesis_config_builder::{
+-		GenesisConfigBuilderRuntimeCaller, DEV_RUNTIME_PRESET, LOCAL_TESTNET_RUNTIME_PRESET,
++		GenesisConfigBuilderRuntimeCaller, /* DEV_RUNTIME_PRESET, LOCAL_TESTNET_RUNTIME_PRESET, */
+ 	},
+ 	json_patch::merge as json_merge,
+ };

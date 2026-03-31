@@ -69,10 +69,6 @@ workspace = true
 default-features = true
 workspace = true
 
-[dependencies.sp-genesis-builder]
-default-features = true
-workspace = true
-
 [dependencies.sp-io]
 workspace = true
 
