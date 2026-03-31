@@ -202,7 +202,7 @@ where
 
 	// This allows malicious ANSI in logs in exchange for allowing colors, as per the behavior of
 	// 0.3.19: https://github.com/tokio-rs/tracing/issues/3378
-	let builder = builder.with_ansi_sanitization(false);
+	let builder = if enable_color { builder.with_ansi_sanitization(false) } else { builder };
 
 	let builder = builder.with_span_events(format::FmtSpan::NONE);
 

@@ -59,7 +59,7 @@ where
 	{
 		let normalized_meta = event.normalized_metadata();
 		let meta = normalized_meta.as_ref().unwrap_or_else(|| event.metadata());
-		time::write(&self.timer, &mut format::Writer::new(&mut writer))?;
+		time::write(&self.timer, &mut writer)?;
 
 		if self.display_level {
 			let fmt_level = FmtLevel::new(meta.level());
@@ -94,7 +94,7 @@ where
 			}
 		}
 
-		ctx.format_fields(format::Writer::new(&mut writer), event)?;
+		ctx.format_fields(writer.by_ref(), event)?;
 		writeln!(&mut writer)?;
 
 		Ok(())
@@ -113,7 +113,7 @@ where
 	fn format_event(
 		&self,
 		ctx: &FmtContext<S, N>,
-		mut writer: format::Writer<'_>,
+		writer: format::Writer<'_>,
 		event: &Event,
 	) -> fmt::Result {
 		if self.dup_to_stdout &&
@@ -122,14 +122,12 @@ where
 				event.metadata().level() == &Level::ERROR)
 		{
 			let mut out = String::new();
+			// TODO: https://github.com/serai-dex/patch-polkadot-sdk/issues/8
 			let buf_writer = format::Writer::new(&mut out);
 			self.format_event_custom(ctx, buf_writer, event)?;
-			writer.write_str(&out)?;
 			print!("{}", out);
-			Ok(())
-		} else {
-			self.format_event_custom(ctx, writer, event)
 		}
+		self.format_event_custom(ctx, writer, event)
 	}
 }
 

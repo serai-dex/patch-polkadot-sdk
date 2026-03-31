@@ -8,9 +8,48 @@ index bdbc4fedcd..5eebeb1cc9 100644
  
 +	// This allows malicious ANSI in logs in exchange for allowing colors, as per the behavior of
 +	// 0.3.19: https://github.com/tokio-rs/tracing/issues/3378
-+	let builder = builder.with_ansi_sanitization(false);
++	let builder = if enable_color { builder.with_ansi_sanitization(false) } else { builder };
 +
  	let builder = builder.with_span_events(format::FmtSpan::NONE);
  
  	let builder = builder.with_writer(MakeStderrWriter::default());
 
+diff --git a/substrate/client/tracing/src/logging/event_format.rs b/substrate/client/tracing/src/logging/event_format.rs
+index ebf8fb0519..14fe4c0e9c 100644
+--- a/substrate/client/tracing/src/logging/event_format.rs
++++ b/substrate/client/tracing/src/logging/event_format.rs
+@@ -59,7 +59,7 @@ where
+ 	{
+ 		let normalized_meta = event.normalized_metadata();
+ 		let meta = normalized_meta.as_ref().unwrap_or_else(|| event.metadata());
+-		time::write(&self.timer, &mut format::Writer::new(&mut writer))?;
++		time::write(&self.timer, &mut writer)?;
+ 
+ 		if self.display_level {
+ 			let fmt_level = FmtLevel::new(meta.level());
+@@ -94,7 +94,7 @@ where
+ 			}
+ 		}
+ 
+-		ctx.format_fields(format::Writer::new(&mut writer), event)?;
++		ctx.format_fields(writer.by_ref(), event)?;
+ 		writeln!(&mut writer)?;
+ 
+ 		Ok(())
+@@ -122,14 +122,12 @@ where
+ 				event.metadata().level() == &Level::ERROR)
+ 		{
+ 			let mut out = String::new();
++			// TODO: https://github.com/serai-dex/patch-polkadot-sdk/issues/8
+ 			let buf_writer = format::Writer::new(&mut out);
+ 			self.format_event_custom(ctx, buf_writer, event)?;
+-			writer.write_str(&out)?;
+ 			print!("{}", out);
+-			Ok(())
+-		} else {
+-			self.format_event_custom(ctx, writer, event)
+ 		}
++		self.format_event_custom(ctx, writer, event)
+ 	}
+ }
+ 
