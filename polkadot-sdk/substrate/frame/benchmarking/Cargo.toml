@@ -35,10 +35,6 @@ workspace = true
 [dependencies.frame-system]
 workspace = true
 
-[dependencies.linregress]
-optional = true
-workspace = true
-
 [dependencies.log]
 workspace = true
 
@@ -83,7 +79,6 @@ std = [
     "frame-support-procedural/std",
     "frame-support/std",
     "frame-system/std",
-    "linregress",
     "log/std",
     "serde",
     "sp-api/std",

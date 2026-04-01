@@ -21,8 +21,6 @@
 
 extern crate alloc;
 
-#[cfg(feature = "std")]
-mod analysis;
 mod utils;
 
 pub mod baseline;
@@ -44,8 +42,6 @@ pub mod __private {
 	pub use sp_storage::{well_known_keys, TrackedStorageKey};
 }
 
-#[cfg(feature = "std")]
-pub use analysis::{Analysis, AnalysisChoice, BenchmarkSelector};
 pub use utils::*;
 pub use v1::*;
 

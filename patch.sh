@@ -464,6 +464,7 @@ remove_crate_tree substrate/utils/substrate-bip39
 remove_crate_tree substrate/utils/wasm-builder
 
 # Remove benchmarking code we don't use
+remove_module ./polkadot-sdk/substrate/frame/benchmarking/src analysis
 remove_crate_tree substrate/frame/benchmarking/pov
 remove_crate_tree substrate/frame/session/benchmarking
 remove_crate_tree substrate/frame/system/benchmarking

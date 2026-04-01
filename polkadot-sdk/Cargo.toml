@@ -442,9 +442,6 @@ version = "0.5.4"
 [workspace.dependencies.linked_hash_set]
 version = "0.1.4"
 
-[workspace.dependencies.linregress]
-version = "0.5.1"
-
 [workspace.dependencies.litep2p]
 version = "0.13.3"
 features = [
