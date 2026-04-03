@@ -5865,7 +5865,7 @@ name = "sp-api-proc-macro"
 version = "27.0.0"
 dependencies = [
  "Inflector",
- "blake2 0.10.6",
+ "blake2 0.11.0-rc.5",
  "expander",
  "proc-macro-crate 3.4.0",
  "proc-macro2",
@@ -5992,7 +5992,7 @@ dependencies = [
  "array-bytes",
  "bip39",
  "bitflags 1.3.2",
- "blake2 0.10.6",
+ "blake2 0.11.0-rc.5",
  "bounded-collections",
  "bs58",
  "dyn-clone",

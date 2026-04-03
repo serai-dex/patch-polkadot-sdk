@@ -161,7 +161,7 @@ default = ["std"]
 std = [
     "bip39/rand",
     "bip39/std",
-    "blake2/std",
+    "blake2/alloc",
     "bs58/std",
     "codec/std",
     "full_crypto",

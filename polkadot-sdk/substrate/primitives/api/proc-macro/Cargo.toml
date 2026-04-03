@@ -56,4 +56,4 @@ workspace = true
 
 [features]
 default = ["std"]
-std = ["blake2/std"]
+std = ["blake2/alloc"]
