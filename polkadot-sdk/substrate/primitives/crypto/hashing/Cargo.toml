@@ -26,20 +26,33 @@ workspace = true
 [lib]
 bench = false
 
-[dependencies.blake2b_simd]
-workspace = true
+[dependencies.typenum]
+version = "1"
+default-features = false
+features = ["const-generics"]
+
+[dependencies.blake2]
+version = "0.11.0-rc.5"
+default-features = false
+features = ["alloc"]
 
 [dependencies.byteorder]
 workspace = true
 
 [dependencies.digest]
 workspace = true
+default-features = false
+features = ["alloc"]
 
 [dependencies.sha2]
 workspace = true
+default-features = false
+features = ["alloc"]
 
 [dependencies.sha3]
 workspace = true
+default-features = false
+features = ["alloc"]
 
 [dependencies.twox-hash]
 features = ["xxhash64"]
@@ -48,10 +61,6 @@ workspace = true
 [features]
 default = ["std"]
 std = [
-    "blake2b_simd/std",
     "byteorder/std",
-    "digest/std",
-    "sha2/std",
-    "sha3/std",
     "twox-hash/std",
 ]

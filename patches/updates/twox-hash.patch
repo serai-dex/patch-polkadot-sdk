@@ -3,9 +3,9 @@ index 93a02e6..102243d 100644
 --- a/substrate/primitives/crypto/hashing/Cargo.toml
 +++ b/substrate/primitives/crypto/hashing/Cargo.toml
 @@ -21,7 +21,7 @@ byteorder = { workspace = true }
- digest = { workspace = true }
- sha2 = { workspace = true }
- sha3 = { workspace = true }
+ digest = { workspace = true, default-features = false, features = ["alloc"] }
+ sha2 = { workspace = true, default-features = false, features = ["alloc"] }
+ sha3 = { workspace = true, default-features = false, features = ["alloc"] }
 -twox-hash = { features = ["digest_0_10"], workspace = true }
 +twox-hash = { features = ["xxhash64"], workspace = true }
  

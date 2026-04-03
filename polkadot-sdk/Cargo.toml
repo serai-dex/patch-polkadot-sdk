@@ -242,10 +242,6 @@ version = "1.3.2"
 version = "0.10.4"
 default-features = false
 
-[workspace.dependencies.blake2b_simd]
-version = "1.0.2"
-default-features = false
-
 [workspace.dependencies.bounded-collections]
 version = "0.3.2"
 default-features = false
@@ -290,7 +286,7 @@ version = "1.0.0"
 default-features = false
 
 [workspace.dependencies.digest]
-version = "0.10.3"
+version = "0.11.0"
 default-features = false
 
 [workspace.dependencies.directories]
@@ -730,11 +726,11 @@ features = [
 ]
 
 [workspace.dependencies.sha2]
-version = "0.10.7"
+version = "0.11.0"
 default-features = false
 
 [workspace.dependencies.sha3]
-version = "0.10.0"
+version = "0.11.0"
 default-features = false
 
 [workspace.dependencies.smallvec]

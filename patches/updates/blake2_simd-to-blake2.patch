@@ -1,0 +1,51 @@
+diff --git a/substrate/primitives/crypto/hashing/Cargo.toml b/substrate/primitives/crypto/hashing/Cargo.toml
+index c83939e6ff..2e8044039f 100644
+--- a/substrate/primitives/crypto/hashing/Cargo.toml
++++ b/substrate/primitives/crypto/hashing/Cargo.toml
+@@ -23,11 +23,12 @@ name = "bench"
+ harness = false
+ 
+ [dependencies]
+-blake2b_simd = { workspace = true }
++typenum = { version = "1", default-features = false, features = ["const-generics"] }
++blake2 = { version = "0.11.0-rc.5", default-features = false, features = ["alloc"] }
+ byteorder = { workspace = true }
+-digest = { workspace = true }
+-sha2 = { workspace = true }
+-sha3 = { workspace = true }
++digest = { workspace = true, default-features = false, features = ["alloc"] }
++sha2 = { workspace = true, default-features = false, features = ["alloc"] }
++sha3 = { workspace = true, default-features = false, features = ["alloc"] }
+ twox-hash = { features = ["digest_0_10"], workspace = true }
+ 
+ [dev-dependencies]
+@@ -37,10 +38,6 @@ sp-crypto-hashing-proc-macro = { default-features = true, workspace = true }
+ [features]
+ default = ["std"]
+ std = [
+-	"blake2b_simd/std",
+ 	"byteorder/std",
+-	"digest/std",
+-	"sha2/std",
+-	"sha3/std",
+ 	"twox-hash/std",
+ ]
+diff --git a/substrate/primitives/crypto/hashing/src/lib.rs b/substrate/primitives/crypto/hashing/src/lib.rs
+index 04b7bb6f4d..6f99cfbc97 100644
+--- a/substrate/primitives/crypto/hashing/src/lib.rs
++++ b/substrate/primitives/crypto/hashing/src/lib.rs
+@@ -27,12 +27,7 @@ use digest::Digest;
+ 
+ #[inline(always)]
+-fn blake2<const N: usize>(data: &[u8]) -> [u8; N] {
++fn blake2<const N: usize>(data: &[u8]) -> [u8; N] where typenum::Const<N>: typenum::ToUInt, typenum::U<N>: typenum::IsLessOrEqual<typenum::U64, Output = typenum::True> + digest::array::ArraySize<ArrayType<u8> = [u8; N]> {
+-	blake2b_simd::Params::new()
+-		.hash_length(N)
+-		.hash(data)
+-		.as_bytes()
+-		.try_into()
+-		.expect("slice is always the necessary length")
++	blake2::Blake2b::<typenum::U<N>>::digest(data).into()
+ }
+ 
+ /// Do a Blake2 512-bit hash and place result in `dest`.

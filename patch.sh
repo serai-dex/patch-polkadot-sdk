@@ -745,6 +745,7 @@ cargo_upgrade cargo_metadata 0.19.0
 cargo_upgrade cfg-expr 0.20.0
 cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
+cargo_upgrade digest 0.11.0
 cargo_upgrade directories 6.0.0
 cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
@@ -760,6 +761,8 @@ cargo_upgrade prometheus 0.14.0
 cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
+cargo_upgrade sha2 0.11.0
+cargo_upgrade sha3 0.11.0
 cargo_upgrade strum 0.28.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade toml 0.9.0

@@ -26,13 +26,8 @@ use byteorder::{ByteOrder, LittleEndian};
 use digest::Digest;
 
 #[inline(always)]
-fn blake2<const N: usize>(data: &[u8]) -> [u8; N] {
-	blake2b_simd::Params::new()
-		.hash_length(N)
-		.hash(data)
-		.as_bytes()
-		.try_into()
-		.expect("slice is always the necessary length")
+fn blake2<const N: usize>(data: &[u8]) -> [u8; N] where typenum::Const<N>: typenum::ToUInt, typenum::U<N>: typenum::IsLessOrEqual<typenum::U64, Output = typenum::True> + digest::array::ArraySize<ArrayType<u8> = [u8; N]> {
+	blake2::Blake2b::<typenum::U<N>>::digest(data).into()
 }
 
 /// Do a Blake2 512-bit hash and place result in `dest`.
