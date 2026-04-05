@@ -111,9 +111,6 @@ workspace = true
 [dependencies.sp-storage]
 workspace = true
 
-[dependencies.ss58-registry]
-workspace = true
-
 [dependencies.thiserror]
 optional = true
 workspace = true
@@ -183,7 +180,6 @@ std = [
     "sp-crypto-hashing/std",
     "sp-externalities/std",
     "sp-storage/std",
-    "ss58-registry/std",
     "thiserror",
     "tracing",
     "zeroize/alloc",

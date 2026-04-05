@@ -22,9 +22,9 @@
 
 extern crate alloc;
 
-pub use sp_core::crypto::{key_types, CryptoTypeId, DeriveJunction, KeyTypeId, Ss58Codec};
+pub use sp_core::crypto::{key_types, CryptoTypeId, DeriveJunction, KeyTypeId};
 #[doc(hidden)]
-pub use sp_core::crypto::{DeriveError, Pair, SecretStringError};
+pub use sp_core::{crypto::{DeriveError, Pair, SecretStringError}, hexdisplay::HexDisplay};
 #[doc(hidden)]
 pub use sp_core::{
 	self,
@@ -403,8 +403,8 @@ macro_rules! app_crypto_public_common_if_serde {
 
 		impl core::fmt::Display for Public {
 			fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-				use $crate::Ss58Codec;
-				write!(f, "{}", self.0.to_ss58check())
+				// use $crate::Ss58Codec;
+				write!(f, "{}", $crate::HexDisplay::from(&<[u8; <Self as $crate::ByteArray>::LEN]>::from(self.0)))
 			}
 		}
 
@@ -413,8 +413,8 @@ macro_rules! app_crypto_public_common_if_serde {
 			where
 				S: $crate::serde::Serializer,
 			{
-				use $crate::Ss58Codec;
-				serializer.serialize_str(&self.to_ss58check())
+				// use $crate::Ss58Codec;
+				<[u8; <Self as $crate::ByteArray>::LEN]>::from(self.0).serialize(serializer)
 			}
 		}
 
@@ -423,10 +423,10 @@ macro_rules! app_crypto_public_common_if_serde {
 			where
 				D: $crate::serde::Deserializer<'de>,
 			{
-				use $crate::{module_format_string_prelude::*, Ss58Codec};
+				// use $crate::{module_format_string_prelude::*, Ss58Codec};
 
-				Public::from_ss58check(&String::deserialize(deserializer)?)
-					.map_err(|e| $crate::serde::de::Error::custom(format!("{:?}", e)))
+
+				Ok(Self(<[u8; <Self as $crate::ByteArray>::LEN]>::deserialize(deserializer)?.into()))
 			}
 		}
 	};

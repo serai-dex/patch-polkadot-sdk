@@ -31,7 +31,7 @@ use itertools::Itertools;
 #[cfg(feature = "std")]
 use rand::{rngs::OsRng, RngCore};
 pub use secrecy::{ExposeSecret, SecretString};
-pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
+// pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
 /// Trait to zeroize a memory buffer.
 pub use zeroize::Zeroize;
 
@@ -214,7 +214,7 @@ pub enum PublicError {
 	BadBase58,
 	#[cfg_attr(feature = "std", error("Length is bad"))]
 	BadLength,
-	#[cfg_attr(
+	/* #[cfg_attr(
 		feature = "std",
 		error(
 			"Unknown SS58 address format `{}`. ` \
@@ -222,7 +222,7 @@ pub enum PublicError {
 			_0
 		)
 	)]
-	UnknownSs58AddressFormat(Ss58AddressFormat),
+	UnknownSs58AddressFormat(Ss58AddressFormat), */
 	#[cfg_attr(feature = "std", error("Invalid checksum"))]
 	InvalidChecksum,
 	#[cfg_attr(feature = "std", error("Invalid SS58 prefix byte."))]
@@ -248,7 +248,7 @@ impl core::fmt::Debug for PublicError {
 	}
 }
 
-/// Key that can be encoded to/from SS58.
+/* /// Key that can be encoded to/from SS58.
 ///
 /// See <https://docs.substrate.io/v3/advanced/ss58/>
 /// for information on the codec.
@@ -359,7 +359,7 @@ pub trait Ss58Codec: Sized + AsMut<[u8]> + AsRef<[u8]> + ByteArray {
 	fn from_string_with_version(s: &str) -> Result<(Self, Ss58AddressFormat), PublicError> {
 		Self::from_ss58check_with_version(s)
 	}
-}
+} */
 
 /// Derivable key trait.
 pub trait Derive: Sized {
@@ -372,7 +372,7 @@ pub trait Derive: Sized {
 	}
 }
 
-#[cfg(feature = "serde")]
+/* #[cfg(feature = "serde")]
 const PREFIX: &[u8] = b"SS58PRE";
 
 #[cfg(feature = "serde")]
@@ -470,6 +470,7 @@ impl<T: Sized + AsMut<[u8]> + AsRef<[u8]> + Public + Derive> Ss58Codec for T {
 // The std implementation is not available because of std only crate Regex.
 #[cfg(all(not(feature = "std"), feature = "serde"))]
 impl<T: Sized + AsMut<[u8]> + AsRef<[u8]> + Public + Derive> Ss58Codec for T {}
+*/
 
 /// Trait used for types that are really just a fixed-length array.
 pub trait ByteArray: AsRef<[u8]> + AsMut<[u8]> + for<'a> TryFrom<&'a [u8], Error = ()> {
@@ -534,8 +535,8 @@ impl ByteArray for AccountId32 {
 	const LEN: usize = 32;
 }
 
-#[cfg(feature = "serde")]
-impl Ss58Codec for AccountId32 {}
+/* #[cfg(feature = "serde")]
+impl Ss58Codec for AccountId32 {} */
 
 impl AsRef<[u8]> for AccountId32 {
 	fn as_ref(&self) -> &[u8] {
@@ -592,30 +593,28 @@ impl From<sr25519::Public> for AccountId32 {
 	}
 }
 
-/*
-impl From<ed25519::Public> for AccountId32 {
+/* impl From<ed25519::Public> for AccountId32 {
 	fn from(k: ed25519::Public) -> Self {
 		k.0.into()
 	}
-}
-*/
+} */
 
 #[cfg(feature = "std")]
 impl std::fmt::Display for AccountId32 {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-		write!(f, "{}", self.to_ss58check())
+		write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.0))
 	}
 }
 
 impl core::fmt::Debug for AccountId32 {
 	fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-		#[cfg(feature = "serde")]
+		/* #[cfg(feature = "serde")]
 		{
 			let s = self.to_ss58check();
 			write!(f, "{} ({}...)", crate::hexdisplay::HexDisplay::from(&self.0), &s[0..8])?;
 		}
 
-		#[cfg(not(feature = "serde"))]
+		#[cfg(not(feature = "serde"))] */
 		write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.0))?;
 
 		Ok(())
@@ -628,7 +627,7 @@ impl serde::Serialize for AccountId32 {
 	where
 		S: serde::Serializer,
 	{
-		serializer.serialize_str(&self.to_ss58check())
+		self.0.serialize(serializer)
 	}
 }
 
@@ -638,8 +637,8 @@ impl<'de> serde::Deserialize<'de> for AccountId32 {
 	where
 		D: serde::Deserializer<'de>,
 	{
-		Ss58Codec::from_ss58check(&String::deserialize(deserializer)?)
-			.map_err(|e| serde::de::Error::custom(format!("{:?}", e)))
+		Ok(Self(<_ as serde::Deserialize<'de>>::deserialize(deserializer)?))
+
 	}
 }
 
@@ -649,11 +648,11 @@ impl std::str::FromStr for AccountId32 {
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
 		let hex_or_ss58_without_prefix = s.trim_start_matches("0x");
-		if hex_or_ss58_without_prefix.len() == 64 {
+		// if hex_or_ss58_without_prefix.len() == 64 {
 			array_bytes::hex_n_into(hex_or_ss58_without_prefix).map_err(|_| "invalid hex address.")
-		} else {
+		/* } else {
 			Self::from_ss58check(s).map_err(|_| "invalid ss58 address.")
-		}
+		} */
 	}
 }
 

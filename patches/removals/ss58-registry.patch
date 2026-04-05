@@ -1,0 +1,303 @@
+diff --git a/substrate/primitives/core/Cargo.toml b/substrate/primitives/core/Cargo.toml
+index 0b3409767f..ad09117c76 100644
+--- a/substrate/primitives/core/Cargo.toml
++++ b/substrate/primitives/core/Cargo.toml
+@@ -45,7 +45,7 @@ sp-debug-derive = { workspace = true }
+ sp-externalities = { optional = true, workspace = true }
+ sp-std = { workspace = true }
+ sp-storage = { workspace = true }
+-ss58-registry = { workspace = true }
++# ss58-registry = { workspace = true }
+ substrate-bip39 = { workspace = true }
+ thiserror = { optional = true, workspace = true }
+ tracing = { optional = true, workspace = true, default-features = true }
+diff --git a/substrate/primitives/core/src/crypto.rs b/substrate/primitives/core/src/crypto.rs
+index df672b42fc..d4ca3cccd1 100644
+--- a/substrate/primitives/core/src/crypto.rs
++++ b/substrate/primitives/core/src/crypto.rs
+@@ -32,7 +32,7 @@ use itertools::Itertools;
+ use rand::{rngs::OsRng, RngCore};
+ use scale_info::TypeInfo;
+ pub use secrecy::{ExposeSecret, SecretString};
+-pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
++// pub use ss58_registry::{from_known_address_format, Ss58AddressFormat, Ss58AddressFormatRegistry};
+ /// Trait to zeroize a memory buffer.
+ pub use zeroize::Zeroize;
+ 
+@@ -215,7 +215,7 @@ pub enum PublicError {
+ 	BadBase58,
+ 	#[cfg_attr(feature = "std", error("Length is bad"))]
+ 	BadLength,
+-	#[cfg_attr(
++	/* #[cfg_attr(
+ 		feature = "std",
+ 		error(
+ 			"Unknown SS58 address format `{}`. ` \
+@@ -223,7 +223,7 @@ pub enum PublicError {
+ 			_0
+ 		)
+ 	)]
+-	UnknownSs58AddressFormat(Ss58AddressFormat),
++	UnknownSs58AddressFormat(Ss58AddressFormat), */
+ 	#[cfg_attr(feature = "std", error("Invalid checksum"))]
+ 	InvalidChecksum,
+ 	#[cfg_attr(feature = "std", error("Invalid SS58 prefix byte."))]
+@@ -249,7 +249,7 @@ impl core::fmt::Debug for PublicError {
+ 	}
+ }
+ 
+-/// Key that can be encoded to/from SS58.
++/* /// Key that can be encoded to/from SS58.
+ ///
+ /// See <https://docs.substrate.io/v3/advanced/ss58/>
+ /// for information on the codec.
+@@ -360,7 +360,7 @@ pub trait Ss58Codec: Sized + AsMut<[u8]> + AsRef<[u8]> + ByteArray {
+ 	fn from_string_with_version(s: &str) -> Result<(Self, Ss58AddressFormat), PublicError> {
+ 		Self::from_ss58check_with_version(s)
+ 	}
+-}
++} */
+ 
+ /// Derivable key trait.
+ pub trait Derive: Sized {
+@@ -373,7 +373,7 @@ pub trait Derive: Sized {
+ 	}
+ }
+ 
+-#[cfg(feature = "serde")]
++/* #[cfg(feature = "serde")]
+ const PREFIX: &[u8] = b"SS58PRE";
+ 
+ #[cfg(feature = "serde")]
+@@ -471,6 +471,7 @@ impl<T: Sized + AsMut<[u8]> + AsRef<[u8]> + Public + Derive> Ss58Codec for T {
+ // The std implementation is not available because of std only crate Regex.
+ #[cfg(all(not(feature = "std"), feature = "serde"))]
+ impl<T: Sized + AsMut<[u8]> + AsRef<[u8]> + Public + Derive> Ss58Codec for T {}
++*/
+ 
+ /// Trait used for types that are really just a fixed-length array.
+ pub trait ByteArray: AsRef<[u8]> + AsMut<[u8]> + for<'a> TryFrom<&'a [u8], Error = ()> {
+@@ -535,8 +536,8 @@ impl ByteArray for AccountId32 {
+ 	const LEN: usize = 32;
+ }
+ 
+-#[cfg(feature = "serde")]
+-impl Ss58Codec for AccountId32 {}
++/* #[cfg(feature = "serde")]
++impl Ss58Codec for AccountId32 {} */
+ 
+ impl AsRef<[u8]> for AccountId32 {
+ 	fn as_ref(&self) -> &[u8] {
+@@ -602,19 +603,19 @@ impl From<ed25519::Public> for AccountId32 {
+ #[cfg(feature = "std")]
+ impl std::fmt::Display for AccountId32 {
+ 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+-		write!(f, "{}", self.to_ss58check())
++		write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.0))
+ 	}
+ }
+ 
+ impl core::fmt::Debug for AccountId32 {
+ 	fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+-		#[cfg(feature = "serde")]
++		/* #[cfg(feature = "serde")]
+ 		{
+ 			let s = self.to_ss58check();
+ 			write!(f, "{} ({}...)", crate::hexdisplay::HexDisplay::from(&self.0), &s[0..8])?;
+ 		}
+ 
+-		#[cfg(not(feature = "serde"))]
++		#[cfg(not(feature = "serde"))] */
+ 		write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.0))?;
+ 
+ 		Ok(())
+@@ -627,7 +628,7 @@ impl serde::Serialize for AccountId32 {
+ 	where
+ 		S: serde::Serializer,
+ 	{
+-		serializer.serialize_str(&self.to_ss58check())
++		self.0.serialize(serializer)
+ 	}
+ }
+ 
+@@ -637,8 +638,8 @@ impl<'de> serde::Deserialize<'de> for AccountId32 {
+ 	where
+ 		D: serde::Deserializer<'de>,
+ 	{
+-		Ss58Codec::from_ss58check(&String::deserialize(deserializer)?)
+-			.map_err(|e| serde::de::Error::custom(format!("{:?}", e)))
++		Ok(Self(<_ as serde::Deserialize<'de>>::deserialize(deserializer)?))
++
+ 	}
+ }
+ 
+@@ -648,11 +649,11 @@ impl std::str::FromStr for AccountId32 {
+ 
+ 	fn from_str(s: &str) -> Result<Self, Self::Err> {
+ 		let hex_or_ss58_without_prefix = s.trim_start_matches("0x");
+-		if hex_or_ss58_without_prefix.len() == 64 {
++		// if hex_or_ss58_without_prefix.len() == 64 {
+ 			array_bytes::hex_n_into(hex_or_ss58_without_prefix).map_err(|_| "invalid hex address.")
+-		} else {
++		/* } else {
+ 			Self::from_ss58check(s).map_err(|_| "invalid ss58 address.")
+-		}
++		} */
+ 	}
+ }
+ 
+diff --git a/substrate/primitives/core/src/crypto_bytes.rs b/substrate/primitives/core/src/crypto_bytes.rs
+index 0925c42b35..bddef9f7b6 100644
+--- a/substrate/primitives/core/src/crypto_bytes.rs
++++ b/substrate/primitives/core/src/crypto_bytes.rs
+@@ -24,10 +24,10 @@ use crate::{
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+ use core::marker::PhantomData;
+ use scale_info::TypeInfo;
+ 
+-#[cfg(feature = "serde")]
+-use crate::crypto::Ss58Codec;
++/*#[cfg(feature = "serde")]
++use crate::crypto::Ss58Codec;*/
+ #[cfg(feature = "serde")]
+ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+ 
+@@ -240,8 +240,8 @@ mod public_bytes {
+ 	{
+ 		#[cfg(feature = "std")]
+ 		fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+-			let s = self.to_ss58check();
+-			write!(f, "{} ({}...)", crate::hexdisplay::HexDisplay::from(&self.as_ref()), &s[0..8])
++			// let s = self.to_ss58check();
++			write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.as_ref()))
+ 		}
+ 
+ 		#[cfg(not(feature = "std"))]
+@@ -250,7 +250,7 @@ mod public_bytes {
+ 		}
+ 	}
+ 
+-	#[cfg(feature = "std")]
++	/* #[cfg(feature = "std")]
+ 	impl<const N: usize, SubTag> std::fmt::Display for PublicBytes<N, SubTag>
+ 	where
+ 		Self: CryptoType,
+@@ -297,7 +297,7 @@ mod public_bytes {
+ 			Self::from_ss58check(&String::deserialize(deserializer)?)
+ 				.map_err(|e| de::Error::custom(format!("{:?}", e)))
+ 		}
+-	}
++	} */
+ }
+ 
+ mod signature_bytes {
+diff --git a/substrate/primitives/core/src/sr25519.rs b/substrate/primitives/core/src/sr25519.rs
+index 7a1b3a1e59..496a5c1da4 100644
+--- a/substrate/primitives/core/src/sr25519.rs
++++ b/substrate/primitives/core/src/sr25519.rs
+@@ -20,8 +20,8 @@
+ //! Note: `CHAIN_CODE_LENGTH` must be equal to `crate::crypto::JUNCTION_ID_LEN`
+ //! for this to work.
+ 
+-#[cfg(feature = "serde")]
+-use crate::crypto::Ss58Codec;
++/*#[cfg(feature = "serde")]
++use crate::crypto::Ss58Codec;*/
+ use crate::{
+ 	crypto::{CryptoBytes, DeriveError, DeriveJunction, Pair as TraitPair, SecretStringError},
+ 	proof_of_possession::NonAggregatable,
+@@ -84,7 +84,7 @@ impl Derive for Public {
+ 	}
+ }
+ 
+-#[cfg(feature = "std")]
++/* #[cfg(feature = "std")]
+ impl std::str::FromStr for Public {
+ 	type Err = crate::crypto::PublicError;
+ 
+@@ -98,13 +98,13 @@ impl std::fmt::Display for Public {
+ 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+ 		write!(f, "{}", self.to_ss58check())
+ 	}
+-}
++} */
+ 
+ impl core::fmt::Debug for Public {
+ 	#[cfg(feature = "std")]
+ 	fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+-		let s = self.to_ss58check();
+-		write!(f, "{} ({}...)", crate::hexdisplay::HexDisplay::from(&self.0), &s[0..8])
++		// let s = self.to_ss58check();
++		write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.0))
+ 	}
+ 
+ 	#[cfg(not(feature = "std"))]
+@@ -113,7 +113,7 @@ impl core::fmt::Debug for Public {
+ 	}
+ }
+ 
+-#[cfg(feature = "serde")]
++/* #[cfg(feature = "serde")]
+ impl Serialize for Public {
+ 	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+ 	where
+@@ -132,7 +132,7 @@ impl<'de> Deserialize<'de> for Public {
+ 		Public::from_ss58check(&String::deserialize(deserializer)?)
+ 			.map_err(|e| de::Error::custom(format!("{:?}", e)))
+ 	}
+-}
++} */
+ 
+ /// An Schnorrkel/Ristretto x25519 ("sr25519") signature.
+ pub type Signature = SignatureBytes<SIGNATURE_SERIALIZED_SIZE, Sr25519Tag>;
+diff --git a/substrate/primitives/application-crypto/src/lib.rs b/substrate/primitives/application-crypto/src/lib.rs
+index 5c51bad18a..5ac97a1e87 100644
+--- a/substrate/primitives/application-crypto/src/lib.rs
++++ b/substrate/primitives/application-crypto/src/lib.rs
+@@ -22,7 +22,7 @@
+ 
+ extern crate alloc;
+ 
+-pub use sp_core::crypto::{key_types, CryptoTypeId, DeriveJunction, KeyTypeId, Ss58Codec};
++pub use sp_core::crypto::{key_types, CryptoTypeId, DeriveJunction, KeyTypeId};
+ #[doc(hidden)]
+-pub use sp_core::crypto::{DeriveError, Pair, SecretStringError};
++pub use sp_core::{crypto::{DeriveError, Pair, SecretStringError}, hexdisplay::HexDisplay};
+ #[doc(hidden)]
+@@ -414,8 +414,8 @@ macro_rules! app_crypto_public_common_if_serde {
+ 
+ 		impl core::fmt::Display for Public {
+ 			fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+-				use $crate::Ss58Codec;
+-				write!(f, "{}", self.0.to_ss58check())
++				// use $crate::Ss58Codec;
++				write!(f, "{}", $crate::HexDisplay::from(&<[u8; <Self as $crate::ByteArray>::LEN]>::from(self.0)))
+ 			}
+ 		}
+ 
+@@ -424,8 +424,8 @@ macro_rules! app_crypto_public_common_if_serde {
+ 			where
+ 				S: $crate::serde::Serializer,
+ 			{
+-				use $crate::Ss58Codec;
+-				serializer.serialize_str(&self.to_ss58check())
++				// use $crate::Ss58Codec;
++				<[u8; <Self as $crate::ByteArray>::LEN]>::from(self.0).serialize(serializer)
+ 			}
+ 		}
+ 
+@@ -434,10 +434,10 @@ macro_rules! app_crypto_public_common_if_serde {
+ 			where
+ 				D: $crate::serde::Deserializer<'de>,
+ 			{
+-				use $crate::{module_format_string_prelude::*, Ss58Codec};
++				// use $crate::{module_format_string_prelude::*, Ss58Codec};
+ 
+-				Public::from_ss58check(&String::deserialize(deserializer)?)
+-					.map_err(|e| $crate::serde::de::Error::custom(format!("{:?}", e)))
++
++				Ok(Self(<[u8; <Self as $crate::ByteArray>::LEN]>::deserialize(deserializer)?.into()))
+ 			}
+ 		}
+ 	};

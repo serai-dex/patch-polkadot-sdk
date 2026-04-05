@@ -45,6 +45,12 @@
 
 - `SS58Prefix`: Removes `SS58Prefix`.
 
+- `ss58-registry`: Removes the `ss58-registry` dependency. This causes a
+  variety of items which would have been SS58-encoded to instead be
+  hex-encoded when converted to a string (such as via `trait Display`). Some
+  `serde` implementations which deferred to SS58-encoded strings now defer to
+  the underlying bytes.
+
 - `substrate-bip39`: Removes `substrate-bip39` from usage. `substrate-bip39`
   was forked from `tiny-bip39` as it was unmaintained, yet for some reason,
   Parity decided to build `parity-bip39` (another fork of `tiny-bip39`).

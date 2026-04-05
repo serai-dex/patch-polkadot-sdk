@@ -20,8 +20,8 @@
 //! Note: `CHAIN_CODE_LENGTH` must be equal to `crate::crypto::JUNCTION_ID_LEN`
 //! for this to work.
 
-#[cfg(feature = "serde")]
-use crate::crypto::Ss58Codec;
+/*#[cfg(feature = "serde")]
+use crate::crypto::Ss58Codec;*/
 use crate::{
 	crypto::{CryptoBytes, DeriveError, DeriveJunction, Pair as TraitPair, SecretStringError},
 	proof_of_possession::NonAggregatable,
@@ -83,7 +83,7 @@ impl Derive for Public {
 	}
 }
 
-#[cfg(feature = "std")]
+/* #[cfg(feature = "std")]
 impl std::str::FromStr for Public {
 	type Err = crate::crypto::PublicError;
 
@@ -97,13 +97,13 @@ impl std::fmt::Display for Public {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
 		write!(f, "{}", self.to_ss58check())
 	}
-}
+} */
 
 impl core::fmt::Debug for Public {
 	#[cfg(feature = "std")]
 	fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-		let s = self.to_ss58check();
-		write!(f, "{} ({}...)", crate::hexdisplay::HexDisplay::from(&self.0), &s[0..8])
+		// let s = self.to_ss58check();
+		write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.0))
 	}
 
 	#[cfg(not(feature = "std"))]
@@ -112,7 +112,7 @@ impl core::fmt::Debug for Public {
 	}
 }
 
-#[cfg(feature = "serde")]
+/* #[cfg(feature = "serde")]
 impl Serialize for Public {
 	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
 	where
@@ -131,7 +131,7 @@ impl<'de> Deserialize<'de> for Public {
 		Public::from_ss58check(&String::deserialize(deserializer)?)
 			.map_err(|e| de::Error::custom(format!("{:?}", e)))
 	}
-}
+} */
 
 /// An Schnorrkel/Ristretto x25519 ("sr25519") signature.
 pub type Signature = SignatureBytes<SIGNATURE_SERIALIZED_SIZE, Sr25519Tag>;

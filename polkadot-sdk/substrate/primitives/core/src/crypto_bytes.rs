@@ -25,8 +25,8 @@ use crate::{
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
 use core::marker::PhantomData;
 
-#[cfg(feature = "serde")]
-use crate::crypto::Ss58Codec;
+/*#[cfg(feature = "serde")]
+use crate::crypto::Ss58Codec;*/
 #[cfg(feature = "serde")]
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
@@ -231,8 +231,8 @@ mod public_bytes {
 	{
 		#[cfg(feature = "std")]
 		fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-			let s = self.to_ss58check();
-			write!(f, "{} ({}...)", crate::hexdisplay::HexDisplay::from(&self.as_ref()), &s[0..8])
+			// let s = self.to_ss58check();
+			write!(f, "{}", crate::hexdisplay::HexDisplay::from(&self.as_ref()))
 		}
 
 		#[cfg(not(feature = "std"))]
@@ -241,7 +241,7 @@ mod public_bytes {
 		}
 	}
 
-	#[cfg(feature = "std")]
+	/* #[cfg(feature = "std")]
 	impl<const N: usize, SubTag> std::fmt::Display for PublicBytes<N, SubTag>
 	where
 		Self: CryptoType,
@@ -288,7 +288,7 @@ mod public_bytes {
 			Self::from_ss58check(&String::deserialize(deserializer)?)
 				.map_err(|e| de::Error::custom(format!("{:?}", e)))
 		}
-	}
+	} */
 }
 
 mod signature_bytes {
