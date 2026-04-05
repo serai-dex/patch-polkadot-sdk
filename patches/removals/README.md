@@ -24,6 +24,9 @@
   `sc-offchain`, etc. This allows removing a variety of crates for HTTP from
   the tree.
 
+- `primitive-types`: Removes `primitive-types` in favor of direct usage of its
+  underlying dependencies.
+
 - `rpc_modules`: Removes provided RPC modules.
 
 - `SessionKeys`: Removes `sp_session::runtime_api::SessionKeys`.

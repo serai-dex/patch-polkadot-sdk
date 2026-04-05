@@ -1457,8 +1457,6 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "835c052cb0c08c1acf6ffd71c022172e18723949c8282f2b9f27efbc51e64534"
 dependencies = [
- "byteorder",
- "rand 0.8.5",
  "rustc-hex",
  "static_assertions",
 ]
@@ -2270,17 +2268,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2d40b9d5e17727407e55028eafc22b2dc68781786e6d7eb8a21103f5058e3a14"
 dependencies = [
  "parity-scale-codec",
-]
-
-[[package]]
-name = "impl-num-traits"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "803d15461ab0dcc56706adf266158acbc44ccf719bf7d0af30705f58b90a4b8c"
-dependencies = [
- "integer-sqrt",
- "num-traits",
- "uint",
 ]
 
 [[package]]
@@ -4034,20 +4021,6 @@ checksum = "479ca8adacdd7ce8f1fb39ce9ecccbfe93a3f1344b3d0d97f20bc0196208f62b"
 dependencies = [
  "proc-macro2",
  "syn 2.0.117",
-]
-
-[[package]]
-name = "primitive-types"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "721a1da530b5a2633218dc9f75713394c983c352be88d2d7c9ee85e2c4c21794"
-dependencies = [
- "fixed-hash",
- "impl-codec",
- "impl-num-traits",
- "impl-serde",
- "scale-info",
- "uint",
 ]
 
 [[package]]
@@ -5986,9 +5959,11 @@ dependencies = [
  "bounded-collections",
  "bs58",
  "dyn-clone",
+ "fixed-hash",
  "futures",
  "hash-db",
  "hash256-std-hasher",
+ "impl-codec",
  "impl-serde",
  "itertools 0.14.0",
  "log",
@@ -5996,7 +5971,6 @@ dependencies = [
  "parity-scale-codec",
  "parking_lot",
  "paste",
- "primitive-types",
  "rand 0.8.5",
  "schnorrkel",
  "secrecy",
@@ -6006,6 +5980,7 @@ dependencies = [
  "sp-storage",
  "thiserror 2.0.18",
  "tracing",
+ "uint",
  "zeroize",
 ]
 

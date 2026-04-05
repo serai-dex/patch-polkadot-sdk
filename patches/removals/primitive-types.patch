@@ -1,0 +1,337 @@
+diff --git a/substrate/primitives/core/Cargo.toml b/substrate/primitives/core/Cargo.toml
+index 0b3409767f..e25902ca46 100644
+--- a/substrate/primitives/core/Cargo.toml
++++ b/substrate/primitives/core/Cargo.toml
+@@ -32,11 +32,13 @@ futures = { optional = true, workspace = true }
+ hash-db = { workspace = true }
+ hash256-std-hasher = { workspace = true }
+ impl-serde = { optional = true, workspace = true }
++impl-codec = { version = "0.7", default-features = false }
++fixed-hash = { version = "0.8", default-features = false, features = ["rustc-hex"] }
++uint = { version = "0.10", default-features = false }
+ itertools = { optional = true, workspace = true }
+ log = { workspace = true }
+ parking_lot = { optional = true, workspace = true, default-features = true }
+ paste = { workspace = true, default-features = true }
+-primitive-types = { features = ["codec", "scale-info"], workspace = true }
+ rand = { features = ["small_rng"], optional = true, workspace = true, default-features = true }
+ scale-info = { features = ["derive"], workspace = true }
+ secrecy = { features = ["alloc"], workspace = true }
+@@ -104,10 +106,6 @@ std = [
+ 	"log/std",
+ 	"merlin/std",
+ 	"parking_lot",
+-	"primitive-types/byteorder",
+-	"primitive-types/rustc-hex",
+-	"primitive-types/serde",
+-	"primitive-types/std",
+ 	"rand",
+ 	"scale-info/std",
+ 	"schnorrkel/std",
+@@ -137,7 +135,6 @@ serde = [
+ 	"dep:serde",
+ 	"impl-serde",
+ 	"k256/serde",
+-	"primitive-types/serde_no_std",
+ 	"scale-info/serde",
+ 	"sp-storage/serde",
+ ]
+diff --git a/substrate/primitives/core/src/hash.rs b/substrate/primitives/core/src/hash.rs
+index ece9b1af79..742e97bbb5 100644
+--- a/substrate/primitives/core/src/hash.rs
++++ b/substrate/primitives/core/src/hash.rs
+@@ -1,120 +1,5 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: Apache-2.0
+-
+-// Licensed under the Apache License, Version 2.0 (the "License");
+-// you may not use this file except in compliance with the License.
+-// You may obtain a copy of the License at
+-//
+-// 	http://www.apache.org/licenses/LICENSE-2.0
+-//
+-// Unless required by applicable law or agreed to in writing, software
+-// distributed under the License is distributed on an "AS IS" BASIS,
+-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-// See the License for the specific language governing permissions and
+-// limitations under the License.
+-
+-//! A fixed hash type.
+-
+-pub use primitive_types::{H160, H256, H512};
+-
+-/// Hash conversion. Used to convert between unbound associated hash types in traits,
+-/// implemented by the same hash type.
+-/// Panics if used to convert between different hash types.
+-pub fn convert_hash<H1: Default + AsMut<[u8]>, H2: AsRef<[u8]>>(src: &H2) -> H1 {
+-	let mut dest = H1::default();
+-	assert_eq!(dest.as_mut().len(), src.as_ref().len());
+-	dest.as_mut().copy_from_slice(src.as_ref());
+-	dest
+-}
+-
+-#[cfg(test)]
+-mod tests {
+-	use super::*;
+-
+-	#[test]
+-	fn test_h160() {
+-		let tests = vec![
+-			(Default::default(), "0x0000000000000000000000000000000000000000"),
+-			(H160::from_low_u64_be(2), "0x0000000000000000000000000000000000000002"),
+-			(H160::from_low_u64_be(15), "0x000000000000000000000000000000000000000f"),
+-			(H160::from_low_u64_be(16), "0x0000000000000000000000000000000000000010"),
+-			(H160::from_low_u64_be(1_000), "0x00000000000000000000000000000000000003e8"),
+-			(H160::from_low_u64_be(100_000), "0x00000000000000000000000000000000000186a0"),
+-			(H160::from_low_u64_be(u64::MAX), "0x000000000000000000000000ffffffffffffffff"),
+-		];
+-
+-		for (number, expected) in tests {
+-			assert_eq!(
+-				format!("{:?}", expected),
+-				serde_json::to_string_pretty(&number).expect("Json pretty print failed")
+-			);
+-			assert_eq!(number, serde_json::from_str(&format!("{:?}", expected)).unwrap());
+-		}
+-	}
+-
+-	#[test]
+-	fn test_h256() {
+-		let tests = vec![
+-			(
+-				Default::default(),
+-				"0x0000000000000000000000000000000000000000000000000000000000000000",
+-			),
+-			(
+-				H256::from_low_u64_be(2),
+-				"0x0000000000000000000000000000000000000000000000000000000000000002",
+-			),
+-			(
+-				H256::from_low_u64_be(15),
+-				"0x000000000000000000000000000000000000000000000000000000000000000f",
+-			),
+-			(
+-				H256::from_low_u64_be(16),
+-				"0x0000000000000000000000000000000000000000000000000000000000000010",
+-			),
+-			(
+-				H256::from_low_u64_be(1_000),
+-				"0x00000000000000000000000000000000000000000000000000000000000003e8",
+-			),
+-			(
+-				H256::from_low_u64_be(100_000),
+-				"0x00000000000000000000000000000000000000000000000000000000000186a0",
+-			),
+-			(
+-				H256::from_low_u64_be(u64::MAX),
+-				"0x000000000000000000000000000000000000000000000000ffffffffffffffff",
+-			),
+-		];
+-
+-		for (number, expected) in tests {
+-			assert_eq!(
+-				format!("{:?}", expected),
+-				serde_json::to_string_pretty(&number).expect("Json pretty print failed")
+-			);
+-			assert_eq!(number, serde_json::from_str(&format!("{:?}", expected)).unwrap());
+-		}
+-	}
+-
+-	#[test]
+-	fn test_invalid() {
+-		assert!(serde_json::from_str::<H256>(
+-			"\"0x000000000000000000000000000000000000000000000000000000000000000\""
+-		)
+-		.unwrap_err()
+-		.is_data());
+-		assert!(serde_json::from_str::<H256>(
+-			"\"0x000000000000000000000000000000000000000000000000000000000000000g\""
+-		)
+-		.unwrap_err()
+-		.is_data());
+-		assert!(serde_json::from_str::<H256>(
+-			"\"0x00000000000000000000000000000000000000000000000000000000000000000\""
+-		)
+-		.unwrap_err()
+-		.is_data());
+-		assert!(serde_json::from_str::<H256>("\"\"").unwrap_err().is_data());
+-		assert!(serde_json::from_str::<H256>("\"0\"").unwrap_err().is_data());
+-		assert!(serde_json::from_str::<H256>("\"10\"").unwrap_err().is_data());
+-	}
++fixed_hash::construct_fixed_hash! {
++  pub struct H256(32);
+ }
++impl_codec::impl_fixed_hash_codec!(H256, 32);
++impl_serde::impl_fixed_hash_serde!(H256, 32);
+diff --git a/substrate/primitives/core/src/lib.rs b/substrate/primitives/core/src/lib.rs
+index c83040cadf..e11423c4d5 100644
+--- a/substrate/primitives/core/src/lib.rs
++++ b/substrate/primitives/core/src/lib.rs
+@@ -84,8 +84,8 @@ pub use bls::{bls377, bls381};
+ pub use paired_crypto::{ecdsa_bls377, ecdsa_bls381};
+ 
+ pub use self::{
+-	hash::{convert_hash, H160, H256, H512},
+-	uint::{U256, U512},
++	hash::H256,
++	uint::U256,
+ };
+ pub use crypto::{ByteArray, DeriveJunction, Pair, Public};
+ 
+diff --git a/substrate/primitives/core/src/uint.rs b/substrate/primitives/core/src/uint.rs
+index b251671dbe..dd070d4cc3 100644
+--- a/substrate/primitives/core/src/uint.rs
++++ b/substrate/primitives/core/src/uint.rs
+@@ -1,92 +1,5 @@
+-// This file is part of Substrate.
+-
+-// Copyright (C) Parity Technologies (UK) Ltd.
+-// SPDX-License-Identifier: Apache-2.0
+-
+-// Licensed under the Apache License, Version 2.0 (the "License");
+-// you may not use this file except in compliance with the License.
+-// You may obtain a copy of the License at
+-//
+-// 	http://www.apache.org/licenses/LICENSE-2.0
+-//
+-// Unless required by applicable law or agreed to in writing, software
+-// distributed under the License is distributed on an "AS IS" BASIS,
+-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-// See the License for the specific language governing permissions and
+-// limitations under the License.
+-
+-//! An unsigned fixed-size integer.
+-
+-pub use primitive_types::{U256, U512};
+-
+-#[cfg(test)]
+-mod tests {
+-	use super::*;
+-	use codec::{Decode, Encode};
+-
+-	macro_rules! test {
+-		($name: ident, $test_name: ident) => {
+-			#[test]
+-			fn $test_name() {
+-				let tests = vec![
+-					($name::from(0), "0x0"),
+-					($name::from(1), "0x1"),
+-					($name::from(2), "0x2"),
+-					($name::from(10), "0xa"),
+-					($name::from(15), "0xf"),
+-					($name::from(16), "0x10"),
+-					($name::from(1_000), "0x3e8"),
+-					($name::from(100_000), "0x186a0"),
+-					($name::from(u64::MAX), "0xffffffffffffffff"),
+-					($name::from(u64::MAX) + $name::from(1), "0x10000000000000000"),
+-				];
+-
+-				for (number, expected) in tests {
+-					assert_eq!(
+-						format!("{:?}", expected),
+-						serde_json::to_string_pretty(&number).expect("Json pretty print failed")
+-					);
+-					assert_eq!(number, serde_json::from_str(&format!("{:?}", expected)).unwrap());
+-				}
+-
+-				// Invalid examples
+-				assert!(serde_json::from_str::<$name>("\"0x\"").unwrap_err().is_data());
+-				assert!(serde_json::from_str::<$name>("\"0xg\"").unwrap_err().is_data());
+-				assert!(serde_json::from_str::<$name>("\"\"").unwrap_err().is_data());
+-			}
+-		};
+-	}
+-
+-	test!(U256, test_u256);
+-
+-	#[test]
+-	fn test_u256_codec() {
+-		let res1 = vec![
+-			120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-			0, 0, 0, 0,
+-		];
+-		let res2 = vec![
+-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+-			0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+-			0xff, 0xff, 0xff, 0xff,
+-		];
+-
+-		assert_eq!(U256::from(120).encode(), res1);
+-		assert_eq!(U256::max_value().encode(), res2);
+-		assert_eq!(U256::decode(&mut &res1[..]), Ok(U256::from(120)));
+-		assert_eq!(U256::decode(&mut &res2[..]), Ok(U256::max_value()));
+-	}
+-
+-	#[test]
+-	fn test_large_values() {
+-		assert_eq!(
+-			serde_json::to_string_pretty(&!U256::zero()).expect("Json pretty print failed"),
+-			"\"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\""
+-		);
+-		assert!(serde_json::from_str::<U256>(
+-			"\"0x1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\""
+-		)
+-		.unwrap_err()
+-		.is_data());
+-	}
++uint::construct_uint! {
++  pub struct U256(4);
+ }
++impl_codec::impl_uint_codec!(U256, 4);
++impl_serde::impl_uint_serde!(U256, 4);
+diff --git a/substrate/primitives/core/src/crypto_bytes.rs b/substrate/primitives/core/src/crypto_bytes.rs
+index 0925c42b35..1c49baf08c 100644
+--- a/substrate/primitives/core/src/crypto_bytes.rs
++++ b/substrate/primitives/core/src/crypto_bytes.rs
+@@ -19,7 +19,7 @@
+ 
+ use crate::{
+ 	crypto::{CryptoType, Derive, FromEntropy, Public, Signature, UncheckedFrom},
+-	hash::{H256, H512},
++	hash::H256,
+ };
+ 
+ use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
+@@ -195,11 +195,11 @@ impl<T> From<CryptoBytes<32, T>> for H256 {
+ 	}
+ }
+ 
+-impl<T> From<CryptoBytes<64, T>> for H512 {
++/* impl<T> From<CryptoBytes<64, T>> for H512 {
+ 	fn from(x: CryptoBytes<64, T>) -> H512 {
+ 		H512::from(x.0)
+ 	}
+-}
++} */
+ 
+ impl<T> UncheckedFrom<H256> for CryptoBytes<32, T> {
+ 	fn unchecked_from(x: H256) -> Self {
+@@ -214,12 +214,12 @@ impl<T> CryptoBytes<32, T> {
+ 	}
+ }
+ 
+-impl<T> CryptoBytes<64, T> {
++/* impl<T> CryptoBytes<64, T> {
+ 	/// A new instance from an H512.
+ 	pub fn from_h512(x: H512) -> Self {
+ 		Self::from_raw(x.into())
+ 	}
+-}
++} */
+ 
+ mod public_bytes {
+ 	use super::*;
+diff --git a/substrate/primitives/runtime/src/lib.rs b/substrate/primitives/runtime/src/lib.rs
+index 15a38bf53c..e1c2d4c099 100644
+--- a/substrate/primitives/runtime/src/lib.rs
++++ b/substrate/primitives/runtime/src/lib.rs
+@@ -75,6 +75,6 @@ pub use sp_core::storage::{Storage, StorageChild};
+ use sp_core::{
+ 	crypto::{self, ByteArray, FromEntropy},
+-	hash::{H256, H512},
++	hash::H256,
+ 	sr25519,
+ };
+ 

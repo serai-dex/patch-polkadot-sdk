@@ -19,7 +19,7 @@
 
 use crate::{
 	crypto::{CryptoType, Derive, FromEntropy, Public, Signature, UncheckedFrom},
-	hash::{H256, H512},
+	hash::H256,
 };
 
 use codec::{Decode, DecodeWithMemTracking, Encode, MaxEncodedLen};
@@ -186,11 +186,11 @@ impl<T> From<CryptoBytes<32, T>> for H256 {
 	}
 }
 
-impl<T> From<CryptoBytes<64, T>> for H512 {
+/* impl<T> From<CryptoBytes<64, T>> for H512 {
 	fn from(x: CryptoBytes<64, T>) -> H512 {
 		H512::from(x.0)
 	}
-}
+} */
 
 impl<T> UncheckedFrom<H256> for CryptoBytes<32, T> {
 	fn unchecked_from(x: H256) -> Self {
@@ -205,12 +205,12 @@ impl<T> CryptoBytes<32, T> {
 	}
 }
 
-impl<T> CryptoBytes<64, T> {
+/* impl<T> CryptoBytes<64, T> {
 	/// A new instance from an H512.
 	pub fn from_h512(x: H512) -> Self {
 		Self::from_raw(x.into())
 	}
-}
+} */
 
 mod public_bytes {
 	use super::*;

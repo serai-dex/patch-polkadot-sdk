@@ -72,8 +72,8 @@ pub mod sr25519;
 
 
 pub use self::{
-	hash::{convert_hash, H160, H256, H512},
-	uint::{U256, U512},
+	hash::H256,
+	uint::U256,
 };
 pub use crypto::{ByteArray, DeriveJunction, Pair, Public};
 

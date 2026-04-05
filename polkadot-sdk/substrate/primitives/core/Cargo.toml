@@ -63,6 +63,19 @@ workspace = true
 optional = true
 workspace = true
 
+[dependencies.impl-codec]
+version = "0.7"
+default-features = false
+
+[dependencies.fixed-hash]
+version = "0.8"
+default-features = false
+features = ["rustc-hex"]
+
+[dependencies.uint]
+version = "0.10"
+default-features = false
+
 [dependencies.itertools]
 optional = true
 workspace = true
@@ -78,13 +91,6 @@ default-features = true
 [dependencies.paste]
 workspace = true
 default-features = true
-
-[dependencies.primitive-types]
-features = [
-    "codec",
-    "scale-info",
-]
-workspace = true
 
 [dependencies.rand]
 features = ["small_rng"]
@@ -171,9 +177,6 @@ std = [
     "log/std",
     "merlin/std",
     "parking_lot",
-    "primitive-types/rustc-hex",
-    "primitive-types/serde",
-    "primitive-types/std",
     "rand",
     "schnorrkel/std",
     "serde/std",
@@ -191,7 +194,6 @@ serde = [
     "bs58/alloc",
     "dep:serde",
     "impl-serde",
-    "primitive-types/serde_no_std",
     "sp-storage/serde",
 ]
 full_crypto = ["blake2"]
