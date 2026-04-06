@@ -26,7 +26,7 @@ pub use ensure::{
 	/* EnsureFixedPointNumber, */ EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign, EnsureOp,
 	EnsureOpAssign, EnsureSub, EnsureSubAssign,
 };
-pub use integer_sqrt::IntegerSquareRoot;
+// pub use integer_sqrt::IntegerSquareRoot;
 pub use num_traits::{
 	checked_pow, Bounded, CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl,
 	CheckedShr, CheckedSub, One, Signed, Unsigned, Zero,
@@ -39,7 +39,7 @@ pub trait BaseArithmetic:
 	From<u8>
 	+ Zero
 	+ One
-	+ IntegerSquareRoot
+	// + IntegerSquareRoot
 	+ Add<Self, Output = Self>
 	+ AddAssign<Self>
 	+ Sub<Self, Output = Self>
@@ -97,7 +97,7 @@ impl<
 		T: From<u8>
 			+ Zero
 			+ One
-			+ IntegerSquareRoot
+			// + IntegerSquareRoot
 			+ Add<Self, Output = Self>
 			+ AddAssign<Self>
 			+ Sub<Self, Output = Self>

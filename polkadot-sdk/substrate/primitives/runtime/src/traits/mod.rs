@@ -39,7 +39,7 @@ pub use sp_arithmetic::traits::{
 	checked_pow, ensure_pow, AtLeast32Bit, AtLeast32BitUnsigned, Bounded, CheckedAdd, CheckedDiv,
 	CheckedMul, CheckedShl, CheckedShr, CheckedSub, Ensure, EnsureAdd, EnsureAddAssign, EnsureDiv,
 	EnsureDivAssign, /* EnsureFixedPointNumber, */ EnsureFrom, EnsureInto, EnsureMul, EnsureMulAssign,
-	EnsureOp, EnsureOpAssign, EnsureSub, EnsureSubAssign, IntegerSquareRoot, One,
+	EnsureOp, EnsureOpAssign, EnsureSub, EnsureSubAssign, /* IntegerSquareRoot, */ One,
 	SaturatedConversion, Saturating, UniqueSaturatedFrom, UniqueSaturatedInto, Zero,
 };
 use sp_core::{self, storage::StateVersion, Hasher, TypeId, U256};

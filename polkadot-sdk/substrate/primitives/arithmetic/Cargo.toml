@@ -31,9 +31,6 @@ features = [
 ]
 workspace = true
 
-[dependencies.integer-sqrt]
-workspace = true
-
 [dependencies.num-traits]
 workspace = true
 

@@ -10,6 +10,8 @@
 
 - `fixed_point`: Remove the `sp_arithmetic::fixed_point` module.
 
+- `integer-sqrt`: Removes the `integer-sqrt` dependency.
+
 - `light_client`: Removes the unused light-client request server.
 
 - `memmap2`: Remove use of the `memmap2` crate.

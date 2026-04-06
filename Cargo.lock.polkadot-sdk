@@ -2312,15 +2312,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "integer-sqrt"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "276ec31bcb4a9ee45f58bec6f9ec700ae4cf4f4f8f2fa7e06cb406bd5ffdd770"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
 name = "ip_network"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5850,7 +5841,6 @@ dependencies = [
 name = "sp-arithmetic"
 version = "28.0.1"
 dependencies = [
- "integer-sqrt",
  "num-traits",
  "parity-scale-codec",
  "serde",

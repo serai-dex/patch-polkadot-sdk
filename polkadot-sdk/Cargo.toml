@@ -397,9 +397,6 @@ version = "0.2.2"
 [workspace.dependencies.indexmap]
 version = "2.7.1"
 
-[workspace.dependencies.integer-sqrt]
-version = "0.1.2"
-
 [workspace.dependencies.ip_network]
 version = "0.4.1"
 
