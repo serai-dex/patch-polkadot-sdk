@@ -2,9 +2,7 @@ diff --git a/substrate/primitives/core/Cargo.toml b/substrate/primitives/core/Ca
 index 0b3409767f..e25902ca46 100644
 --- a/substrate/primitives/core/Cargo.toml
 +++ b/substrate/primitives/core/Cargo.toml
-@@ -32,11 +32,13 @@ futures = { optional = true, workspace = true }
- hash-db = { workspace = true }
- hash256-std-hasher = { workspace = true }
+@@ -34,9 +34,11 @@ futures = { optional = true, workspace = true }
  impl-serde = { optional = true, workspace = true }
 +hex = { version = "0.4", default-features = false }
 +impl-codec = { version = "0.7", default-features = false }

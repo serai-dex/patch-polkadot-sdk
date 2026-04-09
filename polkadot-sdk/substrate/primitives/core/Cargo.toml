@@ -56,8 +56,9 @@ workspace = true
 [dependencies.hash-db]
 workspace = true
 
-[dependencies.hash256-std-hasher]
-workspace = true
+[dependencies.fnv]
+version = "1"
+default-features = false
 
 [dependencies.impl-serde]
 optional = true
@@ -170,7 +171,6 @@ std = [
     "futures/std",
     "futures/thread-pool",
     "hash-db/std",
-    "hash256-std-hasher/std",
     "impl-serde/std",
     "itertools",
     "log/std",

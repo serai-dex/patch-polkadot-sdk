@@ -10,6 +10,12 @@
 
 - `fixed_point`: Remove the `sp_arithmetic::fixed_point` module.
 
+- `hash256-std-hasher`: Removes the `hash256-std-hasher` dependency, which
+  panics if misused (with `debug_assertions`) and uses unsafe to optimize
+  `HashMap`. While the optimization appears safe, and sound given the hashed
+  data is already uniform, the headache isn't appreciated at this time. `fnv`
+  is used instead, as seen as the `DefaultHasher` in `hashbrown`.
+
 - `integer-sqrt`: Removes the `integer-sqrt` dependency.
 
 - `light_client`: Removes the unused light-client request server.

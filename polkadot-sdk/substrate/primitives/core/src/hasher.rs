@@ -19,7 +19,7 @@
 
 pub mod blake2 {
 	use crate::hash::H256;
-	use hash256_std_hasher::Hash256StdHasher;
+	use fnv::FnvHasher;
 	use hash_db::Hasher;
 
 	/// Concrete implementation of Hasher using Blake2b 256-bit hashes
@@ -28,7 +28,7 @@ pub mod blake2 {
 
 	impl Hasher for Blake2Hasher {
 		type Out = H256;
-		type StdHasher = Hash256StdHasher;
+		type StdHasher = FnvHasher;
 		const LENGTH: usize = 32;
 
 		fn hash(x: &[u8]) -> Self::Out {
@@ -39,7 +39,7 @@ pub mod blake2 {
 
 pub mod keccak {
 	use crate::hash::H256;
-	use hash256_std_hasher::Hash256StdHasher;
+	use fnv::FnvHasher;
 	use hash_db::Hasher;
 
 	/// Concrete implementation of Hasher using Keccak 256-bit hashes
@@ -48,7 +48,7 @@ pub mod keccak {
 
 	impl Hasher for KeccakHasher {
 		type Out = H256;
-		type StdHasher = Hash256StdHasher;
+		type StdHasher = FnvHasher;
 		const LENGTH: usize = 32;
 
 		fn hash(x: &[u8]) -> Self::Out {

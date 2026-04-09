@@ -1,0 +1,104 @@
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index 874bc53542..39d5eac1a0 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -1063,6 +1070,6 @@ impl<T> HashOutput for T where
+ impl Hasher for BlakeTwo256 {
+ 	type Out = sp_core::H256;
+-	type StdHasher = hash256_std_hasher::Hash256StdHasher;
++	type StdHasher = fnv::FnvHasher;
+ 	const LENGTH: usize = 32;
+ 
+ 	fn hash(s: &[u8]) -> Self::Out {
+@@ -1090,6 +1097,6 @@ impl Hash for BlakeTwo256 {
+ impl Hasher for Keccak256 {
+ 	type Out = sp_core::H256;
+-	type StdHasher = hash256_std_hasher::Hash256StdHasher;
++	type StdHasher = fnv::FnvHasher;
+ 	const LENGTH: usize = 32;
+ 
+ 	fn hash(s: &[u8]) -> Self::Out {
+diff --git a/substrate/primitives/core/src/hasher.rs b/substrate/primitives/core/src/hasher.rs
+index fc613dba16..b444fde09e 100644
+--- a/substrate/primitives/core/src/hasher.rs
++++ b/substrate/primitives/core/src/hasher.rs
+@@ -19,7 +19,7 @@
+ 
+ pub mod blake2 {
+ 	use crate::hash::H256;
+-	use hash256_std_hasher::Hash256StdHasher;
++	use fnv::FnvHasher;
+ 	use hash_db::Hasher;
+ 
+ 	/// Concrete implementation of Hasher using Blake2b 256-bit hashes
+@@ -28,7 +28,7 @@ pub mod blake2 {
+ 
+ 	impl Hasher for Blake2Hasher {
+ 		type Out = H256;
+-		type StdHasher = Hash256StdHasher;
++		type StdHasher = FnvHasher;
+ 		const LENGTH: usize = 32;
+ 
+ 		fn hash(x: &[u8]) -> Self::Out {
+@@ -39,7 +39,7 @@ pub mod blake2 {
+ 
+ pub mod keccak {
+ 	use crate::hash::H256;
+-	use hash256_std_hasher::Hash256StdHasher;
++	use fnv::FnvHasher;
+ 	use hash_db::Hasher;
+ 
+ 	/// Concrete implementation of Hasher using Keccak 256-bit hashes
+@@ -48,7 +48,7 @@ pub mod keccak {
+ 
+ 	impl Hasher for KeccakHasher {
+ 		type Out = H256;
+-		type StdHasher = Hash256StdHasher;
++		type StdHasher = FnvHasher;
+ 		const LENGTH: usize = 32;
+ 
+ 		fn hash(x: &[u8]) -> Self::Out {
+diff --git a/substrate/primitives/core/Cargo.toml b/substrate/primitives/core/Cargo.toml
+index 0b3409767f..987a9b28a1 100644
+--- a/substrate/primitives/core/Cargo.toml
++++ b/substrate/primitives/core/Cargo.toml
+@@ -30,7 +30,7 @@ bs58 = { optional = true, workspace = true }
+ codec = { features = ["derive", "max-encoded-len"], workspace = true }
+ futures = { optional = true, workspace = true }
+ hash-db = { workspace = true }
+-hash256-std-hasher = { workspace = true }
++fnv = { version = "1", default-features = false }
+ impl-serde = { optional = true, workspace = true }
+ itertools = { optional = true, workspace = true }
+ log = { workspace = true }
+@@ -96,7 +96,7 @@ std = [
+ 	"futures/std",
+ 	"futures/thread-pool",
+ 	"hash-db/std",
+-	"hash256-std-hasher/std",
++	# "hash256-std-hasher/std",
+ 	"impl-serde/std",
+ 	"itertools",
+ 	"k256/std",
+diff --git a/substrate/primitives/runtime/Cargo.toml b/substrate/primitives/runtime/Cargo.toml
+index 909d976246..7befeb8af6 100644
+--- a/substrate/primitives/runtime/Cargo.toml
++++ b/substrate/primitives/runtime/Cargo.toml
+@@ -22,7 +22,7 @@ bytes = { workspace = true }
+ codec = { features = ["derive", "max-encoded-len"], workspace = true }
+ docify = { workspace = true }
+ either = { workspace = true }
+-hash256-std-hasher = { workspace = true }
++fnv = { version = "1", default-features = false }
+ impl-trait-for-tuples = { workspace = true }
+ log = { workspace = true }
+ num-traits = { workspace = true }
+@@ -63,7 +63,7 @@ std = [
+ 	"codec/std",
+ 	"either/std",
+ 	"either/use_std",
+-	"hash256-std-hasher/std",
++	# "hash256-std-hasher/std",
+ 	"log/std",
+ 	"num-traits/std",
+ 	"rand",

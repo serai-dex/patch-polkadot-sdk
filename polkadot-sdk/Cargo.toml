@@ -372,10 +372,6 @@ version = "0.10.0"
 version = "0.16.0"
 default-features = false
 
-[workspace.dependencies.hash256-std-hasher]
-version = "0.15.2"
-default-features = false
-
 [workspace.dependencies.hex]
 version = "0.4.3"
 default-features = false

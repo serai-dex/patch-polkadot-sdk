@@ -1069,7 +1069,7 @@ pub struct BlakeTwo256;
 
 impl Hasher for BlakeTwo256 {
 	type Out = sp_core::H256;
-	type StdHasher = hash256_std_hasher::Hash256StdHasher;
+	type StdHasher = fnv::FnvHasher;
 	const LENGTH: usize = 32;
 
 	fn hash(s: &[u8]) -> Self::Out {
@@ -1096,7 +1096,7 @@ pub struct Keccak256;
 
 impl Hasher for Keccak256 {
 	type Out = sp_core::H256;
-	type StdHasher = hash256_std_hasher::Hash256StdHasher;
+	type StdHasher = fnv::FnvHasher;
 	const LENGTH: usize = 32;
 
 	fn hash(s: &[u8]) -> Self::Out {
