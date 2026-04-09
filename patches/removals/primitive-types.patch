@@ -240,7 +240,7 @@ diff --git a/substrate/primitives/core/src/uint.rs b/substrate/primitives/core/s
 index b251671dbe..dd070d4cc3 100644
 --- a/substrate/primitives/core/src/uint.rs
 +++ b/substrate/primitives/core/src/uint.rs
-@@ -1,92 +1,5 @@
+@@ -1,92 +1,6 @@
 -// This file is part of Substrate.
 -
 -// Copyright (C) Parity Technologies (UK) Ltd.
@@ -336,6 +336,7 @@ index b251671dbe..dd070d4cc3 100644
 +  pub struct U256(4);
  }
 +impl_codec::impl_uint_codec!(U256, 4);
++#[cfg(feature = "serde")]
 +impl_serde::impl_uint_serde!(U256, 4);
 diff --git a/substrate/primitives/core/src/crypto_bytes.rs b/substrate/primitives/core/src/crypto_bytes.rs
 index 0925c42b35..1c49baf08c 100644
