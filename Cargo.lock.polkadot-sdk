@@ -1452,16 +1452,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582"
 
 [[package]]
-name = "fixed-hash"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "835c052cb0c08c1acf6ffd71c022172e18723949c8282f2b9f27efbc51e64534"
-dependencies = [
- "rustc-hex",
- "static_assertions",
-]
-
-[[package]]
 name = "fixedbitset"
 version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5949,10 +5939,10 @@ dependencies = [
  "bounded-collections",
  "bs58",
  "dyn-clone",
- "fixed-hash",
  "futures",
  "hash-db",
  "hash256-std-hasher",
+ "hex",
  "impl-codec",
  "impl-serde",
  "itertools 0.14.0",

@@ -2200,7 +2200,7 @@ fn apply_index_ops<Block: BlockT>(
 				index_map.insert(extrinsic, (hash, size));
 			},
 			IndexOperation::Renew { extrinsic, hash } => {
-				renewed_map.insert(extrinsic, DbHash::from_slice(hash.as_ref()));
+				renewed_map.insert(extrinsic, DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()));
 			},
 		}
 	}
@@ -2208,7 +2208,7 @@ fn apply_index_ops<Block: BlockT>(
 		let db_extrinsic = if let Some(hash) = renewed_map.get(&(index as u32)) {
 			// Bump ref counter
 			let extrinsic = extrinsic.encode();
-			transaction.reference(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()));
+			transaction.reference(columns::TRANSACTION, *hash);
 			DbExtrinsic::Indexed { hash: *hash, header: extrinsic }
 		} else {
 			match index_map.get(&(index as u32)) {
@@ -2218,11 +2218,11 @@ fn apply_index_ops<Block: BlockT>(
 						let offset = encoded.len() - *size as usize;
 						transaction.store(
 							columns::TRANSACTION,
-							DbHash::from_slice(hash.as_ref()),
+							DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()),
 							encoded[offset..].to_vec(),
 						);
 						DbExtrinsic::Indexed {
-							hash: DbHash::from_slice(hash.as_ref()),
+							hash: DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()),
 							header: encoded[..offset].to_vec(),
 						}
 					} else {
@@ -2248,7 +2248,7 @@ fn apply_index_ops<Block: BlockT>(
 fn apply_indexed_body<Block: BlockT>(transaction: &mut Transaction<DbHash>, body: Vec<Vec<u8>>) {
 	for extrinsic in body {
 		let hash = sp_runtime::traits::BlakeTwo256::hash(&extrinsic);
-		transaction.store(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()), extrinsic);
+		transaction.store(columns::TRANSACTION, DbHash::from(hash), extrinsic);
 	}
 }
 

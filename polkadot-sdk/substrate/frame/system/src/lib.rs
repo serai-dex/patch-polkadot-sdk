@@ -528,7 +528,7 @@ pub mod pallet {
 			+ MaybeSerializeDeserialize
 			+ Debug
 			+ MaybeDisplay
-			+ SimpleBitOps
+			// + SimpleBitOps
 			+ Ord
 			+ Default
 			+ Copy

@@ -63,14 +63,13 @@ workspace = true
 optional = true
 workspace = true
 
+[dependencies.hex]
+version = "0.4"
+default-features = false
+
 [dependencies.impl-codec]
 version = "0.7"
 default-features = false
-
-[dependencies.fixed-hash]
-version = "0.8"
-default-features = false
-features = ["rustc-hex"]
 
 [dependencies.uint]
 version = "0.10"

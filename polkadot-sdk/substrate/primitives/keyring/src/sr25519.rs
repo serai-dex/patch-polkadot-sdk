@@ -74,9 +74,9 @@ impl Keyring {
 		Self::from_public(&Public::from_raw(who.into()))
 	}
 
-	pub fn to_h256_public(self) -> H256 {
+	/*pub fn to_h256_public(self) -> H256 {
 		Public::from(self).as_array_ref().into()
-	}
+	}*/
 
 	pub fn to_raw_public_vec(self) -> Vec<u8> {
 		Public::from(self).to_raw_vec()

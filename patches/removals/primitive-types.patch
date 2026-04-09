@@ -6,8 +6,8 @@ index 0b3409767f..e25902ca46 100644
  hash-db = { workspace = true }
  hash256-std-hasher = { workspace = true }
  impl-serde = { optional = true, workspace = true }
++hex = { version = "0.4", default-features = false }
 +impl-codec = { version = "0.7", default-features = false }
-+fixed-hash = { version = "0.8", default-features = false, features = ["rustc-hex"] }
 +uint = { version = "0.10", default-features = false }
  itertools = { optional = true, workspace = true }
  log = { workspace = true }
@@ -40,7 +40,7 @@ diff --git a/substrate/primitives/core/src/hash.rs b/substrate/primitives/core/s
 index ece9b1af79..742e97bbb5 100644
 --- a/substrate/primitives/core/src/hash.rs
 +++ b/substrate/primitives/core/src/hash.rs
-@@ -1,120 +1,5 @@
+@@ -1,120 +1,60 @@
 -// This file is part of Substrate.
 -
 -// Copyright (C) Parity Technologies (UK) Ltd.
@@ -160,11 +160,67 @@ index ece9b1af79..742e97bbb5 100644
 -		assert!(serde_json::from_str::<H256>("\"0\"").unwrap_err().is_data());
 -		assert!(serde_json::from_str::<H256>("\"10\"").unwrap_err().is_data());
 -	}
-+fixed_hash::construct_fixed_hash! {
-+  pub struct H256(32);
- }
-+impl_codec::impl_fixed_hash_codec!(H256, 32);
-+impl_serde::impl_fixed_hash_serde!(H256, 32);
+-}
++#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
++#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
++pub struct H256([u8; 32]);
++
++impl From<[u8; 32]> for H256 {
++  fn from(bytes: [u8; 32]) -> Self {
++    Self(bytes)
++  }
++}
++impl From<H256> for [u8; 32] {
++  fn from(hash: H256) -> Self {
++    hash.0
++  }
++}
++
++impl core::convert::AsRef<[u8]> for H256 {
++  fn as_ref(&self) -> &[u8] {
++    self.0.as_slice()
++  }
++}
++impl core::convert::AsMut<[u8]> for H256 {
++  fn as_mut(&mut self) -> &mut [u8] {
++    self.0.as_mut_slice()
++  }
++}
++
++impl core::fmt::Debug for H256 {
++  fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
++    core::fmt::Debug::fmt(&crate::hexdisplay::HexDisplay::from(&self.0), fmt)
++  }
++}
++impl core::fmt::Display for H256 {
++  fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
++    core::fmt::Display::fmt(&crate::hexdisplay::HexDisplay::from(&self.0), fmt)
++  }
++}
++impl core::str::FromStr for H256 {
++  type Err = ();
++  fn from_str(str: &str) -> Result<Self, Self::Err> {
++    let mut res = [0; 32];
++    hex::decode_to_slice(str.as_bytes(), &mut res).map_err(|_| ())?;
++    Ok(Self(res))
++  }
++}
++
++impl codec::Encode for H256 {
++  fn using_encoded<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R { f(self.0.as_slice()) }
++}
++impl codec::Decode for H256 {
++  fn decode<I: codec::Input>(input: &mut I) -> Result<Self, codec::Error> {
++    let mut res = [0; 32];
++    input.read(&mut res)?;
++    Ok(Self(res))
++  }
++}
++impl codec::DecodeWithMemTracking for H256 {}
++impl codec::EncodeLike for H256 {}
++impl codec::MaxEncodedLen for H256 {
++  fn max_encoded_len() -> usize { 32 }
++}
 diff --git a/substrate/primitives/core/src/lib.rs b/substrate/primitives/core/src/lib.rs
 index c83040cadf..e11423c4d5 100644
 --- a/substrate/primitives/core/src/lib.rs
@@ -335,3 +391,116 @@ index 15a38bf53c..e1c2d4c099 100644
  	sr25519,
  };
  
+diff --git a/substrate/primitives/state-machine/src/basic.rs b/substrate/primitives/state-machine/src/basic.rs
+index 087c723e04..7411385eb0 100644
+--- a/substrate/primitives/state-machine/src/basic.rs
++++ b/substrate/primitives/state-machine/src/basic.rs
+@@ -280,7 +280,7 @@ impl Externalities for BasicExternalities {
+ 		let empty_hash = empty_child_trie_root::<LayoutV1<Blake2Hasher>>();
+ 		for child_info in self.overlay.children().map(|d| d.1.clone()).collect::<Vec<_>>() {
+ 			let child_root = self.child_storage_root(&child_info, state_version);
+-			if empty_hash[..] == child_root[..] {
++			if empty_hash.as_ref() == child_root.as_slice() {
+ 				top.remove(child_info.prefixed_storage_key().as_slice());
+ 			} else {
+ 				top.insert(child_info.prefixed_storage_key().into_inner(), child_root);
+diff --git a/substrate/client/db/src/lib.rs b/substrate/client/db/src/lib.rs
+index e6b5e1f62a..23fc2f5e5c 100644
+--- a/substrate/client/db/src/lib.rs
++++ b/substrate/client/db/src/lib.rs
+@@ -2200,7 +2200,7 @@ fn apply_index_ops<Block: BlockT>(
+ 				index_map.insert(extrinsic, (hash, size));
+ 			},
+ 			IndexOperation::Renew { extrinsic, hash } => {
+-				renewed_map.insert(extrinsic, DbHash::from_slice(hash.as_ref()));
++				renewed_map.insert(extrinsic, DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()));
+ 			},
+ 		}
+ 	}
+@@ -2208,7 +2208,7 @@ fn apply_index_ops<Block: BlockT>(
+ 		let db_extrinsic = if let Some(hash) = renewed_map.get(&(index as u32)) {
+ 			// Bump ref counter
+ 			let extrinsic = extrinsic.encode();
+-			transaction.reference(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()));
++			transaction.reference(columns::TRANSACTION, *hash);
+ 			DbExtrinsic::Indexed { hash: *hash, header: extrinsic }
+ 		} else {
+ 			match index_map.get(&(index as u32)) {
+@@ -2218,11 +2218,11 @@ fn apply_index_ops<Block: BlockT>(
+ 						let offset = encoded.len() - *size as usize;
+ 						transaction.store(
+ 							columns::TRANSACTION,
+-							DbHash::from_slice(hash.as_ref()),
++							DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()),
+ 							encoded[offset..].to_vec(),
+ 						);
+ 						DbExtrinsic::Indexed {
+-							hash: DbHash::from_slice(hash.as_ref()),
++							hash: DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()),
+ 							header: encoded[..offset].to_vec(),
+ 						}
+ 					} else {
+@@ -2248,7 +2248,7 @@ fn apply_index_ops<Block: BlockT>(
+ fn apply_indexed_body<Block: BlockT>(transaction: &mut Transaction<DbHash>, body: Vec<Vec<u8>>) {
+ 	for extrinsic in body {
+ 		let hash = sp_runtime::traits::BlakeTwo256::hash(&extrinsic);
+-		transaction.store(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()), extrinsic);
++		transaction.store(columns::TRANSACTION, DbHash::from(hash), extrinsic);
+ 	}
+ }
+ 
+diff --git a/substrate/primitives/keyring/src/sr25519.rs b/substrate/primitives/keyring/src/sr25519.rs
+index 0ebd04cdeb..4906797f8a 100644
+--- a/substrate/primitives/keyring/src/sr25519.rs
++++ b/substrate/primitives/keyring/src/sr25519.rs
+@@ -74,9 +74,9 @@ impl Keyring {
+ 		Self::from_public(&Public::from_raw(who.into()))
+ 	}
+ 
+-	pub fn to_h256_public(self) -> H256 {
++	/*pub fn to_h256_public(self) -> H256 {
+ 		Public::from(self).as_array_ref().into()
+-	}
++	}*/
+ 
+ 	pub fn to_raw_public_vec(self) -> Vec<u8> {
+ 		Public::from(self).to_raw_vec()
+diff --git a/substrate/frame/system/src/lib.rs b/substrate/frame/system/src/lib.rs
+index 673ab8d5f6..2958ef142e 100644
+--- a/substrate/frame/system/src/lib.rs
++++ b/substrate/frame/system/src/lib.rs
+@@ -558,7 +558,7 @@ pub mod pallet {
+ 			+ MaybeSerializeDeserialize
+ 			+ Debug
+ 			+ MaybeDisplay
+-			+ SimpleBitOps
++			// + SimpleBitOps
+ 			+ Ord
+ 			+ Default
+ 			+ Copy
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index 874bc53542..8c217c8b0d 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -1122,8 +1122,8 @@ impl CheckEqual for sp_core::H256 {
+ 		if self != other {
+ 			println!(
+ 				"Hash: given={}, expected={}",
+-				HexDisplay::from(self.as_fixed_bytes()),
+-				HexDisplay::from(other.as_fixed_bytes()),
++				self,
++				other,
+ 			);
+ 		}
+ 	}
+@@ -1132,8 +1132,8 @@ impl CheckEqual for sp_core::H256 {
+ 	fn check_equal(&self, other: &Self) {
+ 		if self != other {
+ 			"Hash not equal".print();
+-			self.as_bytes().print();
+-			other.as_bytes().print();
++			<[u8; 32]>::from(*self).print();
++			<[u8; 32]>::from(*other).print();
+ 		}
+ 	}
+ }

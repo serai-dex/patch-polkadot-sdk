@@ -1125,12 +1125,12 @@ pub trait CheckEqual {
 impl CheckEqual for sp_core::H256 {
 	#[cfg(feature = "std")]
 	fn check_equal(&self, other: &Self) {
-		use sp_core::hexdisplay::HexDisplay;
+		
 		if self != other {
 			println!(
 				"Hash: given={}, expected={}",
-				HexDisplay::from(self.as_fixed_bytes()),
-				HexDisplay::from(other.as_fixed_bytes()),
+				self,
+				other,
 			);
 		}
 	}
@@ -1139,8 +1139,8 @@ impl CheckEqual for sp_core::H256 {
 	fn check_equal(&self, other: &Self) {
 		if self != other {
 			"Hash not equal".print();
-			self.as_bytes().print();
-			other.as_bytes().print();
+			<[u8; 32]>::from(*self).print();
+			<[u8; 32]>::from(*other).print();
 		}
 	}
 }

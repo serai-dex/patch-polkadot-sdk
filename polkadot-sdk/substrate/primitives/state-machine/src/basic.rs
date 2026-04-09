@@ -280,7 +280,7 @@ impl Externalities for BasicExternalities {
 		let empty_hash = empty_child_trie_root::<LayoutV1<Blake2Hasher>>();
 		for child_info in self.overlay.children().map(|d| d.1.clone()).collect::<Vec<_>>() {
 			let child_root = self.child_storage_root(&child_info, state_version);
-			if empty_hash[..] == child_root[..] {
+			if empty_hash.as_ref() == child_root.as_slice() {
 				top.remove(child_info.prefixed_storage_key().as_slice());
 			} else {
 				top.insert(child_info.prefixed_storage_key().into_inner(), child_root);
