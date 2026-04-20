@@ -159,6 +159,10 @@ function remove_matching_phrase {
 # Apply `patches/`
 apply_patches
 
+# Replace the use of `core2` with Serai's `std-shims` as `core2` was yanked
+echo '[patch.crates-io]' >> ./polkadot-sdk/Cargo.toml
+echo 'core2 = { git = "https://github.com/serai-dex/serai", branch = "next" }' >> ./polkadot-sdk/Cargo.toml
+
 # Add `tokio` as a dependency of `sc-telemetry` due to using it in place of `wasm-timer`
 echo '[dependencies.tokio]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'version = "1"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
@@ -771,7 +775,7 @@ cargo_upgrade thiserror 2.0.0
 cargo_upgrade toml 0.9.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 43.0.0
+cargo_upgrade wasmtime 44.0.0
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk

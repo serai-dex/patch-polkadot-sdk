@@ -218,7 +218,7 @@ fn setup_wasmtime_caching(
 fn common_config(semantics: &Semantics) -> std::result::Result<wasmtime::Config, WasmError> {
 	let mut config = wasmtime::Config::new();
 	config.cranelift_opt_level(wasmtime::OptLevel::Speed);
-	config.cranelift_pcc(false);
+	// config.cranelift_pcc(false);
 
 	let profiler = match std::env::var_os("WASMTIME_PROFILING_STRATEGY") {
 		Some(os_string) if os_string == "jitdump" => wasmtime::ProfilingStrategy::JitDump,
