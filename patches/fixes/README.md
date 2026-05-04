@@ -8,6 +8,10 @@
 - `tracing-subscriber-ansi-colors`: Enables ANSI color codes in
   `tracing-subscriber`, without having to pin to an old version.
 
+- `undefined-symbols`: Adds `link(wasm_import_module = "host")` annotations to
+  host functions, necessary as of
+  https://github.com/rust-lang/rust/pull/149868.
+
 - `useless_deprecated`: Allows a `useless_deprecated` instance which causes a
   compilation error by default. While the deprecation noticed could be removed,
   or 'fixed' by moving it, this is the path of least resistance.
