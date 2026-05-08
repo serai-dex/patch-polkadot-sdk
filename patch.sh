@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=f8cfbb96055978d5031f60153c9dfbff33814183 # stable2603-1
+POLKADOT_SDK_COMMIT=c112e83f4f6b6f8818affb900edcfb34d6fd2af0 # stable2603-2
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
