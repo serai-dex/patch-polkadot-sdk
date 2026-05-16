@@ -769,7 +769,7 @@ cargo_upgrade prost 0.14.0
 cargo_upgrade prost-build 0.14.0
 cargo_upgrade rustc-hash 2.0.0
 cargo_upgrade sha2 0.11.0
-cargo_upgrade sha3 0.11.0
+cargo_upgrade sha3 0.12.0
 cargo_upgrade strum 0.28.0
 cargo_upgrade thiserror 2.0.0
 cargo_upgrade toml 0.9.0
