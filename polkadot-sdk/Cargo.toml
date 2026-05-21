@@ -939,7 +939,7 @@ default-features = false
 version = "0.8.0"
 
 [workspace.dependencies.wasmtime]
-version = "44.0.0"
+version = "45.0.0"
 default-features = false
 
 [workspace.dependencies.zeroize]

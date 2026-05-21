@@ -775,7 +775,7 @@ cargo_upgrade thiserror 2.0.0
 cargo_upgrade toml 0.9.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 44.0.0
+cargo_upgrade wasmtime 45.0.0
 cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk
