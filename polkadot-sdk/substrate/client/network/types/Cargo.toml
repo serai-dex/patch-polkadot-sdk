@@ -53,24 +53,12 @@ default-features = true
 [dependencies.multiaddr]
 workspace = true
 
-[dependencies.multiaddr-17]
-package = "multiaddr"
-version = "0.17"
-default-features = false
-
 [dependencies.multihash]
 workspace = true
 
-[dependencies.multihash-17]
-package = "multihash"
-version = "0.17"
-default-features = false
-features = [
-    "std",
-    "multihash-impl",
-    "identity",
-    "sha2",
-]
+[dependencies.multihash-codetable]
+workspace = true
+features = ["sha2"]
 
 [dependencies.rand]
 workspace = true

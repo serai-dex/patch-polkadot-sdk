@@ -2,7 +2,7 @@ diff --git a/substrate/client/network/types/Cargo.toml b/substrate/client/networ
 index 6ad1689..743ad8a 100644
 --- a/substrate/client/network/types/Cargo.toml
 +++ b/substrate/client/network/types/Cargo.toml
-@@ -12,11 +12,13 @@ documentation = "https://docs.rs/sc-network-types"
+@@ -12,11 +12,12 @@ documentation = "https://docs.rs/sc-network-types"
  [dependencies]
  bs58 = { workspace = true, default-features = true }
  bytes = { workspace = true, default-features = false }
@@ -14,9 +14,8 @@ index 6ad1689..743ad8a 100644
 +litep2p = { workspace = true, optional = true }
  log = { workspace = true, default-features = true }
  multiaddr = { workspace = true }
-+multiaddr-17 = { package = "multiaddr", version = "0.17", default-features = false }
  multihash = { workspace = true }
-+multihash-17 = { package = "multihash", version = "0.17", default-features = false, features = ["std", "multihash-impl", "identity", "sha2"] }
++multihash-codetable = { workspace = true, features = ["sha2"] }
  rand = { workspace = true, default-features = true }
 diff --git a/substrate/client/network/types/src/ed25519.rs b/substrate/client/network/types/src/ed25519.rs
 index acaa017..429904f 100644
@@ -126,7 +125,7 @@ index 925e24f..0bd652c 100644
  // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 -use litep2p::types::multiaddr::{
-+use multiaddr_17::{
++use multiaddr::{
  	Error as LiteP2pError, Iter as LiteP2pIter, Multiaddr as LiteP2pMultiaddr,
  	Protocol as LiteP2pProtocol,
  };
@@ -139,7 +138,7 @@ index 35fcaa5..3afda6e 100644
  use crate::multihash::Multihash;
  use libp2p_identity::PeerId;
 -use litep2p::types::multiaddr::Protocol as LiteP2pProtocol;
-+use multiaddr_17::Protocol as LiteP2pProtocol;
++use multiaddr::Protocol as LiteP2pProtocol;
  use multiaddr::Protocol as LibP2pProtocol;
  use std::{
  	borrow::Cow,
@@ -152,19 +151,6 @@ index 35fcaa5..3afda6e 100644
  		Display::fmt(&protocol, f)
  	}
  }
-diff --git a/substrate/client/network/types/src/multihash.rs b/substrate/client/network/types/src/multihash.rs
-index 321211c..1606196 100644
---- a/substrate/client/network/types/src/multihash.rs
-+++ b/substrate/client/network/types/src/multihash.rs
-@@ -19,7 +19,7 @@
- //! [`Multihash`] implemenattion used by substrate. Currently it's a wrapper over
- //! multihash used by litep2p, but it can be switched to other implementation if needed.
-
--use litep2p::types::multihash::{
-+use multihash_17::{
- 	Code as LiteP2pCode, Error as LiteP2pError, Multihash as LiteP2pMultihash, MultihashDigest as _,
- };
- use std::fmt::{self, Debug};
 diff --git a/substrate/client/network/types/src/peer_id.rs b/substrate/client/network/types/src/peer_id.rs
 index 076be0a..f82ad8e 100644
 --- a/substrate/client/network/types/src/peer_id.rs

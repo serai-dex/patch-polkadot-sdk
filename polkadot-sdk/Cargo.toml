@@ -436,7 +436,7 @@ version = "0.5.4"
 version = "0.1.4"
 
 [workspace.dependencies.litep2p]
-version = "0.13.3"
+version = "0.14.0"
 features = [
     "rsa",
     "websocket",
@@ -463,6 +463,11 @@ version = "0.18.1"
 [workspace.dependencies.multihash]
 version = "0.19.1"
 default-features = false
+
+[workspace.dependencies.multihash-codetable]
+version = "0.2.1"
+default-features = false
+features = ["blake2b"]
 
 [workspace.dependencies.nohash-hasher]
 version = "0.2.0"
@@ -966,7 +971,3 @@ debug = 1
 debug-assertions = true
 inherits = "release"
 overflow-checks = true
-
-[patch.crates-io.core2]
-git = "https://github.com/serai-dex/serai"
-branch = "next"

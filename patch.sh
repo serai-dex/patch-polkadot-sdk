@@ -159,10 +159,6 @@ function remove_matching_phrase {
 # Apply `patches/`
 apply_patches
 
-# Replace the use of `core2` with Serai's `std-shims` as `core2` was yanked
-echo '[patch.crates-io]' >> ./polkadot-sdk/Cargo.toml
-echo 'core2 = { git = "https://github.com/serai-dex/serai", branch = "next" }' >> ./polkadot-sdk/Cargo.toml
-
 # Add `tokio` as a dependency of `sc-telemetry` due to using it in place of `wasm-timer`
 echo '[dependencies.tokio]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'version = "1"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
@@ -839,11 +835,18 @@ while [ ! "$SUBSTRATE_HASH" = "$(find ./substrate -type f -exec sha256sum \{\} \
   cd polkadot-sdk
 done
 
-echo "Running \`cargo check\` for a final time"
+echo "Running \`cargo check --all-features\` for a final time"
 cargo check --all-features
 if [ $? -ne 0 ]; then
   echo "Patched, fixed, machete'd \`polkadot-sdk\` failed to compile"
   exit 14
+fi
+
+echo "Checking \`sc-network\` builds without \`litep2p\`"
+cargo check -p sc-network
+if [ $? -ne 0 ]; then
+  echo "\`sc-network\` failed to build without \`litep2p \`"
+  exit 15
 fi
 
 # Save >10 GB on what should be a static directory of no further use
