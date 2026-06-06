@@ -278,7 +278,7 @@ impl Timestamp {
 
 bitflags::bitflags! {
 	/// Execution context extra capabilities.
-	pub struct Capabilities: u32 {
+	#[derive(Clone, Copy, Debug)] pub struct Capabilities: u32 {
 		/// External http calls.
 		const HTTP = 1 << 0;
 		/// Keystore access.

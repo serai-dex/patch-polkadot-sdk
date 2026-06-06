@@ -18,7 +18,7 @@
 
 // file-level lint whitelist to avoid problem with bitflags macro below
 // TODO: can be dropped after an update to bitflags 2.4
-#![allow(clippy::bad_bit_mask)]
+// #![allow(clippy::bad_bit_mask)]
 
 use codec::{self, Encode, EncodeLike, Input, Output};
 
@@ -84,7 +84,7 @@ impl std::fmt::Display for Role {
 
 bitflags::bitflags! {
 	/// Bitmask of the roles that a node fulfills.
-	pub struct Roles: u8 {
+	#[derive(Clone, Copy, PartialEq, Eq, Debug)] pub struct Roles: u8 {
 		/// No network.
 		const NONE = 0b00000000;
 		/// Full node, does not participate in consensus.

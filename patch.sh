@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=c112e83f4f6b6f8818affb900edcfb34d6fd2af0 # stable2603-2
+POLKADOT_SDK_COMMIT=e3737178ec726cffe506c907263aaaa417893fd0 # stable2603-3
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -741,6 +741,7 @@ machete
 cargo_upgrade array-bytes 7.0.0
 cargo_upgrade async-channel 2.0.0
 cargo_upgrade asynchronous-codec 0.7.0
+cargo_upgrade bitflags 2.4.0
 cargo_upgrade blake2 0.11.0-rc.5
 sed -i s/"blake2\/std"/"blake2\/alloc"/ ./polkadot-sdk/substrate/primitives/core/Cargo.toml
 sed -i s/"blake2\/std"/"blake2\/alloc"/ ./polkadot-sdk/substrate/primitives/api/proc-macro/Cargo.toml

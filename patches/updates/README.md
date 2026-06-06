@@ -1,6 +1,7 @@
 # Updates
 
 - `async-channel`: Updates from `async-channel 1` to `async-channel 2`.
+- `bitflags`: Updates from `bitflags 1` to `bitflags 2`.
 - `blake2b_simd-to-blake2`: Consolidates from `blake2b_simd` to `blake2`.
 - `governor`: Updates from `governor 0.6` to `governor 0.10`.
 - `libp2p`: Updates from `libp2p 0.54` to `libp2p 0.56`.

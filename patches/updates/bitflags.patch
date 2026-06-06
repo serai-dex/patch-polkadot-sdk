@@ -1,0 +1,48 @@
+diff --git a/substrate/primitives/core/src/offchain/mod.rs b/substrate/primitives/core/src/offchain/mod.rs
+index d0786f2ffc8..64ff9a79fe5 100644
+--- a/substrate/primitives/core/src/offchain/mod.rs
++++ b/substrate/primitives/core/src/offchain/mod.rs
+@@ -279,7 +279,7 @@ impl Timestamp {
+ 
+ bitflags::bitflags! {
+ 	/// Execution context extra capabilities.
+-	pub struct Capabilities: u32 {
++	#[derive(Clone, Copy, Debug)] pub struct Capabilities: u32 {
+ 		/// External http calls.
+ 		const HTTP = 1 << 0;
+ 		/// Keystore access.
+diff --git a/substrate/client/network/common/src/role.rs b/substrate/client/network/common/src/role.rs
+index e2218b37f08..aaa26a5c87c 100644
+--- a/substrate/client/network/common/src/role.rs
++++ b/substrate/client/network/common/src/role.rs
+@@ -18,7 +18,7 @@
+ 
+ // file-level lint whitelist to avoid problem with bitflags macro below
+ // TODO: can be dropped after an update to bitflags 2.4
+-#![allow(clippy::bad_bit_mask)]
++// #![allow(clippy::bad_bit_mask)]
+ 
+ use codec::{self, Encode, EncodeLike, Input, Output};
+ 
+@@ -84,7 +84,7 @@ impl std::fmt::Display for Role {
+ 
+ bitflags::bitflags! {
+ 	/// Bitmask of the roles that a node fulfills.
+-	pub struct Roles: u8 {
++	#[derive(Clone, Copy, PartialEq, Eq, Debug)] pub struct Roles: u8 {
+ 		/// No network.
+ 		const NONE = 0b00000000;
+ 		/// Full node, does not participate in consensus.
+diff --git a/substrate/client/network/common/src/sync/message.rs b/substrate/client/network/common/src/sync/message.rs
+index 7cdb1417288..7c30518b12c 100644
+--- a/substrate/client/network/common/src/sync/message.rs
++++ b/substrate/client/network/common/src/sync/message.rs
+@@ -41,7 +41,7 @@ pub type BlockResponse<B> =
+ // Bits of block data and associated artifacts to request.
+ bitflags! {
+ 	/// Node roles bitmask.
+-	pub struct BlockAttributes: u8 {
++	#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)] pub struct BlockAttributes: u8 {
+ 		/// Include block header.
+ 		const HEADER = 0b00000001;
+ 		/// Include block body.

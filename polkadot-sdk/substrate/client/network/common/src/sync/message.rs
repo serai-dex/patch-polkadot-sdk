@@ -41,7 +41,7 @@ pub type BlockResponse<B> =
 // Bits of block data and associated artifacts to request.
 bitflags! {
 	/// Node roles bitmask.
-	pub struct BlockAttributes: u8 {
+	#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)] pub struct BlockAttributes: u8 {
 		/// Include block header.
 		const HEADER = 0b00000001;
 		/// Include block body.

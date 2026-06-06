@@ -236,7 +236,7 @@ version = "2.2.0"
 default-features = false
 
 [workspace.dependencies.bitflags]
-version = "1.3.2"
+version = "2.4.0"
 
 [workspace.dependencies.blake2]
 version = "0.11.0-rc.5"
