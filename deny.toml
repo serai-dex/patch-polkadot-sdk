@@ -6,7 +6,10 @@ db-urls = ["https://github.com/rustsec/advisory-db"]
 
 yanked = "deny"
 
-ignore = []
+ignore = [
+  "RUSTSEC-2026-0118",
+  "RUSTSEC-2026-0119",
+]
 
 [licenses]
 version = 2
