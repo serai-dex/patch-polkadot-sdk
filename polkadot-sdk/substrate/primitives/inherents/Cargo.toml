@@ -1,6 +1,6 @@
 [package]
 name = "sp-inherents"
-version = "41.0.0"
+version = "43.0.0"
 license = "Apache-2.0"
 description = "Provides types and traits for creating and checking inherents."
 documentation = "https://docs.rs/sp-inherents"

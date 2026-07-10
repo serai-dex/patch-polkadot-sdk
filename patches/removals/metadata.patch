@@ -162,83 +162,6 @@ index fc5faa6a..7e159497 100644
  
  /// Simple blob to hold a `PeerId` without committing to its format.
  #[derive(
-diff --git a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
-index 48ee1b19..96613555 100644
---- a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
-+++ b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
-@@ -21,7 +21,7 @@ use crate::{
- 	generic::{CheckedExtrinsic, ExtrinsicFormat},
- 	traits::{
- 		self, transaction_extension::TransactionExtension, Checkable, Dispatchable, ExtrinsicCall,
--		ExtrinsicLike, ExtrinsicMetadata, IdentifyAccount, LazyExtrinsic, MaybeDisplay, Member,
-+		ExtrinsicLike, /* ExtrinsicMetadata,*/ IdentifyAccount, LazyExtrinsic, MaybeDisplay, Member,
- 		SignaturePayload,
- 	},
- 	transaction_validity::{InvalidTransaction, TransactionValidityError},
-@@ -414,12 +414,12 @@ where
- 	}
- }
- 
--impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
-+/* impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
- 	ExtrinsicMetadata for UncheckedExtrinsic<Address, Call, Signature, Extension>
- {
- 	const VERSIONS: &'static [u8] = &[LEGACY_EXTRINSIC_FORMAT_VERSION, EXTRINSIC_FORMAT_VERSION];
- 	type TransactionExtensions = Extension;
--}
-+} */
- 
- impl<Address, Call: Dispatchable, Signature, Extension: TransactionExtension<Call>>
- 	UncheckedExtrinsic<Address, Call, Signature, Extension>
-diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
-index b049e54a..e56000f3 100644
---- a/substrate/primitives/runtime/src/traits/mod.rs
-+++ b/substrate/primitives/runtime/src/traits/mod.rs
-@@ -58,7 +58,7 @@ use std::str::FromStr;
- pub mod transaction_extension;
- pub use transaction_extension::{
- 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
--	TransactionExtensionMetadata, TxBaseImplication, ValidateResult,
-+	/* TransactionExtensionMetadata,*/ TxBaseImplication, ValidateResult,
- };
- 
- /// A lazy value.
-@@ -1437,7 +1437,7 @@ impl SignaturePayload for () {
- }
- 
- /// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
--pub trait ExtrinsicMetadata {
-+/* pub trait ExtrinsicMetadata {
- 	/// The format versions of the `Extrinsic`.
- 	///
- 	/// By format we mean the encoded representation of the `Extrinsic`.
-@@ -1445,7 +1445,7 @@ pub trait ExtrinsicMetadata {
- 
- 	/// Transaction extensions attached to this `Extrinsic`.
- 	type TransactionExtensions;
--}
-+} */
- 
- /// Extract the hashing type for a block.
- pub type HashingFor<B> = <<B as Block>::Header as Header>::Hashing;
-@@ -1728,7 +1728,7 @@ pub trait SignedExtension:
- 		Ok(())
- 	}
- 
--	/// Returns the metadata for this signed extension.
-+	/* /// Returns the metadata for this signed extension.
- 	///
- 	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
- 	/// that holds the metadata of each one. Each individual `SignedExtension` must return
-@@ -1742,7 +1742,7 @@ pub trait SignedExtension:
- 			ty: scale_info::meta_type::<Self>(),
- 			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
- 		}]
--	}
-+	} */
- 
- 	/// Validate an unsigned transaction for the transaction queue.
- 	///
 diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs b/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
 index 1153926d..e3d088c5 100644
 --- a/substrate/primitives/runtime/src/traits/transaction_extension/as_transaction_extension.rs
@@ -259,8 +182,7 @@ diff --git a/substrate/primitives/runtime/src/traits/transaction_extension/mod.r
 index 24ec6721..9717ca08 100644
 --- a/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
 +++ b/substrate/primitives/runtime/src/traits/transaction_extension/mod.rs
-@@ -250,7 +250,7 @@ pub trait TransactionExtension<Call: Dispatchable>:
- 		Ok(Self::Implicit::decode(&mut &[][..]).map_err(|_| IndeterminateImplicit)?)
+@@ -250,6 +250,6 @@ pub trait TransactionExtension<Call: Dispatchable>:
  	}
  
 -	/// Returns the metadata for this extension.
@@ -278,11 +200,11 @@ index 24ec6721..9717ca08 100644
  	/// The type that encodes information that can be passed from `validate` to `prepare`.
  	type Val;
 @@ -527,7 +527,7 @@ macro_rules! impl_tx_ext_default {
- 	($call:ty ;) => {};
  }
  
 -/// Information about a [`TransactionExtension`] for the runtime metadata.
 +/* /// Information about a [`TransactionExtension`] for the runtime metadata.
+ #[derive(Clone)]
  pub struct TransactionExtensionMetadata {
  	/// The unique identifier of the [`TransactionExtension`].
  	pub identifier: &'static str,
@@ -978,38 +900,6 @@ index 1871cfbf..9a9ad06b 100644
  			where_clause,
  			default_sub_trait,
  			warnings,
-diff --git a/substrate/frame/support/src/traits/misc.rs b/substrate/frame/support/src/traits/misc.rs
-index 3dc57656..5cce814e 100644
---- a/substrate/frame/support/src/traits/misc.rs
-+++ b/substrate/frame/support/src/traits/misc.rs
-@@ -926,11 +926,11 @@ pub trait InherentBuilder: ExtrinsicCall {
- 
- impl<Address, Call, Signature, Extra> InherentBuilder
- 	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>
--where
-+/* where
- 	Address: TypeInfo,
- 	Call: TypeInfo,
- 	Signature: TypeInfo,
--	Extra: TypeInfo,
-+	Extra: TypeInfo, */
- {
- 	fn new_inherent(call: Self::Call) -> Self {
- 		Self::new_bare(call)
-@@ -955,11 +955,11 @@ pub trait SignedTransactionBuilder: ExtrinsicCall {
- 
- impl<Address, Call, Signature, Extension> SignedTransactionBuilder
- 	for sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extension>
--where
-+/* where
- 	Address: TypeInfo,
- 	Call: TypeInfo,
- 	Signature: TypeInfo,
--	Extension: TypeInfo,
-+	Extension: TypeInfo, */
- {
- 	type Address = Address;
- 	type Signature = Signature;
 diff --git a/substrate/frame/support/src/lib.rs b/substrate/frame/support/src/lib.rs
 index 1921383a..59848317 100644
 --- a/substrate/frame/support/src/lib.rs
@@ -1097,12 +987,12 @@ index 61939256..f28a16e7 100644
 --- a/substrate/frame/support/src/storage/mod.rs
 +++ b/substrate/frame/support/src/storage/mod.rs
 @@ -35,7 +35,7 @@ pub use self::{
- 	transactional::{
  		in_storage_layer, with_storage_layer, with_transaction, with_transaction_unchecked,
  	},
 -	types::StorageEntryMetadataBuilder,
 +	// types::StorageEntryMetadataBuilder,
  };
+ pub use sp_core::storage::ChildInfo;
  pub use sp_runtime::TransactionOutcome;
  pub use types::Key;
 diff --git a/substrate/frame/support/src/storage/types/key.rs b/substrate/frame/support/src/storage/types/key.rs
@@ -1370,3 +1260,233 @@ index de9fe0863d..7a1d1d4706 100644
  		+ From<<<T as AppPublic>::Generic as RuntimePublic>::ProofOfPossession>
  		+ AsRef<<<T as AppPublic>::Generic as RuntimePublic>::ProofOfPossession>,
  {
+diff --git a/substrate/primitives/runtime/src/traits/vers_tx_ext/at_vers.rs b/substrate/primitives/runtime/src/traits/vers_tx_ext/at_vers.rs
+index ed329f2c044..f5810ab2e3d 100644
+--- a/substrate/primitives/runtime/src/traits/vers_tx_ext/at_vers.rs
++++ b/substrate/primitives/runtime/src/traits/vers_tx_ext/at_vers.rs
+@@ -21,7 +21,7 @@ use crate::{
+ 	traits::{
+ 		AsTransactionAuthorizedOrigin, DecodeWithVersion, DecodeWithVersionWithMemTracking,
+ 		DispatchInfoOf, DispatchOriginOf, DispatchTransaction, Dispatchable, Pipeline,
+-		PipelineMetadataBuilder, PipelineVersion, PostDispatchInfoOf, TransactionExtension,
++		/* PipelineMetadataBuilder, */ PipelineVersion, PostDispatchInfoOf, TransactionExtension,
+ 	},
+ 	transaction_validity::{TransactionSource, TransactionValidityError, ValidTransaction},
+ };
+@@ -75,9 +75,9 @@ where
+ 	Call: Dispatchable<RuntimeOrigin: AsTransactionAuthorizedOrigin> + Encode,
+ 	Extension: TransactionExtension<Call>,
+ {
+-	fn build_metadata(builder: &mut PipelineMetadataBuilder) {
++	/* fn build_metadata(builder: &mut PipelineMetadataBuilder) {
+ 		builder.push_versioned_extension(VERSION, Extension::metadata());
+-	}
++	} */
+ 	fn validate_only(
+ 		&self,
+ 		origin: DispatchOriginOf<Call>,
+diff --git a/substrate/primitives/runtime/src/traits/vers_tx_ext/invalid.rs b/substrate/primitives/runtime/src/traits/vers_tx_ext/invalid.rs
+index f05cc2cfce0..698b2cc35b1 100644
+--- a/substrate/primitives/runtime/src/traits/vers_tx_ext/invalid.rs
++++ b/substrate/primitives/runtime/src/traits/vers_tx_ext/invalid.rs
+@@ -20,7 +20,7 @@
+ use crate::{
+ 	traits::{
+ 		DecodeWithVersion, DecodeWithVersionWithMemTracking, DispatchInfoOf, DispatchOriginOf,
+-		Dispatchable, Pipeline, PipelineMetadataBuilder, PipelineVersion, PostDispatchInfoOf,
++		Dispatchable, Pipeline, /* PipelineMetadataBuilder, */ PipelineVersion, PostDispatchInfoOf,
+ 	},
+ 	transaction_validity::{TransactionSource, TransactionValidityError, ValidTransaction},
+ };
+@@ -49,9 +49,9 @@ impl DecodeWithVersion for InvalidVersion {
+ impl DecodeWithVersionWithMemTracking for InvalidVersion {}
+ 
+ impl<Call: Dispatchable> Pipeline<Call> for InvalidVersion {
+-	fn build_metadata(_builder: &mut PipelineMetadataBuilder) {
++	/* fn build_metadata(_builder: &mut PipelineMetadataBuilder) {
+ 		// Do nothing.
+-	}
++	} */
+ 	fn validate_only(
+ 		&self,
+ 		_origin: DispatchOriginOf<Call>,
+diff --git a/substrate/primitives/runtime/src/traits/vers_tx_ext/mod.rs b/substrate/primitives/runtime/src/traits/vers_tx_ext/mod.rs
+index 705ecfebd35..d99343abe6e 100644
+--- a/substrate/primitives/runtime/src/traits/vers_tx_ext/mod.rs
++++ b/substrate/primitives/runtime/src/traits/vers_tx_ext/mod.rs
+@@ -21,7 +21,7 @@ use crate::{
+ 	scale_info::StaticTypeInfo,
+ 	traits::{
+ 		DispatchInfoOf, DispatchOriginOf, Dispatchable, PostDispatchInfoOf,
+-		TransactionExtensionMetadata,
++		/* TransactionExtensionMetadata, */
+ 	},
+ 	transaction_validity::{TransactionSource, TransactionValidityError, ValidTransaction},
+ };
+@@ -66,8 +66,8 @@ pub trait Pipeline<Call: Dispatchable>:
+ 	+ Clone
+ 	+ PipelineVersion
+ {
+-	/// Build the metadata for the versioned transaction extension pipeline.
+-	fn build_metadata(builder: &mut PipelineMetadataBuilder);
++	/* /// Build the metadata for the versioned transaction extension pipeline.
++	fn build_metadata(builder: &mut PipelineMetadataBuilder); */
+ 
+ 	/// Validate a transaction.
+ 	fn validate_only(
+@@ -106,7 +106,7 @@ pub trait DecodeWithVersion: Sized {
+ /// [`codec::DecodeWithMemTracking`].
+ pub trait DecodeWithVersionWithMemTracking: DecodeWithVersion {}
+ 
+-/// A type to build the metadata for the versioned transaction extension pipeline.
++/* /// A type to build the metadata for the versioned transaction extension pipeline.
+ pub struct PipelineMetadataBuilder {
+ 	/// The transaction extension pipeline by version and its list of items as vec of index into
+ 	/// the other field `in_versions`.
+@@ -151,7 +151,7 @@ impl PipelineMetadataBuilder {
+ 		}
+ 		self.by_version.insert(ext_version, ext_item_indices);
+ 	}
+-}
++} */
+ 
+ #[cfg(test)]
+ mod tests {
+diff --git a/substrate/primitives/runtime/src/traits/vers_tx_ext/multi.rs b/substrate/primitives/runtime/src/traits/vers_tx_ext/multi.rs
+index d90990740d9..ac2ba70d999 100644
+--- a/substrate/primitives/runtime/src/traits/vers_tx_ext/multi.rs
++++ b/substrate/primitives/runtime/src/traits/vers_tx_ext/multi.rs
+@@ -20,7 +20,7 @@
+ use crate::{
+ 	traits::{
+ 		DecodeWithVersion, DecodeWithVersionWithMemTracking, DispatchInfoOf, DispatchOriginOf,
+-		Dispatchable, InvalidVersion, Pipeline, PipelineAtVers, PipelineMetadataBuilder,
++		Dispatchable, InvalidVersion, Pipeline, PipelineAtVers, /* PipelineMetadataBuilder, */
+ 		PipelineVersion, PostDispatchInfoOf,
+ 	},
+ 	transaction_validity::{TransactionSource, TransactionValidityError, ValidTransaction},
+@@ -169,11 +169,11 @@ macro_rules! declare_multi_version_enum {
+ 		impl<$( $variant: Pipeline<Call> + MultiVersionItem, )* Call: Dispatchable>
+ 			Pipeline<Call> for MultiVersion<$( $variant, )*>
+ 		{
+-			fn build_metadata(builder: &mut PipelineMetadataBuilder) {
++			/* fn build_metadata(builder: &mut PipelineMetadataBuilder) {
+ 				$(
+ 					$variant::build_metadata(builder);
+ 				)*
+-			}
++			} */
+ 			fn validate_only(
+ 				&self,
+ 				origin: DispatchOriginOf<Call>,
+diff --git a/substrate/primitives/runtime/src/traits/vers_tx_ext/variant.rs b/substrate/primitives/runtime/src/traits/vers_tx_ext/variant.rs
+index 5e7eae32517..1d624ad2c40 100644
+--- a/substrate/primitives/runtime/src/traits/vers_tx_ext/variant.rs
++++ b/substrate/primitives/runtime/src/traits/vers_tx_ext/variant.rs
+@@ -23,7 +23,7 @@ use crate::{
+ 	traits::{
+ 		AsTransactionAuthorizedOrigin, DecodeWithVersion, DecodeWithVersionWithMemTracking,
+ 		DispatchInfoOf, DispatchTransaction, Dispatchable, Pipeline, PipelineAtVers,
+-		PipelineMetadataBuilder, PipelineVersion, PostDispatchInfoOf, TransactionExtension,
++		/* PipelineMetadataBuilder, */ PipelineVersion, PostDispatchInfoOf, TransactionExtension,
+ 	},
+ 	transaction_validity::TransactionSource,
+ };
+@@ -125,10 +125,10 @@ impl<
+ where
+ 	<Call as Dispatchable>::RuntimeOrigin: AsTransactionAuthorizedOrigin,
+ {
+-	fn build_metadata(builder: &mut PipelineMetadataBuilder) {
++	/* fn build_metadata(builder: &mut PipelineMetadataBuilder) {
+ 		PipelineAtVers::<EXTENSION_V0_VERSION, ExtensionV0>::build_metadata(builder);
+ 		ExtensionOtherVersions::build_metadata(builder);
+-	}
++	} */
+ 	fn validate_only(
+ 		&self,
+ 		origin: super::DispatchOriginOf<Call>,
+diff --git a/substrate/primitives/runtime/src/traits/mod.rs b/substrate/primitives/runtime/src/traits/mod.rs
+index 28aae6fe2c5..bc3db126cfc 100644
+--- a/substrate/primitives/runtime/src/traits/mod.rs
++++ b/substrate/primitives/runtime/src/traits/mod.rs
+@@ -59,11 +59,11 @@ pub mod transaction_extension;
+ pub mod vers_tx_ext;
+ pub use transaction_extension::{
+ 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
+-	TransactionExtensionMetadata, TxBaseImplication, ValidateResult,
++	/* TransactionExtensionMetadata, */ TxBaseImplication, ValidateResult,
+ };
+ pub use vers_tx_ext::{
+ 	DecodeWithVersion, DecodeWithVersionWithMemTracking, ExtensionVariant, InvalidVersion,
+-	MultiVersion, Pipeline, PipelineAtVers, PipelineMetadataBuilder, PipelineVersion,
++	MultiVersion, Pipeline, PipelineAtVers, /* PipelineMetadataBuilder, */ PipelineVersion,
+ };
+ 
+ /// A lazy value.
+@@ -1494,7 +1500,7 @@ impl SignaturePayload for () {
+ 	type SignatureExtra = ();
+ }
+ 
+-/// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
++/* /// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
+ pub trait ExtrinsicMetadata {
+ 	/// The format versions of the `Extrinsic`.
+ 	///
+@@ -1508,7 +1514,7 @@ pub trait ExtrinsicMetadata {
+ 	/// For extrinsic version 5, bare extrinsics don't specify any version, the pipeline version 0
+ 	/// is used.
+ 	type TransactionExtensionPipelines;
+-}
++} */
+ 
+ /// Extract the hashing type for a block.
+ pub type HashingFor<B> = <<B as Block>::Header as Header>::Hashing;
+@@ -1791,7 +1797,7 @@ pub trait SignedExtension:
+ 		Ok(())
+ 	}
+ 
+-	/// Returns the metadata for this signed extension.
++	/* /// Returns the metadata for this signed extension.
+ 	///
+ 	/// As a [`SignedExtension`] can be a tuple of [`SignedExtension`]s we need to return a `Vec`
+ 	/// that holds the metadata of each one. Each individual `SignedExtension` must return
+@@ -1805,7 +1812,7 @@ pub trait SignedExtension:
+ 			ty: scale_info::meta_type::<Self>(),
+ 			implicit: scale_info::meta_type::<Self::AdditionalSigned>()
+ 		}]
+-	}
++	} */
+ 
+ 	/// Validate an unsigned transaction for the transaction queue.
+ 	///
+diff --git a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
+index 5cd3b2c41e8..b27d60ec277 100644
+--- a/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
++++ b/substrate/primitives/runtime/src/generic/unchecked_extrinsic.rs
+@@ -22,7 +22,7 @@ use crate::{
+ 	traits::{
+ 		self, AsTransactionAuthorizedOrigin, Checkable, DecodeWithVersion,
+ 		DecodeWithVersionWithMemTracking, Dispatchable, ExtensionVariant, ExtrinsicCall,
+-		ExtrinsicLike, ExtrinsicMetadata, IdentifyAccount, InvalidVersion, LazyExtrinsic,
++		ExtrinsicLike, /* ExtrinsicMetadata, */ IdentifyAccount, InvalidVersion, LazyExtrinsic,
+ 		MaybeDisplay, Member, Pipeline, PipelineVersion, SignaturePayload, TransactionExtension,
+ 	},
+ 	transaction_validity::{InvalidTransaction, TransactionValidityError},
+@@ -711,7 +711,7 @@ where
+ 	}
+ }
+ 
+-impl<
++/* impl<
+ 		Address,
+ 		Call: Dispatchable,
+ 		Signature,
+@@ -730,7 +730,7 @@ impl<
+ {
+ 	const VERSIONS: &'static [u8] = &[LEGACY_EXTRINSIC_FORMAT_VERSION, EXTRINSIC_FORMAT_VERSION];
+ 	type TransactionExtensionPipelines = ExtensionVariant<ExtensionV0, ExtensionOtherVersions>;
+-}
++} */
+ 
+ impl<Address, Call, Signature, ExtensionV0, const MAX_CALL_SIZE: usize, ExtensionOtherVersions>
+ 	UncheckedExtrinsic<Address, Call, Signature, ExtensionV0, ExtensionOtherVersions, MAX_CALL_SIZE>

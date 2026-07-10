@@ -1,6 +1,6 @@
 [package]
 name = "sc-authority-discovery"
-version = "0.56.0"
+version = "0.59.0"
 build = "build.rs"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate authority discovery."
@@ -47,8 +47,8 @@ workspace = true
 default-features = true
 
 [dependencies.prometheus-endpoint]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.prost]
 workspace = true
@@ -58,12 +58,12 @@ workspace = true
 default-features = true
 
 [dependencies.sc-network]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-network-types]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.serde]
 workspace = true
@@ -72,28 +72,28 @@ workspace = true
 workspace = true
 
 [dependencies.sp-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-authority-discovery]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-keystore]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

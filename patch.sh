@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=82af15d17fd295583820b86fa0e5e33598ef57e0 # stable2603-4
+POLKADOT_SDK_COMMIT=660acefe66599a3e54363797007befcb01bd610b # stable2606
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -344,9 +344,14 @@ remove_crate_tree substrate/primitives/offchain
 # Remove the unused "bitswap" protocol
 # https://github.com/libp2p/rust-libp2p/issues/2632
 silent_rm ./polkadot-sdk/substrate/client/network/build.rs
-silent_rm ./polkadot-sdk/substrate/client/network/src/litep2p/shim/bitswap.rs
 silent_rm ./polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
 remove_module ./polkadot-sdk/substrate/client/network/src bitswap
+remove_module ./polkadot-sdk/substrate/client/network/src ipfs_block_provider
+remove_module ./polkadot-sdk/substrate/client/network/src/litep2p bitswap
+remove_module ./polkadot-sdk/substrate/client/network/src/litep2p bitswap_metrics
+remove_module ./polkadot-sdk/substrate/client/network/src/litep2p ipfs_dht
+remove_module ./polkadot-sdk/substrate/client/network/src/litep2p/shim bitswap
+remove_module ./polkadot-sdk/substrate/client/rpc-spec-v2/src bitswap
 
 # Remove the unused light-client networking protocol
 remove_crate_tree substrate/client/network/light
@@ -447,8 +452,17 @@ remove_crate_tree substrate/client/sync-state-rpc
 
 remove_crate_tree substrate/frame/system/rpc
 
+# Remove the virtualization libraries
+remove_crate_tree substrate/client/virtualization
+remove_crate_tree substrate/primitives/virtualization
+
+# Remove the hand-off protocol for collators
+remove_crate_tree substrate/client/hop
+remove_crate_tree substrate/primitives/hop
+
 # Remove unused primitives
 remove_crate_tree substrate/primitives/ethereum-standards
+remove_crate_tree substrate/primitives/dap
 remove_crate_tree substrate/primitives/npos-elections
 remove_module ./polkadot-sdk/substrate/primitives/arithmetic/src fixed_point
 
@@ -599,6 +613,7 @@ remove_module ./polkadot-sdk/substrate/primitives/runtime/src/proving_trie base1
 
 remove_module ./polkadot-sdk/substrate/primitives/runtime/src type_with_default
 
+remove_module ./polkadot-sdk/substrate/primitives/staking/src budget
 remove_module ./polkadot-sdk/substrate/primitives/staking/src currency_to_vote
 remove_matching_lines ./polkadot-sdk/substrate/primitives/staking/src/lib.rs "CurrencyToVote"
 # Prune `sp-staking` after the `SessionIndex`, `EraIndex` type definitions
@@ -662,7 +677,7 @@ find ./polkadot-sdk/substrate -iname "*.rs" | while read -r path; do
   if [ $path = "./polkadot-sdk/substrate/client/chain-spec/src/extension.rs" ]; then
     continue
   fi
-  TESTS_MOD_OPEN=$(echo "$file" | grep -E -m1 -n "^mod test(s)? {" | cut --delimiter=":" -f1)
+  TESTS_MOD_OPEN=$(echo "$file" | grep -E -m1 -n "^(pub(\(.*\) )?)?mod test(s)? {" | cut --delimiter=":" -f1)
   if [ "$TESTS_MOD_OPEN" = "" ]; then
     continue
   fi
@@ -742,16 +757,14 @@ cargo_upgrade array-bytes 7.0.0
 cargo_upgrade async-channel 2.0.0
 cargo_upgrade asynchronous-codec 0.7.0
 cargo_upgrade bitflags 2.4.0
-cargo_upgrade blake2 0.11.0-rc.5
+cargo_upgrade blake2 0.11.0-rc.6
 sed -i s/"blake2\/std"/"blake2\/alloc"/ ./polkadot-sdk/substrate/primitives/core/Cargo.toml
 sed -i s/"blake2\/std"/"blake2\/alloc"/ ./polkadot-sdk/substrate/primitives/api/proc-macro/Cargo.toml
-cargo_upgrade cargo_metadata 0.19.0
 cargo_upgrade cfg-expr 0.20.0
 cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
 cargo_upgrade digest 0.11.0
 cargo_upgrade directories 6.0.0
-cargo_upgrade fs4 0.13.0
 cargo_upgrade governor 0.10.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade libp2p 0.56.0
@@ -769,11 +782,9 @@ cargo_upgrade sha2 0.11.0
 cargo_upgrade sha3 0.12.0
 cargo_upgrade strum 0.28.0
 cargo_upgrade thiserror 2.0.0
-cargo_upgrade toml 0.9.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
 cargo_upgrade wasmtime 46.0.0
-cargo_upgrade zstd 0.13.0
 
 cd ./polkadot-sdk
 

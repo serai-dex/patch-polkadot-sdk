@@ -29,6 +29,7 @@
 
 use crate::{
 	behaviour::{self, Behaviour, BehaviourOut},
+	/* bitswap::BitswapRequestHandler, */
 	config::{
 		parse_addr, FullNetworkConfiguration, IncomingRequest, MultiaddrWithPeerId,
 		NonDefaultSetConfig, NotificationHandshake, Params, SetConfig, TransportConfig,
@@ -189,6 +190,7 @@ where
 	type RequestResponseProtocolConfig = RequestResponseConfig;
 	type NetworkService<Block, Hash> = Arc<NetworkService<B, H>>;
 	type PeerStore = PeerStore;
+	/* type BitswapConfig = RequestResponseConfig; */
 
 	fn new(params: Params<B, H, Self>) -> Result<Self, Error>
 	where
@@ -213,6 +215,15 @@ where
 	fn register_notification_metrics(registry: Option<&Registry>) -> NotificationMetrics {
 		NotificationMetrics::new(registry)
 	}
+
+	/* fn bitswap_server(
+		client: Arc<dyn BlockBackend<B> + Send + Sync>,
+		_metrics_registry: Option<Registry>,
+	) -> (Pin<Box<dyn Future<Output = ()> + Send>>, Self::BitswapConfig) {
+		let (handler, protocol_config) = BitswapRequestHandler::new(client.clone());
+
+		(Box::pin(async move { handler.run().await }), protocol_config)
+	} */
 
 	/// Create notification protocol configuration.
 	fn notification_config(
@@ -1575,6 +1586,7 @@ where
 							let reason = match err {
 								RequestFailure::NotConnected => "not-connected",
 								RequestFailure::UnknownProtocol => "unknown-protocol",
+								RequestFailure::InvalidRequest => "invalid-request",
 								RequestFailure::Refused => "refused",
 								RequestFailure::Obsolete => "obsolete",
 								RequestFailure::Network(OutboundFailure::DialFailure) => {

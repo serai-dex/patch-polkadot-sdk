@@ -1,6 +1,6 @@
 [package]
 name = "sp-arithmetic"
-version = "28.0.1"
+version = "23.0.0"
 license = "Apache-2.0"
 description = "Minimal fixed point arithmetic primitives and types for runtime."
 documentation = "https://docs.rs/sp-arithmetic"

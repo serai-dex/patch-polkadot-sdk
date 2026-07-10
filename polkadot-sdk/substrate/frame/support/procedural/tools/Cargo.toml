@@ -1,6 +1,6 @@
 [package]
 name = "frame-support-procedural-tools"
-version = "13.0.1"
+version = "10.0.0"
 license = "Apache-2.0"
 description = "Proc macro helpers for procedural macros"
 
@@ -23,8 +23,8 @@ targets = ["x86_64-unknown-linux-gnu"]
 workspace = true
 
 [dependencies.frame-support-procedural-tools-derive]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.proc-macro-crate]
 workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "sp-keyring"
-version = "46.0.0"
+version = "48.0.0"
 license = "Apache-2.0"
 description = "Keyring support code for the runtime. A set of test accounts."
 documentation = "https://docs.rs/sp-keyring"

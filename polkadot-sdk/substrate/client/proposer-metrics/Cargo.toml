@@ -1,6 +1,6 @@
 [package]
 name = "sc-proposer-metrics"
-version = "0.20.0"
+version = "0.17.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Basic metrics for block production."
 readme = "README.md"
@@ -28,5 +28,5 @@ workspace = true
 default-features = true
 
 [dependencies.prometheus-endpoint]
-default-features = true
 workspace = true
+default-features = true

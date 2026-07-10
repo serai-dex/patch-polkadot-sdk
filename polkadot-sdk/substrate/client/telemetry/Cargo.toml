@@ -1,6 +1,6 @@
 [package]
 name = "sc-telemetry"
-version = "30.0.1"
+version = "33.0.0"
 description = "Telemetry utils"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-telemetry"
@@ -55,8 +55,8 @@ workspace = true
 default-features = true
 
 [dependencies.sc-utils]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.serde]
 features = ["derive"]

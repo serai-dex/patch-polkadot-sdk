@@ -26,7 +26,9 @@ use crate::{
 	error::Error,
 	event::{DhtEvent, Event},
 	litep2p::{
+		/* bitswap::BitswapService, */
 		discovery::{Discovery, DiscoveryEvent},
+		/* ipfs_dht::IpfsDht, */
 		peerstore::Peerstore,
 		service::{Litep2pNetworkService, NetworkServiceCommand},
 		shim::{
@@ -54,9 +56,7 @@ use litep2p::{
 	error::{DialError, NegotiationError},
 	executor::Executor,
 	protocol::{
-		libp2p::{
-			kademlia::{QueryId, Record},
-		},
+		libp2p::kademlia::{QueryId, Record},
 		request_response::ConfigBuilder as RequestResponseConfigBuilder,
 	},
 	transport::{
@@ -340,6 +340,7 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 	type RequestResponseProtocolConfig = RequestResponseConfig;
 	type NetworkService<Block, Hash> = Arc<Litep2pNetworkService>;
 	type PeerStore = Peerstore;
+	/* type BitswapConfig = bitswap::BitswapConfig; */
 
 	fn new(mut params: Params<B, H, Self>) -> Result<Self, Error>
 	where
@@ -506,6 +507,26 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 				Arc::clone(&peer_store_handle),
 			);
 
+		/* let bitswap_cmd_tx = params.ipfs_config.as_ref().map(|c| c.bitswap_config.cmd_tx.clone());
+
+		// enable Bitswap & IPFS DHT
+		if let Some(config) = params.ipfs_config {
+			config_builder =
+				config_builder.with_libp2p_bitswap(config.bitswap_config.litep2p_config);
+
+			if !config.bootnodes.is_empty() {
+				let (ipfs_dht, kad_config) = IpfsDht::new(config.bootnodes, config.block_provider);
+				config_builder = config_builder.with_libp2p_kademlia(kad_config);
+				executor.run(Box::pin(ipfs_dht.run()));
+			} else {
+				log::warn!(
+					target: LOG_TARGET,
+					"Not starting IPFS DHT publisher because no IPFS bootnodes are configured. \
+					 Only direct Bitswap requests will be handled.",
+				);
+			}
+		} */
+
 		config_builder = config_builder
 			.with_known_addresses(known_addresses.clone().into_iter())
 			.with_libp2p_ping(ping_config)
@@ -553,6 +574,7 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 			request_response_senders,
 			Arc::clone(&listen_addresses),
 			public_addresses,
+			/* bitswap_cmd_tx, */
 		));
 
 		// register rest of the metrics now that `Litep2p` has been created
@@ -594,6 +616,14 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 	fn register_notification_metrics(registry: Option<&Registry>) -> NotificationMetrics {
 		NotificationMetrics::new(registry)
 	}
+
+	/* /// Create Bitswap server.
+	fn bitswap_server(
+		client: Arc<dyn BlockBackend<B> + Send + Sync>,
+		metrics_registry: Option<Registry>,
+	) -> (Pin<Box<dyn Future<Output = ()> + Send>>, Self::BitswapConfig) {
+		BitswapService::new(client, metrics_registry.as_ref())
+	} */
 
 	/// Create notification protocol configuration for `protocol`.
 	fn notification_config(

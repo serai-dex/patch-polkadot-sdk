@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-epochs"
-version = "0.55.0"
+version = "0.57.0"
 description = "Generic epochs-based utilities for consensus"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 readme = "README.md"
@@ -29,21 +29,21 @@ workspace = true
 default-features = true
 
 [dependencies.fork-tree]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-client-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-consensus]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true

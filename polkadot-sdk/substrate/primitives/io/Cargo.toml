@@ -1,6 +1,6 @@
 [package]
 name = "sp-io"
-version = "45.0.0"
+version = "48.0.0"
 license = "Apache-2.0"
 description = "I/O for Substrate runtimes"
 documentation = "https://docs.rs/sp-io"

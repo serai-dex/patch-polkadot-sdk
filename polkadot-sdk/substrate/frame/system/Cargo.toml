@@ -1,6 +1,6 @@
 [package]
 name = "frame-system"
-version = "46.0.0"
+version = "48.0.0"
 license = "Apache-2.0"
 description = "FRAME system module"
 readme = "README.md"

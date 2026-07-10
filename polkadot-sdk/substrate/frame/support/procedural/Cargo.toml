@@ -1,6 +1,6 @@
 [package]
 name = "frame-support-procedural"
-version = "37.0.0"
+version = "40.0.0"
 license = "Apache-2.0"
 description = "Proc macro of Support code for the runtime."
 
@@ -18,6 +18,8 @@ workspace = true
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+
+[package.metadata.polkadot-sdk]
 
 [lints]
 workspace = true
@@ -38,8 +40,8 @@ workspace = true
 workspace = true
 
 [dependencies.frame-support-procedural-tools]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.itertools]
 workspace = true

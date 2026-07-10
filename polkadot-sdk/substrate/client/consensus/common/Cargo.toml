@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus"
-version = "0.55.0"
+version = "0.57.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Collection of common consensus specific implementations for Substrate (client)"
 readme = "README.md"
@@ -39,20 +39,20 @@ workspace = true
 default-features = true
 
 [dependencies.prometheus-endpoint]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-client-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-network-types]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-utils]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.serde]
 features = ["derive"]
@@ -60,24 +60,24 @@ workspace = true
 default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-consensus]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-state-machine]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

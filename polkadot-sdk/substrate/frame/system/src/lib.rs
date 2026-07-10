@@ -871,8 +871,8 @@ pub mod pallet {
 		ExtrinsicSuccess { dispatch_info: DispatchEventInfo },
 		/// An extrinsic failed.
 		ExtrinsicFailed { dispatch_error: DispatchError, dispatch_info: DispatchEventInfo },
-		/// `:code` was updated.
-		CodeUpdated,
+		/// `:code` was updated to the code with the given hash.
+		CodeUpdated { hash: T::Hash },
 		/// A new account was created.
 		NewAccount { account: T::AccountId },
 		/// An account was reaped.
@@ -1092,8 +1092,9 @@ pub mod pallet {
 		}
 	}
 
+	#[allow(deprecated)]
 	#[pallet::validate_unsigned]
-	impl<T: Config> sp_runtime::traits::ValidateUnsigned for Pallet<T> {
+	impl<T: Config> ValidateUnsigned for Pallet<T> {
 		type Call = Call<T>;
 		fn validate_unsigned(_source: TransactionSource, call: &Self::Call) -> TransactionValidity {
 			if let Call::apply_authorized_upgrade { ref code } = call {
@@ -1559,8 +1560,10 @@ impl<T: Config> Pallet<T> {
 				storage::unhashed::put_raw(well_known_keys::PENDING_CODE, code);
 			},
 		}
+		let hash = T::Hashing::hash(code);
+
 		Self::deposit_log(generic::DigestItem::RuntimeEnvironmentUpdated);
-		Self::deposit_event(Event::CodeUpdated);
+		Self::deposit_event(Event::CodeUpdated { hash });
 	}
 
 	/// Replace code with pending code if scheduled to enact in this block and in that case emit

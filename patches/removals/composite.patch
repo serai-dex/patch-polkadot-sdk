@@ -703,7 +703,7 @@ index 1921383..ac71cde 100644
  		},
  		Blake2_128, Blake2_128Concat, Blake2_256, CloneNoBound, DebugNoBound, EqNoBound, Identity,
  		PartialEqNoBound, Twox128, Twox256, Twox64Concat,
-@@ -1750,7 +1750,7 @@ pub mod pallet_macros {
+@@ -1170,7 +1170,7 @@ pub mod pallet_macros {
  	/// ```
  	pub use frame_support_procedural::config;
  
@@ -712,15 +712,13 @@ index 1921383..ac71cde 100644
  	///
  	/// The `#[pallet::composite_enum]` attribute allows you to define an enum that gets
  	/// composed as an aggregate enum by `construct_runtime`. This is similar in principle with
-@@ -1798,7 +1798,7 @@ pub mod pallet_macros {
+@@ -1218,5 +1218,5 @@ pub mod pallet_macros {
  	/// # 	#[pallet::config]
  	/// # 	pub trait Config: frame_system::Config {}
  	/// }
 -	pub use frame_support_procedural::composite_enum;
 +	pub use frame_support_procedural::composite_enum; */
  
- 	/// Allows the pallet to validate unsigned transactions.
- 	///
 @@ -2792,7 +2792,7 @@ pub mod pallet_macros {
  	pub use frame_support_procedural::storage;
  

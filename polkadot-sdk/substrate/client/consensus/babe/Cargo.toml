@@ -1,6 +1,6 @@
 [package]
 name = "sc-consensus-babe"
-version = "0.56.0"
+version = "0.58.0"
 description = "BABE consensus algorithm for substrate"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-consensus-babe"
@@ -33,8 +33,8 @@ workspace = true
 default-features = true
 
 [dependencies.fork-tree]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.futures]
 workspace = true
@@ -58,84 +58,84 @@ workspace = true
 default-features = true
 
 [dependencies.prometheus-endpoint]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-client-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-consensus]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-consensus-epochs]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-consensus-slots]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-telemetry]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-transaction-pool-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-application-crypto]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-block-builder]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-consensus]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-consensus-babe]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-consensus-slots]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-crypto-hashing]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-inherents]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-keystore]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-timestamp]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

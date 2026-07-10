@@ -1,6 +1,6 @@
 [package]
 name = "sc-tracing"
-version = "45.0.0"
+version = "47.0.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Instrumentation implementation for substrate."
 readme = "README.md"
@@ -48,40 +48,40 @@ default-features = true
 workspace = true
 
 [dependencies.sc-client-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-tracing-proc-macro]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.serde]
 workspace = true
 default-features = true
 
 [dependencies.sp-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-rpc]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-tracing]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

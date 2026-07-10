@@ -1,6 +1,6 @@
 [package]
 name = "sp-core"
-version = "40.0.0"
+version = "43.0.0"
 license = "Apache-2.0"
 description = "Shareable Substrate types."
 documentation = "https://docs.rs/sp-core"

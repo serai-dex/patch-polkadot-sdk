@@ -1,6 +1,6 @@
 [package]
 name = "sc-rpc-server"
-version = "28.0.0"
+version = "31.0.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate RPC servers."
 readme = "README.md"
@@ -55,11 +55,17 @@ workspace = true
 workspace = true
 default-features = true
 
-[dependencies.prometheus-endpoint]
-default-features = true
+[dependencies.prometheus]
 workspace = true
 
+[dependencies.prometheus-endpoint]
+workspace = true
+default-features = true
+
 [dependencies.sc-rpc-api]
+workspace = true
+
+[dependencies.sc-utils]
 workspace = true
 
 [dependencies.serde]
@@ -68,6 +74,9 @@ workspace = true
 [dependencies.serde_json]
 workspace = true
 default-features = true
+
+[dependencies.sp-core]
+workspace = true
 
 [dependencies.tokio]
 features = ["parking_lot"]

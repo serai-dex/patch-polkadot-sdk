@@ -1,6 +1,6 @@
 [package]
 name = "sc-executor-common"
-version = "0.44.0"
+version = "0.47.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "A set of common definitions that are needed for defining execution engines."
 documentation = "https://docs.rs/sc-executor-common/"
@@ -29,12 +29,12 @@ workspace = true
 optional = true
 
 [dependencies.sc-allocator]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-wasm-interface]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

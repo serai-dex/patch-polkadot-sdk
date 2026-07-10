@@ -235,22 +235,22 @@ diff --git a/substrate/client/network/src/lib.rs b/substrate/client/network/src/
 index f19c4dd..6ab19fd 100644
 --- a/substrate/client/network/src/lib.rs
 +++ b/substrate/client/network/src/lib.rs
-@@ -244,6 +244,7 @@
+@@ -244,7 +244,7 @@
 
  mod behaviour;
- mod bitswap;
-+#[cfg(feature = "litep2p")]
- mod litep2p;
+ pub mod bitswap;
+ mod ipfs_block_provider;
++#[cfg(feature = "litep2p")]mod litep2p;
+-mod litep2p;
  mod protocol;
 
-@@ -264,6 +265,7 @@ pub mod transport;
+@@ -265,5 +265,5 @@ pub mod transport;
  pub mod types;
  pub mod utils;
 
-+#[cfg(feature = "litep2p")]
- pub use crate::litep2p::Litep2pNetworkBackend;
++#[cfg(feature = "litep2p")] pub use crate::litep2p::Litep2pNetworkBackend;
+-pub use crate::litep2p::Litep2pNetworkBackend;
  pub use event::{DhtEvent, Event};
- #[doc(inline)]
 diff --git a/substrate/client/network/src/types.rs b/substrate/client/network/src/types.rs
 index 5289389..111bda0 100644
 --- a/substrate/client/network/src/types.rs
@@ -358,3 +358,16 @@ index 4a6a807..9fb176a 100644
  impl From<litep2p::protocol::notification::Direction> for Direction {
  	fn from(direction: litep2p::protocol::notification::Direction) -> Self {
  		match direction {
+diff --git a/substrate/client/network/types/src/multihash.rs b/substrate/client/network/types/src/multihash.rs
+index ba5bb70b34b..d60b93ac937 100644
+--- a/substrate/client/network/types/src/multihash.rs
++++ b/substrate/client/network/types/src/multihash.rs
+@@ -19,7 +19,7 @@
+ //! [`Multihash`] implemenattion used by substrate. Currently it's a wrapper over
+ //! multihash used by litep2p, but it can be switched to other implementation if needed.
+ 
+-use litep2p::types::multihash::{Code as LiteP2pCode, MultihashDigest as _};
++use multihash_codetable::{Code as LiteP2pCode, MultihashDigest as _};
+ use multihash::Multihash as LiteP2pMultihash;
+ use std::fmt::{self, Debug};
+ 

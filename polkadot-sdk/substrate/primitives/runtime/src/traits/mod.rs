@@ -55,9 +55,14 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 pub mod transaction_extension;
+pub mod vers_tx_ext;
 pub use transaction_extension::{
 	DispatchTransaction, Implication, ImplicationParts, TransactionExtension,
-	/* TransactionExtensionMetadata,*/ TxBaseImplication, ValidateResult,
+	/* TransactionExtensionMetadata, */ TxBaseImplication, ValidateResult,
+};
+pub use vers_tx_ext::{
+	DecodeWithVersion, DecodeWithVersionWithMemTracking, ExtensionVariant, InvalidVersion,
+	MultiVersion, Pipeline, PipelineAtVers, /* PipelineMetadataBuilder, */ PipelineVersion,
 };
 
 /// A lazy value.
@@ -1496,15 +1501,20 @@ impl SignaturePayload for () {
 	type SignatureExtra = ();
 }
 
-/// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
-/* pub trait ExtrinsicMetadata {
+/* /// Implementor is an [`Extrinsic`] and provides metadata about this extrinsic.
+pub trait ExtrinsicMetadata {
 	/// The format versions of the `Extrinsic`.
 	///
 	/// By format we mean the encoded representation of the `Extrinsic`.
 	const VERSIONS: &'static [u8];
 
-	/// Transaction extensions attached to this `Extrinsic`.
-	type TransactionExtensions;
+	/// All version of transaction extensions attached to this `Extrinsic`.
+	///
+	/// For extrinsic version 4, extrinsics don't specify any version, the pipeline version 0 is
+	/// used.
+	/// For extrinsic version 5, bare extrinsics don't specify any version, the pipeline version 0
+	/// is used.
+	type TransactionExtensionPipelines;
 } */
 
 /// Extract the hashing type for a block.
@@ -1858,6 +1868,7 @@ pub trait Applyable: Sized + Send + Sync {
 	///
 	/// IMPORTANT: Ensure that *some* origin has been authorized after validating the transaction.
 	/// If no origin was authorized, the transaction must be rejected.
+	#[allow(deprecated)]
 	fn validate<V: ValidateUnsigned<Call = Self::Call>>(
 		&self,
 		source: TransactionSource,
@@ -1870,6 +1881,7 @@ pub trait Applyable: Sized + Send + Sync {
 	///
 	/// IMPORTANT: Ensure that *some* origin has been authorized after validating the
 	/// transaction. If no origin was authorized, the transaction must be rejected.
+	#[allow(deprecated)]
 	fn apply<V: ValidateUnsigned<Call = Self::Call>>(
 		self,
 		info: &DispatchInfoOf<Self::Call>,
@@ -1896,6 +1908,16 @@ pub trait GetNodeBlockType {
 /// function is called right before dispatching the call wrapped by an unsigned extrinsic. The
 /// [`validate_unsigned`](Self::validate_unsigned) function is mainly being used in the context of
 /// the transaction pool to check the validity of the call wrapped by an unsigned extrinsic.
+///
+/// # Deprecation Notice
+///
+/// This trait is deprecated and will be removed after April 2027. Use
+/// `#[pallet::authorize]` with `frame_system::AuthorizeCall` transaction extension instead.
+///
+/// For more information, see: <https://github.com/paritytech/polkadot-sdk/issues/2415>
+#[deprecated(
+	note = "`ValidateUnsigned` will be removed after April 2027. Use `#[pallet::authorize]` with `frame_system::AuthorizeCall` instead. See https://github.com/paritytech/polkadot-sdk/issues/2415"
+)]
 pub trait ValidateUnsigned {
 	/// The call to validate
 	type Call;

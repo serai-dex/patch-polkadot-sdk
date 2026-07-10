@@ -1,6 +1,6 @@
 [package]
 name = "sc-rpc-api"
-version = "0.55.0"
+version = "0.58.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Substrate RPC interfaces."
 readme = "README.md"
@@ -36,8 +36,8 @@ features = [
 workspace = true
 
 [dependencies.sc-chain-spec]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.serde]
 features = ["derive"]

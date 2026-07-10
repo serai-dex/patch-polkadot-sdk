@@ -1,6 +1,6 @@
 [package]
 name = "sp-application-crypto"
-version = "45.0.0"
+version = "48.0.0"
 description = "Provides facilities for generating application specific crypto wrapper types."
 license = "Apache-2.0"
 documentation = "https://docs.rs/sp-application-crypto"

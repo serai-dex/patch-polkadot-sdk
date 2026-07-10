@@ -1,6 +1,6 @@
 [package]
 name = "sp-version-proc-macro"
-version = "15.0.0"
+version = "13.0.0"
 license = "Apache-2.0"
 description = "Macro for defining a runtime version."
 documentation = "https://docs.rs/sp-api-proc-macro"

@@ -403,51 +403,6 @@ index 087c723e04..7411385eb0 100644
  				top.remove(child_info.prefixed_storage_key().as_slice());
  			} else {
  				top.insert(child_info.prefixed_storage_key().into_inner(), child_root);
-diff --git a/substrate/client/db/src/lib.rs b/substrate/client/db/src/lib.rs
-index e6b5e1f62a..23fc2f5e5c 100644
---- a/substrate/client/db/src/lib.rs
-+++ b/substrate/client/db/src/lib.rs
-@@ -2200,7 +2200,7 @@ fn apply_index_ops<Block: BlockT>(
- 				index_map.insert(extrinsic, (hash, size));
- 			},
- 			IndexOperation::Renew { extrinsic, hash } => {
--				renewed_map.insert(extrinsic, DbHash::from_slice(hash.as_ref()));
-+				renewed_map.insert(extrinsic, DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()));
- 			},
- 		}
- 	}
-@@ -2208,7 +2208,7 @@ fn apply_index_ops<Block: BlockT>(
- 		let db_extrinsic = if let Some(hash) = renewed_map.get(&(index as u32)) {
- 			// Bump ref counter
- 			let extrinsic = extrinsic.encode();
--			transaction.reference(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()));
-+			transaction.reference(columns::TRANSACTION, *hash);
- 			DbExtrinsic::Indexed { hash: *hash, header: extrinsic }
- 		} else {
- 			match index_map.get(&(index as u32)) {
-@@ -2218,11 +2218,11 @@ fn apply_index_ops<Block: BlockT>(
- 						let offset = encoded.len() - *size as usize;
- 						transaction.store(
- 							columns::TRANSACTION,
--							DbHash::from_slice(hash.as_ref()),
-+							DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()),
- 							encoded[offset..].to_vec(),
- 						);
- 						DbExtrinsic::Indexed {
--							hash: DbHash::from_slice(hash.as_ref()),
-+							hash: DbHash::from(<[u8; 32]>::try_from(hash.as_slice()).unwrap()),
- 							header: encoded[..offset].to_vec(),
- 						}
- 					} else {
-@@ -2248,7 +2248,7 @@ fn apply_index_ops<Block: BlockT>(
- fn apply_indexed_body<Block: BlockT>(transaction: &mut Transaction<DbHash>, body: Vec<Vec<u8>>) {
- 	for extrinsic in body {
- 		let hash = sp_runtime::traits::BlakeTwo256::hash(&extrinsic);
--		transaction.store(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()), extrinsic);
-+		transaction.store(columns::TRANSACTION, DbHash::from(hash), extrinsic);
- 	}
- }
- 
 diff --git a/substrate/primitives/keyring/src/sr25519.rs b/substrate/primitives/keyring/src/sr25519.rs
 index 0ebd04cdeb..4906797f8a 100644
 --- a/substrate/primitives/keyring/src/sr25519.rs
@@ -503,3 +458,39 @@ index 874bc53542..8c217c8b0d 100644
  		}
  	}
  }
+diff --git a/substrate/client/db/src/lib.rs b/substrate/client/db/src/lib.rs
+index dd52bf7abb9..6ab1ded5436 100644
+--- a/substrate/client/db/src/lib.rs
++++ b/substrate/client/db/src/lib.rs
+@@ -2276,7 +2276,7 @@ fn apply_index_ops<Block: BlockT>(
+ 				renewed_map
+ 					.entry(extrinsic)
+ 					.or_default()
+-					.push(DbHash::from_slice(hash.as_ref()));
++					.push(DbHash::from(<[u8; 32]>::try_from(hash.as_ref()).unwrap()));
+ 			},
+ 		}
+ 	}
+@@ -2317,11 +2317,11 @@ fn apply_index_ops<Block: BlockT>(
+ 						let offset = encoded.len() - *size as usize;
+ 						transaction.store(
+ 							columns::TRANSACTION,
+-							DbHash::from_slice(hash.as_ref()),
++							DbHash::from(<[u8; 32]>::try_from(hash.as_ref()).unwrap()),
+ 							encoded[offset..].to_vec(),
+ 						);
+ 						DbExtrinsic::Indexed {
+-							hash: DbHash::from_slice(hash.as_ref()),
++							hash: DbHash::from(<[u8; 32]>::try_from(hash.as_ref()).unwrap()),
+ 							header: encoded[..offset].to_vec(),
+ 						}
+ 					} else {
+@@ -2352,7 +2352,7 @@ fn apply_index_ops<Block: BlockT>(
+ fn apply_indexed_body<Block: BlockT>(transaction: &mut Transaction<DbHash>, body: Vec<Vec<u8>>) {
+ 	for extrinsic in body {
+ 		let hash = sp_runtime::traits::BlakeTwo256::hash(&extrinsic);
+-		transaction.store(columns::TRANSACTION, DbHash::from_slice(hash.as_ref()), extrinsic);
++		transaction.store(columns::TRANSACTION, DbHash::from(<[u8; 32]>::try_from(hash.as_ref()).unwrap()), extrinsic);
+ 	}
+ }
+ 

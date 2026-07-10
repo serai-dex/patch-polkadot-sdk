@@ -244,6 +244,8 @@ struct StorageTransactionCache<H: Hasher> {
 	transaction: BackendTransaction<H>,
 	/// The storage root after applying the transaction.
 	transaction_storage_root: H::Out,
+	/// The state version that was used to compute the transaction and the root.
+	state_version: StateVersion,
 }
 
 impl<H: Hasher> StorageTransactionCache<H> {
@@ -257,6 +259,7 @@ impl<H: Hasher> Clone for StorageTransactionCache<H> {
 		Self {
 			transaction: self.transaction.clone(),
 			transaction_storage_root: self.transaction_storage_root,
+			state_version: self.state_version,
 		}
 	}
 }
@@ -651,7 +654,9 @@ impl<H: Hasher> OverlayedChanges<H> {
 		H::Out: Ord + Encode,
 	{
 		if let Some(cache) = &self.storage_transaction_cache {
-			return (cache.transaction_storage_root, true);
+			if cache.state_version == state_version {
+				return (cache.transaction_storage_root, true);
+			}
 		}
 
 		let delta = self.top.changes_mut().map(|(k, v)| (&k[..], v.value().map(|v| &v[..])));
@@ -663,8 +668,11 @@ impl<H: Hasher> OverlayedChanges<H> {
 
 		let (root, transaction) = backend.full_storage_root(delta, child_delta, state_version);
 
-		self.storage_transaction_cache =
-			Some(StorageTransactionCache { transaction, transaction_storage_root: root });
+		self.storage_transaction_cache = Some(StorageTransactionCache {
+			transaction,
+			transaction_storage_root: root,
+			state_version,
+		});
 
 		(root, false)
 	}

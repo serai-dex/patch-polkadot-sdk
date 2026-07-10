@@ -1,6 +1,6 @@
 [package]
 name = "sp-blockchain"
-version = "44.0.0"
+version = "46.0.0"
 license = "Apache-2.0"
 description = "Substrate blockchain traits and primitives."
 documentation = "https://docs.rs/sp-blockchain"
@@ -39,28 +39,28 @@ default-features = true
 workspace = true
 
 [dependencies.sp-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-consensus]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-database]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-state-machine]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

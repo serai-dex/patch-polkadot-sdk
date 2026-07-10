@@ -1,6 +1,6 @@
 [package]
 name = "sc-client-db"
-version = "0.52.0"
+version = "0.54.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Client backend that uses RocksDB database as storage."
 readme = "README.md"
@@ -60,47 +60,47 @@ workspace = true
 default-features = true
 
 [dependencies.prometheus-endpoint]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-client-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-state-db]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.schnellru]
 workspace = true
 
 [dependencies.sp-arithmetic]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-database]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-state-machine]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-trie]
-default-features = true
 workspace = true
+default-features = true
 
 [features]
 default = []

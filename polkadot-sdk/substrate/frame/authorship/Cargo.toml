@@ -1,6 +1,6 @@
 [package]
 name = "pallet-authorship"
-version = "46.0.0"
+version = "48.0.0"
 description = "Block and Uncle Author tracking for the FRAME"
 license = "Apache-2.0"
 readme = "README.md"
@@ -36,14 +36,19 @@ workspace = true
 [dependencies.impl-trait-for-tuples]
 workspace = true
 
+[dependencies.sp-runtime]
+workspace = true
+
 [features]
 default = ["std"]
 std = [
     "codec/std",
     "frame-support/std",
     "frame-system/std",
+    "sp-runtime/std",
 ]
 try-runtime = [
     "frame-support/try-runtime",
     "frame-system/try-runtime",
+    "sp-runtime/try-runtime",
 ]

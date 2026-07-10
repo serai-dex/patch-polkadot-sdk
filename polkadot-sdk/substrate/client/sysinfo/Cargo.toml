@@ -1,6 +1,6 @@
 [package]
 name = "sc-sysinfo"
-version = "47.0.0"
+version = "50.0.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "A crate that provides basic hardware and software telemetry information."
 documentation = "https://docs.rs/sc-sysinfo"
@@ -49,8 +49,8 @@ workspace = true
 workspace = true
 
 [dependencies.sc-telemetry]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.serde]
 features = ["derive"]
@@ -62,13 +62,13 @@ workspace = true
 default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-crypto-hashing]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-io]
-default-features = true
 workspace = true
+default-features = true

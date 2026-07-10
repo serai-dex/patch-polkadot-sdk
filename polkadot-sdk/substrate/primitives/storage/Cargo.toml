@@ -1,6 +1,6 @@
 [package]
 name = "sp-storage"
-version = "23.0.0"
+version = "25.0.0"
 description = "Storage related primitives"
 license = "Apache-2.0"
 documentation = "https://docs.rs/sp-storage/"

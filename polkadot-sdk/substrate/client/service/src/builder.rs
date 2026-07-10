@@ -43,13 +43,13 @@ use sc_executor::{
 };
 use sc_keystore::LocalKeystore;
 use sc_network::{
-	config::{FullNetworkConfiguration, ProtocolId, SyncMode},
+	config::{FullNetworkConfiguration, /* IpfsConfig, */ ProtocolId, SyncMode},
 	multiaddr::Protocol,
 	service::{
 		traits::{PeerStore, RequestResponseConfig},
 		NotificationMetrics,
 	},
-	NetworkBackend, NetworkStateInfo,
+	/* IpfsIndexedTransactions, */ NetworkBackend, NetworkStateInfo,
 };
 use sc_network_common::role::{Role, Roles};
 // use sc_network_light::light_client_requests::handler::LightClientRequestHandler;
@@ -67,15 +67,15 @@ use sc_network_sync::{
 	SyncingService, WarpSyncConfig,
 };
 use sc_rpc::{
-	/* author::AuthorApiServer,
+       /* author::AuthorApiServer,
 	chain::ChainApiServer,
 	offchain::OffchainApiServer,
-	state::{ChildStateApiServer, StateApiServer},
-	system::SystemApiServer, */
+       state::{ChildStateApiServer, StateApiServer}, */
 	DenyUnsafe, SubscriptionTaskExecutor,
 };
 /* use sc_rpc_spec_v2::{
 	archive::ArchiveApiServer,
+	/* bitswap::BitswapApiServer, */
 	chain_head::ChainHeadApiServer,
 	chain_spec::ChainSpecApiServer,
 	transaction::{TransactionApiServer, TransactionBroadcastApiServer},
@@ -98,6 +98,10 @@ use std::{
 	sync::Arc,
 	time::{Duration, SystemTime},
 };
+
+/* /// Cap the maximum number of blocks advertized to IPFS to two weeks at 6-second block time.
+/// Block pruning depth will be used if it is shorter.
+const IPFS_MAX_BLOCKS: u32 = 201600; */
 
 /// Full client type.
 pub type TFullClient<TBl, TRtApi, TExec> =
@@ -611,9 +615,19 @@ where
 		.map(|registry| sc_rpc_spec_v2::transaction::TransactionMetrics::new(registry))
 		.transpose()?; */
 
+	// Create dedicated RPC runtime with limited blocking threads.
+	// This isolates RPC blocking operations from the rest of the node.
+	let rpc_runtime = sc_rpc_server::create_rpc_runtime(config.rpc.max_connections)
+		.map_err(|e| Error::Application(Box::new(e)))?;
+
+	// Create spawn handle for RPC tasks
+	let rpc_spawn_handle: Arc<dyn sp_core::traits::SpawnNamed> =
+		Arc::new(sc_rpc_server::RpcSpawnHandle::new(rpc_runtime.handle().clone()));
+
+	// Factory that creates RPC module
 	let gen_rpc_module = || {
 		gen_rpc_module(GenRpcModuleParams {
-			spawn_handle: task_manager.spawn_handle(),
+			spawn_handle: rpc_spawn_handle.clone(),
 			client: client.clone(),
 			transaction_pool: transaction_pool.clone(),
 			keystore: keystore.clone(),
@@ -625,16 +639,21 @@ where
 			blocks_pruning: config.blocks_pruning,
 			backend: backend.clone(),
 			rpc_builder: &*rpc_builder,
-			// metrics: rpc_v2_metrics.clone(),
+			/* metrics: rpc_v2_metrics.clone(), */
+			sync_oracle: sync_service.clone(),
 			tracing_execute_block: execute_block.clone(),
 		})
 	};
+
+	// Generate the RPC module for the server
+	let rpc_api = gen_rpc_module()?;
 
 	let rpc_server_handle = start_rpc_servers(
 		&config.rpc,
 		config.prometheus_registry(),
 		&config.tokio_handle,
-		gen_rpc_module,
+		rpc_api,
+		rpc_runtime,
 		rpc_id_provider,
 	)?;
 
@@ -648,6 +667,7 @@ where
 		})
 		.collect();
 
+	// In-memory RPC uses the same dedicated RPC runtime
 	let in_memory_rpc = {
 		let mut module = gen_rpc_module()?;
 		module.extensions_mut().insert(DenyUnsafe::No);
@@ -762,8 +782,8 @@ where
 
 /// Parameters for [`gen_rpc_module`].
 pub struct GenRpcModuleParams<'a, TBl: BlockT, TBackend, TCl, TRpc, TExPool> {
-	/// The handle to spawn tasks.
-	pub spawn_handle: SpawnTaskHandle,
+	/// The handle to spawn tasks on the RPC runtime.
+	pub spawn_handle: Arc<dyn sp_core::traits::SpawnNamed>,
 	/// Access to the client.
 	pub client: Arc<TCl>,
 	/// The transaction pool.
@@ -788,6 +808,8 @@ pub struct GenRpcModuleParams<'a, TBl: BlockT, TBackend, TCl, TRpc, TExPool> {
 	pub rpc_builder: &'a dyn Fn(SubscriptionTaskExecutor) -> Result<RpcModule<TRpc>, Error>,
 	/* /// Transaction metrics handle.
 	pub metrics: Option<sc_rpc_spec_v2::transaction::TransactionMetrics>, */
+	/// Sync oracle for determining sync status.
+	pub sync_oracle: Arc<dyn sp_consensus::SyncOracle + Send + Sync>,
 	/// Optional [`TracingExecuteBlock`] handle.
 	///
 	/// Will be used by the `trace_block` RPC to execute the actual block.
@@ -809,7 +831,8 @@ pub fn gen_rpc_module<TBl, TBackend, TCl, TRpc, TExPool>(
 		blocks_pruning: _,
 		backend: _,
 		rpc_builder,
-		// metrics,
+		/* metrics, */
+		sync_oracle: _,
 		tracing_execute_block: _execute_block,
 	}: GenRpcModuleParams<TBl, TBackend, TCl, TRpc, TExPool>,
 ) -> Result<RpcModule<()>, Error>
@@ -842,7 +865,7 @@ where
 	}; */
 
 	let mut rpc_api = RpcModule::new(());
-	let task_executor = Arc::new(spawn_handle);
+	let task_executor = spawn_handle;
 
 	/* let (chain, state, child_state) = {
 		let chain = sc_rpc::chain::new_full(client.clone(), task_executor.clone()).into_rpc();
@@ -907,6 +930,9 @@ where
 	)
 	.into_rpc();
 
+	/* // Bitswap RPC-v2 (do not confuse with v1 from `bitswap_v1_get`).
+	let bitswap_v2 = sc_rpc_spec_v2::bitswap::Bitswap::new(client.clone(), sync_oracle).into_rpc(); */
+
 	let author = sc_rpc::author::Author::new(
 		client.clone(),
 		transaction_pool,
@@ -930,6 +956,7 @@ where
 		.map_err(|e| Error::Application(e.into()))?;
 	rpc_api.merge(chain_head_v2).map_err(|e| Error::Application(e.into()))?;
 	rpc_api.merge(chain_spec_v2).map_err(|e| Error::Application(e.into()))?;
+	/* rpc_api.merge(bitswap_v2).map_err(|e| Error::Application(e.into()))?; */
 
 	// Part of the old RPC spec.
 	rpc_api.merge(chain).map_err(|e| Error::Application(e.into()))?;
@@ -1098,6 +1125,7 @@ where
 		network_service_provider,
 		metrics_registry,
 		metrics,
+		blocks_pruning: config.blocks_pruning,
 	})
 }
 
@@ -1137,6 +1165,8 @@ where
 	pub metrics_registry: Option<&'a Registry>,
 	/// Metrics.
 	pub metrics: NotificationMetrics,
+	/// Block pruning configuration.
+	pub blocks_pruning: BlocksPruning,
 }
 
 /// Build the network service, the network status sinks and an RPC sender, this is a lower-level
@@ -1183,6 +1213,7 @@ where
 		network_service_provider,
 		metrics_registry,
 		metrics,
+		blocks_pruning: _,
 	} = params;
 
 	let genesis_hash = client.info().genesis_hash;
@@ -1197,6 +1228,24 @@ where
 
 	// install request handlers to `FullNetworkConfiguration`
 	net_config.add_request_response_protocol(light_client_request_protocol_config); */
+
+	/* // Initialize IPFS server.
+	let ipfs_config = net_config.network_config.ipfs_server.then(|| {
+		let (handler, bitswap_config) =
+			Net::bitswap_server(client.clone(), metrics_registry.cloned());
+		spawn_handle.spawn("bitswap-request-handler", Some("networking"), handler);
+
+		let ipfs_num_blocks = match blocks_pruning {
+			BlocksPruning::KeepAll | BlocksPruning::KeepFinalized => IPFS_MAX_BLOCKS,
+			BlocksPruning::Some(num) => std::cmp::min(num, IPFS_MAX_BLOCKS),
+		};
+
+		IpfsConfig {
+			bitswap_config,
+			block_provider: Box::new(IpfsIndexedTransactions::new(client.clone(), ipfs_num_blocks)),
+			bootnodes: net_config.network_config.ipfs_bootnodes.clone(),
+		}
+	}); */
 
 	// Create transactions protocol and add it to the list of supported protocols of
 	let (transactions_handler_proto, transactions_config) =
@@ -1229,6 +1278,7 @@ where
 		fork_id: fork_id.map(ToOwned::to_owned),
 		metrics_registry: metrics_registry.cloned(),
 		block_announce_config,
+		/* ipfs_config, */
 		notification_metrics: metrics,
 	};
 

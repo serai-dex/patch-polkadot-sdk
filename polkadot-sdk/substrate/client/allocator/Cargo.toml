@@ -1,6 +1,6 @@
 [package]
 name = "sc-allocator"
-version = "36.0.0"
+version = "39.0.0"
 license = "Apache-2.0"
 description = "Collection of allocator implementations."
 documentation = "https://docs.rs/sc-allocator"
@@ -29,12 +29,12 @@ workspace = true
 default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-wasm-interface]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

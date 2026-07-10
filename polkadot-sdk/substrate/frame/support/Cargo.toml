@@ -1,6 +1,6 @@
 [package]
 name = "frame-support"
-version = "46.0.1"
+version = "48.0.0"
 license = "Apache-2.0"
 description = "Support code for the runtime."
 readme = "README.md"
@@ -31,6 +31,9 @@ features = [
     "derive",
     "max-encoded-len",
 ]
+workspace = true
+
+[dependencies.derive-where]
 workspace = true
 
 [dependencies.environmental]
@@ -74,8 +77,8 @@ workspace = true
 workspace = true
 
 [dependencies.sp-crypto-hashing-proc-macro]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-inherents]
 workspace = true

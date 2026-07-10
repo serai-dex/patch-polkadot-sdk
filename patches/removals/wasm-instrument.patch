@@ -160,3 +160,37 @@ index 8f189ca..97a79a1 100644
  }
  
  fn create_versioned_wasm_runtime<H>(
+diff --git a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
+index f14e7d52efb..9db25d541e6 100644
+--- a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
++++ b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
+@@ -142,6 +142,6 @@ impl RuntimeBlob {
+ 	}
+ 
+-	/// Removes the maximum page limit from the memory section.
++	/* /// Removes the maximum page limit from the memory section.
+ 	///
+ 	/// Only valid for WASM programs; will return an error if the blob is a PolkaVM program.
+ 	pub fn clear_memory_max_limit(&mut self) -> Result<(), WasmError> {
+@@ -154,7 +154,7 @@ impl RuntimeBlob {
+ 			*memory_ty = MemoryType::new(memory_ty.limits().initial(), None);
+ 		}
+ 		Ok(())
+-	}
++	} */
+ 
+ 	/// Modifies the blob's memory section according to the given `heap_alloc_strategy`.
+ 	///
+diff --git a/substrate/client/executor/wasmtime/src/runtime.rs b/substrate/client/executor/wasmtime/src/runtime.rs
+index 49a96a61c9d..ae7b34a1f46 100644
+--- a/substrate/client/executor/wasmtime/src/runtime.rs
++++ b/substrate/client/executor/wasmtime/src/runtime.rs
+@@ -657,7 +657,7 @@ fn prepare_blob_for_compilation(
+ 	// now automatically take care of creating the memory for us, and it is also necessary
+ 	// to enable `wasmtime`'s instance pooling. (Imported memories are ineligible for pooling.)
+ 	blob.convert_memory_import_into_export()?;
+-	blob.clear_memory_max_limit()?;
++	// blob.clear_memory_max_limit()?;
+ 
+ 	Ok(blob)
+ }

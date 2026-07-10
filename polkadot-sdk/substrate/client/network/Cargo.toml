@@ -1,7 +1,7 @@
 [package]
 description = "Substrate network protocol"
 name = "sc-network"
-version = "0.56.1"
+version = "0.58.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 documentation = "https://docs.rs/sc-network"
 readme = "README.md"
@@ -105,7 +105,10 @@ workspace = true
 workspace = true
 
 [dependencies.prometheus-endpoint]
+workspace = true
 default-features = true
+
+[dependencies.prost]
 workspace = true
 
 [dependencies.rand]
@@ -113,20 +116,20 @@ workspace = true
 default-features = true
 
 [dependencies.sc-client-api]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-network-common]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-network-types]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sc-utils]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.schnellru]
 workspace = true
@@ -145,20 +148,20 @@ workspace = true
 default-features = true
 
 [dependencies.sp-arithmetic]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-blockchain]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-core]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.sp-runtime]
-default-features = true
 workspace = true
+default-features = true
 
 [dependencies.thiserror]
 workspace = true

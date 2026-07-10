@@ -17,6 +17,10 @@
 
 //! The transaction extension trait.
 
+use super::{
+	DispatchInfoOf, DispatchOriginOf, Dispatchable, ExtensionPostDispatchWeightHandler,
+	PostDispatchInfoOf, RefundWeight,
+};
 use crate::{
 	transaction_validity::{
 		TransactionSource, TransactionValidity, TransactionValidityError, ValidTransaction,
@@ -30,11 +34,6 @@ pub use core::marker::PhantomData;
 use impl_trait_for_tuples::impl_for_tuples;
 use sp_weights::Weight;
 use tuplex::{PopFront, PushBack};
-
-use super::{
-	DispatchInfoOf, DispatchOriginOf, Dispatchable, ExtensionPostDispatchWeightHandler,
-	PostDispatchInfoOf, RefundWeight,
-};
 
 mod as_transaction_extension;
 mod dispatch_transaction;
@@ -526,6 +525,7 @@ macro_rules! impl_tx_ext_default {
 }
 
 /* /// Information about a [`TransactionExtension`] for the runtime metadata.
+#[derive(Clone)]
 pub struct TransactionExtensionMetadata {
 	/// The unique identifier of the [`TransactionExtension`].
 	pub identifier: &'static str,
