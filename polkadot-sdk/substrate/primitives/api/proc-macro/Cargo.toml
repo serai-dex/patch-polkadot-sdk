@@ -32,9 +32,6 @@ workspace = true
 [dependencies.blake2]
 workspace = true
 
-[dependencies.expander]
-workspace = true
-
 [dependencies.proc-macro-crate]
 workspace = true
 

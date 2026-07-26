@@ -8,6 +8,8 @@
 
 - `ecdsa_ed25519`: Removes ECDSA, Ed25519 cryptography from the runtime.
 
+- `expander`: Removes the `expander` dependency.
+
 - `fixed_point`: Remove the `sp_arithmetic::fixed_point` module.
 
 - `hash256-std-hasher`: Removes the `hash256-std-hasher` dependency, which

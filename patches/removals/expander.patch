@@ -1,0 +1,90 @@
+diff --git a/substrate/frame/support/procedural/src/construct_runtime/mod.rs b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+index c90f819..5bee786 100644
+--- a/substrate/frame/support/procedural/src/construct_runtime/mod.rs
++++ b/substrate/frame/support/procedural/src/construct_runtime/mod.rs
+@@ -265,11 +265,11 @@ const SYSTEM_PALLET_NAME: &str = "System";
+ 		res
+ 	};
+ 
+-	let res = expander::Expander::new("construct_runtime")
++	/* let res = expander::Expander::new("construct_runtime")
+ 		.dry(std::env::var("EXPAND_MACROS").is_err())
+ 		.verbose(true)
+ 		.write_to_out_dir(res)
+-		.expect("Does not fail because of IO in OUT_DIR; qed");
++		.expect("Does not fail because of IO in OUT_DIR; qed"); */
+ 
+ 	res.into()
+ }
+diff --git a/substrate/frame/support/procedural/src/runtime/expand/mod.rs b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+index 2062483..3d2b3d0 100644
+--- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
++++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
+@@ -76,11 +76,11 @@ pub fn expand(def: Def, legacy_ordering: bool) -> TokenStream2 {
+ 		res
+ 	};
+ 
+-	let res = expander::Expander::new("construct_runtime")
++	/* let res = expander::Expander::new("construct_runtime")
+ 		.dry(std::env::var("EXPAND_MACROS").is_err())
+ 		.verbose(true)
+ 		.write_to_out_dir(res)
+-		.expect("Does not fail because of IO in OUT_DIR; qed");
++		.expect("Does not fail because of IO in OUT_DIR; qed"); */
+ 
+ 	res.into()
+ }
+diff --git a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
+index 5e88954..a4b8fe6 100644
+--- a/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
++++ b/substrate/primitives/api/proc-macro/src/decl_runtime_apis.rs
+@@ -743,11 +743,11 @@ fn decl_runtime_apis_impl_inner(api_decls: &[ItemTrait]) -> Result<TokenStream>
+ 		#client_side_decls
+ 	};
+ 
+-	let decl = expander::Expander::new("decl_runtime_apis")
++	/* let decl = expander::Expander::new("decl_runtime_apis")
+ 		.dry(std::env::var("EXPAND_MACROS").is_err())
+ 		.verbose(true)
+ 		.write_to_out_dir(decl)
+-		.expect("Does not fail because of IO in OUT_DIR; qed");
++		.expect("Does not fail because of IO in OUT_DIR; qed"); */
+ 
+ 	Ok(decl)
+ }
+diff --git a/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs b/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
+index 09b8386..749de5d 100644
+--- a/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
++++ b/substrate/primitives/api/proc-macro/src/impl_runtime_apis.rs
+@@ -880,11 +880,11 @@ fn impl_runtime_apis_impl_inner(api_impls: &mut [ItemImpl]) -> Result<TokenStrea
+ 		}
+ 	);
+ 
+-	let impl_ = expander::Expander::new("impl_runtime_apis")
++	/* let impl_ = expander::Expander::new("impl_runtime_apis")
+ 		.dry(std::env::var("EXPAND_MACROS").is_err())
+ 		.verbose(true)
+ 		.write_to_out_dir(impl_)
+-		.expect("Does not fail because of IO in OUT_DIR; qed");
++		.expect("Does not fail because of IO in OUT_DIR; qed"); */
+ 
+ 	Ok(impl_)
+ }
+diff --git a/substrate/primitives/runtime-interface/proc-macro/src/runtime_interface/mod.rs b/substrate/primitives/runtime-interface/proc-macro/src/runtime_interface/mod.rs
+index c285afa..078d927 100644
+--- a/substrate/primitives/runtime-interface/proc-macro/src/runtime_interface/mod.rs
++++ b/substrate/primitives/runtime-interface/proc-macro/src/runtime_interface/mod.rs
+@@ -68,11 +68,11 @@ pub fn runtime_interface_impl(
+ 		}
+ 	};
+ 
+-	let res = expander::Expander::new("runtime_interface")
++	/* let res = expander::Expander::new("runtime_interface")
+ 		.dry(std::env::var("EXPAND_MACROS").is_err())
+ 		.verbose(true)
+ 		.write_to_out_dir(res)
+-		.expect("Does not fail because of IO in OUT_DIR; qed");
++		.expect("Does not fail because of IO in OUT_DIR; qed"); */
+ 
+ 	Ok(res)
+ }

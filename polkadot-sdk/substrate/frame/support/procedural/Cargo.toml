@@ -36,9 +36,6 @@ workspace = true
 [dependencies.derive-syn-parse]
 workspace = true
 
-[dependencies.expander]
-workspace = true
-
 [dependencies.frame-support-procedural-tools]
 workspace = true
 default-features = true

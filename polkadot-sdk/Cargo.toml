@@ -314,9 +314,6 @@ default-features = false
 [workspace.dependencies.exit-future]
 version = "0.2.0"
 
-[workspace.dependencies.expander]
-version = "2.0.0"
-
 [workspace.dependencies.finality-grandpa]
 version = "0.16.3"
 default-features = false

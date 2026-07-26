@@ -165,6 +165,11 @@ echo 'version = "1"' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'default-features = false' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 echo 'features = ["time"]' >> ./polkadot-sdk/substrate/client/telemetry/Cargo.toml
 
+# Remove `expander` as a dependency
+find ./polkadot-sdk -name "Cargo.toml" | while IFS="\n" read -r manifest; do
+  remove_matching_lines "$manifest" "expander"
+done
+
 # Remove `frame-metadata` as a dependency
 remove_matching_lines ./polkadot-sdk/substrate/client/tracing/Cargo.toml "frame-metadata"
 

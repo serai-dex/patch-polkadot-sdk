@@ -76,11 +76,11 @@ pub fn expand(def: Def, legacy_ordering: bool) -> TokenStream2 {
 		res
 	};
 
-	let res = expander::Expander::new("construct_runtime")
+	/* let res = expander::Expander::new("construct_runtime")
 		.dry(std::env::var("EXPAND_MACROS").is_err())
 		.verbose(true)
 		.write_to_out_dir(res)
-		.expect("Does not fail because of IO in OUT_DIR");
+		.expect("Does not fail because of IO in OUT_DIR"); */
 
 	res.into()
 }
