@@ -4727,7 +4727,7 @@ dependencies = [
 
 [[package]]
 name = "sc-client-db"
-version = "0.54.0"
+version = "0.54.1"
 dependencies = [
  "hash-db",
  "kvdb",
@@ -4822,7 +4822,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-grandpa"
-version = "0.43.0"
+version = "0.43.1"
 dependencies = [
  "ahash",
  "array-bytes",
@@ -5924,7 +5924,7 @@ dependencies = [
 
 [[package]]
 name = "sp-database"
-version = "10.0.0"
+version = "10.0.2"
 dependencies = [
  "kvdb",
  "kvdb-rocksdb",
