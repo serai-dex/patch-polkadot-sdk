@@ -32,10 +32,8 @@ workspace = true
 
 [dependencies.libp2p]
 features = [
-    "dns",
     "tcp",
     "tokio",
-    "websocket",
 ]
 workspace = true
 

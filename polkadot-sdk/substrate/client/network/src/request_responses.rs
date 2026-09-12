@@ -1045,7 +1045,6 @@ pub struct GenericCodec {
 	max_response_size: u64,
 }
 
-#[async_trait::async_trait]
 impl Codec for GenericCodec {
 	type Protocol = ProtocolName;
 	type Request = Vec<u8>;

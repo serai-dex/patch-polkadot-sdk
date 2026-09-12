@@ -20,6 +20,10 @@
 
 - `integer-sqrt`: Removes the `integer-sqrt` dependency.
 
+- `libp2p-dns-websocket`: Removes the (unused by Serai) DNS and WebSocket
+  transports due to the amount of dependencies they require, creating a massive
+  security risk for no benefit.
+
 - `light_client`: Removes the unused light-client request server.
 
 - `memmap2`: Remove use of the `memmap2` crate.

@@ -1,0 +1,88 @@
+diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Cargo.toml
+index 2af5336a3e8..73e9a0c47c2 100644
+--- a/substrate/client/network/Cargo.toml
++++ b/substrate/client/network/Cargo.toml
+@@ -37,5 +37,5 @@ fnv = { workspace = true }
+ futures = { workspace = true }
+ futures-timer = { workspace = true }
+ ip_network = { workspace = true }
+-libp2p = { features = ["dns", "identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "websocket", "yamux"], workspace = true }
++libp2p = { features = ["identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "yamux"], workspace = true }
+ linked_hash_set = { workspace = true }
+diff --git a/substrate/client/network/src/transport.rs b/substrate/client/network/src/transport.rs
+index 2f6b7a643c4..937ab13cdee 100644
+--- a/substrate/client/network/src/transport.rs
++++ b/substrate/client/network/src/transport.rs
+@@ -25,7 +25,7 @@ use libp2p::{
+ 		transport::{Boxed, OptionalTransport},
+ 		upgrade,
+ 	},
+-	dns, identity, noise, tcp, websocket, PeerId, Transport, TransportExt,
++	identity, noise, tcp, PeerId, Transport, TransportExt,
+ };
+ use std::{sync::Arc, time::Duration};
+ 
+@@ -50,9 +50,9 @@ pub fn build_transport(
+ 		// Main transport: DNS(TCP)
+ 		let tcp_config = tcp::Config::new().nodelay(true);
+ 		let tcp_trans = tcp::tokio::Transport::new(tcp_config.clone());
+-		let dns_init = dns::tokio::Transport::system(tcp_trans);
++		// let dns_init = dns::tokio::Transport::system(tcp_trans);
+ 
+-		Either::Left(if let Ok(dns) = dns_init {
++		Either::Left(/* if let Ok(dns) = dns_init */ { /*
+ 			// WS + WSS transport
+ 			//
+ 			// Main transport can't be used for `/wss` addresses because WSS transport needs
+@@ -62,12 +62,12 @@ pub fn build_transport(
+ 			let dns_for_wss = dns::tokio::Transport::system(tcp_trans)
+ 				.expect("same system_conf & resolver to work");
+ 			Either::Left(websocket::WsConfig::new(dns_for_wss).or_transport(dns))
+-		} else {
++		} else { */
+ 			// In case DNS can't be constructed, fallback to TCP + WS (WSS won't work)
+-			let tcp_trans = tcp::tokio::Transport::new(tcp_config.clone());
+-			let desktop_trans = websocket::WsConfig::new(tcp_trans)
++			let tcp_trans = tcp::tokio::Transport::new(tcp_config);
++			/* let desktop_trans = websocket::WsConfig::new(tcp_trans)
+ 				.or_transport(tcp::tokio::Transport::new(tcp_config));
+-			Either::Right(desktop_trans)
++			Either::Left(desktop_trans) */ tcp_trans
+ 		})
+ 	} else {
+ 		Either::Right(OptionalTransport::some(libp2p::core::transport::MemoryTransport::default()))
+diff --git a/substrate/client/telemetry/Cargo.toml b/substrate/client/telemetry/Cargo.toml
+index fef9115856f..5bc6e5f756a 100644
+--- a/substrate/client/telemetry/Cargo.toml
++++ b/substrate/client/telemetry/Cargo.toml
+@@ -19,7 +19,7 @@ targets = ["x86_64-unknown-linux-gnu"]
+ [dependencies]
+ chrono = { workspace = true }
+ futures = { workspace = true }
+-libp2p = { features = ["dns", "tcp", "tokio", "websocket"], workspace = true }
++libp2p = { features = ["tcp", "tokio"], workspace = true }
+ log = { workspace = true, default-features = true }
+ parking_lot = { workspace = true, default-features = true }
+ pin-project = { workspace = true }
+diff --git a/substrate/client/telemetry/src/transport.rs b/substrate/client/telemetry/src/transport.rs
+index 5e6e118b20c..2d70417edaa 100644
+--- a/substrate/client/telemetry/src/transport.rs
++++ b/substrate/client/telemetry/src/transport.rs
+@@ -29,7 +29,7 @@ use std::{io, pin::Pin, time::Duration};
+ const CONNECT_TIMEOUT: Duration = Duration::from_secs(20);
+ 
+ pub(crate) fn initialize_transport() -> Result<WsTrans, io::Error> {
+-	let transport = {
++	/* let transport = {
+ 		let tcp_transport = libp2p::tcp::tokio::Transport::new(libp2p::tcp::Config::new());
+ 		let inner = libp2p::dns::tokio::Transport::system(tcp_transport)?;
+ 		libp2p::websocket::framed::WsConfig::new(inner).and_then(|connec, _| {
+@@ -58,7 +58,7 @@ pub(crate) fn initialize_transport() -> Result<WsTrans, io::Error> {
+ 		}),
+ 		CONNECT_TIMEOUT,
+ 	)
+-	.boxed())
++	.boxed()) */ Err(io::Error::other("websocket transport removed due to its surface area"))
+ }
+ 
+ /// A trait that implements `Stream` and `Sink`.

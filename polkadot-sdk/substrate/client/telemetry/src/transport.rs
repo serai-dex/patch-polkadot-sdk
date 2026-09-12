@@ -29,7 +29,7 @@ use std::{io, pin::Pin, time::Duration};
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(20);
 
 pub(crate) fn initialize_transport() -> Result<WsTrans, io::Error> {
-	let transport = {
+	/* let transport = {
 		let tcp_transport = libp2p::tcp::tokio::Transport::new(libp2p::tcp::Config::new());
 		let inner = libp2p::dns::tokio::Transport::system(tcp_transport)?;
 		libp2p::websocket::framed::WsConfig::new(inner).and_then(|connec, _| {
@@ -58,7 +58,7 @@ pub(crate) fn initialize_transport() -> Result<WsTrans, io::Error> {
 		}),
 		CONNECT_TIMEOUT,
 	)
-	.boxed())
+	.boxed()) */ Err(io::Error::other("websocket transport removed due to its surface area"))
 }
 
 /// A trait that implements `Stream` and `Sink`.

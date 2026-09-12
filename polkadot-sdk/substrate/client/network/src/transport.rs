@@ -25,7 +25,7 @@ use libp2p::{
 		transport::{Boxed, OptionalTransport},
 		upgrade,
 	},
-	dns, identity, noise, tcp, websocket, PeerId, Transport,
+	identity, noise, tcp, PeerId, Transport,
 };
 use std::time::Duration;
 
@@ -44,10 +44,10 @@ pub(crate) fn build_transport(
 	let transport = if !memory_only {
 		// Main transport: DNS(TCP)
 		let tcp_config = tcp::Config::new().nodelay(true);
-		let tcp_trans = tcp::tokio::Transport::new(tcp_config.clone());
-		let dns_init = dns::tokio::Transport::system(tcp_trans);
+		let _tcp_trans = tcp::tokio::Transport::new(tcp_config.clone());
+		// let dns_init = dns::tokio::Transport::system(tcp_trans);
 
-		Either::Left(if let Ok(dns) = dns_init {
+		Either::Left(/* if let Ok(dns) = dns_init */ { /*
 			// WS + WSS transport
 			//
 			// Main transport can't be used for `/wss` addresses because WSS transport needs
@@ -57,12 +57,12 @@ pub(crate) fn build_transport(
 			let dns_for_wss = dns::tokio::Transport::system(tcp_trans)
 				.expect("same system_conf & resolver to work");
 			Either::Left(websocket::WsConfig::new(dns_for_wss).or_transport(dns))
-		} else {
+		} else { */
 			// In case DNS can't be constructed, fallback to TCP + WS (WSS won't work)
-			let tcp_trans = tcp::tokio::Transport::new(tcp_config.clone());
-			let desktop_trans = websocket::WsConfig::new(tcp_trans)
+			let tcp_trans = tcp::tokio::Transport::new(tcp_config);
+			/* let desktop_trans = websocket::WsConfig::new(tcp_trans)
 				.or_transport(tcp::tokio::Transport::new(tcp_config));
-			Either::Right(desktop_trans)
+			Either::Left(desktop_trans) */ tcp_trans
 		})
 	} else {
 		Either::Right(OptionalTransport::some(libp2p::core::transport::MemoryTransport::default()))

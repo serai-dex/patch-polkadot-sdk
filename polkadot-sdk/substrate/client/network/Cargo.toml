@@ -24,9 +24,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies]
-prometheus-client = "0.23"
-
 [dependencies.array-bytes]
 workspace = true
 default-features = true
@@ -67,7 +64,6 @@ workspace = true
 
 [dependencies.libp2p]
 features = [
-    "dns",
     "identify",
     "kad",
     "macros",
@@ -77,11 +73,14 @@ features = [
     "request-response",
     "tcp",
     "tokio",
-    "websocket",
     "yamux",
     "metrics",
 ]
 workspace = true
+
+[dependencies.prometheus-client]
+version = "0.25"
+default-features = false
 
 [dependencies.linked_hash_set]
 workspace = true

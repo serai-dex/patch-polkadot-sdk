@@ -159,6 +159,30 @@ impl From<&PeerId> for libp2p_identity::PeerId {
 	}
 }
 
+impl From<libp2p_identity_02::PeerId> for PeerId {
+	fn from(peer_id: libp2p_identity_02::PeerId) -> Self {
+		PeerId { multihash: Multihash::from_bytes(&peer_id.to_bytes()).expect("to succeed") }
+	}
+}
+
+impl From<PeerId> for libp2p_identity_02::PeerId {
+	fn from(peer_id: PeerId) -> Self {
+		libp2p_identity_02::PeerId::from_bytes(&peer_id.to_bytes()).expect("to succeed")
+	}
+}
+
+impl From<&libp2p_identity_02::PeerId> for PeerId {
+	fn from(peer_id: &libp2p_identity_02::PeerId) -> Self {
+		PeerId { multihash: Multihash::from_bytes(&peer_id.to_bytes()).expect("to succeed") }
+	}
+}
+
+impl From<&PeerId> for libp2p_identity_02::PeerId {
+	fn from(peer_id: &PeerId) -> Self {
+		libp2p_identity_02::PeerId::from_bytes(&peer_id.to_bytes()).expect("to succeed")
+	}
+}
+
 #[cfg(feature = "litep2p")]
 impl From<litep2p::PeerId> for PeerId {
 	fn from(peer_id: litep2p::PeerId) -> Self {

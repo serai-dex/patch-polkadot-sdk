@@ -50,6 +50,20 @@ optional = true
 workspace = true
 default-features = true
 
+[dependencies.libp2p-identity-02]
+package = "libp2p-identity"
+version = "0.2"
+default-features = false
+features = [
+    "peerid",
+    "rand",
+]
+
+[dependencies.multiaddr-018]
+package = "multiaddr"
+version = "0.18"
+default-features = false
+
 [dependencies.multiaddr]
 workspace = true
 

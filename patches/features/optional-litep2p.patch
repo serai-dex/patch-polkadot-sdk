@@ -2,7 +2,7 @@ diff --git a/substrate/client/network/types/Cargo.toml b/substrate/client/networ
 index 6ad1689..743ad8a 100644
 --- a/substrate/client/network/types/Cargo.toml
 +++ b/substrate/client/network/types/Cargo.toml
-@@ -12,11 +12,12 @@ documentation = "https://docs.rs/sc-network-types"
+@@ -12,11 +12,14 @@ documentation = "https://docs.rs/sc-network-types"
  [dependencies]
  bs58 = { workspace = true, default-features = true }
  bytes = { workspace = true, default-features = false }
@@ -13,6 +13,8 @@ index 6ad1689..743ad8a 100644
 -litep2p = { workspace = true }
 +litep2p = { workspace = true, optional = true }
  log = { workspace = true, default-features = true }
++libp2p-identity-02 = { package = "libp2p-identity", version = "0.2", default-features = false, features = ["peerid", "rand"] }
++multiaddr-018 = { package = "multiaddr", version = "0.18", default-features = false }
  multiaddr = { workspace = true }
  multihash = { workspace = true }
 +multihash-codetable = { workspace = true, features = ["sha2"] }
@@ -125,7 +127,7 @@ index 925e24f..0bd652c 100644
  // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 -use litep2p::types::multiaddr::{
-+use multiaddr::{
++use multiaddr_018::{
  	Error as LiteP2pError, Iter as LiteP2pIter, Multiaddr as LiteP2pMultiaddr,
  	Protocol as LiteP2pProtocol,
  };
@@ -138,7 +140,7 @@ index 35fcaa5..3afda6e 100644
  use crate::multihash::Multihash;
  use libp2p_identity::PeerId;
 -use litep2p::types::multiaddr::Protocol as LiteP2pProtocol;
-+use multiaddr::Protocol as LiteP2pProtocol;
++use multiaddr_018::Protocol as LiteP2pProtocol;
  use multiaddr::Protocol as LibP2pProtocol;
  use std::{
  	borrow::Cow,
