@@ -1085,6 +1085,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453"
 dependencies = [
  "hybrid-array",
+ "rand_core 0.10.1",
 ]
 
 [[package]]
@@ -1132,6 +1133,7 @@ dependencies = [
  "curve25519-dalek-derive",
  "digest 0.11.3",
  "fiat-crypto 0.3.0",
+ "rand_core 0.10.1",
  "rustc_version",
  "subtle",
  "zeroize",
@@ -1419,7 +1421,9 @@ checksum = "6ebaa1a2bf1290ab3bfe5a7b771d050ebffab2711c19a81691c683a5144a25de"
 dependencies = [
  "curve25519-dalek 5.0.0",
  "ed25519 3.0.0",
+ "rand_core 0.10.1",
  "sha2 0.11.0",
+ "signature 3.0.0",
  "subtle",
  "zeroize",
 ]
@@ -5460,7 +5464,7 @@ version = "0.22.0"
 dependencies = [
  "bs58",
  "bytes",
- "ed25519-dalek 2.2.0",
+ "ed25519-dalek 3.0.0",
  "libp2p-identity 0.2.13",
  "libp2p-identity 0.3.0",
  "libp2p-kad",
@@ -5470,6 +5474,7 @@ dependencies = [
  "multiaddr 0.19.0",
  "multihash",
  "multihash-codetable",
+ "rand 0.10.2",
  "rand 0.8.6",
  "serde_with",
  "thiserror 2.0.18",
@@ -6021,6 +6026,9 @@ name = "signature"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d567dcbaf0049cb8ac2608a76cd95ff9e4412e1899d389ee400918ca7537f5"
+dependencies = [
+ "rand_core 0.10.1",
+]
 
 [[package]]
 name = "simd_cesu8"

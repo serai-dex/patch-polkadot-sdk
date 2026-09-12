@@ -770,6 +770,7 @@ cargo_upgrade console 0.16.0
 cargo_upgrade derive_more 1.0.0
 cargo_upgrade digest 0.11.0
 cargo_upgrade directories 6.0.0
+cargo_upgrade ed25519-dalek 3.0.0
 cargo_upgrade governor 0.10.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade libp2p 0.57.0

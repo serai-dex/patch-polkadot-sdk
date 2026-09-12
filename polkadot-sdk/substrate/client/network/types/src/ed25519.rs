@@ -242,7 +242,7 @@ impl fmt::Debug for SecretKey {
 impl SecretKey {
 	/// Generate a new Ed25519 secret key.
 	pub fn generate() -> SecretKey {
-		let signing = ed25519::SigningKey::generate(&mut rand::rngs::OsRng);
+		let signing = ed25519::SigningKey::generate(&mut rand_10::rand_core::UnwrapErr(rand_10::rngs::SysRng));
 		SecretKey(signing.to_bytes())
 	}
 

@@ -78,6 +78,12 @@ features = ["sha2"]
 workspace = true
 default-features = true
 
+[dependencies.rand_10]
+package = "rand"
+version = "0.10"
+default-features = false
+features = ["sys_rng"]
+
 [dependencies.serde_with]
 workspace = true
 

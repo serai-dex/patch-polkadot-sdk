@@ -344,3 +344,26 @@ index 0ff762fd824..cb7c5e0213e 100644
  impl Codec for GenericCodec {
  	type Protocol = ProtocolName;
  	type Request = Vec<u8>;
+diff --git a/substrate/client/network/types/Cargo.toml b/substrate/client/network/types/Cargo.toml
+index a5f8ab31bb4..f5d4d5d518c 100644
+--- a/substrate/client/network/types/Cargo.toml
++++ b/substrate/client/network/types/Cargo.toml
+@@ -22,4 +22,5 @@ log = { workspace = true, default-features = true }
+ rand = { workspace = true, default-features = true }
++rand_10 = { package = "rand", version = "0.10", default-features = false, features = ["sys_rng"] }
+ serde.workspace = true
+ serde_with.workspace = true
+ thiserror = { workspace = true }
+diff --git a/substrate/client/network/types/src/ed25519.rs b/substrate/client/network/types/src/ed25519.rs
+index acaa01759e5..e847a1eff06 100644
+--- a/substrate/client/network/types/src/ed25519.rs
++++ b/substrate/client/network/types/src/ed25519.rs
+@@ -237,7 +237,7 @@ impl fmt::Debug for SecretKey {
+ impl SecretKey {
+ 	/// Generate a new Ed25519 secret key.
+ 	pub fn generate() -> SecretKey {
+-		let signing = ed25519::SigningKey::generate(&mut rand::rngs::OsRng);
++		let signing = ed25519::SigningKey::generate(&mut rand_10::rand_core::UnwrapErr(rand_10::rngs::SysRng));
+ 		SecretKey(signing.to_bytes())
+ 	}
+ 
