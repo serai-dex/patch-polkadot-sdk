@@ -22,4 +22,4 @@ jobs:
           cargo deny -L error --all-features check --hide-inclusion-graph
 
           cd ./polkadot-sdk
-          cargo deny -L error --all-features check -c ../deny.toml --hide-inclusion-graph --allow unresolved-workspace-dependency --allow unmaintained
+          cargo deny -L error --all-features --config ../deny.toml check --hide-inclusion-graph --allow unresolved-workspace-dependency --allow unmaintained
