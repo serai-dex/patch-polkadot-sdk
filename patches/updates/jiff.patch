@@ -1,0 +1,75 @@
+diff --git a/substrate/client/telemetry/Cargo.toml b/substrate/client/telemetry/Cargo.toml
+index fef9115856fe..5388a1c76594 100644
+--- a/substrate/client/telemetry/Cargo.toml
++++ b/substrate/client/telemetry/Cargo.toml
+@@ -17,5 +17,5 @@ workspace = true
+ targets = ["x86_64-unknown-linux-gnu"]
+ 
+ [dependencies]
+-chrono = { workspace = true }
++jiff = { version = "1", default-features = false, features = ["std"] }
+ futures = { workspace = true }
+diff --git a/substrate/client/tracing/Cargo.toml b/substrate/client/tracing/Cargo.toml
+index 43708ddacde5..523d5999f735 100644
+--- a/substrate/client/tracing/Cargo.toml
++++ b/substrate/client/tracing/Cargo.toml
+@@ -32,7 +32,7 @@ name = "interest_cache_multithreaded"
+ harness = false
+ 
+ [dependencies]
+-chrono = { workspace = true }
++jiff = { version = "1", default-features = false, features = ["std"] }
+ codec = { workspace = true, default-features = true }
+ console = { workspace = true }
+ is-terminal = { workspace = true }
+diff --git a/substrate/client/tracing/src/logging/fast_local_time.rs b/substrate/client/tracing/src/logging/fast_local_time.rs
+index ac4d14d95699..043a9620bfbb 100644
+--- a/substrate/client/tracing/src/logging/fast_local_time.rs
++++ b/substrate/client/tracing/src/logging/fast_local_time.rs
+@@ -16,7 +16,7 @@
+ // You should have received a copy of the GNU General Public License
+ // along with this program. If not, see <https://www.gnu.org/licenses/>.
+ 
+-use chrono::{Datelike, Timelike};
++// use chrono::{Datelike, Timelike};
+ use std::{cell::RefCell, fmt::Write, time::SystemTime};
+ use tracing_subscriber::fmt::{format, time::FormatTime};
+ 
+@@ -89,7 +89,7 @@ impl FormatTime for FastLocalTime {
+ 
+ 			// Regenerate the timestamp only at most once each second.
+ 			if cache.last_regenerated_at != unix_time {
+-				let ts = chrono::Local::now();
++				let ts = jiff::ZonedDateTime::now();
+-				let fractional = (ts.nanosecond() % 1_000_000_000) / 1_000_000;
++				let fractional = (u32::from(ts.nanosecond() as u16) % 1_000_000_000) / 1_000_000;
+ 				cache.last_regenerated_at = unix_time;
+ 				cache.last_fractional = fractional;
+diff --git a/substrate/client/telemetry/src/lib.rs b/substrate/client/telemetry/src/lib.rs
+index 6b866898dfb2..614aa394ac2f 100644
+--- a/substrate/client/telemetry/src/lib.rs
++++ b/substrate/client/telemetry/src/lib.rs
+@@ -306,9 +306,9 @@ impl TelemetryWorker {
+ 		node_pool: &mut HashMap<Multiaddr, Node<WsTrans>>,
+ 		node_map: &HashMap<Id, Vec<(VerbosityLevel, Multiaddr)>>,
+ 	) {
+ 		let (id, verbosity, payload) = input.expect("the stream is never closed; qed");
+ 
+-		let ts = chrono::Local::now().to_rfc3339();
++		let ts = { let ts = jiff::ZonedDateTime::now(); let ts = ts.timestamp().display_with_offset(ts.offset()); format!("{ts}") };
+ 		let mut message = serde_json::Map::new();
+ 		message.insert("id".into(), id.into());
+ 		message.insert("ts".into(), ts.into());
+diff --git a/substrate/client/telemetry/src/node.rs b/substrate/client/telemetry/src/node.rs
+index f4b0f6514e7d..0f7ac8398105 100644
+--- a/substrate/client/telemetry/src/node.rs
++++ b/substrate/client/telemetry/src/node.rs
+@@ -207,7 +207,7 @@ where
+ 								let mut json = json.clone();
+ 								json.insert(
+ 									"ts".to_string(),
+-									chrono::Local::now().to_rfc3339().into(),
++									{ let ts = jiff::ZonedDateTime::now(); let ts = ts.timestamp().display_with_offset(ts.offset()); format!("{ts}").into() },
+ 								);
+ 								json
+ 							})

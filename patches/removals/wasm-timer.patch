@@ -95,15 +95,16 @@ diff --git a/substrate/client/telemetry/src/node.rs b/substrate/client/telemetry
 index 2c8d424c..fd7ee341 100644
 --- a/substrate/client/telemetry/src/node.rs
 +++ b/substrate/client/telemetry/src/node.rs
-@@ -32,7 +32,6 @@ use std::{
+@@ -32,7 +32,7 @@ use std::{
  	task::{Context, Poll},
  	time::Duration,
  };
 -use wasm_timer::Delay;
++// use wasm_timer::Delay;
  
  pub(crate) type ConnectionNotifierSender = mpsc::Sender<()>;
  pub(crate) type ConnectionNotifierReceiver = mpsc::Receiver<()>;
-@@ -75,7 +74,7 @@ enum NodeSocket<TTrans: Transport> {
+@@ -75,7 +75,7 @@ enum NodeSocket<TTrans: Transport> {
  	/// A new connection should be started as soon as possible.
  	ReconnectNow,
  	/// Waiting before attempting to dial again.
@@ -112,7 +113,7 @@ index 2c8d424c..fd7ee341 100644
  	/// Temporary transition state.
  	Poisoned,
  }
-@@ -83,7 +82,7 @@ enum NodeSocket<TTrans: Transport> {
+@@ -83,7 +83,7 @@ enum NodeSocket<TTrans: Transport> {
  impl<TTrans: Transport> NodeSocket<TTrans> {
  	fn wait_reconnect() -> NodeSocket<TTrans> {
  		let random_delay = rand::thread_rng().gen_range(10..20);

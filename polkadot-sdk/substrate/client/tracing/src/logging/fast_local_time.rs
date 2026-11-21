@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use chrono::{Datelike, Timelike};
+// use chrono::{Datelike, Timelike};
 use std::{cell::RefCell, fmt::Write, time::SystemTime};
 use tracing_subscriber::fmt::{format, time::FormatTime};
 
@@ -89,8 +89,8 @@ impl FormatTime for FastLocalTime {
 
 			// Regenerate the timestamp only at most once each second.
 			if cache.last_regenerated_at != unix_time {
-				let ts = chrono::Local::now();
-				let fractional = (ts.nanosecond() % 1_000_000_000) / 1_000_000;
+				let ts = jiff::ZonedDateTime::now();
+				let fractional = (u32::from(ts.nanosecond() as u16) % 1_000_000_000) / 1_000_000;
 				cache.last_regenerated_at = unix_time;
 				cache.last_fractional = fractional;
 				cache.buffer.length = 0;

@@ -308,7 +308,7 @@ impl TelemetryWorker {
 	) {
 		let (id, verbosity, payload) = input.expect("the stream is never closed");
 
-		let ts = chrono::Local::now().to_rfc3339();
+		let ts = { let ts = jiff::ZonedDateTime::now(); let ts = ts.timestamp().display_with_offset(ts.offset()); format!("{ts}") };
 		let mut message = serde_json::Map::new();
 		message.insert("id".into(), id.into());
 		message.insert("ts".into(), ts.into());

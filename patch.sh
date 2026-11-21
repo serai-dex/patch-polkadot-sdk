@@ -794,7 +794,7 @@ cargo_upgrade thiserror 2.0.0
 cargo_upgrade trie-db 0.32.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
-cargo_upgrade wasmtime 50.0.0
+cargo_upgrade wasmtime 51.0.0
 
 cd ./polkadot-sdk
 

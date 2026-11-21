@@ -32,6 +32,7 @@ use std::{
 	task::{Context, Poll},
 	time::Duration,
 };
+// use wasm_timer::Delay;
 
 pub(crate) type ConnectionNotifierSender = mpsc::Sender<()>;
 pub(crate) type ConnectionNotifierReceiver = mpsc::Receiver<()>;
@@ -206,7 +207,7 @@ where
 								let mut json = json.clone();
 								json.insert(
 									"ts".to_string(),
-									chrono::Local::now().to_rfc3339().into(),
+									{ let ts = jiff::ZonedDateTime::now(); let ts = ts.timestamp().display_with_offset(ts.offset()); format!("{ts}").into() },
 								);
 								json
 							})

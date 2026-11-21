@@ -24,8 +24,10 @@ targets = ["x86_64-unknown-linux-gnu"]
 [lints]
 workspace = true
 
-[dependencies.chrono]
-workspace = true
+[dependencies.jiff]
+version = "1"
+default-features = false
+features = ["std"]
 
 [dependencies.futures]
 workspace = true

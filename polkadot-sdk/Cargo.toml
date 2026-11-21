@@ -265,9 +265,6 @@ version = "0.20.0"
 [workspace.dependencies.cfg-if]
 version = "1.0"
 
-[workspace.dependencies.chrono]
-version = "0.4.31"
-
 [workspace.dependencies.clap]
 version = "4.5.13"
 
@@ -945,7 +942,7 @@ default-features = false
 version = "0.8.0"
 
 [workspace.dependencies.wasmtime]
-version = "50.0.0"
+version = "51.0.0"
 default-features = false
 
 [workspace.dependencies.zeroize]

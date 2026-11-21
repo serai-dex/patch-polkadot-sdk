@@ -51,14 +51,14 @@ jobs:
           persist-credentials: false
 
       - name: Install cargo deny
-        run: cargo +1.98.1 install --locked cargo-deny --version =0.20.2
+        run: cargo +1.100 install --locked cargo-deny --version =0.22.0
 
       - name: Run cargo deny
         run: |
           cargo deny -L error --all-features check --hide-inclusion-graph
 
           cd ./polkadot-sdk
-          cargo deny -L error --all-features check -c ../deny.toml --hide-inclusion-graph --allow unresolved-workspace-dependency --allow unmaintained
+          cargo deny -L error --all-features --config ../deny.toml check --hide-inclusion-graph --allow unresolved-workspace-dependency --allow unmaintained
 
   fmt:
     runs-on: ubuntu-latest
@@ -87,5 +87,5 @@ jobs:
 
       - name: Verify all dependencies are in use
         run: |
-          cargo +1.98.1 install --locked cargo-machete --version =0.9.2
-          cargo +1.98.1 machete ./Cargo.toml
+          cargo +1.100 install --locked cargo-machete --version =0.10.1
+          cargo +1.100 machete ./Cargo.toml
