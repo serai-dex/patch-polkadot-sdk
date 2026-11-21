@@ -1625,7 +1625,7 @@ dependencies = [
 
 [[package]]
 name = "frame-benchmarking"
-version = "49.0.0"
+version = "50.0.0"
 dependencies = [
  "frame-support",
  "frame-support-procedural",
@@ -1646,7 +1646,7 @@ dependencies = [
 
 [[package]]
 name = "frame-executive"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -1661,7 +1661,7 @@ dependencies = [
 
 [[package]]
 name = "frame-support"
-version = "48.1.1"
+version = "49.1.0"
 dependencies = [
  "array-bytes",
  "derive-where",
@@ -1690,7 +1690,7 @@ dependencies = [
 
 [[package]]
 name = "frame-support-procedural"
-version = "40.0.0"
+version = "41.0.1"
 dependencies = [
  "Inflector",
  "cfg-expr",
@@ -1727,7 +1727,7 @@ dependencies = [
 
 [[package]]
 name = "frame-system"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "cfg-if",
  "frame-support",
@@ -1743,7 +1743,7 @@ dependencies = [
 
 [[package]]
 name = "frame-try-runtime"
-version = "0.54.0"
+version = "0.55.0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -3885,7 +3885,7 @@ checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
 name = "pallet-authorship"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -3896,7 +3896,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-babe"
-version = "49.0.0"
+version = "50.0.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -3916,7 +3916,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-grandpa"
-version = "49.0.0"
+version = "50.0.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -3935,7 +3935,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-session"
-version = "49.0.1"
+version = "50.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -3945,7 +3945,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-timestamp"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -4125,9 +4125,9 @@ checksum = "19f132c84eca552bf34cab8ec81f1c1dcc229b811638f9d283dceabe58c5569e"
 
 [[package]]
 name = "polkavm"
-version = "0.33.1"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d90ece49c68657299648e20469517e22c6ec38321307bb14a69c27a33927a491"
+checksum = "1e169701bf52ffe9abafea76f0519d526c736a4deea7e2cd70fc51b3bbf1ba81"
 dependencies = [
  "libc",
  "log",
@@ -4139,18 +4139,18 @@ dependencies = [
 
 [[package]]
 name = "polkavm-assembler"
-version = "0.33.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00010f7924647dbf6f468d85d0fcfe4c3587cfb4557ef13f3682dbece8fd57f0"
+checksum = "6dddb5cf523ca1c8de5a1a265438aa0e96fbf812e9f90a2f300a4c550bd8a9e9"
 dependencies = [
  "log",
 ]
 
 [[package]]
 name = "polkavm-common"
-version = "0.33.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e44a9487003cf5b9fc4462bbcf105cc37d5d9b18b40edf5ed50dd20ed1fdb27"
+checksum = "b20e5a47dd9ad7bb43013676a18074fca2573dd8270774a7d2ad286b57bc710f"
 dependencies = [
  "log",
  "picosimd",
@@ -4159,18 +4159,18 @@ dependencies = [
 
 [[package]]
 name = "polkavm-derive"
-version = "0.33.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ef966bc8518a66ce12d4edb73f2c4094cae72bb23258bc9e9b2802cc9d6cd79"
+checksum = "80796823e852d4ff90857dd184162ce3b5de739b34495aadef69d381005dcc5d"
 dependencies = [
  "polkavm-derive-impl-macro",
 ]
 
 [[package]]
 name = "polkavm-derive-impl"
-version = "0.33.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0c2166ad71dd7f51dcdd0d91b70d408a8b3610fa6e94d8202dd4b7185607181"
+checksum = "b8eede5680fbaac211c5e5f78cd2fa55456eba819a0c02dc5ca08b3327268ff5"
 dependencies = [
  "polkavm-common",
  "proc-macro2",
@@ -4180,9 +4180,9 @@ dependencies = [
 
 [[package]]
 name = "polkavm-derive-impl-macro"
-version = "0.33.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7ac2ac8ec5b938e249fa97b5ebb1e6fa47000c81a25eba6bf0f13edb8d430e4"
+checksum = "d345f00a91917abae726812c5a8683da571412f22ce6a523cfcdfea66f8459a9"
 dependencies = [
  "polkavm-derive-impl",
  "syn 2.0.117",
@@ -4190,9 +4190,9 @@ dependencies = [
 
 [[package]]
 name = "polkavm-linux-raw"
-version = "0.33.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42063d4a1c52e569f7794df27dab3e19c9fa8946184023257bdbb43eb4a94be5"
+checksum = "7689d791c6ab52782217ae904d0f5eb7b7cc125a90eb085069d38c15f5d5a53c"
 
 [[package]]
 name = "polling"
@@ -4917,7 +4917,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf"
 dependencies = [
  "aws-lc-rs",
+ "log",
  "once_cell",
+ "ring",
  "rustls-pki-types",
  "rustls-webpki",
  "subtle",
@@ -4986,7 +4988,7 @@ dependencies = [
 
 [[package]]
 name = "sc-allocator"
-version = "39.0.0"
+version = "23.0.0"
 dependencies = [
  "log",
  "sp-core",
@@ -4996,7 +4998,7 @@ dependencies = [
 
 [[package]]
 name = "sc-authority-discovery"
-version = "0.62.0"
+version = "0.61.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5025,7 +5027,7 @@ dependencies = [
 
 [[package]]
 name = "sc-basic-authorship"
-version = "0.58.0"
+version = "0.57.0"
 dependencies = [
  "futures",
  "log",
@@ -5045,7 +5047,7 @@ dependencies = [
 
 [[package]]
 name = "sc-block-builder"
-version = "0.51.0"
+version = "0.52.0"
 dependencies = [
  "parity-scale-codec",
  "sp-api",
@@ -5059,7 +5061,7 @@ dependencies = [
 
 [[package]]
 name = "sc-chain-spec"
-version = "54.0.0"
+version = "53.0.0"
 dependencies = [
  "clap",
  "parity-scale-codec",
@@ -5079,7 +5081,7 @@ dependencies = [
 
 [[package]]
 name = "sc-client-api"
-version = "49.0.0"
+version = "48.0.0"
 dependencies = [
  "fnv",
  "futures",
@@ -5104,7 +5106,7 @@ dependencies = [
 
 [[package]]
 name = "sc-client-db"
-version = "0.56.0"
+version = "0.55.0"
 dependencies = [
  "hash-db",
  "kvdb",
@@ -5130,7 +5132,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus"
-version = "0.60.0"
+version = "0.59.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5151,7 +5153,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-babe"
-version = "0.61.0"
+version = "0.60.0"
 dependencies = [
  "async-trait",
  "fork-tree",
@@ -5187,7 +5189,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-epochs"
-version = "0.60.0"
+version = "0.59.0"
 dependencies = [
  "fork-tree",
  "parity-scale-codec",
@@ -5199,7 +5201,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-grandpa"
-version = "0.46.0"
+version = "0.45.0"
 dependencies = [
  "ahash",
  "array-bytes",
@@ -5242,7 +5244,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-slots"
-version = "0.60.0"
+version = "0.59.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5264,7 +5266,7 @@ dependencies = [
 
 [[package]]
 name = "sc-executor"
-version = "0.50.0"
+version = "0.51.0"
 dependencies = [
  "parity-scale-codec",
  "parking_lot",
@@ -5283,7 +5285,7 @@ dependencies = [
 
 [[package]]
 name = "sc-executor-common"
-version = "0.47.0"
+version = "0.29.0"
 dependencies = [
  "polkavm",
  "sc-allocator",
@@ -5293,7 +5295,7 @@ dependencies = [
 
 [[package]]
 name = "sc-executor-polkavm"
-version = "0.44.0"
+version = "0.29.0"
 dependencies = [
  "log",
  "polkavm",
@@ -5304,7 +5306,7 @@ dependencies = [
 
 [[package]]
 name = "sc-executor-wasmtime"
-version = "0.47.0"
+version = "0.29.0"
 dependencies = [
  "log",
  "parking_lot",
@@ -5318,7 +5320,7 @@ dependencies = [
 
 [[package]]
 name = "sc-informant"
-version = "0.60.0"
+version = "0.59.0"
 dependencies = [
  "console",
  "futures",
@@ -5333,7 +5335,7 @@ dependencies = [
 
 [[package]]
 name = "sc-keystore"
-version = "42.0.0"
+version = "43.0.0"
 dependencies = [
  "array-bytes",
  "parking_lot",
@@ -5346,7 +5348,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network"
-version = "0.61.0"
+version = "0.60.0"
 dependencies = [
  "array-bytes",
  "async-channel",
@@ -5367,8 +5369,8 @@ dependencies = [
  "partial_sort",
  "pin-project",
  "prometheus-client",
- "prost 0.14.3",
  "rand 0.8.6",
+ "rustls",
  "sc-client-api",
  "sc-network-common",
  "sc-network-types",
@@ -5391,7 +5393,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-common"
-version = "0.55.0"
+version = "0.56.0"
 dependencies = [
  "bitflags",
  "parity-scale-codec",
@@ -5400,7 +5402,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-gossip"
-version = "0.61.0"
+version = "0.60.0"
 dependencies = [
  "ahash",
  "futures",
@@ -5418,7 +5420,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-sync"
-version = "0.60.0"
+version = "0.59.0"
 dependencies = [
  "array-bytes",
  "async-channel",
@@ -5450,7 +5452,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-transactions"
-version = "0.60.0"
+version = "0.59.0"
 dependencies = [
  "array-bytes",
  "futures",
@@ -5468,7 +5470,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-types"
-version = "0.23.3"
+version = "0.23.2"
 dependencies = [
  "bs58",
  "bytes",
@@ -5499,7 +5501,7 @@ dependencies = [
 
 [[package]]
 name = "sc-rpc"
-version = "57.0.0"
+version = "56.0.0"
 dependencies = [
  "futures",
  "jsonrpsee",
@@ -5517,7 +5519,7 @@ dependencies = [
 
 [[package]]
 name = "sc-rpc-api"
-version = "0.61.0"
+version = "0.60.0"
 dependencies = [
  "jsonrpsee",
  "parity-scale-codec",
@@ -5528,7 +5530,7 @@ dependencies = [
 
 [[package]]
 name = "sc-rpc-server"
-version = "34.0.0"
+version = "33.0.0"
 dependencies = [
  "dyn-clone",
  "forwarded-header-value",
@@ -5554,7 +5556,7 @@ dependencies = [
 
 [[package]]
 name = "sc-service"
-version = "0.63.0"
+version = "0.62.0"
 dependencies = [
  "async-trait",
  "directories",
@@ -5613,7 +5615,7 @@ dependencies = [
 
 [[package]]
 name = "sc-state-db"
-version = "0.45.0"
+version = "0.30.0"
 dependencies = [
  "log",
  "parity-scale-codec",
@@ -5622,7 +5624,7 @@ dependencies = [
 
 [[package]]
 name = "sc-sysinfo"
-version = "50.0.0"
+version = "51.0.0"
 dependencies = [
  "derive_more",
  "futures",
@@ -5641,7 +5643,7 @@ dependencies = [
 
 [[package]]
 name = "sc-telemetry"
-version = "33.0.0"
+version = "34.0.0"
 dependencies = [
  "futures",
  "jiff",
@@ -5659,7 +5661,7 @@ dependencies = [
 
 [[package]]
 name = "sc-tracing"
-version = "49.0.0"
+version = "48.0.0"
 dependencies = [
  "console",
  "jiff",
@@ -5695,7 +5697,7 @@ dependencies = [
 
 [[package]]
 name = "sc-transaction-pool"
-version = "49.0.0"
+version = "48.0.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5725,7 +5727,7 @@ dependencies = [
 
 [[package]]
 name = "sc-transaction-pool-api"
-version = "48.0.0"
+version = "47.0.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5742,7 +5744,7 @@ dependencies = [
 
 [[package]]
 name = "sc-utils"
-version = "23.0.0"
+version = "24.0.0"
 dependencies = [
  "async-channel",
  "futures",
@@ -6157,7 +6159,7 @@ dependencies = [
 
 [[package]]
 name = "sp-api"
-version = "43.0.0"
+version = "44.0.0"
 dependencies = [
  "hash-db",
  "log",
@@ -6175,7 +6177,7 @@ dependencies = [
 
 [[package]]
 name = "sp-api-proc-macro"
-version = "29.0.0"
+version = "15.0.0"
 dependencies = [
  "Inflector",
  "blake2 0.11.0-rc.6",
@@ -6187,7 +6189,7 @@ dependencies = [
 
 [[package]]
 name = "sp-application-crypto"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "parity-scale-codec",
  "serde",
@@ -6197,7 +6199,7 @@ dependencies = [
 
 [[package]]
 name = "sp-arithmetic"
-version = "23.0.0"
+version = "29.0.0"
 dependencies = [
  "num-traits",
  "parity-scale-codec",
@@ -6207,7 +6209,7 @@ dependencies = [
 
 [[package]]
 name = "sp-authority-discovery"
-version = "43.0.0"
+version = "44.0.0"
 dependencies = [
  "parity-scale-codec",
  "sp-api",
@@ -6216,7 +6218,7 @@ dependencies = [
 
 [[package]]
 name = "sp-block-builder"
-version = "43.0.0"
+version = "44.0.0"
 dependencies = [
  "parity-scale-codec",
  "sp-api",
@@ -6226,7 +6228,7 @@ dependencies = [
 
 [[package]]
 name = "sp-blockchain"
-version = "46.0.1"
+version = "47.0.0"
 dependencies = [
  "futures",
  "parity-scale-codec",
@@ -6244,7 +6246,7 @@ dependencies = [
 
 [[package]]
 name = "sp-consensus"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -6259,7 +6261,7 @@ dependencies = [
 
 [[package]]
 name = "sp-consensus-babe"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "async-trait",
  "parity-scale-codec",
@@ -6275,7 +6277,7 @@ dependencies = [
 
 [[package]]
 name = "sp-consensus-grandpa"
-version = "30.0.0"
+version = "31.0.0"
 dependencies = [
  "finality-grandpa",
  "log",
@@ -6290,7 +6292,7 @@ dependencies = [
 
 [[package]]
 name = "sp-consensus-slots"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "parity-scale-codec",
  "serde",
@@ -6299,7 +6301,7 @@ dependencies = [
 
 [[package]]
 name = "sp-core"
-version = "43.0.0"
+version = "28.0.0"
 dependencies = [
  "array-bytes",
  "bip39",
@@ -6357,7 +6359,7 @@ dependencies = [
 
 [[package]]
 name = "sp-database"
-version = "10.0.2"
+version = "10.0.0"
 dependencies = [
  "kvdb",
  "kvdb-rocksdb",
@@ -6366,7 +6368,7 @@ dependencies = [
 
 [[package]]
 name = "sp-externalities"
-version = "0.34.0"
+version = "0.25.0"
 dependencies = [
  "environmental",
  "parity-scale-codec",
@@ -6375,7 +6377,7 @@ dependencies = [
 
 [[package]]
 name = "sp-inherents"
-version = "43.0.0"
+version = "44.0.0"
 dependencies = [
  "async-trait",
  "impl-trait-for-tuples",
@@ -6386,7 +6388,7 @@ dependencies = [
 
 [[package]]
 name = "sp-io"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "bytes",
  "log",
@@ -6407,7 +6409,7 @@ dependencies = [
 
 [[package]]
 name = "sp-keyring"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "sp-core",
  "sp-runtime",
@@ -6416,7 +6418,7 @@ dependencies = [
 
 [[package]]
 name = "sp-keystore"
-version = "0.49.0"
+version = "0.34.0"
 dependencies = [
  "parity-scale-codec",
  "parking_lot",
@@ -6426,7 +6428,7 @@ dependencies = [
 
 [[package]]
 name = "sp-rpc"
-version = "41.0.0"
+version = "26.0.0"
 dependencies = [
  "rustc-hash",
  "serde",
@@ -6434,7 +6436,7 @@ dependencies = [
 
 [[package]]
 name = "sp-runtime"
-version = "48.0.0"
+version = "49.0.0"
 dependencies = [
  "bytes",
  "either",
@@ -6457,7 +6459,7 @@ dependencies = [
 
 [[package]]
 name = "sp-runtime-interface"
-version = "37.0.0"
+version = "37.0.1"
 dependencies = [
  "bytes",
  "parity-scale-codec",
@@ -6470,7 +6472,7 @@ dependencies = [
 
 [[package]]
 name = "sp-runtime-interface-proc-macro"
-version = "21.0.1"
+version = "17.0.0"
 dependencies = [
  "Inflector",
  "proc-macro-crate",
@@ -6481,7 +6483,7 @@ dependencies = [
 
 [[package]]
 name = "sp-session"
-version = "45.0.0"
+version = "46.0.0"
 dependencies = [
  "parity-scale-codec",
  "sp-api",
@@ -6492,7 +6494,7 @@ dependencies = [
 
 [[package]]
 name = "sp-staking"
-version = "45.0.0"
+version = "46.0.0"
 dependencies = [
  "parity-scale-codec",
  "sp-core",
@@ -6501,7 +6503,7 @@ dependencies = [
 
 [[package]]
 name = "sp-state-machine"
-version = "0.53.0"
+version = "0.54.0"
 dependencies = [
  "hash-db",
  "log",
@@ -6519,7 +6521,7 @@ dependencies = [
 
 [[package]]
 name = "sp-storage"
-version = "25.0.0"
+version = "19.0.0"
 dependencies = [
  "impl-serde",
  "parity-scale-codec",
@@ -6529,7 +6531,7 @@ dependencies = [
 
 [[package]]
 name = "sp-timestamp"
-version = "43.0.0"
+version = "44.0.0"
 dependencies = [
  "async-trait",
  "parity-scale-codec",
@@ -6550,7 +6552,7 @@ dependencies = [
 
 [[package]]
 name = "sp-transaction-pool"
-version = "43.0.0"
+version = "44.0.0"
 dependencies = [
  "sp-api",
  "sp-runtime",
@@ -6558,7 +6560,7 @@ dependencies = [
 
 [[package]]
 name = "sp-trie"
-version = "46.0.0"
+version = "47.0.0"
 dependencies = [
  "ahash",
  "foldhash 0.1.5",
@@ -6580,7 +6582,7 @@ dependencies = [
 
 [[package]]
 name = "sp-version"
-version = "46.0.0"
+version = "47.0.0"
 dependencies = [
  "impl-serde",
  "parity-scale-codec",
@@ -6604,7 +6606,7 @@ dependencies = [
 
 [[package]]
 name = "sp-wasm-interface"
-version = "27.0.0"
+version = "20.0.0"
 dependencies = [
  "impl-trait-for-tuples",
  "log",
@@ -6614,7 +6616,7 @@ dependencies = [
 
 [[package]]
 name = "sp-weights"
-version = "36.0.0"
+version = "37.0.0"
 dependencies = [
  "bounded-collections",
  "parity-scale-codec",

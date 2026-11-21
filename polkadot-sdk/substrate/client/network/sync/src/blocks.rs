@@ -18,6 +18,7 @@
 
 use crate::LOG_TARGET;
 use log::trace;
+use prometheus_endpoint::{register, Counter, PrometheusError, Registry, U64};
 use sc_network_common::sync::message;
 use sc_network_types::PeerId;
 use sp_arithmetic::traits::Saturating;
@@ -54,6 +55,25 @@ impl<B: BlockT> BlockRangeState<B> {
 	}
 }
 
+#[derive(Clone)]
+pub(crate) struct Metrics {
+	stale_download_reservations: Counter<U64>,
+}
+
+impl Metrics {
+	pub(crate) fn register(registry: &Registry) -> Result<Self, PrometheusError> {
+		Ok(Self {
+			stale_download_reservations: register(
+				Counter::new(
+					"substrate_sync_stale_download_reservations_total",
+					"Number of stale block download reservations released before scheduling a new range",
+				)?,
+				registry,
+			)?,
+		})
+	}
+}
+
 /// A collection of blocks being downloaded.
 #[derive(Default)]
 pub struct BlockCollection<B: BlockT> {
@@ -63,15 +83,22 @@ pub struct BlockCollection<B: BlockT> {
 	/// Block ranges downloaded and queued for import.
 	/// Maps start_hash => (start_num, end_num).
 	queued_blocks: HashMap<B::Hash, (NumberFor<B>, NumberFor<B>)>,
+	/// Metrics shared by regular and gap sync.
+	metrics: Option<Metrics>,
 }
 
 impl<B: BlockT> BlockCollection<B> {
 	/// Create a new instance.
 	pub fn new() -> Self {
+		Self::with_metrics(None)
+	}
+
+	pub(crate) fn with_metrics(metrics: Option<Metrics>) -> Self {
 		Self {
 			blocks: BTreeMap::new(),
 			peer_requests: HashMap::new(),
 			queued_blocks: HashMap::new(),
+			metrics,
 		}
 	}
 
@@ -117,6 +144,14 @@ impl<B: BlockT> BlockCollection<B> {
 		max_parallel: u32,
 		max_ahead: u32,
 	) -> Option<Range<NumberFor<B>>> {
+		// Cancellation, responses and disconnection should release the previous range.
+		if self.peer_requests.contains_key(&who) {
+			log::debug!(target: LOG_TARGET, "Releasing stale block download reservation for {who}");
+			if let Some(metrics) = &self.metrics {
+				metrics.stale_download_reservations.inc();
+			}
+			self.clear_peer_download(&who);
+		}
 		if peer_best <= common {
 			// Bail out early
 			return None;

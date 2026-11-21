@@ -131,3 +131,7 @@ impl FusedStream for PendingResponses {
 		false
 	}
 }
+
+#[cfg(test)]
+mod tests {
+}

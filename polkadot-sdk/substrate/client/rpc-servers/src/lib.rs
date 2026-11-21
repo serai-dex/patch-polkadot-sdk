@@ -190,6 +190,42 @@ pub struct Config<M: Send + Sync + 'static> {
 	pub rpc_runtime: tokio::runtime::Runtime,
 }
 
+/// Guards the dedicated RPC runtime while [`start_server`] is setting the server up.
+///
+/// `start_server` is awaited from within a runtime context, so dropping the RPC runtime on an
+/// early error return would panic: `Runtime::drop` blocks until the blocking pool has shut down,
+/// which tokio forbids on a runtime thread. Routing every exit path through this guard tears the
+/// runtime down with `shutdown_background()` instead, just like [`Server::drop`] does.
+struct RuntimeGuard(Option<tokio::runtime::Runtime>);
+
+impl RuntimeGuard {
+	fn new(runtime: tokio::runtime::Runtime) -> Self {
+		Self(Some(runtime))
+	}
+
+	fn handle(&self) -> tokio::runtime::Handle {
+		self.0
+			.as_ref()
+			.expect("runtime is only taken in `into_inner` and `Drop`")
+			.handle()
+			.clone()
+	}
+
+	/// Hands the runtime over to the [`Server`], which owns it from then on.
+	fn into_inner(mut self) -> tokio::runtime::Runtime {
+		self.0.take().expect("runtime is only taken here and in `Drop`")
+	}
+}
+
+impl Drop for RuntimeGuard {
+	fn drop(&mut self) {
+		if let Some(runtime) = self.0.take() {
+			// Same trade-off `Server::drop` accepts
+			runtime.shutdown_background();
+		}
+	}
+}
+
 #[derive(Debug, Clone)]
 struct PerConnection {
 	methods: Methods,
@@ -206,7 +242,9 @@ where
 	let Config { endpoints, metrics, rpc_api, id_provider, request_logger_limit, rpc_runtime } =
 		config;
 
-	let rpc_handle = rpc_runtime.handle().clone();
+	// Held as a guard so that every early error return below shuts the runtime down
+	let rpc_runtime = RuntimeGuard::new(rpc_runtime);
+	let rpc_handle = rpc_runtime.handle();
 
 	let (stop_handle, server_handle) = stop_channel();
 	let rpc_api = build_rpc_api(rpc_api);
@@ -400,5 +438,9 @@ where
 	// This is to make it work with old scripts/utils that parse the logs.
 	log::info!("Running JSON-RPC server: addr={}", format_listen_addrs(&local_addrs));
 
-	Ok(Server::new(server_handle, local_addrs, rpc_runtime))
+	Ok(Server::new(server_handle, local_addrs, rpc_runtime.into_inner()))
+}
+
+#[cfg(test)]
+mod tests {
 }

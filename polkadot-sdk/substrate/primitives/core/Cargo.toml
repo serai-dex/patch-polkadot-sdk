@@ -1,6 +1,6 @@
 [package]
 name = "sp-core"
-version = "43.0.0"
+version = "28.0.0"
 license = "Apache-2.0"
 description = "Shareable Substrate types."
 documentation = "https://docs.rs/sp-core"
@@ -147,17 +147,16 @@ workspace = true
 [dependencies.sp-crypto-hashing]
 workspace = true
 
-[target."cfg(not(substrate_runtime))".dependencies]
-dyn-clone = "1.0.17"
-
 [target."cfg(not(substrate_runtime))".dependencies.sp-externalities]
 workspace = true
 default-features = false
 
 [target."cfg(not(substrate_runtime))".dependencies.futures]
-version = "0.3.30"
-default-features = false
+workspace = true
 features = ["alloc"]
+
+[target."cfg(not(substrate_runtime))".dependencies.dyn-clone]
+workspace = true
 
 [features]
 default = ["std"]

@@ -743,7 +743,6 @@ where
 						}))
 					}
 					.boxed(),
-					remove_obsolete: false,
 				}
 			});
 		self.actions.extend(warp_proof_request);
@@ -767,9 +766,6 @@ where
 						))
 					}
 					.boxed(),
-					// Sending block request implies dropping obsolete pending response as we are
-					// not interested in it anymore.
-					remove_obsolete: true,
 				}
 			});
 		self.actions.extend(target_block_request);

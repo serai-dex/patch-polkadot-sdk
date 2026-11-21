@@ -2,7 +2,7 @@ diff --git a/substrate/client/service/src/builder.rs b/substrate/client/service/
 index 69c7619a700..f7f24b44a6e 100644
 --- a/substrate/client/service/src/builder.rs
 +++ b/substrate/client/service/src/builder.rs
-@@ -67,20 +67,20 @@
+@@ -68,20 +68,20 @@
  	SyncingService, WarpSyncConfig,
  };
  use sc_rpc::{
@@ -18,7 +18,7 @@ index 69c7619a700..f7f24b44a6e 100644
 -use sc_rpc_spec_v2::{
 +/* use sc_rpc_spec_v2::{
  	archive::ArchiveApiServer,
- 	/* bitswap::BitswapApiServer, */
+ 	// bitswap::BitswapApiServer,
  	chain_head::ChainHeadApiServer,
  	chain_spec::ChainSpecApiServer,
  	transaction::{TransactionApiServer, TransactionBroadcastApiServer},

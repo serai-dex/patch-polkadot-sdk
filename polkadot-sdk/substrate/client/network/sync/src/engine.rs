@@ -35,7 +35,7 @@ use crate::{
 
 use codec::{Decode, DecodeAll, Encode};
 use futures::{channel::oneshot, StreamExt};
-use log::{debug, error, trace, warn};
+use log::{debug, error, trace};
 use prometheus_endpoint::{
 	register, Counter, Gauge, MetricSource, Opts, PrometheusError, Registry, SourcedGauge, U64,
 };
@@ -87,6 +87,24 @@ const MAX_KNOWN_BLOCKS: usize = 1024; // ~32kb per peer + LruHashSet overhead
 
 /// Maximum allowed size for a block announce.
 const MAX_BLOCK_ANNOUNCE_SIZE: u64 = 1024 * 1024;
+
+/// Generate the block announces protocol name from the genesis hash and fork id.
+pub fn block_announces_protocol_name<Hash: AsRef<[u8]>>(
+	genesis_hash: Hash,
+	fork_id: Option<&str>,
+) -> String {
+	let genesis_hash = genesis_hash.as_ref();
+	if let Some(fork_id) = fork_id {
+		format!("/{}/{}/block-announces/1", array_bytes::bytes2hex("", genesis_hash), fork_id)
+	} else {
+		format!("/{}/block-announces/1", array_bytes::bytes2hex("", genesis_hash))
+	}
+}
+
+/// Generate the legacy block announces protocol name from chain specific protocol identifier.
+pub fn block_announces_legacy_protocol_name(protocol_id: &ProtocolId) -> String {
+	format!("/{}/block-announces/1", protocol_id.as_ref())
+}
 
 mod rep {
 	use sc_network::ReputationChange as Rep;
@@ -233,6 +251,10 @@ pub struct SyncingEngine<B: BlockT, Client> {
 
 	/// Number of inbound peers accepted so far.
 	num_in_peers: usize,
+
+	/// Dynamic updatable no-slot peer set (see [`SyncingService::set_no_slot_peers`]).
+	/// Treated identically to `default_peers_set_no_slot_peers` for inbound slot accounting.
+	dynamic_no_slot_peers: HashSet<PeerId>,
 
 	/// Async processor of block announce validations.
 	block_announce_validator: BlockAnnounceValidatorStream<B>,
@@ -389,6 +411,7 @@ where
 				default_peers_set_num_light,
 				num_in_peers: 0usize,
 				max_in_peers,
+				dynamic_no_slot_peers: HashSet::new(),
 				event_streams: Vec::new(),
 				notification_service,
 				tick_timeout,
@@ -579,7 +602,7 @@ where
 	fn process_strategy_actions(&mut self) -> Result<(), ClientError> {
 		for action in self.strategy.actions(&self.network_service)? {
 			match action {
-				SyncingAction::StartRequest { peer_id, key, request, remove_obsolete } => {
+				SyncingAction::StartRequest { peer_id, key, request } => {
 					if !self.peers.contains_key(&peer_id) {
 						trace!(
 							target: LOG_TARGET,
@@ -588,21 +611,6 @@ where
 						);
 						debug_assert!(false);
 						continue;
-					}
-					if remove_obsolete {
-						if self.pending_responses.remove(peer_id, key) {
-							warn!(
-								target: LOG_TARGET,
-								"Processed `SyncingAction::StartRequest` to {peer_id} with \
-								strategy key {key:?}. Stale response removed!",
-							)
-						} else {
-							trace!(
-								target: LOG_TARGET,
-								"Processed `SyncingAction::StartRequest` to {peer_id} with \
-								strategy key {key:?}.",
-							)
-						}
 					}
 
 					self.pending_responses.insert(peer_id, key, request);
@@ -651,6 +659,28 @@ where
 		Ok(())
 	}
 
+	/// Reconcile per-peer slot tracking against `new_dynamic_no_slot`. See
+	/// [`apply_no_slot_set_inner`] for details.
+	fn apply_no_slot_set(&mut self, new_dynamic_no_slot: HashSet<PeerId>) {
+		let connected_peers = &self.peers;
+		apply_no_slot_set_inner(
+			|peer_id| {
+				connected_peers
+					.get(peer_id)
+					.map(|peer| peer.inbound && peer.info.roles.is_full())
+			},
+			&self.default_peers_set_no_slot_peers,
+			&self.dynamic_no_slot_peers,
+			&new_dynamic_no_slot,
+			&mut self.default_peers_set_no_slot_connected_peers,
+			&mut self.num_in_peers,
+			self.max_in_peers,
+			&self.network_service,
+			&self.block_announce_protocol_name,
+		);
+		self.dynamic_no_slot_peers = new_dynamic_no_slot;
+	}
+
 	fn process_service_command(&mut self, command: ToServiceCommand<B>) {
 		match command {
 			ToServiceCommand::SetSyncForkRequest(peers, hash, number) => {
@@ -658,8 +688,11 @@ where
 			},
 			ToServiceCommand::EventStream(tx) => {
 				// Let a new subscriber know about already connected peers.
-				for peer_id in self.peers.keys() {
-					let _ = tx.unbounded_send(SyncEvent::PeerConnected(*peer_id));
+				for (peer_id, peer) in self.peers.iter() {
+					let _ = tx.unbounded_send(SyncEvent::PeerConnected {
+						peer_id: *peer_id,
+						roles: peer.info.roles,
+					});
 				}
 				self.event_streams.push(tx);
 			},
@@ -736,6 +769,7 @@ where
 					self.peers.iter().map(|(peer_id, peer)| (*peer_id, peer.info)).collect();
 				let _ = tx.send(peers_info);
 			},
+			ToServiceCommand::SetNoSlotPeers(peers) => self.apply_no_slot_set(peers),
 			ToServiceCommand::OnBlockFinalized(hash, header) => {
 				self.strategy.on_block_finalized(&hash, *header.number())
 			},
@@ -797,6 +831,11 @@ where
 				self.push_block_announce_validation(peer, announce);
 			},
 		}
+	}
+
+	fn is_no_slot_peer(&self, peer_id: &PeerId) -> bool {
+		self.default_peers_set_no_slot_peers.contains(peer_id) ||
+			self.dynamic_no_slot_peers.contains(peer_id)
 	}
 
 	/// Called by peer when it is disconnecting.
@@ -918,7 +957,7 @@ where
 			return Err(false);
 		}
 
-		let no_slot_peer = self.default_peers_set_no_slot_peers.contains(&peer_id);
+		let no_slot_peer = self.is_no_slot_peer(&peer_id);
 		let this_peer_reserved_slot: usize = if no_slot_peer { 1 } else { 0 };
 
 		if handshake.roles.is_full() &&
@@ -927,7 +966,14 @@ where
 					self.default_peers_set_no_slot_connected_peers.len() +
 					this_peer_reserved_slot
 		{
-			log::debug!(target: LOG_TARGET, "Too many full nodes, rejecting {peer_id}");
+			log::debug!(
+				target: LOG_TARGET,
+				"Too many full nodes, rejecting {peer_id} (no_slot_peer={no_slot_peer}, num_peers={}, full_cap={}, no_slot_connected={}, this_reserved={})",
+				self.strategy.num_peers(),
+				self.default_peers_set_num_full,
+				self.default_peers_set_no_slot_connected_peers.len(),
+				this_peer_reserved_slot,
+			);
 			return Err(false);
 		}
 
@@ -935,9 +981,23 @@ where
 		if !no_slot_peer &&
 			handshake.roles.is_full() &&
 			direction.is_inbound() &&
-			self.num_in_peers == self.max_in_peers
+			self.num_in_peers >= self.max_in_peers
 		{
-			log::debug!(target: LOG_TARGET, "All inbound slots have been consumed, rejecting {peer_id}");
+			if self.num_in_peers > self.max_in_peers {
+				log::warn!(
+					target: LOG_TARGET,
+					"num_in_peers ({}) exceeds max_in_peers ({}), this is a slot accounting bug ",
+					self.num_in_peers,
+					self.max_in_peers,
+				);
+				debug_assert!(false);
+			}
+			log::debug!(
+				target: LOG_TARGET,
+				"All inbound slots have been consumed, rejecting {peer_id} (no_slot_peer={no_slot_peer}, num_in_peers={}, max_in_peers={})",
+				self.num_in_peers,
+				self.max_in_peers,
+			);
 			return Err(false);
 		}
 
@@ -995,14 +1055,17 @@ where
 		}
 		self.peer_store_handle.set_peer_role(&peer_id, status.roles.into());
 
-		if self.default_peers_set_no_slot_peers.contains(&peer_id) {
+		if self.is_no_slot_peer(&peer_id) {
 			self.default_peers_set_no_slot_connected_peers.insert(peer_id);
 		} else if direction.is_inbound() && status.roles.is_full() {
 			self.num_in_peers += 1;
 		}
 
-		self.event_streams
-			.retain(|stream| stream.unbounded_send(SyncEvent::PeerConnected(peer_id)).is_ok());
+		self.event_streams.retain(|stream| {
+			stream
+				.unbounded_send(SyncEvent::PeerConnected { peer_id, roles: status.roles })
+				.is_ok()
+		});
 
 		Ok(())
 	}
@@ -1090,22 +1153,11 @@ where
 		metrics: NotificationMetrics,
 		peer_store_handle: Arc<dyn PeerStoreProvider>,
 	) -> (N::NotificationProtocolConfig, Box<dyn NotificationService>) {
-		let block_announces_protocol = {
-			let genesis_hash = genesis_hash.as_ref();
-			if let Some(fork_id) = fork_id {
-				format!(
-					"/{}/{}/block-announces/1",
-					array_bytes::bytes2hex("", genesis_hash),
-					fork_id
-				)
-			} else {
-				format!("/{}/block-announces/1", array_bytes::bytes2hex("", genesis_hash))
-			}
-		};
+		let block_announces_protocol = block_announces_protocol_name(genesis_hash, fork_id);
 
 		N::notification_config(
 			block_announces_protocol.into(),
-			iter::once(format!("/{}/block-announces/1", protocol_id.as_ref()).into()).collect(),
+			iter::once(block_announces_legacy_protocol_name(&protocol_id).into()).collect(),
 			MAX_BLOCK_ANNOUNCE_SIZE,
 			Some(NotificationHandshake::new(BlockAnnouncesHandshake::<B>::build(
 				roles,
@@ -1142,4 +1194,97 @@ where
 
 		self.import_queue.import_justifications(peer_id, hash, number, justifications);
 	}
+}
+
+/// Update per-peer slot tracking for changes in the dynamic no-slot set.
+/// Promotes newly added peers, demotes removed ones, ignoring static no-slot peers.
+///
+/// `peer_inbound_full(peer_id)` returns `true` if `peer_id` is inbound and full.
+///  Returns `None` if the peer is not connected.
+///
+/// If removing a peer from no-slot would make `num_in_peers` exceed `max_in_peers`,
+/// disconnect the peer instead and keep it in `connected_no_slot` until the async disconnect
+/// handler will update `num_in_peers`..
+/// Caller needs to update `dynamic_no_slot_peers` after calling this function.
+fn apply_no_slot_set_inner(
+	peer_inbound_full: impl Fn(&PeerId) -> Option<bool>,
+	static_no_slot: &HashSet<PeerId>,
+	old_dynamic_no_slot: &HashSet<PeerId>,
+	new_dynamic_no_slot: &HashSet<PeerId>,
+	connected_no_slot: &mut HashSet<PeerId>,
+	num_in_peers: &mut usize,
+	max_in_peers: usize,
+	network_service: &service::network::NetworkServiceHandle,
+	protocol: &ProtocolName,
+) {
+	// Skip static-set and disconnected peers and return the slot-affecting flag for the rest.
+	let slot_impact = |peer_id: &PeerId| -> Option<bool> {
+		if static_no_slot.contains(peer_id) {
+			return None;
+		}
+		peer_inbound_full(peer_id)
+	};
+
+	let mut promoted = 0;
+	let mut demoted = 0;
+	let mut disconnected = 0;
+
+	for peer_id in new_dynamic_no_slot.difference(old_dynamic_no_slot) {
+		let Some(affects_slots) = slot_impact(peer_id) else { continue };
+		// Defensive check, should never happen as we filter above.
+		if !connected_no_slot.insert(*peer_id) {
+			log::error!(
+				target: LOG_TARGET,
+				"{peer_id} promoted to no-slot but was already in connected_no_slot",
+			);
+			debug_assert!(false);
+			continue;
+		}
+		if affects_slots {
+			if let Some(n) = num_in_peers.checked_sub(1) {
+				*num_in_peers = n;
+			} else {
+				log::error!(
+					target: LOG_TARGET,
+					"num_in_peers underflow promoting {peer_id} to no-slot",
+				);
+				debug_assert!(false);
+			}
+			promoted += 1;
+		}
+	}
+
+	for peer_id in old_dynamic_no_slot.difference(new_dynamic_no_slot) {
+		let Some(affects_slots) = slot_impact(peer_id) else { continue };
+		if !connected_no_slot.contains(peer_id) {
+			continue;
+		}
+		if affects_slots && *num_in_peers >= max_in_peers {
+			log::debug!(
+				target: LOG_TARGET,
+				"Demoting {peer_id} would exceed max_in_peers ({max_in_peers}); disconnecting",
+			);
+			network_service.disconnect_peer(*peer_id, protocol.clone());
+			disconnected += 1;
+			continue;
+		}
+		connected_no_slot.remove(peer_id);
+		if affects_slots {
+			*num_in_peers += 1;
+			demoted += 1;
+		}
+	}
+
+	log::debug!(
+		target: LOG_TARGET,
+		"Dynamic no-slot peer set updated: {} peers: +{} in, -{} out, {} disconnected",
+		new_dynamic_no_slot.len(),
+		promoted,
+		demoted,
+		disconnected,
+	);
+}
+
+#[cfg(test)]
+mod tests {
 }

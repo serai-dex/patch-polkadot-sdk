@@ -1,6 +1,6 @@
 [package]
 name = "frame-support-procedural"
-version = "40.0.0"
+version = "41.0.1"
 license = "Apache-2.0"
 description = "Proc macro of Support code for the runtime."
 

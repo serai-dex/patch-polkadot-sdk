@@ -1,0 +1,105 @@
+diff --git a/substrate/client/network/src/litep2p/mod.rs b/substrate/client/network/src/litep2p/mod.rs
+index de4ac0215094..762d2502cb3a 100644
+--- a/substrate/client/network/src/litep2p/mod.rs
++++ b/substrate/client/network/src/litep2p/mod.rs
+@@ -45,7 +45,7 @@ use crate::{
+ 		out_events,
+ 		traits::{BandwidthSink, NetworkBackend, NetworkService},
+ 	},
+-	webrtc, NetworkStatus, NotificationService, ProtocolName,
++	NetworkStatus, NotificationService, ProtocolName,
+ };
+ 
+ use codec::Encode;
+@@ -60,7 +60,7 @@ use litep2p::{
+ 		request_response::ConfigBuilder as RequestResponseConfigBuilder,
+ 	},
+ 	transport::{
+-		tcp::config::Config as TcpTransportConfig, webrtc::config::Config as WebRtcTransportConfig,
++		tcp::config::Config as TcpTransportConfig,
+ 		websocket::config::Config as WebSocketTransportConfig, ConnectionLimitsConfig, Endpoint,
+ 	},
+ 	types::{
+@@ -283,7 +283,7 @@ impl Litep2pNetworkBackend {
+ 		let listen_addr_len = config.network_config.listen_addresses.len();
+ 		let mut tcp_addresses = Vec::with_capacity(listen_addr_len);
+ 		let mut websocket_addresses = Vec::with_capacity(listen_addr_len);
+-		let mut webrtc_addresses = Vec::with_capacity(listen_addr_len);
++		// let mut webrtc_addresses = Vec::with_capacity(listen_addr_len);
+ 
+ 		for addr in &config.network_config.listen_addresses {
+ 			let mut iter = addr.iter();
+@@ -312,12 +312,12 @@ impl Litep2pNetworkBackend {
+ 				) => {
+ 					websocket_addresses.push(addr.clone());
+ 				},
+-				// WebRTC-Direct address.
++				/* // WebRTC-Direct address.
+ 				(Some(NetworkProtocol::Udp(_)), Some(NetworkProtocol::WebRTCDirect)) => {
+ 					// An address carrying anything past `webrtc-direct` is rejected.
+ 					webrtc::validate_listen_address(addr)?;
+ 					webrtc_addresses.push(addr.clone());
+-				},
++				}, */
+ 				_ => {
+ 					log::error!(
+ 						target: LOG_TARGET,
+@@ -341,7 +341,7 @@ impl Litep2pNetworkBackend {
+ 				..Default::default()
+ 			});
+ 
+-		if !webrtc_addresses.is_empty() {
++		/* if !webrtc_addresses.is_empty() {
+ 			let certificate =
+ 				webrtc::derive_certificate(keypair.secret()).map_err(Error::Litep2p)?;
+ 			log::info!(target: LOG_TARGET, "WebRTC certhash: {}", certificate.certhash_b64());
+@@ -350,7 +350,7 @@ impl Litep2pNetworkBackend {
+ 				certificate: Some(certificate),
+ 				..Default::default()
+ 			});
+-		}
++		} */
+ 
+ 		Ok(config_builder.with_keypair(keypair))
+ 	}
+@@ -503,9 +503,9 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
+ 					Some(
+ 						NetworkProtocol::Ws(_) | NetworkProtocol::Wss(_) | NetworkProtocol::Tcp(_),
+ 					) => address.with(NetworkProtocol::P2p(peer.into())),
+-					Some(NetworkProtocol::WebRTCDirect | NetworkProtocol::Certhash(_)) => {
++					/* Some(NetworkProtocol::WebRTCDirect | NetworkProtocol::Certhash(_)) => {
+ 						address.with(NetworkProtocol::P2p(peer.into()))
+-					},
++					}, */
+ 					Some(NetworkProtocol::P2p(_)) => address,
+ 					_ => return acc,
+ 				};
+diff --git a/substrate/client/network/src/config.rs b/substrate/client/network/src/config.rs
+index 88de23023a9f..6548a357251b 100644
+--- a/substrate/client/network/src/config.rs
++++ b/substrate/client/network/src/config.rs
+@@ -43,7 +43,7 @@ use sc_network_types::{
+ 
+ use crate::{
+ 	service::{ensure_addresses_consistent_with_transport, traits::NetworkBackend},
+-	webrtc,
++	// webrtc,
+ };
+ use codec::Encode;
+ use prometheus_endpoint::Registry;
+@@ -763,7 +763,7 @@ impl NetworkConfiguration {
+ 		config
+ 	}
+ 
+-	/// Validate this node's `webrtc-direct` addresses and append its WebRTC `/certhash` to the
++	/* /// Validate this node's `webrtc-direct` addresses and append its WebRTC `/certhash` to the
+ 	/// public ones.
+ 	///
+ 	/// Fails on a `webrtc-direct` address configured for the [`NetworkBackendType::Libp2p`]
+@@ -825,5 +825,5 @@ impl NetworkConfiguration {
+ 			}
+ 			keep
+ 		});
+-	}
++	} */
+ }

@@ -41,17 +41,21 @@ use sp_runtime::traits::Block as BlockT;
 use std::{
 	hash::{Hash, Hasher},
 	sync::Arc,
-	time::Duration,
+	time::{Duration, Instant},
 };
 
 const MAX_RESPONSE_BYTES: usize = 2 * 1024 * 1024; // Actual reponse may be bigger.
 const MAX_NUMBER_OF_SAME_REQUESTS_PER_PEER: usize = 2;
 
+/// Reset duplicate counts this long after the first fulfilled response, allowing legitimate
+/// retries.
+const SAME_REQUEST_WINDOW: Duration = Duration::from_secs(60);
+
 mod rep {
 	use sc_network::ReputationChange as Rep;
 
 	/// Reputation change when a peer sent us the same request multiple times.
-	pub const SAME_REQUEST: Rep = Rep::new(i32::MIN, "Same state request multiple times");
+	pub const SAME_REQUEST: Rep = Rep::new(-(1 << 12), "Same state request multiple times");
 }
 
 /// Generates a `RequestResponseProtocolConfig` for the state request protocol, refusing incoming
@@ -112,8 +116,8 @@ impl<B: BlockT> Hash for SeenRequestsKey<B> {
 enum SeenRequestsValue {
 	/// First time we have seen the request.
 	First,
-	/// We have fulfilled the request `n` times.
-	Fulfilled(usize),
+	/// Requests seen since the first fulfilled response.
+	Fulfilled { requests: usize, since: Instant },
 }
 
 /// Handler for incoming block requests from a remote peer.
@@ -190,12 +194,17 @@ where
 
 		match self.seen_requests.get(&key) {
 			Some(SeenRequestsValue::First) => {},
-			Some(SeenRequestsValue::Fulfilled(ref mut requests)) => {
+			Some(SeenRequestsValue::Fulfilled { requests, since })
+				if since.elapsed() <= SAME_REQUEST_WINDOW =>
+			{
 				*requests = requests.saturating_add(1);
 
 				if *requests > MAX_NUMBER_OF_SAME_REQUESTS_PER_PEER {
 					reputation_changes.push(rep::SAME_REQUEST);
 				}
+			},
+			Some(value @ SeenRequestsValue::Fulfilled { .. }) => {
+				*value = SeenRequestsValue::First;
 			},
 			None => {
 				self.seen_requests.insert(key.clone(), SeenRequestsValue::First);
@@ -256,10 +265,8 @@ where
 					.map(|e| sp_core::hexdisplay::HexDisplay::from(&e.key))),
 			);
 			if let Some(value) = self.seen_requests.get(&key) {
-				// If this is the first time we have processed this request, we need to change
-				// it to `Fulfilled`.
 				if let SeenRequestsValue::First = value {
-					*value = SeenRequestsValue::Fulfilled(1);
+					*value = SeenRequestsValue::Fulfilled { requests: 1, since: Instant::now() };
 				}
 			}
 
@@ -292,4 +299,8 @@ enum HandleRequestError {
 
 	#[error("Failed to send response.")]
 	SendResponse,
+}
+
+#[cfg(test)]
+mod tests {
 }

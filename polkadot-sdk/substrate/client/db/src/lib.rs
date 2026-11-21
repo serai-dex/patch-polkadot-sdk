@@ -562,6 +562,14 @@ impl<Block: BlockT> BlockchainDb<Block> {
 			}
 			meta.finalized_number = number;
 			meta.finalized_hash = hash;
+
+			// A finalized block is canonical and must be reflected by the best block.
+			// If the current best block is behind the newly finalized one, advance it
+			// to maintain the invariant `best_number >= finalized_number`.
+			if number > meta.best_number {
+				meta.best_number = number;
+				meta.best_hash = hash;
+			}
 		}
 	}
 

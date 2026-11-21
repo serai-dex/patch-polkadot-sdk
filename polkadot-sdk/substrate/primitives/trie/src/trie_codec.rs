@@ -53,12 +53,14 @@ impl<H, CodecError> From<Box<trie_db::TrieError<H, CodecError>>> for Error<H, Co
 /// Takes as input a destination `db` for decoded node and `encoded`
 /// an iterator of compact encoded nodes.
 ///
+/// The decoded root is always checked against `expected_root`.
+///
 /// Child trie are decoded in order of child trie root present
 /// in the top trie.
 pub fn decode_compact<'a, L, DB, I>(
 	db: &mut DB,
 	encoded: I,
-	expected_root: Option<&TrieHash<L>>,
+	expected_root: &TrieHash<L>,
 ) -> Result<TrieHash<L>, Error<TrieHash<L>, CError<L>>>
 where
 	L: TrieConfiguration,
@@ -68,8 +70,7 @@ where
 	let mut nodes_iter = encoded.into_iter();
 	let (top_root, _nb_used) = trie_db::decode_compact_from_iter::<L, _, _>(db, &mut nodes_iter)?;
 
-	// Only check root if expected root is passed as argument.
-	if let Some(expected_root) = expected_root.filter(|expected| *expected != &top_root) {
+	if &top_root != expected_root {
 		return Err(Error::RootMismatch(top_root, *expected_root));
 	}
 
@@ -155,6 +156,7 @@ where
 	L: TrieConfiguration,
 	DB: HashDBT<L::Hash, trie_db::DBValue> + hash_db::HashDBRef<L::Hash, trie_db::DBValue>,
 {
+	let mut seen = trie_db::SeenHashes::<L>::default();
 	let mut child_tries = Vec::new();
 	let mut compact_proof = {
 		let trie = crate::TrieDBBuilder::<L>::new(partial_db, root).build();
@@ -185,7 +187,7 @@ where
 			}
 		}
 
-		trie_db::encode_compact::<L>(&trie)?
+		trie_db::encode_compact_skip_duplicates::<L>(&trie, &mut seen)?
 	};
 
 	for child_root in child_tries {
@@ -196,7 +198,7 @@ where
 		}
 
 		let trie = crate::TrieDBBuilder::<L>::new(partial_db, &child_root).build();
-		let child_proof = trie_db::encode_compact::<L>(&trie)?;
+		let child_proof = trie_db::encode_compact_skip_duplicates::<L>(&trie, &mut seen)?;
 
 		compact_proof.extend(child_proof);
 	}

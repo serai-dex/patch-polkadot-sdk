@@ -54,7 +54,7 @@ use std::{
 	cmp::min,
 	hash::{Hash, Hasher},
 	sync::Arc,
-	time::Duration,
+	time::{Duration, Instant},
 };
 
 /// Maximum blocks per response.
@@ -62,11 +62,15 @@ pub(crate) const MAX_BLOCKS_IN_RESPONSE: usize = 128;
 
 const MAX_NUMBER_OF_SAME_REQUESTS_PER_PEER: usize = 2;
 
+/// Reset duplicate counts this long after the first fulfilled response, allowing legitimate
+/// retries.
+const SAME_REQUEST_WINDOW: Duration = Duration::from_secs(60);
+
 mod rep {
 	use sc_network::ReputationChange as Rep;
 
 	/// Reputation change when a peer sent us the same request multiple times.
-	pub const SAME_REQUEST: Rep = Rep::new_fatal("Same block request multiple times");
+	pub const SAME_REQUEST: Rep = Rep::new(-(1 << 12), "Same block request multiple times");
 
 	/// Reputation change when a peer sent us the same "small" request multiple times.
 	pub const SAME_SMALL_REQUEST: Rep =
@@ -140,8 +144,8 @@ impl<B: BlockT> Hash for SeenRequestsKey<B> {
 enum SeenRequestsValue {
 	/// First time we have seen the request.
 	First,
-	/// We have fulfilled the request `n` times.
-	Fulfilled(usize),
+	/// Requests seen since the first fulfilled response.
+	Fulfilled { requests: usize, since: Instant },
 }
 
 /// The full block server implementation of [`BlockServer`]. It handles
@@ -261,7 +265,9 @@ where
 
 		match self.seen_requests.get(&key) {
 			Some(SeenRequestsValue::First) => {},
-			Some(SeenRequestsValue::Fulfilled(ref mut requests)) => {
+			Some(SeenRequestsValue::Fulfilled { requests, since })
+				if since.elapsed() <= SAME_REQUEST_WINDOW =>
+			{
 				*requests = requests.saturating_add(1);
 
 				if *requests > MAX_NUMBER_OF_SAME_REQUESTS_PER_PEER {
@@ -271,6 +277,9 @@ where
 						rep::SAME_REQUEST
 					});
 				}
+			},
+			Some(value @ SeenRequestsValue::Fulfilled { .. }) => {
+				*value = SeenRequestsValue::First;
 			},
 			None => {
 				self.seen_requests.insert(key.clone(), SeenRequestsValue::First);
@@ -301,10 +310,9 @@ where
 				.any(|b| !b.header.is_empty() || !b.body.is_empty() || b.is_empty_justification)
 			{
 				if let Some(value) = self.seen_requests.get(&key) {
-					// If this is the first time we have processed this request, we need to change
-					// it to `Fulfilled`.
 					if let SeenRequestsValue::First = value {
-						*value = SeenRequestsValue::Fulfilled(1);
+						*value =
+							SeenRequestsValue::Fulfilled { requests: 1, since: Instant::now() };
 					}
 				}
 			}
@@ -630,4 +638,8 @@ impl<B: BlockT> BlockDownloader<B> for FullBlockDownloader {
 		self.blocks_from_schema::<B>(request, response_schema)
 			.map_err(|error| BlockResponseError::ExtractionFailed(error.to_string()))
 	}
+}
+
+#[cfg(test)]
+mod tests {
 }

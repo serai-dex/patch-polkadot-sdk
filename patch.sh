@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=dc34fa97a2fb21ebee90d43dae1b459a9a99f9ca # stable2606-5
+POLKADOT_SDK_COMMIT=9448fe4f252936d241b8d2663506813b884f94f3 # stable2609-2
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -59,6 +59,7 @@ for commit_to_revert in "$PIN_TO_OLD_TRACING_SUBSCRIBER"; do
   git show "$commit_to_revert" | git apply --reverse --reject --quiet
 done
 find . -type f -name "*.rej" -delete
+sed -i s/'tracing-subscriber = { version = "=0.3.19" }'/'tracing-subscriber = { version = "0.3.23" }'/ ./Cargo.toml
 
 # Remove the existing `.patched` marker
 silent_rm .patched
@@ -349,16 +350,12 @@ remove_crate_tree substrate/primitives/panic-handler
 # Remove `sp-offchain`, as offchain workers are unused by Serai
 remove_crate_tree substrate/primitives/offchain
 
-# Remove the unused "bitswap" protocol
+# Remove the "bitswap" protocol
 # https://github.com/libp2p/rust-libp2p/issues/2632
-silent_rm ./polkadot-sdk/substrate/client/network/build.rs
-silent_rm ./polkadot-sdk/substrate/client/network/src/schema/bitswap.v1.2.0.proto
-remove_module ./polkadot-sdk/substrate/client/network/src bitswap
+remove_crate_tree substrate/client/network/bitswap
+remove_crate_tree substrate/client/storage-chain-sync
 remove_module ./polkadot-sdk/substrate/client/network/src ipfs_block_provider
-remove_module ./polkadot-sdk/substrate/client/network/src/litep2p bitswap
-remove_module ./polkadot-sdk/substrate/client/network/src/litep2p bitswap_metrics
 remove_module ./polkadot-sdk/substrate/client/network/src/litep2p ipfs_dht
-remove_module ./polkadot-sdk/substrate/client/network/src/litep2p/shim bitswap
 remove_module ./polkadot-sdk/substrate/client/rpc-spec-v2/src bitswap
 
 # Remove `webrtc`
@@ -797,7 +794,6 @@ cargo_upgrade sha2 0.11.0
 cargo_upgrade sha3 0.12.0
 cargo_upgrade strum 0.28.0
 cargo_upgrade thiserror 2.0.0
-cargo_upgrade trie-db 0.32.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
 cargo_upgrade wasmtime 51.0.0

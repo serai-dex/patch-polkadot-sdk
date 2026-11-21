@@ -31,9 +31,6 @@
 - `metadata`: Removes `scale_info::TypeInfo` and metadata from `frame-support`
   and the rest of Substrate.
 
-- `NativeExecutor`: Removes `NativeExecutor`, `NativeElseWasmExecutor`,
-  which were deprecated and were supposed to be removed at the end of 2024.
-
 - `offchain_http`: Removes HTTP functionality from `sp-offchain`,
   `sc-offchain`, etc. This allows removing a variety of crates for HTTP from
   the tree.
