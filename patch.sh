@@ -7,7 +7,7 @@ function silent_rm {
 
 # Start by checking out the desired version of the polkadot-sdk
 
-POLKADOT_SDK_COMMIT=8ae9775dc43c0d8cdd0f6d87700596e14278b1e1 # stable2606-1
+POLKADOT_SDK_COMMIT=dc34fa97a2fb21ebee90d43dae1b459a9a99f9ca # stable2606-5
 
 if [ -f "./polkadot-sdk/.patched" ]; then
   if [ ! "$1" = "--from-scratch" ]; then
@@ -239,6 +239,9 @@ remove_matching_lines ./polkadot-sdk/substrate/primitives/wasm-interface/Cargo.t
 remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "anyhow"
 remove_matching_lines ./polkadot-sdk/substrate/client/executor/wasmtime/Cargo.toml "profiling"
 
+# Remove `webrtc` dependencies
+remove_matching_lines ./polkadot-sdk/substrate/client/network/Cargo.toml "sha2"
+
 # Now, set up the Rust binary and make all the invasive changes
 silent_rm ./target/release/serai-polkadot-sdk # Ensure we aren't using a cached binary
 cargo build --release &> /dev/null
@@ -357,6 +360,10 @@ remove_module ./polkadot-sdk/substrate/client/network/src/litep2p bitswap_metric
 remove_module ./polkadot-sdk/substrate/client/network/src/litep2p ipfs_dht
 remove_module ./polkadot-sdk/substrate/client/network/src/litep2p/shim bitswap
 remove_module ./polkadot-sdk/substrate/client/rpc-spec-v2/src bitswap
+
+# Remove `webrtc`
+remove_matching_lines ./polkadot-sdk/Cargo.toml "webrtc"
+remove_module ./polkadot-sdk/substrate/client/network/src webrtc
 
 # Remove the unused light-client networking protocol
 remove_crate_tree substrate/client/network/light
@@ -776,7 +783,6 @@ cargo_upgrade itertools 0.14.0
 cargo_upgrade libp2p 0.57.0
 cargo_upgrade libp2p-identity 0.3.0
 cargo_upgrade libp2p-kad 0.49.0
-cargo_upgrade litep2p 0.15.2
 cargo_upgrade macro_magic 0.6.0
 cargo_upgrade multiaddr 0.19.0
 cargo_upgrade parity-db 0.5.0
@@ -804,6 +810,7 @@ silent_rm .config
 silent_rm .forklift
 silent_rm .github
 silent_rm .gitlab
+silent_rm .markdownlintignore
 silent_rm docker
 silent_rm prdoc
 silent_rm scripts

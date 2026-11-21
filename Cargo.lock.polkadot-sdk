@@ -1661,7 +1661,7 @@ dependencies = [
 
 [[package]]
 name = "frame-support"
-version = "48.0.0"
+version = "48.1.1"
 dependencies = [
  "array-bytes",
  "derive-where",
@@ -3270,9 +3270,9 @@ checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
 name = "litep2p"
-version = "0.15.2"
+version = "0.15.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b43bcd3f698c589f30fb44db886f48c1b5d96c6a6f8ee5c41cdb21d24da2869"
+checksum = "75a2c94e6b822a70bf38263b39c26ce3bffbdd78795d7da8de134d1f0cb3f7ea"
 dependencies = [
  "async-trait",
  "bs58",
@@ -3935,7 +3935,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-session"
-version = "49.0.0"
+version = "49.0.1"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -4996,7 +4996,7 @@ dependencies = [
 
 [[package]]
 name = "sc-authority-discovery"
-version = "0.59.0"
+version = "0.62.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5025,7 +5025,7 @@ dependencies = [
 
 [[package]]
 name = "sc-basic-authorship"
-version = "0.56.0"
+version = "0.58.0"
 dependencies = [
  "futures",
  "log",
@@ -5059,7 +5059,7 @@ dependencies = [
 
 [[package]]
 name = "sc-chain-spec"
-version = "51.0.0"
+version = "54.0.0"
 dependencies = [
  "clap",
  "parity-scale-codec",
@@ -5079,7 +5079,7 @@ dependencies = [
 
 [[package]]
 name = "sc-client-api"
-version = "47.0.0"
+version = "49.0.0"
 dependencies = [
  "fnv",
  "futures",
@@ -5104,7 +5104,7 @@ dependencies = [
 
 [[package]]
 name = "sc-client-db"
-version = "0.54.1"
+version = "0.56.0"
 dependencies = [
  "hash-db",
  "kvdb",
@@ -5130,7 +5130,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus"
-version = "0.57.0"
+version = "0.60.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5151,7 +5151,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-babe"
-version = "0.58.0"
+version = "0.61.0"
 dependencies = [
  "async-trait",
  "fork-tree",
@@ -5187,7 +5187,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-epochs"
-version = "0.57.0"
+version = "0.60.0"
 dependencies = [
  "fork-tree",
  "parity-scale-codec",
@@ -5199,7 +5199,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-grandpa"
-version = "0.43.1"
+version = "0.46.0"
 dependencies = [
  "ahash",
  "array-bytes",
@@ -5242,7 +5242,7 @@ dependencies = [
 
 [[package]]
 name = "sc-consensus-slots"
-version = "0.57.0"
+version = "0.60.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5318,7 +5318,7 @@ dependencies = [
 
 [[package]]
 name = "sc-informant"
-version = "0.57.0"
+version = "0.60.0"
 dependencies = [
  "console",
  "futures",
@@ -5346,7 +5346,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network"
-version = "0.58.0"
+version = "0.61.0"
 dependencies = [
  "array-bytes",
  "async-channel",
@@ -5400,7 +5400,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-gossip"
-version = "0.58.0"
+version = "0.61.0"
 dependencies = [
  "ahash",
  "futures",
@@ -5418,7 +5418,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-sync"
-version = "0.57.0"
+version = "0.60.0"
 dependencies = [
  "array-bytes",
  "async-channel",
@@ -5450,7 +5450,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-transactions"
-version = "0.57.0"
+version = "0.60.0"
 dependencies = [
  "array-bytes",
  "futures",
@@ -5468,7 +5468,7 @@ dependencies = [
 
 [[package]]
 name = "sc-network-types"
-version = "0.22.0"
+version = "0.23.3"
 dependencies = [
  "bs58",
  "bytes",
@@ -5499,7 +5499,7 @@ dependencies = [
 
 [[package]]
 name = "sc-rpc"
-version = "54.0.0"
+version = "57.0.0"
 dependencies = [
  "futures",
  "jsonrpsee",
@@ -5517,7 +5517,7 @@ dependencies = [
 
 [[package]]
 name = "sc-rpc-api"
-version = "0.58.0"
+version = "0.61.0"
 dependencies = [
  "jsonrpsee",
  "parity-scale-codec",
@@ -5528,7 +5528,7 @@ dependencies = [
 
 [[package]]
 name = "sc-rpc-server"
-version = "31.0.0"
+version = "34.0.0"
 dependencies = [
  "dyn-clone",
  "forwarded-header-value",
@@ -5554,7 +5554,7 @@ dependencies = [
 
 [[package]]
 name = "sc-service"
-version = "0.60.0"
+version = "0.63.0"
 dependencies = [
  "async-trait",
  "directories",
@@ -5659,7 +5659,7 @@ dependencies = [
 
 [[package]]
 name = "sc-tracing"
-version = "47.0.0"
+version = "49.0.0"
 dependencies = [
  "console",
  "jiff",
@@ -5695,7 +5695,7 @@ dependencies = [
 
 [[package]]
 name = "sc-transaction-pool"
-version = "47.0.0"
+version = "49.0.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -5725,7 +5725,7 @@ dependencies = [
 
 [[package]]
 name = "sc-transaction-pool-api"
-version = "46.0.0"
+version = "48.0.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -6226,7 +6226,7 @@ dependencies = [
 
 [[package]]
 name = "sp-blockchain"
-version = "46.0.0"
+version = "46.0.1"
 dependencies = [
  "futures",
  "parity-scale-codec",
@@ -6470,7 +6470,7 @@ dependencies = [
 
 [[package]]
 name = "sp-runtime-interface-proc-macro"
-version = "17.0.0"
+version = "21.0.1"
 dependencies = [
  "Inflector",
  "proc-macro-crate",

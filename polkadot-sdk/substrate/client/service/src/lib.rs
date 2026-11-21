@@ -43,8 +43,8 @@ use jsonrpsee::RpcModule;
 use log::{debug, error, trace, warn};
 use sc_client_api::{blockchain::HeaderBackend, BlockBackend, BlockchainEvents, ProofProvider};
 use sc_network::{
-	config::MultiaddrWithPeerId, service::traits::NetworkService, NetworkBackend, NetworkBlock,
-	NetworkPeers, NetworkStateInfo,
+	config::MultiaddrWithPeerId, multiaddr::Protocol, service::traits::NetworkService,
+	NetworkBackend, NetworkBlock, NetworkPeers, NetworkStateInfo,
 };
 use sc_network_sync::SyncingService;
 use sc_network_types::PeerId;
@@ -286,12 +286,11 @@ pub async fn build_system_rpc_future<
 				let _ = sender.send(network_service.local_peer_id().to_base58());
 			},
 			sc_rpc::system::Request::LocalListenAddresses(sender) => {
-				let peer_id = (network_service.local_peer_id()).into();
-				let p2p_proto_suffix = sc_network::multiaddr::Protocol::P2p(peer_id);
+				let local_peer_id = network_service.local_peer_id();
 				let addresses = network_service
 					.listen_addresses()
 					.iter()
-					.map(|addr| addr.clone().with(p2p_proto_suffix.clone()).to_string())
+					.map(|address| with_local_peer_id(address.clone(), local_peer_id).to_string())
 					.collect();
 				let _ = sender.send(addresses);
 			},
@@ -376,6 +375,16 @@ pub async fn build_system_rpc_future<
 	}
 
 	debug!("`NetworkWorker` has terminated, shutting down the system RPC future.");
+}
+
+/// Appends `/p2p/<local peer id>` unless the address already carries one.
+fn with_local_peer_id(address: Multiaddr, local_peer_id: PeerId) -> Multiaddr {
+	// litep2p backend appends local peer id to every listen address it reports,
+	// the libp2p backend does not.
+	match address.iter().last() {
+		Some(Protocol::P2p(_)) => address,
+		_ => address.with(Protocol::P2p(local_peer_id.into())),
+	}
 }
 
 /// Starts RPC servers.

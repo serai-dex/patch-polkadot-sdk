@@ -18,7 +18,11 @@
 
 //! RPC middleware to collect prometheus metrics on RPC calls.
 
-use std::{sync::LazyLock, time::Instant};
+use std::{
+	collections::HashSet,
+	sync::{Arc, LazyLock},
+	time::Instant,
+};
 
 use jsonrpsee::{types::Request, MethodResponse};
 use prometheus::core::{GenericCounter, GenericGauge};
@@ -74,6 +78,9 @@ pub struct RpcMetrics {
 	ws_sessions_closed: Option<Counter<U64>>,
 	/// Histogram over RPC websocket sessions.
 	ws_sessions_time: HistogramVec,
+	/// Bounds the `method` label to keep series cardinality finite.
+	/// Empty = not configured: fall back to the raw name (old behaviour).
+	known_methods: Arc<HashSet<&'static str>>,
 }
 
 impl RpcMetrics {
@@ -163,9 +170,26 @@ impl RpcMetrics {
 					)?,
 					metrics_registry,
 				)?,
+				known_methods: Default::default(),
 			}))
 		} else {
 			Ok(None)
+		}
+	}
+
+	/// Set the registered methods so unknown names collapse to `"unknown"`.
+	pub fn with_known_methods(mut self, names: impl IntoIterator<Item = &'static str>) -> Self {
+		self.known_methods = Arc::new(names.into_iter().collect());
+		self
+	}
+
+	/// Registered name, else `"unknown"` (raw name if not configured).
+	fn method_label<'a>(&'a self, req: &'a Request) -> &'a str {
+		let name = req.method_name();
+		if self.known_methods.is_empty() || self.known_methods.contains(name) {
+			name
+		} else {
+			"unknown"
 		}
 	}
 
@@ -189,7 +213,7 @@ impl RpcMetrics {
 		);
 
 		self.calls_started
-			.with_label_values(&[transport_label, req.method_name()])
+			.with_label_values(&[transport_label, self.method_label(req)])
 			.inc();
 	}
 
@@ -200,7 +224,7 @@ impl RpcMetrics {
 			req.method_name(),
 		);
 		self.calls_rejected
-			.with_label_values(&[transport_label, req.method_name()])
+			.with_label_values(&[transport_label, self.method_label(req)])
 			.inc();
 	}
 
@@ -211,7 +235,7 @@ impl RpcMetrics {
 			req.method_name(),
 		);
 		self.calls_retried
-			.with_label_values(&[transport_label, req.method_name()])
+			.with_label_values(&[transport_label, self.method_label(req)])
 			.inc();
 	}
 
@@ -233,17 +257,18 @@ impl RpcMetrics {
 			req.method_name(),
 			micros,
 		);
+		let method = self.method_label(req);
 		self.calls_time
 			.with_label_values(&[
 				transport_label,
-				req.method_name(),
+				method,
 				if is_rate_limited { "true" } else { "false" },
 			])
 			.observe(micros as _);
 		self.calls_finished
 			.with_label_values(&[
 				transport_label,
-				req.method_name(),
+				method,
 				// the label "is_error", so `success` should be regarded as false
 				// and vice-versa to be registered correctly.
 				if rp.is_success() { "false" } else { "true" },
@@ -295,4 +320,8 @@ impl Metrics {
 	) {
 		self.inner.on_response(req, rp, is_rate_limited, self.transport_label, now)
 	}
+}
+
+#[cfg(test)]
+mod tests {
 }

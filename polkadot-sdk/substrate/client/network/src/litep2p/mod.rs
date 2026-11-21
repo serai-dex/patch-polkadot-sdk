@@ -70,10 +70,13 @@ use litep2p::{
 	Litep2p, Litep2pEvent, ProtocolName as Litep2pProtocolName,
 };
 use prometheus_endpoint::Registry;
-use sc_network_types::kad::{Key as RecordKey, PeerRecord, Record as P2PRecord};
 
 use sc_network_common::{role::Roles, ExHashT};
-use sc_network_types::PeerId;
+use sc_network_types::{
+	kad::{Key as RecordKey, PeerRecord, Record as P2PRecord},
+	multiaddr::Protocol as NetworkProtocol,
+	PeerId,
+};
 use sc_utils::mpsc::{tracing_unbounded, TracingUnboundedReceiver};
 use sp_runtime::traits::Block as BlockT;
 
@@ -265,72 +268,87 @@ impl Litep2pNetworkBackend {
 	/// Configure transport protocols for `Litep2pNetworkBackend`.
 	fn configure_transport<B: BlockT + 'static, H: ExHashT>(
 		config: &FullNetworkConfiguration<B, H, Self>,
-	) -> ConfigBuilder {
+		keypair: Keypair,
+	) -> Result<ConfigBuilder, Error> {
 		let _ = match config.network_config.transport {
 			TransportConfig::MemoryOnly => panic!("memory transport not supported"),
 			TransportConfig::Normal { .. } => false,
 		};
 		let config_builder = ConfigBuilder::new();
 
-		let (tcp, websocket): (Vec<Option<_>>, Vec<Option<_>>) = config
-			.network_config
-			.listen_addresses
-			.iter()
-			.filter_map(|address| {
-				use sc_network_types::multiaddr::Protocol;
+		let listen_addr_len = config.network_config.listen_addresses.len();
+		let mut tcp_addresses = Vec::with_capacity(listen_addr_len);
+		let mut websocket_addresses = Vec::with_capacity(listen_addr_len);
+		// let mut webrtc_addresses = Vec::with_capacity(listen_addr_len);
 
-				let mut iter = address.iter();
+		for addr in &config.network_config.listen_addresses {
+			let mut iter = addr.iter();
 
-				match iter.next() {
-					Some(Protocol::Ip4(_) | Protocol::Ip6(_)) => {},
-					protocol => {
-						log::error!(
-							target: LOG_TARGET,
-							"unknown protocol {protocol:?}, ignoring {address:?}",
-						);
+			let ip_version = iter.next();
+			let Some(NetworkProtocol::Ip4(_) | NetworkProtocol::Ip6(_)) = ip_version else {
+				log::error!(
+					target: LOG_TARGET,
+					"unknown protocol {ip_version:?}, ignoring {addr:?}",
+				);
+				continue;
+			};
 
-						return None;
-					},
-				}
+			let transport_layer = iter.next();
+			let protocol_type = iter.next();
 
-				match iter.next() {
-					Some(Protocol::Tcp(_)) => match iter.next() {
-						Some(Protocol::Ws(_) | Protocol::Wss(_)) => {
-							Some((None, Some(address.clone())))
-						},
-						Some(Protocol::P2p(_)) | None => Some((Some(address.clone()), None)),
-						protocol => {
-							log::error!(
-								target: LOG_TARGET,
-								"unknown protocol {protocol:?}, ignoring {address:?}",
-							);
-							None
-						},
-					},
-					protocol => {
-						log::error!(
-							target: LOG_TARGET,
-							"unknown protocol {protocol:?}, ignoring {address:?}",
-						);
-						None
-					},
-				}
-			})
-			.unzip();
+			match (&transport_layer, &protocol_type) {
+				// Plain TCP address.
+				(Some(NetworkProtocol::Tcp(_)), Some(NetworkProtocol::P2p(_)) | None) => {
+					tcp_addresses.push(addr.clone());
+				},
+				// Websocket address.
+				(
+					Some(NetworkProtocol::Tcp(_)),
+					Some(NetworkProtocol::Ws(_) | NetworkProtocol::Wss(_)),
+				) => {
+					websocket_addresses.push(addr.clone());
+				},
+				/* // WebRTC-Direct address.
+				(Some(NetworkProtocol::Udp(_)), Some(NetworkProtocol::WebRTCDirect)) => {
+					// An address carrying anything past `webrtc-direct` is rejected.
+					webrtc::validate_listen_address(addr)?;
+					webrtc_addresses.push(addr.clone());
+				}, */
+				_ => {
+					log::error!(
+						target: LOG_TARGET,
+						"unknown transport layer {transport_layer:?} and protocol type {protocol_type:?}, ignoring {addr:?}",
+					);
+				},
+			};
+		}
 
-		config_builder
+		let config_builder = config_builder
 			.with_websocket(WebSocketTransportConfig {
-				listen_addresses: websocket.into_iter().flatten().map(Into::into).collect(),
+				listen_addresses: websocket_addresses.into_iter().map(Into::into).collect(),
 				yamux_config: litep2p::yamux::Config::default(),
 				nodelay: true,
 				..Default::default()
 			})
 			.with_tcp(TcpTransportConfig {
-				listen_addresses: tcp.into_iter().flatten().map(Into::into).collect(),
+				listen_addresses: tcp_addresses.into_iter().map(Into::into).collect(),
 				yamux_config: litep2p::yamux::Config::default(),
 				nodelay: true,
 				..Default::default()
-			})
+			});
+
+		/* if !webrtc_addresses.is_empty() {
+			let certificate =
+				webrtc::derive_certificate(keypair.secret()).map_err(Error::Litep2p)?;
+			log::info!(target: LOG_TARGET, "WebRTC certhash: {}", certificate.certhash_b64());
+			config_builder = config_builder.with_webrtc(WebRtcTransportConfig {
+				listen_addresses: webrtc_addresses.into_iter().map(Into::into).collect(),
+				certificate: Some(certificate),
+				..Default::default()
+			});
+		} */
+
+		Ok(config_builder.with_keypair(keypair))
 	}
 }
 
@@ -387,7 +405,7 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 		params.network_config.sanity_check_bootnodes()?;
 
 		let mut config_builder =
-			Self::configure_transport(&params.network_config).with_keypair(keypair.clone());
+			Self::configure_transport(&params.network_config, keypair.clone())?;
 		let known_addresses = params.network_config.known_addresses();
 		let peer_store_handle = params.network_config.peer_store_handle();
 		let executor = Arc::new(Litep2pExecutor { executor: params.executor });
@@ -477,13 +495,14 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 		// collect known addresses
 		let known_addresses: HashMap<litep2p::PeerId, Vec<Multiaddr>> =
 			known_addresses.into_iter().fold(HashMap::new(), |mut acc, (peer, address)| {
-				use sc_network_types::multiaddr::Protocol;
-
 				let address = match address.iter().last() {
-					Some(Protocol::Ws(_) | Protocol::Wss(_) | Protocol::Tcp(_)) => {
-						address.with(Protocol::P2p(peer.into()))
-					},
-					Some(Protocol::P2p(_)) => address,
+					Some(
+						NetworkProtocol::Ws(_) | NetworkProtocol::Wss(_) | NetworkProtocol::Tcp(_),
+					) => address.with(NetworkProtocol::P2p(peer.into())),
+					/* Some(NetworkProtocol::WebRTCDirect | NetworkProtocol::Certhash(_)) => {
+						address.with(NetworkProtocol::P2p(peer.into()))
+					}, */
+					Some(NetworkProtocol::P2p(_)) => address,
 					_ => return acc,
 				};
 
@@ -1290,4 +1309,8 @@ impl<B: BlockT + 'static, H: ExHashT> NetworkBackend<B, H> for Litep2pNetworkBac
 			}
 		}
 	}
+}
+
+#[cfg(test)]
+mod tests {
 }

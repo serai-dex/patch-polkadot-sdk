@@ -190,12 +190,11 @@ diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Carg
 index 1f40ea9..1cd5381 100644
 --- a/substrate/client/network/Cargo.toml
 +++ b/substrate/client/network/Cargo.toml
-@@ -42,4 +42,4 @@ linked_hash_set = { workspace = true }
+@@ -43,3 +43,3 @@ linked_hash_set = { workspace = true }
 -litep2p = { workspace = true }
 +litep2p = { workspace = true, optional = true }
  log = { workspace = true, default-features = true }
  mockall = { workspace = true }
- parking_lot = { workspace = true, default-features = true }
 @@ -99,3 +99,4 @@ prost-build = { workspace = true }
 
  [features]
@@ -246,9 +245,10 @@ index f19c4dd..6ab19fd 100644
 -mod litep2p;
  mod protocol;
 
-@@ -265,5 +265,5 @@ pub mod transport;
+@@ -265,6 +265,6 @@ pub mod transport;
  pub mod types;
  pub mod utils;
+ mod webrtc;
 
 +#[cfg(feature = "litep2p")] pub use crate::litep2p::Litep2pNetworkBackend;
 -pub use crate::litep2p::Litep2pNetworkBackend;

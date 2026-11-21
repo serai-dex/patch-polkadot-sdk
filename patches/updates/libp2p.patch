@@ -157,9 +157,10 @@ diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Carg
 index 1f40ea9..5087611 100644
 --- a/substrate/client/network/Cargo.toml
 +++ b/substrate/client/network/Cargo.toml
-@@ -32,5 +32,6 @@ fnv = { workspace = true }
+@@ -32,6 +32,7 @@ fnv = { workspace = true }
  futures = { workspace = true }
  futures-timer = { workspace = true }
+ hmac = { workspace = true }
  ip_network = { workspace = true }
 -libp2p = { features = ["identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "yamux"], workspace = true }
 +libp2p = { features = ["identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "yamux", "metrics"], workspace = true }
@@ -239,7 +240,7 @@ index 21bc83b..7794a7d 100644
 +			Protocol::P2pWebRtcStar => LiteP2pProtocol::P2pWebRtcStar,
 +			// Protocol #280 is called `WebRTC` in multiaddr-17.0 and `WebRTCDirect` in
 +			// multiaddr-18.1.
-+			Protocol::WebRTC => LiteP2pProtocol::WebRTCDirect,
++			Protocol::WebRTCDirect => LiteP2pProtocol::WebRTCDirect,
 +			Protocol::Certhash(multihash) => LiteP2pProtocol::Certhash(multihash.into()),
 +			Protocol::P2pWebSocketStar => LiteP2pProtocol::P2pWebSocketStar,
 +			Protocol::Memory(port) => LiteP2pProtocol::Memory(port),

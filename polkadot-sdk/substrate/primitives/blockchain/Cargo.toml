@@ -1,6 +1,6 @@
 [package]
 name = "sp-blockchain"
-version = "46.0.0"
+version = "46.0.1"
 license = "Apache-2.0"
 description = "Substrate blockchain traits and primitives."
 documentation = "https://docs.rs/sp-blockchain"

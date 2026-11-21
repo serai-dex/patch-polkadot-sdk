@@ -2,9 +2,10 @@ diff --git a/substrate/client/network/Cargo.toml b/substrate/client/network/Carg
 index 2af5336a3e8..73e9a0c47c2 100644
 --- a/substrate/client/network/Cargo.toml
 +++ b/substrate/client/network/Cargo.toml
-@@ -37,5 +37,5 @@ fnv = { workspace = true }
+@@ -37,6 +37,6 @@ fnv = { workspace = true }
  futures = { workspace = true }
  futures-timer = { workspace = true }
+ hmac = { workspace = true }
  ip_network = { workspace = true }
 -libp2p = { features = ["dns", "identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "websocket", "yamux"], workspace = true }
 +libp2p = { features = ["identify", "kad", "macros", "mdns", "noise", "ping", "request-response", "tcp", "tokio", "yamux"], workspace = true }

@@ -101,3 +101,5 @@
   to Serai having a single runtime (its own) and not needing filesystem-level
   caching, solely in-memory caching of the most recent version (or one other
   version, if an upgrade is approximate).
+
+- `webrtc`: Removes the `webrtc`-based transport option.
