@@ -51,7 +51,7 @@ jobs:
           persist-credentials: false
 
       - name: Install cargo deny
-        run: cargo +1.100 install --locked cargo-deny --version =0.22.0
+        run: cargo +1.100 install --locked cargo-deny --version =0.22.1
 
       - name: Run cargo deny
         run: |

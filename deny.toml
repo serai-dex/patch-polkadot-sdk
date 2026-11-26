@@ -6,10 +6,7 @@ db-urls = ["https://github.com/rustsec/advisory-db"]
 
 yanked = "deny"
 
-ignore = [
-  "RUSTSEC-2026-0118",
-  "RUSTSEC-2026-0119",
-]
+ignore = []
 
 [licenses]
 version = 2
@@ -39,7 +36,6 @@ allow = [
 ]
 
 exceptions = [
-  { allow = ["AGPL-3.0-only"], name = "pallet-session" },
   { allow = ["AGPL-3.0-only"], name = "serai-polkadot-sdk" },
 ]
 
@@ -56,4 +52,4 @@ deny = [
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-allow-git = ["https://github.com/serai-dex/serai"]
+allow-git = []

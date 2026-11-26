@@ -1597,9 +1597,9 @@ dependencies = [
 
 [[package]]
 name = "form_urlencoded"
-version = "1.2.2"
+version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb4cb245038516f5f85277875cdaa4f7d2c9a0fa0468de06ed190163b1581fcf"
+checksum = "afa489199eaffb1211795df1c6236ce1ad0d41a6fa45250add73e3b02420f06e"
 dependencies = [
  "percent-encoding",
 ]
@@ -2046,9 +2046,9 @@ dependencies = [
 
 [[package]]
 name = "hash-db"
-version = "0.16.0"
+version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e7d7786361d7425ae2fe4f9e407eb0efaa0840f5212d109cc018c40c35c6ab4"
+checksum = "b8f310bc3dffea73a56cd6d9e0cf9dab130e6f117d47903f382b962eb96886da"
 
 [[package]]
 name = "hashbrown"
@@ -3460,11 +3460,11 @@ dependencies = [
 
 [[package]]
 name = "memory-db"
-version = "0.34.0"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e300c54e3239a86f9c61cc63ab0f03862eb40b1c6e065dc6fd6ceaeff6da93d"
+checksum = "69736002c0e8dab5d44bcdc06144ebc0160ac56316eb6546670de562d4e02b93"
 dependencies = [
- "foldhash 0.1.5",
+ "foldhash 0.2.0",
  "hash-db",
  "hashbrown 0.15.5",
 ]
@@ -6563,7 +6563,7 @@ name = "sp-trie"
 version = "47.0.0"
 dependencies = [
  "ahash",
- "foldhash 0.1.5",
+ "foldhash 0.2.0",
  "hash-db",
  "memory-db",
  "nohash-hasher",
@@ -7158,9 +7158,9 @@ dependencies = [
 
 [[package]]
 name = "trie-db"
-version = "0.32.0"
+version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "559b3902fbd74c14b64ea1690792be25bd5ccd3820f8b6b6228754e00fe3c1d6"
+checksum = "fd8a7e7b10f4ca7f5659757b16f11c91df7c12a007907d7407e387e66dbd7d9a"
 dependencies = [
  "hash-db",
  "log",
@@ -7170,9 +7170,9 @@ dependencies = [
 
 [[package]]
 name = "trie-root"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4ed310ef5ab98f5fa467900ed906cb9232dd5376597e00fd4cba2a449d06c0b"
+checksum = "6e7ec93f87fc5faa8299e06a0009a1ee286dfe6136f85665b11e1260874031da"
 dependencies = [
  "hash-db",
 ]
@@ -7303,9 +7303,9 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "url"
-version = "2.5.8"
+version = "2.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff67a8a4397373c3ef660812acab3268222035010ab8680ec4215f38ba3d0eed"
+checksum = "f00cd2407bb42c0ef17be88d4cf020f5cceffd121665bac9b8b9493a369b3b1a"
 dependencies = [
  "form_urlencoded",
  "idna",

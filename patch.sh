@@ -775,12 +775,15 @@ cargo_upgrade derive_more 1.0.0
 cargo_upgrade digest 0.11.0
 cargo_upgrade directories 6.0.0
 cargo_upgrade ed25519-dalek 3.0.0
+cargo_upgrade foldhash 0.2.0
 cargo_upgrade governor 0.10.0
+cargo_upgrade hash-db 0.17.0
 cargo_upgrade itertools 0.14.0
 cargo_upgrade libp2p 0.57.0
 cargo_upgrade libp2p-identity 0.3.0
 cargo_upgrade libp2p-kad 0.49.0
 cargo_upgrade macro_magic 0.6.0
+cargo_upgrade memory-db 0.35.0
 cargo_upgrade multiaddr 0.19.0
 cargo_upgrade parity-db 0.5.0
 cargo_upgrade partial_sort 1.0.0
@@ -794,6 +797,8 @@ cargo_upgrade sha2 0.11.0
 cargo_upgrade sha3 0.12.0
 cargo_upgrade strum 0.28.0
 cargo_upgrade thiserror 2.0.0
+cargo_upgrade trie-db 0.33.0
+cargo_upgrade trie-root 0.19.0
 cargo_upgrade twox-hash 2.0.0
 cargo_upgrade unsigned-varint 0.8.0
 cargo_upgrade wasmtime 51.0.0
