@@ -219,7 +219,17 @@ impl<B: BlockT> ConsensusGossip<B> {
 		message: Vec<u8>,
 		sender: Option<PeerId>,
 	) {
-		if self.known_messages.insert(message_hash, ()) {
+		// `LruMap::insert` also returns true on key replacement, so detect a
+		// true insert via `get_or_insert` (callback runs only for missing keys).
+		let mut is_new = false;
+		if self
+			.known_messages
+			.get_or_insert(message_hash, || {
+				is_new = true;
+			})
+			.is_some() &&
+			is_new
+		{
 			self.messages.push(MessageEntry { message_hash, topic, message, sender });
 
 			if let Some(ref metrics) = self.metrics {
@@ -236,6 +246,13 @@ impl<B: BlockT> ConsensusGossip<B> {
 	pub fn register_message(&mut self, topic: B::Hash, message: Vec<u8>) {
 		let message_hash = HashingFor::<B>::hash(&message[..]);
 		self.register_message_hashed(message_hash, topic, message, None);
+	}
+
+	/// Marks a message as known without registering it, so it is never propagated. Incoming
+	/// copies of the message are ignored, as for a registered message.
+	pub fn mark_message_known(&mut self, message: &[u8]) {
+		let message_hash = HashingFor::<B>::hash(message);
+		self.known_messages.insert(message_hash, ());
 	}
 
 	/// Call when a peer has been disconnected to stop tracking gossip status.
@@ -304,7 +321,7 @@ impl<B: BlockT> ConsensusGossip<B> {
 	/// Prune old or no longer relevant consensus messages. Provide a predicate
 	/// for pruning, which returns `false` when the items with a given topic should be pruned.
 	pub fn collect_garbage(&mut self) {
-		let known_messages = &mut self.known_messages;
+		let known_messages = &self.known_messages;
 		let before = self.messages.len();
 
 		let mut message_expired = self.validator.message_expired();
@@ -326,7 +343,7 @@ impl<B: BlockT> ConsensusGossip<B> {
 		);
 
 		for (_, ref mut peer) in self.peers.iter_mut() {
-			peer.known_messages.retain(|h| known_messages.get(h).is_some());
+			peer.known_messages.retain(|h| known_messages.peek(h).is_some());
 		}
 	}
 

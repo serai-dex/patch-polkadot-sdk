@@ -556,10 +556,10 @@ index ee3620e..2034b45 100644
  	fn set_authorized_nodes(&mut self, _nodes: Vec<OpaquePeerId>, _authorized_only: bool) {
  		unimplemented!()
  	}
-diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
+diff --git a/substrate/primitives/io/src/relay_chain.rs b/substrate/primitives/io/src/relay_chain.rs
 index e9f0dae5..94f4082d 100644
---- a/substrate/primitives/io/src/lib.rs
-+++ b/substrate/primitives/io/src/lib.rs
+--- a/substrate/primitives/io/src/relay_chain.rs
++++ b/substrate/primitives/io/src/relay_chain.rs
 @@ -1661,6 +1661,7 @@ pub trait Offchain {
  			.local_storage_get(kind, key)
  	}

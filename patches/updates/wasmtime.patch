@@ -101,14 +101,14 @@ index 8f189ca9..280eb1d2 100644
 --- a/substrate/client/executor/src/wasm_runtime.rs
 +++ b/substrate/client/executor/src/wasm_runtime.rs
 @@ -311,7 +311,7 @@ where
- 						heap_alloc_strategy,
- 						instantiation_strategy,
- 						deterministic_stack_limit: None,
--						canonicalize_nans: false,
-+						// canonicalize_nans: false,
- 						parallel_compilation: true,
- 						wasm_multi_value: false,
- 						wasm_bulk_memory: false,
+ 			heap_alloc_strategy,
+ 			instantiation_strategy,
+ 			deterministic_stack_limit: None,
+-			canonicalize_nans: false,
++			// canonicalize_nans: false,
+ 			parallel_compilation: true,
+ 			wasm_multi_value: false,
+ 			wasm_bulk_memory: false,
 diff --git a/substrate/primitives/wasm-interface/src/lib.rs b/substrate/primitives/wasm-interface/src/lib.rs
 index 5e2bd10c16..47d986e1c6 100644
 --- a/substrate/primitives/wasm-interface/src/lib.rs

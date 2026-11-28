@@ -410,7 +410,9 @@ where
 		let bound = Value::bound();
 		let current = <Self as MapWrapper>::Map::decode_len(Ref::from(&key)).unwrap_or_default();
 		if current < bound {
-			CounterFor::<Prefix>::mutate(|value| value.saturating_inc());
+			if !<Self as MapWrapper>::Map::contains_key(Ref::from(&key)) {
+				CounterFor::<Prefix>::mutate(|value| value.saturating_inc());
+			}
 			let key = <Self as MapWrapper>::Map::hashed_key_for(key);
 			sp_io::storage::append(&key, item.encode());
 			Ok(())

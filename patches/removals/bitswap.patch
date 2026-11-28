@@ -20,16 +20,14 @@ index 6c2d97c097fd..9f0a7d5548b6 100644
  	pub ipfs_server: bool,
  
  	/// List of IPFS bootstrap nodes to register in IPFS DHT as a provider of indexed transaction
-@@ -692,7 +692,7 @@ pub struct NetworkConfiguration {
+@@ -692,5 +692,5 @@ pub struct NetworkConfiguration {
  	///
  	/// If IPFS bootstrap nodes are not provided, this node will only handle direct Bitswap
  	/// requests from peers that already know its address.
 -	pub ipfs_bootnodes: Vec<MultiaddrWithPeerId>,
 +	pub ipfs_bootnodes: Vec<MultiaddrWithPeerId>, */
  
- 	/// Networking backend used for P2P communication.
- 	pub network_backend: NetworkBackendType,
-@@ -728,8 +728,8 @@ impl NetworkConfiguration {
+@@ -728,6 +728,6 @@ impl NetworkConfiguration {
  			kademlia_disjoint_query_paths: false,
  			kademlia_replication_factor: NonZeroUsize::new(DEFAULT_KADEMLIA_REPLICATION_FACTOR)
  				.expect("value is a constant; constant is non-zero; qed."),
@@ -37,9 +35,7 @@ index 6c2d97c097fd..9f0a7d5548b6 100644
 -			ipfs_bootnodes: Vec::new(),
 +			// ipfs_server: false,
 +			// ipfs_bootnodes: Vec::new(),
- 			network_backend: NetworkBackendType::default(),
- 		}
- 	}
+ 			light_request_execution_timeout: Some(DEFAULT_LIGHT_REQUEST_EXECUTION_TIMEOUT),
 @@ -829,7 +829,7 @@ impl NetworkConfiguration {
  	}
  }
@@ -180,12 +176,18 @@ index 76fea9567c89..a963e70f4f2c 100644
  
  /// Full client type.
  pub type TFullClient<TBl, TRtApi, TExec> =
-@@ -937,7 +937,7 @@ where
+@@ -937,12 +937,12 @@ where
  	.into_rpc();
  
- 	// Bitswap RPC-v2 (do not confuse with v1 from `bitswap_v1_get`).
--	let bitswap_v2 = sc_rpc_spec_v2::bitswap::Bitswap::new(client.clone(), sync_oracle).into_rpc();
-+	// let bitswap_v2 = sc_rpc_spec_v2::bitswap::Bitswap::new(client.clone(), sync_oracle).into_rpc();
+-	// Bitswap RPC-v2 (`bitswap_unstable_*`; `bitswap_v1_get` is registered as an alias of
++	/* // Bitswap RPC-v2 (`bitswap_unstable_*`; `bitswap_v1_get` is registered as an alias of
+ 	// `bitswap_unstable_get` during the migration). Do not confuse with the Bitswap network
+ 	// protocol itself, which is the IPFS-style block-exchange wire format these methods may
+ 	// dispatch to.
+ 	let bitswap_v2 =
+ 		sc_rpc_spec_v2::bitswap::Bitswap::new(client.clone(), sync_oracle, task_executor.clone())
+-			.into_rpc();
++			.into_rpc(); */
  
  	let author = sc_rpc::author::Author::new(
  		client.clone(),

@@ -176,8 +176,13 @@ pub(crate) struct Listener {
 
 impl Listener {
 	/// Accepts a new connection.
+	///
+	/// Sets `TCP_NODELAY` on the accepted socket, disabling Nagle's algorithm.
 	pub(crate) async fn accept(&mut self) -> std::io::Result<(tokio::net::TcpStream, SocketAddr)> {
 		let (sock, remote_addr) = self.listener.accept().await?;
+		if let Err(err) = sock.set_nodelay(true) {
+			log::debug!(target: "rpc", "Failed to set TCP_NODELAY for {remote_addr}: {err:?}");
+		}
 		Ok((sock, remote_addr))
 	}
 

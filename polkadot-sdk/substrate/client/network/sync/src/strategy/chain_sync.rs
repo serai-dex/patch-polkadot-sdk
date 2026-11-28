@@ -300,25 +300,12 @@ pub enum ChainSyncMode {
 	LightState {
 		/// Skip state proof download and verification.
 		skip_proofs: bool,
-		/// Download indexed transactions for recent blocks.
-		storage_chain_mode: bool,
 	},
 }
 
-impl ChainSyncMode {
-	/// Returns the base block attributes required for this sync mode.
-	pub fn required_block_attributes(&self) -> BlockAttributes {
-		match self {
-			ChainSyncMode::Full | ChainSyncMode::LightState { storage_chain_mode: false, .. } => {
-				BlockAttributes::HEADER | BlockAttributes::JUSTIFICATION | BlockAttributes::BODY
-			},
-			ChainSyncMode::LightState { storage_chain_mode: true, .. } => {
-				BlockAttributes::HEADER |
-					BlockAttributes::JUSTIFICATION |
-					BlockAttributes::INDEXED_BODY
-			},
-		}
-	}
+/// Returns the base block attributes required for chain sync.
+fn required_block_attributes() -> BlockAttributes {
+	BlockAttributes::HEADER | BlockAttributes::JUSTIFICATION | BlockAttributes::BODY
 }
 
 /// Which block bodies gap sync downloads while backfilling the block history below a
@@ -1441,7 +1428,6 @@ where
 										hash: block_data.block.hash,
 										header: block_data.block.header,
 										body: block_data.block.body,
-										indexed_body: block_data.block.indexed_body,
 										justifications,
 										origin: block_data.origin,
 										allow_missing_state: true,
@@ -1493,7 +1479,6 @@ where
 									hash: b.hash,
 									header: b.header,
 									body: b.body,
-									indexed_body: None,
 									justifications,
 									origin: Some(*peer_id),
 									allow_missing_state: true,
@@ -1635,7 +1620,6 @@ where
 							hash: b.hash,
 							header: b.header,
 							body: b.body,
-							indexed_body: None,
 							justifications,
 							origin: Some(*peer_id),
 							allow_missing_state: true,
@@ -2018,7 +2002,6 @@ where
 					hash: block_data.block.hash,
 					header: block_data.block.header,
 					body: block_data.block.body,
-					indexed_body: block_data.block.indexed_body,
 					justifications,
 					origin: block_data.origin,
 					allow_missing_state: true,
@@ -2064,7 +2047,7 @@ where
 		&self,
 		finalized_number: NumberFor<B>,
 	) -> (BlockAttributes, Option<NumberFor<B>>) {
-		let attrs = self.mode.required_block_attributes();
+		let attrs = required_block_attributes();
 		match self.gap_sync_body_policy {
 			GapSyncBodyPolicy::HeadersOnly => (attrs & !BlockAttributes::BODY, None),
 			GapSyncBodyPolicy::All => (attrs, None),
@@ -2091,7 +2074,6 @@ where
 			return Vec::new();
 		}
 		let is_major_syncing = self.status().state.is_major_syncing();
-		let mode = self.mode;
 		let finalized_number = self.client.info().finalized_number;
 		let (gap_attrs, gap_body_cutoff) = self.gap_request_attributes(finalized_number);
 		if let (Some(metrics), Some(cutoff), Some(gap)) =
@@ -2158,7 +2140,7 @@ where
 					&id,
 					peer,
 					blocks,
-					mode.required_block_attributes(),
+					required_block_attributes(),
 					max_parallel,
 					max_blocks_per_request,
 					last_finalized,
@@ -2179,7 +2161,7 @@ where
 					fork_targets,
 					best_queued,
 					last_finalized,
-					mode.required_block_attributes(),
+					required_block_attributes(),
 					|hash| {
 						if queue_blocks.contains(hash) {
 							BlockStatus::Queued
@@ -2305,7 +2287,6 @@ where
 					hash,
 					header: Some(header),
 					body,
-					indexed_body: None,
 					justifications,
 					origin: None,
 					allow_missing_state: true,

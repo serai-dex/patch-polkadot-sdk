@@ -304,10 +304,10 @@ index 0cda70e..af9978b 100644
  
  /// Means of signature verification of an application key.
  pub trait AppVerify {
-diff --git a/substrate/primitives/io/src/lib.rs b/substrate/primitives/io/src/lib.rs
+diff --git a/substrate/primitives/io/src/relay_chain.rs b/substrate/primitives/io/src/relay_chain.rs
 index e9f0dae5..455e99a1 100644
---- a/substrate/primitives/io/src/lib.rs
-+++ b/substrate/primitives/io/src/lib.rs
+--- a/substrate/primitives/io/src/relay_chain.rs
++++ b/substrate/primitives/io/src/relay_chain.rs
 @@ -99,6 +99,5 @@ use sp_core::{
  use sp_core::{
  	crypto::KeyTypeId,

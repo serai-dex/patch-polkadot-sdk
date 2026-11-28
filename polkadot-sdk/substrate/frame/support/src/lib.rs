@@ -118,9 +118,7 @@ pub use self::{
 		StorageMap, StorageNMap, StoragePrefixedMap, StorageValue,
 	},
 };
-pub use sp_runtime::{
-	self, print, traits::Printable, ConsensusEngineId, MAX_MODULE_ERROR_ENCODED_SIZE,
-};
+pub use sp_runtime::{self, ConsensusEngineId, MAX_MODULE_ERROR_ENCODED_SIZE};
 
 use codec::{Decode, Encode};
 use sp_runtime::TypeId;
@@ -944,6 +942,9 @@ pub mod pallet_macros {
 	/* /// Defines constants that are added to the constant field of
 	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
 	///
+	/// Multiple `#[pallet::extra_constants]` blocks are allowed. Constants from all blocks are
+	/// included in metadata in declaration order, after the constants defined in `Config`.
+	///
 	/// Must be defined like:
 	///
 	/// ```
@@ -1267,6 +1268,8 @@ pub mod pallet_macros {
 	/// View functions methods must be read-only and always return some output. A
 	/// `view_functions` impl block only allows methods to be defined inside of
 	/// it.
+	/// Only one `#[pallet::view_functions]` block is allowed per pallet. Define all view
+	/// functions in that block.
 	///
 	/// ## Example
 	/// ```

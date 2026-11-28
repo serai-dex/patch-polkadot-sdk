@@ -311,7 +311,7 @@ macro_rules! impl_rrm {
 						None => return None,
 					};
 				}
-				if result > (<$ulow>::max_value() as $uhi) {
+				if result > (<$ulow>::MAX as $uhi) {
 					None
 				} else {
 					Some(result as $ulow)

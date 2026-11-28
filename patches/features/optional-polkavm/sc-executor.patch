@@ -40,14 +40,13 @@ diff --git a/substrate/client/executor/src/wasm_runtime.rs b/substrate/client/ex
 index 8f189ca..bca7ef6 100644
 --- a/substrate/client/executor/src/wasm_runtime.rs
 +++ b/substrate/client/executor/src/wasm_runtime.rs
-@@ -297,6 +297,7 @@ pub fn create_wasm_runtime_with_code<H>(
+@@ -463,5 +463,6 @@ pub fn create_wasm_runtime_with_code<H>(
  where
  	H: HostFunctions,
  {
 +	#[cfg(feature = "polkavm")]
  	if let Some(blob) = blob.as_polkavm_blob() {
- 		return sc_executor_polkavm::create_runtime::<H>(blob);
- 	}
+ 		return sc_executor_polkavm::create_runtime::<H>(blob)
 diff --git a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs b/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
 index d8af26bf..9be2c80c 100644
 --- a/substrate/client/executor/common/src/runtime_blob/runtime_blob.rs
@@ -158,3 +157,15 @@ index 6e09177a1b1..f877590b0ce 100644
  	fn from(error: polkavm::Error) -> Self {
  		Error::Other(error.to_string())
  	}
+diff --git a/substrate/client/executor/src/wasm_runtime.rs b/substrate/client/executor/src/wasm_runtime.rs
+index 4413a4b..150e061 100644
+--- a/substrate/client/executor/src/wasm_runtime.rs
++++ b/substrate/client/executor/src/wasm_runtime.rs
+@@ -497,6 +497,7 @@ fn create_wasm_runtimes<H>(
+ where
+ 	H: HostFunctions,
+ {
++	#[cfg(feature = "polkavm")]
+ 	if let Some(program_blob) = blob.as_polkavm_blob() {
+ 		static POLKAVM_TIMEOUT_WARN: std::sync::Once = std::sync::Once::new();
+ 		POLKAVM_TIMEOUT_WARN.call_once(|| {

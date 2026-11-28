@@ -33,7 +33,7 @@ pub use self::{
 	header::Header,
 	unchecked_extrinsic::{
 		CallAndMaybeEncoded, ExtensionVersion, Preamble, SignedPayload, UncheckedExtrinsic,
-		EXTRINSIC_FORMAT_VERSION,
+		DEFAULT_MAX_CALL_SIZE, EXTRINSIC_FORMAT_VERSION,
 	},
 };
 pub use unchecked_extrinsic::UncheckedSignaturePayload;

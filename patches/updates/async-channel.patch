@@ -2,30 +2,15 @@ diff --git a/substrate/client/network/light/src/light_client_requests/handler.rs
 index 49bdf70..d6a15cb 100644
 --- a/substrate/client/network/light/src/light_client_requests/handler.rs
 +++ b/substrate/client/network/light/src/light_client_requests/handler.rs
-@@ -49,7 +49,7 @@ const MAX_LIGHT_REQUEST_QUEUE: usize = 20;
+@@ -75,7 +75,7 @@ const MAX_LIGHT_REQUEST_QUEUE: usize = 20;
  
  /// Handler for incoming light client requests from a remote peer.
  pub struct LightClientRequestHandler<B, Client> {
 -	request_receiver: async_channel::Receiver<IncomingRequest>,
 +	request_receiver: core::pin::Pin<Box<async_channel::Receiver<IncomingRequest>>>,
- 	/// Blockchain client.
- 	client: Arc<Client>,
- 	_block: PhantomData<B>,
-@@ -79,12 +79,12 @@ where
- 			tx,
- 		);
- 
--		(Self { client, request_receiver, _block: PhantomData::default() }, protocol_config)
-+		(Self { client, request_receiver: Box::pin(request_receiver), _block: PhantomData::default() }, protocol_config)
- 	}
- 
- 	/// Run [`LightClientRequestHandler`].
- 	pub async fn run(mut self) {
--		while let Some(request) = self.request_receiver.next().await {
-+		while let Some(request) = self.request_receiver.as_mut().next().await {
- 			let IncomingRequest { peer, payload, pending_response } = request;
- 
- 			match self.handle_request(peer, payload) {
+ 	processor: Arc<RequestProcessor<B, Client>>,
+ 	/// Number of workers serving call requests in parallel.
+ 	call_workers: NonZeroUsize,
 diff --git a/substrate/client/network/src/service/out_events.rs b/substrate/client/network/src/service/out_events.rs
 index aac1aba..779fd07 100644
 --- a/substrate/client/network/src/service/out_events.rs
@@ -178,3 +163,25 @@ index 369c395..b32ff97 100644
  			Poll::Ready(msg) => {
  				if msg.is_some() {
  					UNBOUNDED_CHANNELS_COUNTER.with_label_values(&[s.name, RECEIVED_LABEL]).inc();
+diff --git a/substrate/client/network/light/src/light_client_requests/handler.rs b/substrate/client/network/light/src/light_client_requests/handler.rs
+index 4bf63059c349..b75dced4e0d4 100644
+--- a/substrate/client/network/light/src/light_client_requests/handler.rs
++++ b/substrate/client/network/light/src/light_client_requests/handler.rs
+@@ -127,7 +127,7 @@ where
+ 
+ 		(
+ 			Self {
+-				request_receiver,
++				request_receiver: Box::pin(request_receiver),
+ 				processor: Arc::new(RequestProcessor {
+ 					client,
+ 					execution_timeout,
+@@ -165,7 +165,7 @@ where
+ 		);
+ 		drop(call_rx);
+ 
+-		while let Some(request) = self.request_receiver.next().await {
++		while let Some(request) = self.request_receiver.as_mut().next().await {
+ 			let IncomingRequest { peer, payload, pending_response } = request;
+ 
+ 			let request = match decode_request(&payload) {

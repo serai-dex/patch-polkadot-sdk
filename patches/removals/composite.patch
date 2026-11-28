@@ -327,7 +327,7 @@ index 8d94c49..c92e8c0 100644
 @@ -66,7 +66,7 @@ pub struct Def {
  	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
  	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
- 	pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
+ 	pub extra_constants: Vec<extra_constants::ExtraConstantsDef>,
 -	pub composites: Vec<composite::CompositeDef>,
 +	// pub composites: Vec<composite::CompositeDef>,
  	pub type_values: Vec<type_value::TypeValueDef>,
@@ -345,7 +345,7 @@ index 8d94c49..c92e8c0 100644
  		let mut event = None;
  		let mut origin = None;
 @@ -105,7 +105,7 @@ impl Def {
- 		let mut extra_constants = None;
+ 		let mut extra_constants = vec![];
  		let mut storages = vec![];
  		let mut type_values = vec![];
 -		let mut composites: Vec<CompositeDef> = vec![];
@@ -371,10 +371,9 @@ index 8d94c49..c92e8c0 100644
  				Some(PalletAttr::Error(span)) if error.is_none() =>
  					error = Some(error::ErrorDef::try_from(span, index, item)?),
  				Some(PalletAttr::RuntimeEvent(span)) if event.is_none() =>
-@@ -187,7 +187,7 @@ impl Def {
+@@ -187,6 +187,6 @@ impl Def {
  				Some(PalletAttr::ExtraConstants(_)) =>
- 					extra_constants =
- 						Some(extra_constants::ExtraConstantsDef::try_from(item)?),
+ 					extra_constants.push(extra_constants::ExtraConstantsDef::try_from(item)?),
 -				Some(PalletAttr::Composite(span)) => {
 +				/* Some(PalletAttr::Composite(span)) => {
  					let composite =
@@ -386,7 +385,7 @@ index 8d94c49..c92e8c0 100644
  					composites.push(composite);
 -				},
 +				}, */
- 				Some(PalletAttr::ViewFunctions(span)) => {
+ 				Some(PalletAttr::ViewFunctions(span)) if view_functions.is_none() => {
  					view_functions = Some(view_functions::ViewFunctionsImplDef::try_from(span, item)?);
  				}
 @@ -235,7 +235,7 @@ impl Def {
@@ -437,7 +436,7 @@ index 8d94c49..c92e8c0 100644
  	/// Check that usage of trait `Config` is consistent with the definition, i.e. it is used with
  	/// instance iff it is defined with instance.
 @@ -396,9 +396,9 @@ impl Def {
- 		if let Some(extra_constants) = &self.extra_constants {
+ 		for extra_constants in &self.extra_constants {
  			instances.extend_from_slice(&extra_constants.instances[..]);
  		}
 -		if let Some(task_enum) = &self.task_enum {

@@ -357,7 +357,6 @@ where
 	) -> Result<BlockResponse, HandleRequestError> {
 		let get_header = attributes.contains(BlockAttributes::HEADER);
 		let get_body = attributes.contains(BlockAttributes::BODY);
-		let get_indexed_body = attributes.contains(BlockAttributes::INDEXED_BODY);
 		let get_justification = attributes.contains(BlockAttributes::JUSTIFICATION);
 
 		let mut blocks = Vec::new();
@@ -419,24 +418,6 @@ where
 				Vec::new()
 			};
 
-			let indexed_body = if get_indexed_body {
-				match self.client.block_indexed_body(hash)? {
-					Some(transactions) => transactions,
-					None => {
-						log::trace!(
-							target: LOG_TARGET,
-							"Missing indexed block data for block request."
-						);
-						// If the indexed body is missing we still continue returning headers.
-						// Ideally `None` should distinguish a missing body from the empty body,
-						// but the current protobuf based protocol does not allow it.
-						Vec::new()
-					},
-				}
-			} else {
-				Vec::new()
-			};
-
 			let block_data = crate::schema::v1::BlockData {
 				hash: hash.encode(),
 				header: if get_header { header.encode() } else { Vec::new() },
@@ -446,7 +427,6 @@ where
 				justification,
 				is_empty_justification,
 				justifications,
-				indexed_body,
 			};
 
 			let new_total_size = total_size + block_data.encoded_len();
@@ -553,11 +533,6 @@ impl FullBlockDownloader {
 								.map(|body| Decode::decode(&mut body.as_ref()))
 								.collect::<Result<Vec<_>, _>>()?,
 						)
-					} else {
-						None
-					},
-					indexed_body: if request.fields.contains(BlockAttributes::INDEXED_BODY) {
-						Some(block_data.indexed_body)
 					} else {
 						None
 					},

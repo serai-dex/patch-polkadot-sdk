@@ -46,11 +46,13 @@ impl MemoryKeystore {
 		Self::default()
 	}
 
+	/// The pair stored under `public`, if its secret URI parses and derives `public`.
+	///
+	/// `insert` stores whatever it is given, so like `LocalKeystore` this checks the URI on lookup.
 	fn pair<T: Pair>(&self, key_type: KeyTypeId, public: &T::Public) -> Option<T> {
 		self.keys.read().get(&key_type).and_then(|inner| {
-			inner
-				.get(public.as_slice())
-				.map(|s| T::from_string(s, None).expect("seed slice is valid"))
+			let pair = T::from_string(inner.get(public.as_slice())?, None).ok()?;
+			(pair.public().as_slice() == public.as_slice()).then_some(pair)
 		})
 	}
 
@@ -61,7 +63,7 @@ impl MemoryKeystore {
 			.map(|keys| {
 				keys.iter()
 					.filter_map(|(raw_pubkey, s)| {
-						let pair = T::from_string(s, None).expect("seed slice is valid");
+						let pair = T::from_string(s, None).ok()?;
 						let pubkey = pair.public();
 						(pubkey.as_slice() == raw_pubkey).then_some(pubkey)
 					})

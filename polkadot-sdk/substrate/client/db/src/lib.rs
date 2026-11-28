@@ -81,8 +81,7 @@ use sp_database::Transaction;
 use sp_runtime::{
 	generic::BlockId,
 	traits::{
-		Block as BlockT, Hash, HashingFor, Header as HeaderT, NumberFor, One, SaturatedConversion,
-		Zero,
+		Block as BlockT, HashingFor, Header as HeaderT, NumberFor, One, SaturatedConversion, Zero,
 	},
 	Justification, Justifications, StateVersion, Storage,
 };
@@ -484,7 +483,6 @@ struct PendingBlock<Block: BlockT> {
 	header: Block::Header,
 	justifications: Option<Justifications>,
 	body: Option<Vec<Block::Extrinsic>>,
-	indexed_body: Option<Vec<Vec<u8>>>,
 	leaf_state: NewBlockState,
 	register_as_leaf: bool,
 }
@@ -990,20 +988,13 @@ impl<Block: BlockT> sc_client_api::backend::BlockImportOperation<Block>
 		&mut self,
 		header: Block::Header,
 		body: Option<Vec<Block::Extrinsic>>,
-		indexed_body: Option<Vec<Vec<u8>>>,
 		justifications: Option<Justifications>,
 		leaf_state: NewBlockState,
 		register_as_leaf: bool,
 	) -> ClientResult<()> {
 		assert!(self.pending_block.is_none(), "Only one block per operation is allowed");
-		self.pending_block = Some(PendingBlock {
-			header,
-			body,
-			indexed_body,
-			justifications,
-			leaf_state,
-			register_as_leaf,
-		});
+		self.pending_block =
+			Some(PendingBlock { header, body, justifications, leaf_state, register_as_leaf });
 		Ok(())
 	}
 
@@ -1713,9 +1704,6 @@ impl<Block: BlockT> Backend<Block> {
 					transaction.set_from_vec(columns::BODY_INDEX, &lookup_key, body);
 				}
 			}
-			if let Some(body) = pending_block.indexed_body {
-				apply_indexed_body::<Block>(&mut transaction, body);
-			}
 			if let Some(justifications) = pending_block.justifications {
 				transaction.set_from_vec(
 					columns::JUSTIFICATIONS,
@@ -2355,13 +2343,6 @@ fn apply_index_ops<Block: BlockT>(
 		n_full,
 	);
 	extrinsic_index.encode()
-}
-
-fn apply_indexed_body<Block: BlockT>(transaction: &mut Transaction<DbHash>, body: Vec<Vec<u8>>) {
-	for extrinsic in body {
-		let hash = sp_runtime::traits::BlakeTwo256::hash(&extrinsic);
-		transaction.store(columns::TRANSACTION, DbHash::from(<[u8; 32]>::try_from(hash.as_ref()).unwrap()), extrinsic);
-	}
 }
 
 impl<Block> sc_client_api::backend::AuxStore for Backend<Block>

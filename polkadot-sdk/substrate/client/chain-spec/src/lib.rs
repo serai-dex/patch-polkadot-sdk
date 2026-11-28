@@ -348,8 +348,8 @@ pub use self::{
 	},
 	json_patch::merge as json_merge,
 };
+pub use sc_network::config::MultiaddrWithPeerId;
 
-use sc_network::config::MultiaddrWithPeerId;
 use sc_telemetry::TelemetryEndpoints;
 use sp_core::storage::Storage;
 use sp_runtime::BuildStorage;

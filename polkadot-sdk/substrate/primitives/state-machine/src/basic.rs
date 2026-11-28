@@ -41,17 +41,28 @@ use sp_trie::{empty_child_trie_root, LayoutV0, LayoutV1, TrieConfiguration};
 pub struct BasicExternalities {
 	overlay: OverlayedChanges<Blake2Hasher>,
 	extensions: Extensions,
+	state_version: StateVersion,
 }
 
 impl BasicExternalities {
 	/// Create a new instance of `BasicExternalities`
 	pub fn new(inner: Storage) -> Self {
-		BasicExternalities { overlay: inner.into(), extensions: Default::default() }
+		BasicExternalities {
+			overlay: inner.into(),
+			extensions: Default::default(),
+			state_version: StateVersion::default(),
+		}
 	}
 
 	/// New basic externalities with empty storage.
 	pub fn new_empty() -> Self {
 		Self::new(Storage::default())
+	}
+
+	/// Set the state version used by `storage_root` and `child_storage_root`.
+	pub fn with_state_version(mut self, state_version: StateVersion) -> Self {
+		self.state_version = state_version;
+		self
 	}
 
 	/// Insert key/value
@@ -268,7 +279,11 @@ impl Externalities for BasicExternalities {
 		self.overlay.append_storage(key, element, Default::default);
 	}
 
-	fn storage_root(&mut self, state_version: StateVersion) -> Vec<u8> {
+	fn storage_root(&mut self) -> Vec<u8> {
+		self.storage_root_with_version(self.state_version)
+	}
+
+	fn storage_root_with_version(&mut self, state_version: StateVersion) -> Vec<u8> {
 		let mut top = self
 			.overlay
 			.changes_mut()
@@ -279,7 +294,7 @@ impl Externalities for BasicExternalities {
 		// type of child trie support.
 		let empty_hash = empty_child_trie_root::<LayoutV1<Blake2Hasher>>();
 		for child_info in self.overlay.children().map(|d| d.1.clone()).collect::<Vec<_>>() {
-			let child_root = self.child_storage_root(&child_info, state_version);
+			let child_root = self.child_storage_root_with_version(&child_info, state_version);
 			if empty_hash.as_ref() == child_root.as_slice() {
 				top.remove(child_info.prefixed_storage_key().as_slice());
 			} else {
@@ -293,7 +308,11 @@ impl Externalities for BasicExternalities {
 		}
 	}
 
-	fn child_storage_root(
+	fn child_storage_root(&mut self, child_info: &ChildInfo) -> Vec<u8> {
+		self.child_storage_root_with_version(child_info, self.state_version)
+	}
+
+	fn child_storage_root_with_version(
 		&mut self,
 		child_info: &ChildInfo,
 		state_version: StateVersion,

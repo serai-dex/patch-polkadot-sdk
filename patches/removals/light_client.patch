@@ -10,15 +10,14 @@ index 74d94c30..ab13a26f 100644
  use sc_network_sync::{
  	block_relay_protocol::{BlockDownloader, BlockRelayParams},
  	block_request_handler::BlockRequestHandler,
-@@ -1237,7 +1237,7 @@ where
+@@ -1237,6 +1237,6 @@ where
  	let genesis_hash = client.info().genesis_hash;
  	let sync_service = Arc::new(sync_service);
  
 -	let light_client_request_protocol_config = {
 +	/* let light_client_request_protocol_config = {
  		// Allow both outgoing and incoming requests.
- 		let (handler, protocol_config) =
- 			LightClientRequestHandler::new::<Net>(&protocol_id, fork_id, client.clone());
+ 		let (handler, protocol_config) = LightClientRequestHandler::new::<Net>(
 @@ -1246,5 +1246,5 @@ where
  	};
  

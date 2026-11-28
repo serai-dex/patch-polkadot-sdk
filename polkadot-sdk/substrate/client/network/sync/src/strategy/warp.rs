@@ -407,7 +407,6 @@ where
 					hash: header.hash(),
 					header: Some(header),
 					body: None,
-					indexed_body: None,
 					justifications: Some(justifications),
 					origin: Some(*peer_id),
 					// We are still in warp sync, so we don't have the state. This means

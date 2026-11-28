@@ -15,9 +15,10 @@ diff --git a/substrate/client/executor/wasmtime/src/runtime.rs b/substrate/clien
 index 2e47f14693..bba385a293 100644
 --- a/substrate/client/executor/wasmtime/src/runtime.rs
 +++ b/substrate/client/executor/wasmtime/src/runtime.rs
-@@ -41,7 +41,7 @@ use std::{
+@@ -41,8 +41,8 @@ use std::{
  		Arc,
  	},
+ 	time::Duration,
  };
 -use wasmtime::{AsContext, Cache, CacheConfig, Engine, Memory};
 +use wasmtime::{AsContext, /* Cache, CacheConfig,*/ Engine, Memory};

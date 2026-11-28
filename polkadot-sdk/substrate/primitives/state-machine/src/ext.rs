@@ -71,6 +71,8 @@ where
 	/// Extensions registered with this instance.
 	#[cfg(feature = "std")]
 	extensions: Option<OverlayedExtensions<'a>>,
+	/// State version used by `storage_root` and `child_storage_root` to compute the trie layout.
+	state_version: StateVersion,
 }
 
 impl<'a, H, B> Ext<'a, H, B>
@@ -80,8 +82,12 @@ where
 {
 	/// Create a new `Ext`.
 	#[cfg(not(feature = "std"))]
-	pub fn new(overlay: &'a mut OverlayedChanges<H>, backend: &'a B) -> Self {
-		Ext { overlay, backend, id: 0 }
+	pub fn new(
+		overlay: &'a mut OverlayedChanges<H>,
+		backend: &'a B,
+		state_version: StateVersion,
+	) -> Self {
+		Ext { overlay, backend, id: 0, state_version }
 	}
 
 	/// Create a new `Ext` from overlayed changes and read-only backend
@@ -90,12 +96,14 @@ where
 		overlay: &'a mut OverlayedChanges<H>,
 		backend: &'a B,
 		extensions: Option<&'a mut sp_externalities::Extensions>,
+		state_version: StateVersion,
 	) -> Self {
 		Self {
 			overlay,
 			backend,
 			id: rand::random(),
 			extensions: extensions.map(OverlayedExtensions::new),
+			state_version,
 		}
 	}
 }
@@ -475,7 +483,11 @@ where
 		});
 	}
 
-	fn storage_root(&mut self, state_version: StateVersion) -> Vec<u8> {
+	fn storage_root(&mut self) -> Vec<u8> {
+		self.storage_root_with_version(self.state_version)
+	}
+
+	fn storage_root_with_version(&mut self, state_version: StateVersion) -> Vec<u8> {
 		let _guard = guard();
 
 		let (root, _cached) = self.overlay.storage_root(self.backend, state_version);
@@ -491,7 +503,11 @@ where
 		root.encode()
 	}
 
-	fn child_storage_root(
+	fn child_storage_root(&mut self, child_info: &ChildInfo) -> Vec<u8> {
+		self.child_storage_root_with_version(child_info, self.state_version)
+	}
+
+	fn child_storage_root_with_version(
 		&mut self,
 		child_info: &ChildInfo,
 		state_version: StateVersion,
@@ -591,14 +607,12 @@ where
 	}
 
 	fn commit(&mut self) {
-		// Bench always use latest state.
-		let state_version = StateVersion::default();
 		for _ in 0..self.overlay.transaction_depth() {
 			self.overlay.commit_transaction().expect(BENCHMARKING_FN);
 		}
 		let changes = self
 			.overlay
-			.drain_storage_changes(self.backend, state_version)
+			.drain_storage_changes(self.backend, self.state_version)
 			.expect(EXT_NOT_ALLOWED_TO_FAIL);
 		self.backend
 			.commit(

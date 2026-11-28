@@ -20,7 +20,7 @@
 
 pub(crate) mod api;
 pub(crate) mod enactment_state;
-pub(crate) mod error;
+pub mod error;
 pub(crate) mod metrics;
 pub(crate) mod sliding_stat;
 pub(crate) mod tracing_log_xt;
@@ -42,7 +42,7 @@ pub async fn notification_future<Client, Pool, Block>(
 ) where
 	Block: sp_runtime::traits::Block,
 	Client: sc_client_api::BlockchainEvents<Block>,
-	Pool: sc_transaction_pool_api::MaintainedTransactionPool<Block = Block>,
+	Pool: sc_transaction_pool_api::MaintainedTransactionPool<Block = Block> + ?Sized,
 {
 	let import_stream = client
 		.import_notification_stream()

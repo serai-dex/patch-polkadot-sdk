@@ -19,7 +19,7 @@
 
 use crate::{
 	codec::{Decode, Encode},
-	Debug,
+	Debug, ModuleInvalidity,
 };
 use alloc::{vec, vec::Vec};
 use sp_weights::Weight;
@@ -28,7 +28,7 @@ use sp_weights::Weight;
 pub type TransactionPriority = u64;
 
 /// Minimum number of blocks a transaction will remain valid for.
-/// `TransactionLongevity::max_value()` means "forever".
+/// `TransactionLongevity::MAX` means "forever".
 pub type TransactionLongevity = u64;
 
 /// Tag for a transaction. No two transactions with the same tag should be placed on-chain.
@@ -88,6 +88,8 @@ pub enum InvalidTransaction {
 	IndeterminateImplicit,
 	/// The transaction extension did not authorize any origin.
 	UnknownOrigin,
+	/// An error in a module.
+	Module(ModuleInvalidity),
 }
 
 impl InvalidTransaction {
@@ -128,6 +130,7 @@ impl From<InvalidTransaction> for &'static str {
 			InvalidTransaction::UnknownOrigin => {
 				"The transaction extension did not authorize any origin"
 			},
+			InvalidTransaction::Module(_) => "Invalid transaction: module error",
 		}
 	}
 }
@@ -323,7 +326,7 @@ impl Default for ValidTransaction {
 			priority: 0,
 			requires: vec![],
 			provides: vec![],
-			longevity: TransactionLongevity::max_value(),
+			longevity: TransactionLongevity::MAX,
 			propagate: true,
 		}
 	}

@@ -223,19 +223,6 @@ pub trait BuildStorage {
 	fn assimilate_storage(&self, storage: &mut sp_core::storage::Storage) -> Result<(), String>;
 }
 
-/// Something that can build the genesis storage of a module.
-#[cfg(feature = "std")]
-#[deprecated(
-	note = "`BuildModuleGenesisStorage` is planned to be removed in December 2023. Use `BuildStorage` instead of it."
-)]
-pub trait BuildModuleGenesisStorage<T, I>: Sized {
-	/// Create the module genesis storage into the given `storage` and `child_storage`.
-	fn build_module_genesis_storage(
-		&self,
-		storage: &mut sp_core::storage::Storage,
-	) -> Result<(), String>;
-}
-
 #[cfg(feature = "std")]
 impl BuildStorage for sp_core::storage::Storage {
 	fn assimilate_storage(&self, storage: &mut sp_core::storage::Storage) -> Result<(), String> {
@@ -477,13 +464,23 @@ impl Verify for MultiSignature {
 			Self::Ed25519(sig) => sig.verify(msg, &who.into()),
 			Self::Sr25519(sig) => sig.verify(msg, &who.into()),
 			Self::Ecdsa(sig) => {
+				let sig_ref: &[u8; 65] = sig.as_ref();
+				// Reject high-S signatures (BIP-62 malleability protection)
+				if !ecdsa::is_signature_normalized(sig_ref) {
+					return false;
+				}
 				let m = sp_io::hashing::blake2_256(msg.get());
-				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m)
+				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig_ref, &m)
 					.map_or(false, |pubkey| sp_io::hashing::blake2_256(&pubkey) == who)
 			},
 			Self::Eth(sig) => {
+				let sig_ref: &[u8; 65] = sig.as_ref();
+				// Reject high-S signatures (EIP-2 / BIP-62 malleability protection)
+				if !ecdsa::is_signature_normalized(sig_ref) {
+					return false;
+				}
 				let m = sp_io::hashing::keccak_256(msg.get());
-				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m)
+				sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig_ref, &m)
 					.map_or(false, |pubkey| {
 						&MultiSigner::Eth(pubkey.into()).into_account() == signer
 					})
@@ -561,6 +558,30 @@ impl PartialEq for ModuleError {
 	fn eq(&self, other: &Self) -> bool {
 		(self.index == other.index) && (self.error == other.error)
 	}
+}
+
+/// Reason why a transaction was invalid due to a module-specific reason.
+///
+/// Semantically different from [`ModuleError`] (dispatch error). Carries a per-module error
+/// number when validation fails.
+#[derive(
+	Eq,
+	PartialEq,
+	Clone,
+	Copy,
+	Encode,
+	Decode,
+	DecodeWithMemTracking,
+	Debug,
+
+	MaxEncodedLen,
+)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct ModuleInvalidity {
+	/// Module index, matching the metadata module index.
+	pub index: u8,
+	/// Module-specific error number.
+	pub error: u16,
 }
 
 /// Errors related to transactional storage layers.
@@ -656,7 +677,7 @@ pub enum DispatchError {
 #[derive(Eq, PartialEq, Clone, Copy, Encode, Decode, DecodeWithMemTracking, Debug)]
 pub struct DispatchErrorWithPostInfo<Info>
 where
-	Info: Eq + PartialEq + Clone + Copy + Encode + Decode + traits::Printable,
+	Info: Eq + PartialEq + Clone + Copy + Encode + Decode,
 {
 	/// Additional information about the `Dispatchable` which is only known post dispatch.
 	pub post_info: Info,
@@ -678,7 +699,7 @@ impl DispatchError {
 
 impl<T, E> From<E> for DispatchErrorWithPostInfo<T>
 where
-	T: Eq + PartialEq + Clone + Copy + Encode + Decode + traits::Printable + Default,
+	T: Eq + PartialEq + Clone + Copy + Encode + Decode + Default,
 	E: Into<DispatchError>,
 {
 	fn from(error: E) -> Self {
@@ -804,63 +825,10 @@ impl From<DispatchError> for &'static str {
 
 impl<T> From<DispatchErrorWithPostInfo<T>> for &'static str
 where
-	T: Eq + PartialEq + Clone + Copy + Encode + Decode + traits::Printable,
+	T: Eq + PartialEq + Clone + Copy + Encode + Decode,
 {
 	fn from(err: DispatchErrorWithPostInfo<T>) -> &'static str {
 		err.error.into()
-	}
-}
-
-impl traits::Printable for DispatchError {
-	fn print(&self) {
-		use DispatchError::*;
-		"DispatchError".print();
-		match self {
-			Other(err) => err.print(),
-			CannotLookup => "Cannot lookup".print(),
-			BadOrigin => "Bad origin".print(),
-			Module(ModuleError { index, error, message }) => {
-				index.print();
-				error.print();
-				if let Some(msg) = message {
-					msg.print();
-				}
-			},
-			ConsumerRemaining => "Consumer remaining".print(),
-			NoProviders => "No providers".print(),
-			TooManyConsumers => "Too many consumers".print(),
-			Token(e) => {
-				"Token error: ".print();
-				<&'static str>::from(*e).print();
-			},
-			Arithmetic(e) => {
-				"Arithmetic error: ".print();
-				<&'static str>::from(*e).print();
-			},
-			Transactional(e) => {
-				"Transactional error: ".print();
-				<&'static str>::from(*e).print();
-			},
-			Exhausted => "Resources exhausted".print(),
-			Corruption => "State corrupt".print(),
-			Unavailable => "Resource unavailable".print(),
-			RootNotAllowed => "Root not allowed".print(),
-			Trie(e) => {
-				"Trie error: ".print();
-				<&'static str>::from(*e).print();
-			},
-		}
-	}
-}
-
-impl<T> traits::Printable for DispatchErrorWithPostInfo<T>
-where
-	T: Eq + PartialEq + Clone + Copy + Encode + Decode + traits::Printable,
-{
-	fn print(&self) {
-		self.error.print();
-		"PostInfo: ".print();
-		self.post_info.print();
 	}
 }
 
@@ -1048,11 +1016,6 @@ impl traits::ExtrinsicLike for OpaqueExtrinsic {
 	fn is_bare(&self) -> bool {
 		false
 	}
-}
-
-/// Print something that implements `Printable` from the runtime.
-pub fn print(print: impl traits::Printable) {
-	print.print();
 }
 
 /// Utility function to declare string literals backed by an array of length N.

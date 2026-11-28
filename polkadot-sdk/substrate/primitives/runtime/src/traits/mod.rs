@@ -31,7 +31,6 @@ use codec::{
 };
 #[doc(hidden)]
 pub use core::{fmt::Debug, marker::PhantomData};
-use impl_trait_for_tuples::impl_for_tuples;
 #[cfg(feature = "serde")]
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use sp_application_crypto::AppCrypto;
@@ -157,6 +156,9 @@ impl Verify for sp_core::sr25519::Signature {
 impl Verify for sp_core::ecdsa::Signature {
 	type Signer = sp_core::ecdsa::Public;
 	fn verify<L: Lazy<[u8]>>(&self, mut msg: L, signer: &sp_core::ecdsa::Public) -> bool {
+		if !sp_core::ecdsa::is_signature_normalized(self.as_ref()) {
+			return false;
+		}
 		match sp_io::crypto::secp256k1_ecdsa_recover_compressed(
 			self.as_ref(),
 			&sp_io::hashing::blake2_256(msg.get()),
@@ -1143,9 +1145,7 @@ impl CheckEqual for sp_core::H256 {
 	#[cfg(not(feature = "std"))]
 	fn check_equal(&self, other: &Self) {
 		if self != other {
-			"Hash not equal".print();
-			<[u8; 32]>::from(*self).print();
-			<[u8; 32]>::from(*other).print();
+			log::error!("Hash not equal: given={:?}, expected={:?}", self, other);
 		}
 	}
 }
@@ -1161,9 +1161,7 @@ impl CheckEqual for super::generic::DigestItem {
 	#[cfg(not(feature = "std"))]
 	fn check_equal(&self, other: &Self) {
 		if self != other {
-			"DigestItem not equal".print();
-			(&Encode::encode(self)[..]).print();
-			(&Encode::encode(other)[..]).print();
+			log::error!("DigestItem not equal: given={:?}, expected={:?}", self, other);
 		}
 	}
 }
@@ -1620,7 +1618,6 @@ pub trait Dispatchable {
 		+ Copy
 		+ Encode
 		+ Decode
-		+ Printable
 		+ ExtensionPostDispatchWeightHandler<Self::Info>;
 	/// Actually dispatch this call and return the result of it.
 	fn dispatch(self, origin: Self::RuntimeOrigin)
@@ -2461,89 +2458,6 @@ macro_rules! impl_opaque_keys {
 			},
 			$crate,
 		}
-	}
-}
-
-/// Trait for things which can be printed from the runtime.
-pub trait Printable {
-	/// Print the object.
-	fn print(&self);
-}
-
-impl<T: Printable> Printable for &T {
-	fn print(&self) {
-		(*self).print()
-	}
-}
-
-impl Printable for u8 {
-	fn print(&self) {
-		(*self as u64).print()
-	}
-}
-
-impl Printable for u32 {
-	fn print(&self) {
-		(*self as u64).print()
-	}
-}
-
-impl Printable for usize {
-	fn print(&self) {
-		(*self as u64).print()
-	}
-}
-
-impl Printable for u64 {
-	fn print(&self) {
-		sp_io::misc::print_num(*self);
-	}
-}
-
-impl Printable for &[u8] {
-	fn print(&self) {
-		sp_io::misc::print_hex(self);
-	}
-}
-
-impl<const N: usize> Printable for [u8; N] {
-	fn print(&self) {
-		sp_io::misc::print_hex(&self[..]);
-	}
-}
-
-impl Printable for &str {
-	fn print(&self) {
-		sp_io::misc::print_utf8(self.as_bytes());
-	}
-}
-
-impl Printable for bool {
-	fn print(&self) {
-		if *self {
-			"true".print()
-		} else {
-			"false".print()
-		}
-	}
-}
-
-impl Printable for sp_weights::Weight {
-	fn print(&self) {
-		self.ref_time().print()
-	}
-}
-
-impl Printable for () {
-	fn print(&self) {
-		"()".print()
-	}
-}
-
-#[impl_for_tuples(1, 12)]
-impl Printable for Tuple {
-	fn print(&self) {
-		for_tuples!( #( Tuple.print(); )* )
 	}
 }
 

@@ -2,24 +2,22 @@ diff --git a/substrate/client/service/src/builder.rs b/substrate/client/service/
 index d9aa3b8..56f006f 100644
 --- a/substrate/client/service/src/builder.rs
 +++ b/substrate/client/service/src/builder.rs
-@@ -403,7 +403,7 @@ where
- 		+ CallApiAt<TBl>
- 		+ Send
- 		+ 'static,
--	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_api::Metadata<TBl>
-+	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_api::Core<TBl>
- 		+ sp_transaction_pool::runtime_api::TaggedTransactionQueue<TBl>
- 		+ sp_session::SessionKeys<TBl>
- 		+ sp_api::ApiExt<TBl>,
-@@ -702,7 +702,7 @@ where
- 		+ Sync
- 		+ 'static,
+@@ -403,6 +403,6 @@ where
+ 		+ CallApiAt<TBl>,
+ 	<TCl as ProvideRuntimeApi<TBl>>::Api:
+-		sp_api::Metadata<TBl> + sp_session::SessionKeys<TBl> + sp_api::ApiExt<TBl>,
++		sp_api::Core<TBl> + sp_session::SessionKeys<TBl> + sp_api::ApiExt<TBl>,
+ 	TBl: BlockT,
+ 	TBl::Hash: Unpin,
+ 	TBl::Header: Unpin,
+@@ -702,6 +702,6 @@ where
  	TBackend: sc_client_api::backend::Backend<TBl> + 'static,
 -	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_session::SessionKeys<TBl> + sp_api::Metadata<TBl>,
 +	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_session::SessionKeys<TBl> + sp_api::Core<TBl>,
- 	TExPool: MaintainedTransactionPool<Block = TBl, Hash = <TBl as BlockT>::Hash> + 'static,
  	TBl::Hash: Unpin,
  	TBl::Header: Unpin,
+ 	TExPool:
+ 		MaintainedTransactionPool<Block = TBl, Hash = <TBl as BlockT>::Hash> + ?Sized + 'static,
 diff --git a/substrate/primitives/runtime/src/generic/digest.rs b/substrate/primitives/runtime/src/generic/digest.rs
 index 23854d92..aa08e0df 100644
 --- a/substrate/primitives/runtime/src/generic/digest.rs
@@ -575,8 +573,8 @@ index 8d94c490..078b553f 100644
  	pub genesis_config: Option<genesis_config::GenesisConfigDef>,
  	pub genesis_build: Option<genesis_build::GenesisBuildDef>,
  	pub validate_unsigned: Option<validate_unsigned::ValidateUnsignedDef>,
--	pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
-+	// pub extra_constants: Option<extra_constants::ExtraConstantsDef>,
+-	pub extra_constants: Vec<extra_constants::ExtraConstantsDef>,
++	// pub extra_constants: Vec<extra_constants::ExtraConstantsDef>,
  	// pub composites: Vec<composite::CompositeDef>,
  	pub type_values: Vec<type_value::TypeValueDef>,
  	pub frame_system: syn::Path,
@@ -584,8 +582,8 @@ index 8d94c490..078b553f 100644
  		let mut genesis_config = None;
  		let mut genesis_build = None;
  		let mut validate_unsigned = None;
--		let mut extra_constants = None;
-+		// let mut extra_constants = None;
+-		let mut extra_constants = vec![];
++		// let mut extra_constants = vec![];
  		let mut storages = vec![];
  		let mut type_values = vec![];
 @@ -113,14 +113,14 @@ impl Def {
@@ -605,15 +603,14 @@ index 8d94c490..078b553f 100644
  						is_frame_system,
  					)?);
  				},
-@@ -184,9 +184,9 @@ impl Def {
+@@ -184,8 +184,8 @@ impl Def {
  				},
  				Some(PalletAttr::TypeValue(span)) =>
  					type_values.push(type_value::TypeValueDef::try_from(span, index, item)?),
 -				Some(PalletAttr::ExtraConstants(_)) =>
 +				/* Some(PalletAttr::ExtraConstants(_)) =>
- 					extra_constants =
--						Some(extra_constants::ExtraConstantsDef::try_from(item)?),
-+						Some(extra_constants::ExtraConstantsDef::try_from(item)?), */
+-					extra_constants.push(extra_constants::ExtraConstantsDef::try_from(item)?),
++					extra_constants.push(extra_constants::ExtraConstantsDef::try_from(item)?), */
  				/* Some(PalletAttr::Composite(span)) => {
  					let composite =
  						composite::CompositeDef::try_from(span, &frame_support, item)?;
@@ -630,8 +627,8 @@ index 8d94c490..078b553f 100644
  		if let Some(genesis_build) = &self.genesis_build {
  			genesis_build.instances.as_ref().map(|i| instances.extend_from_slice(&i));
  		}
--		if let Some(extra_constants) = &self.extra_constants {
-+		/* if let Some(extra_constants) = &self.extra_constants {
+-		for extra_constants in &self.extra_constants {
++		/* for extra_constants in &self.extra_constants {
  			instances.extend_from_slice(&extra_constants.instances[..]);
 -		}
 +		} */
@@ -736,7 +733,7 @@ index ae466db5..f0fb0746 100644
 --- a/substrate/frame/support/procedural/src/runtime/expand/mod.rs
 +++ b/substrate/frame/support/procedural/src/runtime/expand/mod.rs
 @@ -234,13 +234,13 @@ fn construct_runtime_final_expansion(
- 	let all_pallets = decl_all_pallets(&name, pallets.iter(), &features);
+ 	let all_pallets = decl_all_pallets(&name, &pallets);
  	let pallet_to_index = decl_pallet_runtime_setup(&name, &pallets, &scrate);
  
 -	let metadata = expand::expand_runtime_metadata(
@@ -936,7 +933,7 @@ index 1921383a..59848317 100644
 +	/* /// Defines constants that are added to the constant field of
  	/// [`PalletMetadata`](frame_metadata::v15::PalletMetadata) struct for this pallet.
  	///
- 	/// Must be defined like:
+ 	/// Multiple `#[pallet::extra_constants]` blocks are allowed. Constants from all blocks are
 @@ -1562,7 +1562,7 @@ pub mod pallet_macros {
  	///
  	/// I.e. a regular rust `impl` block with some optional where clause and functions with 0

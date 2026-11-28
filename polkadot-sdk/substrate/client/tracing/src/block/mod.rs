@@ -329,16 +329,7 @@ where
 			.lock()
 			.drain(..)
 			.filter(|e| {
-				self.storage_keys
-					.as_ref()
-					.map(|keys| event_values_filter(e, "key", keys))
-					.unwrap_or(false)
-			})
-			.filter(|e| {
-				self.methods
-					.as_ref()
-					.map(|methods| event_values_filter(e, "method", methods))
-					.unwrap_or(false)
+				event_matches_filters(e, self.storage_keys.as_deref(), self.methods.as_deref())
 			})
 			.map(|s| s.into())
 			.collect();
@@ -356,7 +347,25 @@ where
 	}
 }
 
+fn event_matches_filters(
+	event: &TraceEvent,
+	storage_keys: Option<&str>,
+	methods: Option<&str>,
+) -> bool {
+	storage_keys
+		.map(|keys| event_values_filter(event, "key", keys))
+		.unwrap_or(false) &&
+		methods
+			.map(|methods| event_values_filter(event, "method", methods))
+			.unwrap_or(false)
+}
+
+/// An empty string keeps every event, including those without the filtered field.
 fn event_values_filter(event: &TraceEvent, filter_kind: &str, values: &str) -> bool {
+	if values.is_empty() {
+		return true;
+	}
+
 	event
 		.values
 		.string_values
@@ -406,4 +415,8 @@ fn block_id_as_string<T: BlockT>(block_id: BlockId<T>) -> String {
 		BlockId::Hash(h) => HexDisplay::from(&h.encode()).to_string(),
 		BlockId::Number(n) => HexDisplay::from(&n.encode()).to_string(),
 	}
+}
+
+#[cfg(test)]
+mod tests {
 }

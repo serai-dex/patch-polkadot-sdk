@@ -91,11 +91,11 @@ index 88de23023a9f..6548a357251b 100644
  		config
  	}
  
--	/// Validate this node's `webrtc-direct` addresses and append its WebRTC `/certhash` to the
-+	/* /// Validate this node's `webrtc-direct` addresses and append its WebRTC `/certhash` to the
- 	/// public ones.
+-	/// Validate this node's listen and public addresses against its node key, and append its
++	/* /// Validate this node's listen and public addresses against its node key, and append its
+ 	/// WebRTC `/certhash` to the public `webrtc-direct` ones.
  	///
- 	/// Fails on a `webrtc-direct` address configured for the [`NetworkBackendType::Libp2p`]
+ 	/// A listen or public address may carry `/p2p/<peer id>`, and a `webrtc-direct` one
 @@ -825,5 +825,5 @@ impl NetworkConfiguration {
  			}
  			keep
@@ -103,3 +103,41 @@ index 88de23023a9f..6548a357251b 100644
 -	}
 +	} */
  }
+diff --git a/substrate/client/network/src/config.rs b/substrate/client/network/src/config.rs
+index 6e653ac83c57..128e4db75cc2 100644
+--- a/substrate/client/network/src/config.rs
++++ b/substrate/client/network/src/config.rs
+@@ -191,13 +191,13 @@ fn check_and_strip_identity(
+ 		_ => None,
+ 	};
+ 
+-	let configured_certhash = match address.iter().last() {
++	/* let configured_certhash = match address.iter().last() {
+ 		Some(multiaddr::Protocol::Certhash(hash)) => {
+ 			address.pop();
+ 			Some(hash)
+ 		},
+ 		_ => None,
+-	};
++	}; */
+ 
+ 	// If an identity is still present within the address it must be a malformed one.
+ 	if let Some(identity) = configured_identity(address) {
+@@ -217,7 +217,7 @@ fn check_and_strip_identity(
+ 		}
+ 	}
+ 
+-	// A certificate to hash is something only a `webrtc-direct` address presents.
++	/* // A certificate to hash is something only a `webrtc-direct` address presents.
+ 	if let Some(configured) = configured_certhash {
+ 		let expected =
+ 			certhash.filter(|_| webrtc::is_webrtc_address(address)).ok_or_else(|| {
+@@ -232,7 +232,7 @@ fn check_and_strip_identity(
+ 				node_key_origin: node_key_origin.to_string(),
+ 			});
+ 		}
+-	}
++	} */
+ 
+ 	if let Some(configured) = configured_peer_id {
+ 		let expected = local_peer_id.into();

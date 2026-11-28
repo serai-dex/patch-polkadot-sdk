@@ -590,6 +590,14 @@ pub fn proposing_remaining_duration<Block: BlockT>(
 
 	let proposing_duration = std::cmp::min(slot_remaining, proposing_duration);
 
+	let max_proposing_duration =
+		max_block_proposal_slot_portion.map(|p| slot_info.duration.mul_f32(p.get()));
+
+	// Cap proposing duration across all paths, in case `block_proposal_slot_portion`
+	// exceeds `max_block_proposal_slot_portion`.
+	let proposing_duration = max_proposing_duration
+		.map_or(proposing_duration, |max| std::cmp::min(proposing_duration, max));
+
 	// If parent is genesis block, we don't require any lenience factor.
 	if slot_info.chain_head.number().is_zero() {
 		return proposing_duration;
@@ -611,15 +619,10 @@ pub fn proposing_remaining_duration<Block: BlockT>(
 
 		// if we defined a maximum portion of the slot for proposal then we must make sure the
 		// lenience doesn't go over it
-		let lenient_proposing_duration =
-			if let Some(max_block_proposal_slot_portion) = max_block_proposal_slot_portion {
-				std::cmp::min(
-					lenient_proposing_duration,
-					slot_info.duration.mul_f32(max_block_proposal_slot_portion.get()),
-				)
-			} else {
-				lenient_proposing_duration
-			};
+		let lenient_proposing_duration = max_proposing_duration
+			.map_or(lenient_proposing_duration, |max| {
+				std::cmp::min(lenient_proposing_duration, max)
+			});
 
 		debug!(
 			target: log_target,

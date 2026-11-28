@@ -88,4 +88,4 @@ index 8e326972a2..05f50dfb06 100644
 +#[cfg(debug_assertions)] fn construct_runtime_final_expansion(
  	definition: ExplicitRuntimeDeclaration,
  ) -> Result<TokenStream2> {
- 	let ExplicitRuntimeDeclaration { name, pallets, pallets_token, where_section } = definition;
+ 	let ExplicitRuntimeDeclaration { name, pallets, pallets_token } = definition;

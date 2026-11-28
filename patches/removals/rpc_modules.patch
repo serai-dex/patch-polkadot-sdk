@@ -72,9 +72,7 @@ index 69c7619a700..f7f24b44a6e 100644
  		sync_oracle,
  		tracing_execute_block: execute_block,
  	}: GenRpcModuleParams<TBl, TBackend, TCl, TRpc, TExPool>,
-@@ -868,18 +868,18 @@ where
- 	TBl::Hash: Unpin,
- 	TBl::Header: Unpin,
+@@ -868,16 +868,16 @@ where
  {
 -	let system_info = sc_rpc::system::SystemInfo {
 +	/* let system_info = sc_rpc::system::SystemInfo {

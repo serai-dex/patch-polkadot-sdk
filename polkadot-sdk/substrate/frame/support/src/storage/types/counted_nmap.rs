@@ -180,16 +180,14 @@ where
 	}
 
 	/// Store or remove the value to be associated with `key` so that `get` returns the `query`.
-	/// It decrements the counter when the value is removed.
+	/// It updates the counter when an entry is added or removed.
 	pub fn set<KArg: EncodeLikeTuple<Key::KArg> + TupleToEncodedIter>(
 		key: KArg,
 		query: QueryKind::Query,
 	) {
-		let option = QueryKind::from_query_to_optional_value(query);
-		if option.is_none() {
-			CounterFor::<Prefix>::mutate(|value| value.saturating_dec());
-		}
-		<Self as MapWrapper>::Map::set(key, QueryKind::from_optional_value_to_query(option))
+		Self::mutate_exists(key, |value| {
+			*value = QueryKind::from_query_to_optional_value(query);
+		})
 	}
 
 	/// Take a value from storage, removing it afterwards.

@@ -1464,19 +1464,27 @@ impl<Block: BlockT> GossipValidator<Block> {
 	/// Note that we've imported a commit finalizing a given block.
 	/// `set_id` & `round` are the ones the commit message is from and not necessarily
 	/// the latest set ID & round started.
+	///
+	/// Returns `true` if the commit advanced our view of the finalized height, i.e. it isn't a
+	/// duplicate of (or older than) a commit we've already noted.
 	pub(super) fn note_commit_finalized<F>(
 		&self,
 		round: Round,
 		set_id: SetId,
 		finalized: NumberFor<Block>,
 		send_neighbor: F,
-	) where
+	) -> bool
+	where
 		F: FnOnce(Vec<PeerId>, NeighborPacket<NumberFor<Block>>),
 	{
 		let maybe_msg = self.inner.write().note_commit_finalized(round, set_id, finalized);
 
-		if let Some((to, msg)) = maybe_msg {
-			send_neighbor(to, msg);
+		match maybe_msg {
+			Some((to, msg)) => {
+				send_neighbor(to, msg);
+				true
+			},
+			None => false,
 		}
 	}
 
@@ -1691,16 +1699,21 @@ impl<Block: BlockT> sc_network_gossip::Validator<Block> for GossipValidator<Bloc
 				return false; // cannot evaluate until we have a local view.
 			};
 
+			// we only broadcast our best commit, so check its height before decoding.
+			let Some(best_commit_height) = local_view.last_commit_height() else {
+				return false;
+			};
+
+			if peer.view.consider_global(set_id, *best_commit_height) != Consider::Accept {
+				return false;
+			}
+
 			match GossipMessage::<Block>::decode_all(&mut data) {
 				Err(_) => false,
 				Ok(GossipMessage::Commit(full)) => {
-					// we only broadcast commit messages if they're for the same
-					// set the peer is in and if the commit is better than the
-					// last received by peer, additionally we make sure to only
-					// broadcast our best commit.
-					peer.view.consider_global(set_id, full.message.target_number) ==
-						Consider::Accept && Some(&full.message.target_number) ==
-						local_view.last_commit_height()
+					// only broadcast our best commit, the peer accepting its height
+					// was checked above.
+					full.message.target_number == *best_commit_height
 				},
 				Ok(GossipMessage::Neighbor(_)) => false,
 				Ok(GossipMessage::CatchUpRequest(_)) => false,

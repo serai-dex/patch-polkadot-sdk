@@ -71,7 +71,7 @@ index 0b3409767f..987a9b28a1 100644
  impl-serde = { optional = true, workspace = true }
  itertools = { optional = true, workspace = true }
  log = { workspace = true }
-@@ -96,7 +96,7 @@ std = [
+@@ -96,6 +96,6 @@ std = [
  	"futures/std",
  	"futures/thread-pool",
  	"hash-db/std",
@@ -79,7 +79,6 @@ index 0b3409767f..987a9b28a1 100644
 +	# "hash256-std-hasher/std",
  	"impl-serde/std",
  	"itertools",
- 	"k256/std",
 diff --git a/substrate/primitives/runtime/Cargo.toml b/substrate/primitives/runtime/Cargo.toml
 index 909d976246..7befeb8af6 100644
 --- a/substrate/primitives/runtime/Cargo.toml

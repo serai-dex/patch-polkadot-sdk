@@ -2,13 +2,10 @@ diff --git a/substrate/client/service/src/builder.rs b/substrate/client/service/
 index 3919fb2..9be3226 100644
 --- a/substrate/client/service/src/builder.rs
 +++ b/substrate/client/service/src/builder.rs
-@@ -473,7 +473,7 @@ where
- 		+ 'static,
- 	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_api::Core<TBl>
- 		+ sp_transaction_pool::runtime_api::TaggedTransactionQueue<TBl>
--		+ sp_session::SessionKeys<TBl>
-+		// + sp_session::SessionKeys<TBl>
- 		+ sp_api::ApiExt<TBl>,
+@@ -473,4 +473,4 @@ where
+ 	<TCl as ProvideRuntimeApi<TBl>>::Api:
+-		sp_api::Core<TBl> + sp_session::SessionKeys<TBl> + sp_api::ApiExt<TBl>,
++		sp_api::Core<TBl> + sp_api::ApiExt<TBl>,
  	TBl: BlockT,
  	TBl::Hash: Unpin,
 @@ -503,12 +503,12 @@ where 
@@ -26,13 +23,10 @@ index 3919fb2..9be3226 100644
  
  	let sysinfo = sc_sysinfo::gather_sysinfo();
  	sc_sysinfo::print_sysinfo(&sysinfo);
-@@ -770,7 +770,7 @@ where
- 		+ Sync
- 		+ 'static,
+@@ -770,4 +770,4 @@ where
  	TBackend: sc_client_api::backend::Backend<TBl> + 'static,
 -	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_session::SessionKeys<TBl> + sp_api::Core<TBl>,
 +	<TCl as ProvideRuntimeApi<TBl>>::Api: sp_api::Core<TBl>,
- 	TExPool: MaintainedTransactionPool<Block = TBl, Hash = <TBl as BlockT>::Hash> + 'static,
  	TBl::Hash: Unpin,
  	TBl::Header: Unpin,
 diff --git a/substrate/primitives/session/src/lib.rs b/substrate/primitives/session/src/lib.rs
